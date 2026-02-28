@@ -1,5 +1,5 @@
-site_name: IoTxWeb3 Intelligence Platform (IW3IP) Docs
-site_description: Research and platform documentation for IoTxWeb3 Intelligence Platform (IW3IP)
+site_name: IoTxWeb3 Intelligence Platform (IW3IP)
+site_description: Official website for IoTxWeb3 Intelligence Platform (IW3IP)
 site_url: https://ertlnagoya.github.io/iw3ip.github.io/
 repo_name: ertlnagoya/iw3ip.github.io
 repo_url: https://github.com/ertlnagoya/iw3ip.github.io
@@ -28,13 +28,9 @@ plugins:
           build: true
           nav_translations:
             Home: ホーム
-            Profile: プロフィール
-            Research: 研究
-            Keywords: キーワード
-            Open Source: オープンソース
+            Platform Overview: プラットフォーム概要
             Publications: 論文
-            Students: 学生向け
-            IW3IP: IW3IP
+            Docs: ドキュメント
         - locale: en
           name: English
           build: true
@@ -51,10 +47,6 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Profile: profile.md
-  - Research: research.md
-  - Keywords: keywords.md
-  - Open Source: open-source.md
+  - Platform Overview: platform-overview.md
   - Publications: publications.md
-  - Students: students.md
-  - IW3IP: iw3ip.md
+  - Docs: docs.md

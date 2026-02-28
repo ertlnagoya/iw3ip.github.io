@@ -1,19 +1,5 @@
-# Publications (Selected)
+# Publications
 
-## Journal highlights
-
-- Mobility-as-a-Service resilience engineering (IEEE TNSM, 2025)
-- Software-defined vehicles and mixed-criticality orchestration (IEEE Embedded Systems Letters, 2025)
-- Privacy enhancement for blockchain-based IoT access control with ZKP (MDPI Electronics, 2025)
-- SoS resilience assurance and evaluation methods (MDPI Systems / IEEE Access, 2025)
-
-## Book chapter
-
-- Security analysis method with attack-oriented guidewords for embedded systems (Springer, 2016)
-
-## Reference
-
-- DBLP
-- Google Scholar
-
-A complete publication list will be maintained here.
+1. Luyonghe Li, Yuichiro Yasue, Yutaka Matsubara, "SSI-Enabled Authentication and Enhanced Metadata Search in Blockchain-based Decentralized IoT Data Platforms", IEEE 1st International Workshop on Blockchain for Decentralized Trust and Digital Identity (B4TI) at BCCA 2025, Croatia, Oct. 2025.
+2. Yuxiao Wu, Kenta Kawai, Yutaka Matsubara, "PPDS: A Practical and Privacy-Preserving Data Sharing Model for Blockchain-Based IoT e-Health Systems Using ECC, Zero-Knowledge Proof, and Access Control", IEEE 7th International Conference on Blockchain Computing and Applications (BCCA 2025), Croatia, Oct. 2025.
+3. Kenta Kawai, Yuxiao Wu, Yutaka Matsubara, Hiroaki Takada, "Flexible Edge Processing in Blockchain-based Secure IoT Data Distribution Framework", 6th Workshop on Blockchain theoRy and ApplicatIoNs (BRAIN 2025) at PerCom2025, Washington D.C., Mar 2025.
