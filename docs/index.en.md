@@ -1,26 +1,24 @@
-# IoTxWeb3 Intelligence Platform (IW3IP) Documentation
+# IoTxWeb3 Intelligence Platform (IW3IP)
 
-This site organizes material for workshop facilitation and learner hands-on execution.
+IoTxWeb3 Intelligence Platform (IW3IP) is a long-term integration effort
+that starts from trusted data exchange and extends toward AI-enabled decision
+and control orchestration for IoT systems.
 
-## Documentation model
+Based on the existing research website content, this site organizes:
 
-- **Workshop**: instructor/TA flow design (goals, timing, orchestration)
-- **Hands-on**: participant execution steps (commands, expected results)
+- Research overview
+- Research keywords
+- Open-source outputs
+- Selected publications
+- Message to students
+- IW3IP roadmap
 
-In short, **Hands-on is a part of Workshop**.
+## Main sections
 
-## Start here
-
-1. [Workshop / Prerequisites](workshop/prerequisites.md)
-2. [Workshop / Quickstart](workshop/quickstart.md)
-3. [Hands-on](hands-on/index.md)
-4. [Operations / Troubleshooting](operations/troubleshooting.md)
-
-## Run docs locally
-
-```bash
-pip install mkdocs-material mkdocs-static-i18n
-mkdocs serve
-```
-
-Open: `http://127.0.0.1:8000`
+1. [Profile](profile.md)
+2. [Research](research.md)
+3. [Keywords](keywords.md)
+4. [Open Source](open-source.md)
+5. [Publications](publications.md)
+6. [Students](students.md)
+7. [IW3IP](iw3ip.md)

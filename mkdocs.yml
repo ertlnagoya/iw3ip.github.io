@@ -1,5 +1,5 @@
 site_name: IoTxWeb3 Intelligence Platform (IW3IP) Docs
-site_description: Workshop and hands-on documentation for IoTxWeb3 Intelligence Platform (IW3IP)
+site_description: Research and platform documentation for IoTxWeb3 Intelligence Platform (IW3IP)
 site_url: https://ertlnagoya.github.io/iw3ip.github.io/
 repo_name: ertlnagoya/iw3ip.github.io
 repo_url: https://github.com/ertlnagoya/iw3ip.github.io
@@ -28,18 +28,13 @@ plugins:
           build: true
           nav_translations:
             Home: ホーム
-            Workshop: ワークショップ
-            Overview: 概要
-            Prerequisites: 事前準備
-            Quickstart: 最短起動
-            Facilitator Guide: 講師進行ガイド
-            Hands-on: ハンズオン
-            HuskyLens2 Sample: HUSKYLENS2サンプル
-            USB Webcam Sample: USBウェブカメラサンプル
-            Mobile Viewer: スマホ閲覧アプリ
-            Operations: 運用
-            Troubleshooting: トラブルシュート
-            FAQ: FAQ
+            Profile: プロフィール
+            Research: 研究
+            Keywords: キーワード
+            Open Source: オープンソース
+            Publications: 論文
+            Students: 学生向け
+            IW3IP: IW3IP
         - locale: en
           name: English
           build: true
@@ -56,17 +51,10 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Workshop:
-      - Overview: workshop/index.md
-      - Prerequisites: workshop/prerequisites.md
-      - Quickstart: workshop/quickstart.md
-      - Facilitator Guide: workshop/facilitator-guide.md
-  - Hands-on:
-      - Overview: hands-on/index.md
-      - HuskyLens2 Sample: hands-on/huskylens2.md
-      - USB Webcam Sample: hands-on/webcam.md
-      - Mobile Viewer: hands-on/mobile-viewer.md
-  - Operations:
-      - Overview: operations/index.md
-      - Troubleshooting: operations/troubleshooting.md
-      - FAQ: operations/faq.md
+  - Profile: profile.md
+  - Research: research.md
+  - Keywords: keywords.md
+  - Open Source: open-source.md
+  - Publications: publications.md
+  - Students: students.md
+  - IW3IP: iw3ip.md
