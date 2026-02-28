@@ -8,12 +8,14 @@
    - [HUSKYLENS2サンプル](huskylens2.md)
    - [USBウェブカメラサンプル](webcam.md)
    - [HA x SSI Publisherサンプル](ha-ssi-publisher.md)
-2. イベント出力を確認する
-3. フロントで購入する
-4. スマホ表示を確認する（任意）
+2. 選んだサンプルの成功判定を確認する
+3. 結果を共有し、必要に応じて次のサンプルへ進む
 
 ## 共通の成功判定
 
-- `mediator-owner/raw_data/output` にイベントファイルができる
-- フロントに商品が表示される
-- 購入できる
+- カメラ系（HUSKYLENS2 / Webcam）:
+  - `mediator-owner/raw_data/output` にイベントファイルができる
+  - フロントに商品が表示され、購入できる
+- HA x SSI Publisher系:
+  - `/simulate/publish` で `allowed` / `denied` の両ケースを確認できる
+  - `/audit/logs` に `allow` / `deny` / `send_error` が記録される

@@ -25,3 +25,4 @@ Flow:
 
 - With HUSKYLENS2: [HUSKYLENS2 sample](../hands-on/huskylens2.md)
 - Without HUSKYLENS2: [USB webcam sample](../hands-on/webcam.md)
+- Home Assistant + SSI integration path: [HA x SSI Publisher sample](../hands-on/ha-ssi-publisher.md)

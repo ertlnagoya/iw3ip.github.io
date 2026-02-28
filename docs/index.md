@@ -23,7 +23,7 @@
 ## ローカルでDocsを起動
 
 ```bash
-pip install mkdocs-material
+pip install mkdocs-material mkdocs-static-i18n
 mkdocs serve
 ```
 

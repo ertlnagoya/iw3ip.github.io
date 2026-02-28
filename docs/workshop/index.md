@@ -26,6 +26,7 @@
 
 - HUSKYLENS2あり: [HUSKYLENS2サンプル](../hands-on/huskylens2.md)
 - HUSKYLENS2なし: [USBウェブカメラサンプル](../hands-on/webcam.md)
+- Home Assistant + SSI 連携を学ぶ: [HA x SSI Publisherサンプル](../hands-on/ha-ssi-publisher.md)
 
 ## 参照
 
