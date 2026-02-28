@@ -7,6 +7,7 @@
 1. どちらかの入力ソースを選ぶ
    - [HUSKYLENS2サンプル](huskylens2.md)
    - [USBウェブカメラサンプル](webcam.md)
+   - [HA x SSI Publisherサンプル](ha-ssi-publisher.md)
 2. イベント出力を確認する
 3. フロントで購入する
 4. スマホ表示を確認する（任意）

@@ -1,0 +1,120 @@
+# HA x SSI Publisherサンプル（Phase 1）
+
+## 目的
+
+Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意VC）で許可判定し、
+許可データのみを送信・監査ログ保存する最小構成を体験します。
+
+パイプライン:
+
+`Home Assistant -> MQTT -> (任意 Node-RED) -> Data Publisher -> Platform API`
+
+## 前提
+
+- Docker / Docker Compose が使える
+- `curl` が使える
+
+## 1. 起動
+
+```bash
+docker compose -f infra/docker-compose.yml up --build -d
+```
+
+確認:
+
+```bash
+curl http://localhost:8080/health
+```
+
+期待結果:
+
+```json
+{"status":"ok","service":"publisher"}
+```
+
+## 2. Consent VC を登録
+
+```bash
+curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_temperature.json
+curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_power.json
+curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_person_detected.json
+```
+
+## 3. 許可されるケース
+
+```bash
+curl -X POST http://localhost:8080/simulate/publish \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "topic":"homeassistant/state/sensor/temperature",
+    "payload":{
+      "entity_id":"sensor.living_room_temperature",
+      "state":"24.1",
+      "attributes":{"unit_of_measurement":"C"},
+      "ts":"2026-02-28T10:00:00Z",
+      "source":"home_assistant"
+    },
+    "purpose":"research"
+  }'
+```
+
+期待結果:
+
+```json
+{"status":"allowed","dataset_id":"home/env/temperature"}
+```
+
+## 4. 拒否されるケース
+
+```bash
+curl -X POST http://localhost:8080/simulate/publish \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "topic":"homeassistant/state/sensor/power",
+    "payload":{
+      "entity_id":"sensor.main_power",
+      "state":"520",
+      "attributes":{"unit_of_measurement":"W"},
+      "ts":"2026-02-28T10:00:10Z",
+      "source":"home_assistant"
+    },
+    "purpose":"marketing"
+  }'
+```
+
+期待結果:
+
+```json
+{"status":"denied","dataset_id":"home/energy/power","reason":"no_matching_consent"}
+```
+
+## 5. MQTT経路を試す
+
+```bash
+docker exec -i iw3ip-mosquitto mosquitto_pub \
+  -h localhost -p 1883 \
+  -t homeassistant/event/person_detected \
+  -m '{"event_type":"person_detected","data":{"camera_id":"front_door","confidence":0.93},"ts":"2026-02-28T10:00:20Z","source":"edge_inference"}'
+```
+
+## 6. 監査ログ確認
+
+```bash
+curl http://localhost:8080/audit/logs?limit=10
+```
+
+確認ポイント:
+
+- `allow` / `deny` / `send_error` が記録される
+- `dataset_id`, `purpose`, `message_hash` が残る
+
+## 7. 停止
+
+```bash
+docker compose -f infra/docker-compose.yml down
+```
+
+## 拡張ヒント
+
+- Phase 2: `homeassistant/event/...` 系を中心にイベント共有へ拡張
+- Phase 3: 前段にSSI Gateway（PEP）を追加し、VC提示制御を実装
