@@ -2,6 +2,12 @@
 
 This section contains participant execution recipes.
 
+## Learning Goals (University Students)
+
+- explain behavior based on execution evidence
+- explain `allowed` / `denied` by policy conditions
+- explain on-chain/off-chain boundaries in the data flow
+
 ## Order
 
 1. Choose one input source:

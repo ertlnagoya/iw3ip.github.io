@@ -30,6 +30,13 @@ plugins:
             Home: ホーム
             Platform Overview: プラットフォーム概要
             Publications: 論文
+            Learning Foundations: 学習基礎
+            Course Guide: 授業ガイド
+            Learning Roadmap: 学習ロードマップ
+            Blockchain Basics: ブロックチェーン基礎
+            Hardhat Basics: Hardhat基礎
+            SSI DID VC Basics: SSI/DID/VC基礎
+            References: 参考文献
             Docs: ドキュメント
             Workshop: ワークショップ
             Overview: 概要
@@ -62,6 +69,13 @@ nav:
   - Home: index.md
   - Platform Overview: platform-overview.md
   - Publications: publications.md
+  - Learning Foundations:
+      - Course Guide: foundations/course-guide.md
+      - Learning Roadmap: foundations/roadmap.md
+      - Blockchain Basics: foundations/blockchain-basics.md
+      - Hardhat Basics: foundations/hardhat-basics.md
+      - SSI DID VC Basics: foundations/ssi-did-vc-basics.md
+      - References: foundations/references.md
   - Docs: docs.md
   - Workshop:
       - Overview: workshop/index.md

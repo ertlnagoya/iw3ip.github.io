@@ -2,6 +2,13 @@
 
 このサイトは、ワークショップ運営と実習手順を分けて管理するためのドキュメントです。
 
+## 想定読者
+
+- コンピュータを学ぶ大学生（学部2-4年）
+- 演習を担当する講師・TA
+
+初学者は、まず [学習基礎 / 授業ガイド](foundations/course-guide.md) から読むことを推奨します。
+
 ## ドキュメントの考え方
 
 - **Workshop**: 講師・TA向けの進行設計（目的、時間配分、運営）
@@ -16,9 +23,10 @@
 ## はじめに読むページ
 
 1. [Workshop / 事前準備](workshop/prerequisites.md)
-2. [Workshop / 最短起動](workshop/quickstart.md)
-3. [Hands-on](hands-on/index.md)
-4. [Operations / トラブルシュート](operations/troubleshooting.md)
+2. [Learning Foundations / 学習ロードマップ](foundations/roadmap.md)
+3. [Workshop / 最短起動](workshop/quickstart.md)
+4. [Hands-on](hands-on/index.md)
+5. [Operations / トラブルシュート](operations/troubleshooting.md)
 
 ## ローカルでDocsを起動
 

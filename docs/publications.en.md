@@ -11,3 +11,11 @@
 3. Kenta Kawai, Yuxiao Wu, Yutaka Matsubara, Hiroaki Takada, "Flexible Edge Processing in Blockchain-based Secure IoT Data Distribution Framework", 6th Workshop on Blockchain theoRy and ApplicatIoNs (BRAIN 2025) at PerCom2025, Washington D.C., Mar 2025. DOI: <https://doi.org/10.1109/PERCOMWORKSHOPS65533.2025.00038>
 
    Abstract: The rapid proliferation of IoT devices has increased demand for data integration platforms to efficiently utilize sensor data. While centralized platforms remain dominant, they suffer from structural issues, including platform dependency, privacy risks, and data distribution constraints. To address these challenges, various studies have explored decentralized blockchain-based approaches to build reliable systems. However, existing approaches often focus on specific aspects and have not yet led to practical platforms. This paper proposes a decentralized IoT data distribution system that enables secure data exchange. It also supports diverse distribution needs through integrated processing and flexible external service integration. We implemented a prototype and evaluated its feasibility, confirming that the system can operate with reasonable costs and computational resources. Furthermore, we developed a highly portable system and released it as open source, contributing to the advancement of decentralized IoT platforms.
+
+## Source Notes
+
+- Bibliographic lines are based on DOI and conference metadata.
+- Abstract text is transcribed from public metadata sources (OpenAlex) and DOI-linked metadata.  
+  - <https://api.openalex.org/works/https://doi.org/10.1109/BCCA66705.2025.11229590>  
+  - <https://api.openalex.org/works/https://doi.org/10.1109/BCCA66705.2025.11229822>  
+  - <https://api.openalex.org/works/https://doi.org/10.1109/PERCOMWORKSHOPS65533.2025.00038>

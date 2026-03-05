@@ -1,0 +1,39 @@
+# Course Guide (University Students)
+
+This chapter helps instructors and learners use IW3IP content in undergraduate computer science education.
+
+## Target Learners
+
+- Undergraduate CS/CE students (2nd-4th year)
+- Basic familiarity with networking, Web/API, databases, and programming
+
+## Learning Outcomes
+
+- Explain decentralized data-sharing architecture
+- Understand consent-based policy decisions (Consent VC)
+- Explain on-chain/off-chain separation rationale
+- Report experimental results with reproducible evidence
+
+## Example Placement in a 15-Session Course
+
+| Session | Theme | Related Chapters |
+|---|---|---|
+| 1-2 | Introduction and motivation | Platform Overview |
+| 3-4 | Blockchain fundamentals | Blockchain Basics / Hardhat Basics |
+| 5-6 | SSI/DID/VC fundamentals | SSI/DID/VC Basics |
+| 7-9 | Implementation exercises | Workshop + Hands-on |
+| 10-12 | Validation and comparison | Operations + FAQ |
+| 13-15 | Final presentation | Roadmap + References |
+
+## Suggested Assessment
+
+- Reproducibility (40%): can run the workflow end-to-end
+- Conceptual explanation (40%): can explain why `allow/deny` happened
+- Improvement proposal (20%): quality of Phase 2/3 extension ideas
+
+## Minimum Report Requirements
+
+- execution environment (OS, Docker versions)
+- command history and logs
+- comparison of `allow` and `deny` cases
+- at least one improvement proposal
