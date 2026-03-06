@@ -5,6 +5,18 @@
 HUSKYLENS2がなくても、USBウェブカメラだけで
 `person_detected` / `possible_littering` イベントを生成します。
 
+## 公式リンク
+
+- OpenCV: <https://opencv.org/>
+- USBカメラ一般説明（参考）: <https://en.wikipedia.org/wiki/Webcam>
+
+## 前提
+
+- USBウェブカメラ、または mock 実行環境がある
+- `webcam-bridge` が利用できる
+- `mediator-owner` が起動済みで、`raw_data/output` を監視している
+- 実機モードでは、PCからカメラデバイスが認識されている
+
 ## 1. mockで最小確認
 
 ```bash
@@ -39,6 +51,23 @@ python3 webcam_litter_bridge.py \
 - `*_webcam_event_*.txt` が生成される
 - 商品化されて購入可能になる
 
+## 成功例
+
+- mock モードでイベントファイル生成まで確認できる
+- 実機モードで `person_detected` または `possible_littering` が出力される
+- 商品一覧に反映され、購入できる
+
 ## 5. 注意
 
 この検知は学習用のヒューリスティックであり、厳密な判定ではありません。
+
+## トラブル時
+
+- カメラが開けない:
+  - 別アプリがカメラを占有していないか確認
+  - `--camera-index 0` を `1` などに変えて試す
+- 期待イベントが出ない:
+  - 照明条件や画角を見直す
+  - mock モードでパイプライン自体が動くか先に確認する
+- 商品化されない:
+  - `mediator-owner` と出力先パスを確認する
