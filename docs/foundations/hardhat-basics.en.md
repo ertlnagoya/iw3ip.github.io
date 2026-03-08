@@ -1,18 +1,26 @@
 # Hardhat Basics (Blockchain Used in This Site)
 
-## What is Hardhat?
+## General Explanation
+
+### What is Hardhat?
 
 Hardhat is a development environment for Ethereum smart contracts.
 
 In this site, it is used as a **local development blockchain** for safe and reproducible exercises.
 
-## What You Can Do
+### What You Can Do
 
 - start local chain (`npx hardhat node`)
 - deploy contracts (`npx hardhat run ... --network localhost`)
 - run tests (`npx hardhat test`)
 
-## Minimal Flow
+### Why It Is Good for Learning
+
+- you can experiment locally on one machine
+- test accounts and balances are provided by default
+- deploy/call/observe cycles are short and repeatable
+
+### Minimal Flow
 
 ```mermaid
 sequenceDiagram
@@ -25,16 +33,29 @@ sequenceDiagram
   SC-->>Dev: tx receipts / events
 ```
 
-## Role in IW3IP
+## Position in This System
+
+### Role in IW3IP
 
 - learning phase: understand contract execution and traceability
 - future phase: evaluate production network choices and operations
 
-## Typical Issues
+### What You Actually Touch in This Site
+
+- `npx hardhat node`: starts local blockchain
+- deploy scripts: place contracts on the local network
+- MetaMask: connects to the local chain and sends transactions from the UI
+
+### Typical Issues
 
 - stale MetaMask network state -> reset/sync accounts and network
 - deploy script failures -> restart local node and redeploy
 - port conflicts -> check `8545` usage
+
+### Difference from Production
+
+- Hardhat is mainly for development and education
+- production use requires separate consideration for network operations, gas costs, incident handling, and key management
 
 ## Sources
 

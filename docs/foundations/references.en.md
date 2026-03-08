@@ -1,4 +1,7 @@
-# References and Learning Materials
+# References and Further Learning Materials
+
+This page collects **supplementary material to read after finishing the basic path inside this site**.  
+Basic understanding and hands-on execution are intended to be possible using this site alone.
 
 ## Blockchain Basics
 
@@ -24,6 +27,12 @@
 ## Papers in This Site
 
 - [Publications](../publications.md)
+
+## Recommended Usage
+
+1. finish the foundation pages and hands-on in this site first
+2. then read official docs or standards when deeper detail is needed
+3. finally use papers for research-level background
 
 ## Figure Usage Note
 

@@ -6,10 +6,22 @@
 
 | 優先度 | テーマ | 目標 | 目安時間 |
 |---|---|---|---|
+| P0 | サイト内導線の確認 | どの順で読めばよいかを把握する | 30分 |
 | P0 | Hands-on再現 | `allow/deny` を再現し監査ログを読める | 2-3時間 |
 | P1 | ブロックチェーン基礎 + Hardhat | ローカルチェーンの役割を説明できる | 3-4時間 |
 | P1 | SSI/DID/VC基礎 | Consent VC判定の意味を説明できる | 3-4時間 |
 | P2 | 発展（イベント共有・PEP） | Phase 2/3の設計意図を説明できる | 2-3時間 |
+
+## 最短学習パス
+
+1. [授業ガイド](course-guide.md)
+2. [ブロックチェーン基礎](blockchain-basics.md)
+3. [Hardhat基礎](hardhat-basics.md)
+4. [SSI/DID/VC基礎](ssi-did-vc-basics.md)
+5. [最短起動](../workshop/quickstart.md)
+6. [HA x SSI Publisherサンプル](../hands-on/ha-ssi-publisher.md)
+
+この6ページで、基本理解と最小ハンズオンは完結します。
 
 ## 3週間プラン（例）
 
@@ -33,3 +45,8 @@
 2. [Hardhat基礎](hardhat-basics.md)
 3. [SSI/DID/VC基礎](ssi-did-vc-basics.md)
 4. [参考文献](references.md)
+
+## 外部資料の使い方
+
+- まずは本サイト内の説明を優先してください。
+- 外部資料は、用語の原典確認、詳細仕様の確認、追加調査のために使います。

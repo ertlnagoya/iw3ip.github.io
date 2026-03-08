@@ -9,6 +9,21 @@
 
 初学者は、まず [学習基礎 / 授業ガイド](foundations/course-guide.md) から読むことを推奨します。
 
+## このサイトだけで学べる範囲
+
+このサイトは、**基礎理解から基本ハンズオンまでをサイト内だけで完結**できるように構成しています。
+
+- 基礎学習:
+  - ブロックチェーン
+  - Hardhat
+  - SSI / DID / VC
+- 実践:
+  - 最短起動
+  - 各 Hands-on サンプル
+  - トラブルシュート
+
+外部サイト・論文は、**さらに深く学びたい場合の補助資料**として最後に参照する位置付けです。
+
 ## ドキュメントの考え方
 
 - **Workshop**: 講師・TA向けの進行設計（目的、時間配分、運営）
@@ -27,6 +42,17 @@
 3. [Workshop / 最短起動](workshop/quickstart.md)
 4. [Hands-on](hands-on/index.md)
 5. [Operations / トラブルシュート](operations/troubleshooting.md)
+
+## 推奨学習順
+
+1. [授業ガイド](foundations/course-guide.md)
+2. [学習ロードマップ](foundations/roadmap.md)
+3. [ブロックチェーン基礎](foundations/blockchain-basics.md)
+4. [Hardhat基礎](foundations/hardhat-basics.md)
+5. [SSI/DID/VC基礎](foundations/ssi-did-vc-basics.md)
+6. [最短起動](workshop/quickstart.md)
+7. [Hands-on](hands-on/index.md)
+8. [参考文献](foundations/references.md)
 
 ## ローカルでDocsを起動
 

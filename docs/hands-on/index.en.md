@@ -8,6 +8,11 @@ This section contains participant execution recipes.
 - explain `allowed` / `denied` by policy conditions
 - explain on-chain/off-chain boundaries in the data flow
 
+## Position of This Chapter
+
+This chapter is where learners verify concepts by actually running the system after reading the foundation pages.  
+Basic execution and validation should be possible using this site alone, without requiring external references.
+
 ## Order
 
 1. Choose one input source:

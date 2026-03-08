@@ -14,6 +14,21 @@ This chapter helps instructors and learners use IW3IP content in undergraduate c
 - Explain on-chain/off-chain separation rationale
 - Report experimental results with reproducible evidence
 
+## Self-Contained Learning Policy
+
+This site is designed so that basic study and introductory hands-on work can be completed within the site itself.
+
+- Completed inside this site:
+  - fundamental terminology
+  - system overview
+  - quickstart
+  - hands-on execution
+  - result interpretation
+- Use external material when:
+  - you want deeper technical background
+  - you need literature review for reports or research
+  - you want to confirm standards or primary sources
+
 ## Example Placement in a 15-Session Course
 
 | Session | Theme | Related Chapters |

@@ -6,10 +6,22 @@ This roadmap helps learners move from "it runs" to "I can explain why it works".
 
 | Priority | Topic | Goal | Estimated Time |
 |---|---|---|---|
+| P0 | Understand site navigation | know what to read in what order | 30 min |
 | P0 | Hands-on reproduction | reproduce `allow/deny` and read audit logs | 2-3 hours |
 | P1 | Blockchain basics + Hardhat | explain the role of local chain | 3-4 hours |
 | P1 | SSI/DID/VC basics | explain consent-based policy meaning | 3-4 hours |
 | P2 | Advanced (events/PEP) | explain Phase 2/3 design direction | 2-3 hours |
+
+## Short Learning Path
+
+1. [Course Guide](course-guide.md)
+2. [Blockchain Basics](blockchain-basics.md)
+3. [Hardhat Basics](hardhat-basics.md)
+4. [SSI/DID/VC Basics](ssi-did-vc-basics.md)
+5. [Quickstart](../workshop/quickstart.md)
+6. [HA x SSI Publisher Sample](../hands-on/ha-ssi-publisher.md)
+
+These six pages are intended to be enough for basic understanding and minimum hands-on completion.
 
 ## 3-Week Plan (Example)
 
@@ -33,3 +45,8 @@ This roadmap helps learners move from "it runs" to "I can explain why it works".
 2. [Hardhat Basics](hardhat-basics.md)
 3. [SSI/DID/VC Basics](ssi-did-vc-basics.md)
 4. [References](references.md)
+
+## How to Use External Materials
+
+- Prefer this site first for the basic path.
+- Use external sources for standards, deeper technical detail, and follow-up study.
