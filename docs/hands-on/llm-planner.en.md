@@ -142,6 +142,10 @@ This screen lets you check:
 - `GET /assistant/executions`
 - badge / alert rendering for `planner_diagnostics`
 
+Screen image:
+
+![assistant-demo overview](../assets/assistant-demo-overview.svg)
+
 If you want a one-command path including the local mock LLM:
 
 ```bash

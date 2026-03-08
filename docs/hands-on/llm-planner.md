@@ -142,6 +142,10 @@ docker compose -f infra/docker-compose.yml --profile assistant-ui up --build -d 
 - `GET /assistant/executions`
 - `planner_diagnostics` の badge / alert 表示
 
+画面イメージ:
+
+![assistant-demo overview](../assets/assistant-demo-overview.svg)
+
 local mock LLM まで含めて 1 コマンドで起動する場合:
 
 ```bash
