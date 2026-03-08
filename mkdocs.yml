@@ -16,6 +16,9 @@ theme:
     - search.highlight
     - content.code.copy
 
+extra_css:
+  - stylesheets/extra.css
+
 plugins:
   - i18n:
       docs_structure: suffix
@@ -39,6 +42,8 @@ plugins:
             References: 参考文献
             Docs: ドキュメント
             Workshop: ワークショップ
+            Before Class: 事前準備と起動
+            Facilitation: 進行と運営
             Overview: 概要
             Prerequisites: 事前準備
             Quickstart: 最短起動
@@ -87,9 +92,11 @@ nav:
   - Docs: docs.md
   - Workshop:
       - Overview: workshop/index.md
-      - Prerequisites: workshop/prerequisites.md
-      - Quickstart: workshop/quickstart.md
-      - Facilitator Guide: workshop/facilitator-guide.md
+      - Before Class:
+          - Prerequisites: workshop/prerequisites.md
+          - Quickstart: workshop/quickstart.md
+      - Facilitation:
+          - Facilitator Guide: workshop/facilitator-guide.md
   - Hands-on:
       - Overview: hands-on/index.md
       - Phase 1 Data Exchange:
