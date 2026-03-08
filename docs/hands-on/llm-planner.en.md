@@ -306,6 +306,57 @@ defineProps<{
 </template>
 ```
 
+Minimal CSS example:
+
+```css
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.badge-green {
+  background: #e8f7ee;
+  color: #146c43;
+}
+
+.badge-amber {
+  background: #fff3cd;
+  color: #9a6700;
+}
+
+.badge-red {
+  background: #fbe9e7;
+  color: #b42318;
+}
+
+.alert {
+  margin-top: 0.75rem;
+  border-left: 4px solid currentColor;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+}
+
+.alert-green {
+  color: #146c43;
+  background: #eefbf3;
+}
+
+.alert-amber {
+  color: #9a6700;
+  background: #fff8e1;
+}
+
+.alert-red {
+  color: #b42318;
+  background: #fef3f2;
+}
+```
+
 ## 5. Switch to an OpenAI-compatible API
 
 If your API key and model are ready, start the server like this:
