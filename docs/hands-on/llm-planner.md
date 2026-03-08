@@ -75,6 +75,10 @@ Docker Compose 例:
 docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
 ```
 
+参考スクリーンショット:
+
+![assistant-llm startup](../assets/llm-planner-compose.svg)
+
 別ターミナルで確認:
 
 ```bash
@@ -178,6 +182,10 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 - [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_expected_plan.json)
 
+参考スクリーンショット:
+
+![LLM planner response](../assets/llm-planner-response.svg)
+
 ## 5.5 演習用 pytest を使う
 
 この Hands-on には、problem / answer 共通で使える pytest もあります。
@@ -211,6 +219,7 @@ pytest -q tests/test_phase3_llm_hands_on_program.py
 
 - `planner_name` が期待値と違う場合、フォールバックの可能性がある
 - 許可外の action がそのまま実行されない
+- `/assistant/executions` に `planner_diagnostics.error_type` と `planner_diagnostics.error_message` が残る
 
 ## 成功判定
 

@@ -75,6 +75,10 @@ Docker Compose example:
 docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
 ```
 
+Reference screenshot:
+
+![assistant-llm startup](../assets/llm-planner-compose.svg)
+
 In another terminal:
 
 ```bash
@@ -178,6 +182,10 @@ The expected JSON shape is documented here:
 
 - [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_expected_plan.json)
 
+Reference screenshot:
+
+![LLM planner response](../assets/llm-planner-response.svg)
+
 ## 5.5 Use the exercise pytest
 
 This hands-on also includes a reusable pytest file for both the problem and answer programs.
@@ -211,6 +219,7 @@ What to watch:
 
 - if `planner_name` is different from the expected LLM planner name, fallback may have happened
 - unsupported actions must not pass directly into execution
+- `/assistant/executions` now keeps `planner_diagnostics.error_type` and `planner_diagnostics.error_message`
 
 ## Success criteria
 

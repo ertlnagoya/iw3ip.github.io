@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <rect width="1200" height="760" fill="#0f172a"/>
+  <rect x="40" y="40" width="1120" height="680" rx="18" fill="#111827" stroke="#334155" stroke-width="2"/>
+  <circle cx="88" cy="78" r="8" fill="#ef4444"/>
+  <circle cx="116" cy="78" r="8" fill="#f59e0b"/>
+  <circle cx="144" cy="78" r="8" fill="#22c55e"/>
+  <text x="180" y="85" fill="#cbd5e1" font-family="Menlo, Consolas, monospace" font-size="24">assistant-llm profile startup</text>
+  <text x="70" y="145" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="24">$ cp .env.local.example .env.local</text>
+  <text x="70" y="185" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="24">$ docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm</text>
+  <text x="70" y="245" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="22">[+] Running 3/3</text>
+  <text x="100" y="285" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">✔ Network infra_default             Created</text>
+  <text x="100" y="320" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">✔ Image infra-assistant-llm         Built</text>
+  <text x="100" y="355" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">✔ Container iw3ip-assistant-llm     Started</text>
+  <text x="70" y="425" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="24">$ curl http://localhost:8090/health</text>
+  <rect x="70" y="455" width="560" height="70" rx="10" fill="#0b1220" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="95" y="498" fill="#f8fafc" font-family="Menlo, Consolas, monospace" font-size="22">{"status":"ok","service":"assistant"}</text>
+  <rect x="690" y="150" width="400" height="300" rx="14" fill="#0b1220" stroke="#334155" stroke-width="2"/>
+  <text x="715" y="195" fill="#f8fafc" font-family="Arial, sans-serif" font-size="28" font-weight="bold">What to confirm</text>
+  <text x="715" y="240" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="24">1. `.env.local` exists</text>
+  <text x="715" y="280" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="24">2. `assistant-llm` container starts</text>
+  <text x="715" y="320" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="24">3. `/health` returns `ok`</text>
+  <text x="715" y="360" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="24">4. Next step: `/assistant/plan`</text>
+  <text x="70" y="625" fill="#94a3b8" font-family="Arial, sans-serif" font-size="22">Mock screenshot for the hands-on guide. The actual terminal output may differ slightly by Docker version.</text>
+</svg>

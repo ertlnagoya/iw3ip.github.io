@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="860" viewBox="0 0 1200 860">
+  <rect width="1200" height="860" fill="#f8fafc"/>
+  <rect x="55" y="45" width="1090" height="770" rx="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="85" y="95" fill="#0f172a" font-family="Arial, sans-serif" font-size="34" font-weight="bold">LLM planner response example</text>
+  <rect x="80" y="130" width="1040" height="60" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="105" y="170" fill="#1d4ed8" font-family="Menlo, Consolas, monospace" font-size="22">curl -X POST http://localhost:8090/assistant/plan -H 'Content-Type: application/json' -d @examples/phase3_request_park_safety.json</text>
+  <rect x="80" y="220" width="1040" height="470" rx="14" fill="#0f172a"/>
+  <text x="110" y="270" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">{</text>
+  <text x="140" y="305" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="22">"status"</text>
+  <text x="250" y="305" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">: </text>
+  <text x="280" y="305" fill="#86efac" font-family="Menlo, Consolas, monospace" font-size="22">"planned"</text>
+  <text x="140" y="340" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="22">"plan"</text>
+  <text x="220" y="340" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">: {</text>
+  <text x="180" y="375" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="22">"planner_name"</text>
+  <text x="360" y="375" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">: </text>
+  <text x="390" y="375" fill="#86efac" font-family="Menlo, Consolas, monospace" font-size="22">"llm-planner-openai-compatible-v1"</text>
+  <text x="180" y="410" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="22">"target_area"</text>
+  <text x="330" y="410" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">: </text>
+  <text x="360" y="410" fill="#86efac" font-family="Menlo, Consolas, monospace" font-size="22">"park-north"</text>
+  <text x="180" y="445" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="22">"watch_events"</text>
+  <text x="350" y="445" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">: [</text>
+  <text x="390" y="445" fill="#86efac" font-family="Menlo, Consolas, monospace" font-size="22">"possible_littering", "suspicious_activity"</text>
+  <text x="180" y="480" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="22">"actions"</text>
+  <text x="280" y="480" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">: [</text>
+  <text x="320" y="480" fill="#86efac" font-family="Menlo, Consolas, monospace" font-size="22">"light_on", "send_notification"</text>
+  <text x="140" y="530" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="22">"planner_diagnostics"</text>
+  <text x="420" y="530" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">: {</text>
+  <text x="180" y="565" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="22">"provider_name"</text>
+  <text x="360" y="565" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">: </text>
+  <text x="390" y="565" fill="#86efac" font-family="Menlo, Consolas, monospace" font-size="22">"openai_compatible"</text>
+  <text x="180" y="600" fill="#93c5fd" font-family="Menlo, Consolas, monospace" font-size="22">"used_fallback"</text>
+  <text x="360" y="600" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">: </text>
+  <text x="390" y="600" fill="#fcd34d" font-family="Menlo, Consolas, monospace" font-size="22">false</text>
+  <text x="110" y="645" fill="#e2e8f0" font-family="Menlo, Consolas, monospace" font-size="22">}</text>
+  <rect x="80" y="720" width="1040" height="65" rx="12" fill="#fef3c7" stroke="#f59e0b"/>
+  <text x="105" y="760" fill="#92400e" font-family="Arial, sans-serif" font-size="24">If `used_fallback` becomes `true`, inspect `/assistant/executions` and read `planner_diagnostics.error_message`.</text>
+</svg>
