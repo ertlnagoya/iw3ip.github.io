@@ -17,6 +17,15 @@ HUSKYLENS2がなくても、USBウェブカメラだけで
 - `mediator-owner` が起動済みで、`raw_data/output` を監視している
 - 実機モードでは、PCからカメラデバイスが認識されている
 
+## 演習用プログラム
+
+- [問題用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/webcam_littering_mock/problem_program.py)
+- [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/webcam_littering_mock/answer_program.py)
+- [演習説明](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/webcam_littering_mock/README.md)
+
+この演習では、USBウェブカメラの mock 出力として `possible_littering` イベントファイルを生成します。  
+問題用プログラムでは、イベントの最小構造と、`camera_id`・`confidence`・`event_type` の意味を確認できます。
+
 ## 1. mockで最小確認
 
 ```bash

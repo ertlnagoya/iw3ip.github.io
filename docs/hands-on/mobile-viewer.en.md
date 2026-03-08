@@ -15,6 +15,15 @@ Confirm that a smartphone can browse the event feed and proceed to purchase acti
 - PC and smartphone are connected to the same LAN / Wi-Fi
 - MetaMask Mobile or an equivalent wallet browser is available on the phone
 
+## Exercise Programs
+
+- [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/mobile_viewer/problem_program.py)
+- [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/mobile_viewer/answer_program.py)
+- [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/mobile_viewer/README.md)
+
+This exercise builds the smartphone access URL from the PC's LAN IP.  
+The problem program asks learners to complete the function that generates `http://<LAN_IP>:5173/mobile`, so they understand exactly what the phone should open.
+
 ## Serve frontend on LAN
 
 ```bash

@@ -15,6 +15,15 @@
 - PC とスマホが同じ LAN / Wi-Fi に接続されている
 - スマホで MetaMask モバイルアプリ、または同等のウォレットブラウザが使える
 
+## 演習用プログラム
+
+- [問題用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/mobile_viewer/problem_program.py)
+- [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/mobile_viewer/answer_program.py)
+- [演習説明](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/mobile_viewer/README.md)
+
+この演習では、PC の LAN IP からスマホ用 URL を組み立てます。  
+問題用プログラムでは `http://<LAN_IP>:5173/mobile` を組み立てる関数を完成させ、接続先 URL の意味を確認します。
+
 ## 1. PC側をLAN公開で起動
 
 ```bash

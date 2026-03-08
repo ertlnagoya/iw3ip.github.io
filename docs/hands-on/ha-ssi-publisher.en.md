@@ -27,6 +27,15 @@ Matching sample files:
 - `examples/payload_flood_risk_high.json`
 - `examples/payload_possible_littering.json`
 
+Exercise programs:
+
+- [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase1_ha_ssi_publisher/problem_program.py)
+- [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase1_ha_ssi_publisher/answer_program.py)
+- [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase1_ha_ssi_publisher/README.md)
+
+This exercise asks learners to construct the minimum request body for `/simulate/publish`.  
+The problem program focuses on how `topic`, `payload`, and `purpose` are combined into one request.
+
 ## 1. Start services
 
 ```bash

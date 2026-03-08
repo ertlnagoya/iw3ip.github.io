@@ -27,6 +27,15 @@
 - `examples/consent_flood_risk_high.json`
 - `examples/payload_flood_risk_high.json`
 
+演習用プログラム:
+
+- [問題用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_environment_disaster/problem_program.py)
+- [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_environment_disaster/answer_program.py)
+- [演習説明](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_environment_disaster/README.md)
+
+この演習では、`flood_risk_high` イベントを `/simulate/publish` に送るリクエストを完成させます。  
+問題用プログラムでは、同じイベントでも `purpose` によって `allowed` / `denied` が変わることをコードレベルで確認できます。
+
 ## シナリオ
 
 河川近くのエッジセンサが、水位上昇や周辺情報から `flood_risk_high` というイベントを生成したとします。  

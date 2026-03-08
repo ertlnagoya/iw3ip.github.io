@@ -27,6 +27,15 @@ Matching sample files:
 - `examples/consent_possible_littering.json`
 - `examples/payload_possible_littering.json`
 
+Exercise programs:
+
+- [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_webcam_event_sharing/problem_program.py)
+- [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_webcam_event_sharing/answer_program.py)
+- [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_webcam_event_sharing/README.md)
+
+This exercise asks learners to write the code that sends a `possible_littering` event to `/simulate/publish`.  
+The problem program makes it clear that a Phase 1 detection event becomes a Phase 2 condition-controlled sharing event.
+
 ## Scenario
 
 Suppose a community camera detects possible littering in a public park.  

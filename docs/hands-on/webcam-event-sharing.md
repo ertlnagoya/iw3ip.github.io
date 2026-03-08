@@ -27,6 +27,15 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 - `examples/consent_possible_littering.json`
 - `examples/payload_possible_littering.json`
 
+演習用プログラム:
+
+- [問題用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_webcam_event_sharing/problem_program.py)
+- [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_webcam_event_sharing/answer_program.py)
+- [演習説明](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_webcam_event_sharing/README.md)
+
+この演習では、`possible_littering` イベントを `/simulate/publish` に送るコードを書きます。  
+問題用プログラムでは、Phase 1 の検知イベントが Phase 2 では「条件付き共有イベント」へ変わることを確認できます。
+
 ## シナリオ
 
 地域のカメラでポイ捨ての可能性が検知されたとします。  

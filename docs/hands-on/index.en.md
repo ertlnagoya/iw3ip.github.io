@@ -13,6 +13,9 @@ This section contains participant execution recipes.
 This chapter is where learners verify concepts by actually running the system after reading the foundation pages.  
 Basic execution and validation should be possible using this site alone, without requiring external references.
 
+Each page now also links to a matching `problem program`, `answer program`, and `exercise guide`.  
+For workshop use, the intended flow is to start with the problem version and move to the answer or guide only when needed.
+
 ## Order
 
 1. Choose one input source:
