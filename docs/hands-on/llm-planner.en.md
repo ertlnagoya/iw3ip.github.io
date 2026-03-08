@@ -33,9 +33,15 @@ References:
 - [assistant/app/llm_prompt.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/assistant/app/llm_prompt.py)
 - [assistant/app/llm_provider.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/assistant/app/llm_provider.py)
 - [assistant/app/plan_validator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/assistant/app/plan_validator.py)
+- [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/problem_program.py)
+- [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/answer_program.py)
+- [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/README.md)
+- [.env.local.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/.env.local.example)
 - [examples/phase3_llm.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm.env.example)
 - [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_expected_plan.json)
 - [examples/phase3_request_station_warning.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_request_station_warning.json)
+
+The exercise programs focus on the minimum request body for `/assistant/plan` and on how to summarize the returned plan.
 
 ## Architecture Diagram
 
@@ -134,7 +140,7 @@ This confirms that the planner can also map an English request to `station-front
 To use an actual OpenAI-compatible API, inspect the example environment file:
 
 ```bash
-cat examples/phase3_llm.env.example
+cat .env.local.example
 ```
 
 Main fields:
@@ -150,9 +156,8 @@ Main fields:
 If your API key and model are ready, start the server like this:
 
 ```bash
-set -a
-source examples/phase3_llm.env.example
-set +a
+cp .env.local.example .env.local
+source .env.local
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
@@ -196,9 +201,17 @@ This hands-on is successful if you can confirm:
 
 ## Common issues
 
-### `source examples/phase3_llm.env.example` leaves placeholder values
+### `source .env.local` leaves placeholder values
 
 - a real API call will not work while `REPLACE_WITH_YOUR_API_KEY` is still present
+
+### `401 Unauthorized`
+
+- check `ASSISTANT_LLM_API_KEY`
+
+### `404` or `405`
+
+- check whether `ASSISTANT_LLM_API_BASE_URL` points to an OpenAI-compatible `/chat/completions` endpoint
 
 ### A real API always falls back instead of returning the LLM plan
 

@@ -33,9 +33,15 @@
 - [assistant/app/llm_prompt.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/assistant/app/llm_prompt.py)
 - [assistant/app/llm_provider.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/assistant/app/llm_provider.py)
 - [assistant/app/plan_validator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/assistant/app/plan_validator.py)
+- [問題用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/problem_program.py)
+- [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/answer_program.py)
+- [演習説明](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/README.md)
+- [.env.local.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/.env.local.example)
 - [examples/phase3_llm.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm.env.example)
 - [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_expected_plan.json)
 - [examples/phase3_request_station_warning.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_request_station_warning.json)
+
+演習プログラムでは、`/assistant/plan` に送る最小 JSON と、返ってきた `plan` の要約のしかたを確認できます。
 
 ## アーキテクチャ図
 
@@ -134,7 +140,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 実際の OpenAI 互換 API を使う場合は、次の example を参照します。
 
 ```bash
-cat examples/phase3_llm.env.example
+cat .env.local.example
 ```
 
 主な項目:
@@ -150,9 +156,8 @@ cat examples/phase3_llm.env.example
 API キーや model を設定済みなら、次のように起動できます。
 
 ```bash
-set -a
-source examples/phase3_llm.env.example
-set +a
+cp .env.local.example .env.local
+source .env.local
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
@@ -199,6 +204,14 @@ curl -X POST http://localhost:8090/assistant/plan \
 ### `source examples/phase3_llm.env.example` で値がそのまま残っている
 
 - `REPLACE_WITH_YOUR_API_KEY` のままでは実 API は使えません
+
+### `401 Unauthorized`
+
+- `ASSISTANT_LLM_API_KEY` を確認してください
+
+### `404` または `405`
+
+- `ASSISTANT_LLM_API_BASE_URL` が OpenAI 互換の `/chat/completions` を提供しているか確認してください
 
 ### 実 API で `planned` が返らず、いつも fallback になる
 
