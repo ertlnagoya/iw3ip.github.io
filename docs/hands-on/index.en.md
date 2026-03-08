@@ -30,6 +30,19 @@ For workshop use, the intended flow is to start with the problem version and mov
 2. Validate the success criteria for the selected sample
 3. Share outcomes, then move to the next sample if needed
 
+## Shortest Demo Path
+
+If you want to experience Phase 3 first, start with [LLM Planner Hands-on](llm-planner.md).  
+The `assistant-demo` profile starts `assistant-demo`, `llm-mock`, and `assistant-ui` in one command.
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
+```
+
+Open:
+
+- `http://localhost:4173`
+
 ## Common success criteria
 
 - Camera paths (HUSKYLENS2 / Webcam):

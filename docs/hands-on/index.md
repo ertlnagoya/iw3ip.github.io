@@ -30,6 +30,19 @@
 2. 選んだサンプルの成功判定を確認する
 3. 結果を共有し、必要に応じて次のサンプルへ進む
 
+## 最短デモ導線
+
+Phase 3 を最短で体験したい場合は、まず [LLM Plannerハンズオン](llm-planner.md) を選んでください。  
+`assistant-demo` profile を使うと、`assistant-demo`、`llm-mock`、`assistant-ui` を 1 コマンドで起動できます。
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
+```
+
+開く URL:
+
+- `http://localhost:4173`
+
 ## 共通の成功判定
 
 - カメラ系（HUSKYLENS2 / Webcam）:

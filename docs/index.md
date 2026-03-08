@@ -43,6 +43,28 @@
 4. [Hands-on](hands-on/index.md)
 5. [Operations / トラブルシュート](operations/troubleshooting.md)
 
+## まず 1 つ動かしたい場合
+
+Phase 3 の最短デモとして、`assistant-demo` を使うと 1 コマンドで次をまとめて起動できます。
+
+- `assistant-demo`
+- `llm-mock`
+- `assistant-ui`
+
+対応ページ:
+
+- [LLM Plannerハンズオン](hands-on/llm-planner.md)
+
+起動コマンド:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
+```
+
+開く URL:
+
+- `http://localhost:4173`
+
 ## 推奨学習順
 
 1. [授業ガイド](foundations/course-guide.md)

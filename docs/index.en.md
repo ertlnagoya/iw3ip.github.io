@@ -39,6 +39,28 @@ In short, **Hands-on is a part of Workshop**.
 4. [Hands-on](hands-on/index.md)
 5. [Operations / Troubleshooting](operations/troubleshooting.md)
 
+## If You Want To Run One Demo First
+
+As the shortest Phase 3 demo path, `assistant-demo` starts the following in one command:
+
+- `assistant-demo`
+- `llm-mock`
+- `assistant-ui`
+
+Matching page:
+
+- [LLM Planner Hands-on](hands-on/llm-planner.md)
+
+Start command:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
+```
+
+Open:
+
+- `http://localhost:4173`
+
 ## Recommended Learning Order
 
 1. [Course Guide](foundations/course-guide.md)
