@@ -238,6 +238,74 @@ const badge = diagnosticsToBadge({
 });
 ```
 
+Minimal React example:
+
+```tsx
+type PlannerDiagnostics = {
+  label: string;
+  color_hint: "green" | "amber" | "red";
+  code: string;
+  category: string;
+  user_message: string;
+  summary?: string | null;
+  suggestion?: string | null;
+};
+
+function DiagnosticsBadge({ diagnostics }: { diagnostics: PlannerDiagnostics }) {
+  return (
+    <span className={`badge badge-${diagnostics.color_hint}`}>
+      {diagnostics.label}
+    </span>
+  );
+}
+
+function DiagnosticsAlertPanel({ diagnostics }: { diagnostics: PlannerDiagnostics }) {
+  return (
+    <div className={`alert alert-${diagnostics.color_hint}`}>
+      <strong>{diagnostics.label}</strong>
+      <p>{diagnostics.user_message}</p>
+      <small>
+        code={diagnostics.code} / category={diagnostics.category}
+      </small>
+      {diagnostics.suggestion ? <p>Next: {diagnostics.suggestion}</p> : null}
+    </div>
+  );
+}
+```
+
+Minimal Vue example:
+
+```vue
+<script setup lang="ts">
+type PlannerDiagnostics = {
+  label: string;
+  color_hint: "green" | "amber" | "red";
+  code: string;
+  category: string;
+  user_message: string;
+  summary?: string | null;
+  suggestion?: string | null;
+};
+
+defineProps<{
+  diagnostics: PlannerDiagnostics;
+}>();
+</script>
+
+<template>
+  <span :class="`badge badge-${diagnostics.color_hint}`">
+    {{ diagnostics.label }}
+  </span>
+
+  <div :class="`alert alert-${diagnostics.color_hint}`">
+    <strong>{{ diagnostics.label }}</strong>
+    <p>{{ diagnostics.user_message }}</p>
+    <small>code={{ diagnostics.code }} / category={{ diagnostics.category }}</small>
+    <p v-if="diagnostics.suggestion">Next: {{ diagnostics.suggestion }}</p>
+  </div>
+</template>
+```
+
 ## 5. Switch to an OpenAI-compatible API
 
 If your API key and model are ready, start the server like this:
