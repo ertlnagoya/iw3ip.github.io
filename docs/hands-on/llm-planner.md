@@ -169,6 +169,10 @@ cat .env.local.example
   - `ok` か `fallback`
 - `severity`
   - `info`, `warning`, `error`
+- `label`
+  - バッジにそのまま載せる短い表示名
+- `color_hint`
+  - `green`, `amber`, `red` のような色分けヒント
 - `summary`
   - 何が起きたかの短い説明
 - `suggestion`
@@ -235,6 +239,8 @@ curl -X POST http://localhost:8090/assistant/plan \
 - `planner_name` が `llm-planner-mock-http-v1`
 - `planner_diagnostics.provider_name` が `openai_compatible`
 - `planner_diagnostics.severity` が `info`
+- `planner_diagnostics.label` が `OK`
+- `planner_diagnostics.color_hint` が `green`
 - `planner_diagnostics.used_fallback` が `false`
 
 ## 5.5 演習用 pytest を使う

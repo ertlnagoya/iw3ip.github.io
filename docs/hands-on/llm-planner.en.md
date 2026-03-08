@@ -169,6 +169,10 @@ How to read `planner_diagnostics`:
   - `ok` or `fallback`
 - `severity`
   - `info`, `warning`, or `error`
+- `label`
+  - short text that can be shown directly in a badge
+- `color_hint`
+  - color hint such as `green`, `amber`, or `red`
 - `summary`
   - short explanation of what happened
 - `suggestion`
@@ -235,6 +239,8 @@ Checkpoints:
 - `planner_name` is `llm-planner-mock-http-v1`
 - `planner_diagnostics.provider_name` is `openai_compatible`
 - `planner_diagnostics.severity` is `info`
+- `planner_diagnostics.label` is `OK`
+- `planner_diagnostics.color_hint` is `green`
 - `planner_diagnostics.used_fallback` is `false`
 
 ## 5.5 Use the exercise pytest
