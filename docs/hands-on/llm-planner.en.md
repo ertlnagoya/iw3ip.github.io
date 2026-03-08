@@ -69,6 +69,12 @@ ASSISTANT_LLM_PROVIDER=stub \
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
+Docker Compose example:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
+```
+
 In another terminal:
 
 ```bash
@@ -157,8 +163,7 @@ If your API key and model are ready, start the server like this:
 
 ```bash
 cp .env.local.example .env.local
-source .env.local
-uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
+docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
 ```
 
 Then call the same endpoint:
@@ -172,6 +177,23 @@ curl -X POST http://localhost:8090/assistant/plan \
 The expected JSON shape is documented here:
 
 - [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_expected_plan.json)
+
+## 5.5 Use the exercise pytest
+
+This hands-on also includes a reusable pytest file for both the problem and answer programs.
+
+First, validate the answer program:
+
+```bash
+pytest -q tests/test_phase3_llm_hands_on_program.py
+```
+
+After the TODOs in the problem program are implemented, switch the target module like this:
+
+```bash
+PHASE3_LLM_HANDS_ON_MODULE=examples.hands_on.phase3_llm_planner.problem_program \
+pytest -q tests/test_phase3_llm_hands_on_program.py
+```
 
 ## 6. Check validator and fallback behavior
 
@@ -212,6 +234,11 @@ This hands-on is successful if you can confirm:
 ### `404` or `405`
 
 - check whether `ASSISTANT_LLM_API_BASE_URL` points to an OpenAI-compatible `/chat/completions` endpoint
+
+### `docker compose --profile assistant-llm up` fails
+
+- make sure `.env.local` exists
+- make sure `ASSISTANT_LLM_API_KEY` is not empty in `.env.local`
 
 ### A real API always falls back instead of returning the LLM plan
 

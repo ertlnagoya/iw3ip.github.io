@@ -69,6 +69,12 @@ ASSISTANT_LLM_PROVIDER=stub \
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
+Docker Compose 例:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
+```
+
 別ターミナルで確認:
 
 ```bash
@@ -157,8 +163,7 @@ API キーや model を設定済みなら、次のように起動できます。
 
 ```bash
 cp .env.local.example .env.local
-source .env.local
-uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
+docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
 ```
 
 その後は同じ `curl` を使えます。
@@ -172,6 +177,23 @@ curl -X POST http://localhost:8090/assistant/plan \
 期待する JSON の形は、次の example で確認できます。
 
 - [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_expected_plan.json)
+
+## 5.5 演習用 pytest を使う
+
+この Hands-on には、problem / answer 共通で使える pytest もあります。
+
+まず解答用の確認:
+
+```bash
+pytest -q tests/test_phase3_llm_hands_on_program.py
+```
+
+問題用プログラムの TODO を埋めた後は、次のように切り替えられます。
+
+```bash
+PHASE3_LLM_HANDS_ON_MODULE=examples.hands_on.phase3_llm_planner.problem_program \
+pytest -q tests/test_phase3_llm_hands_on_program.py
+```
 
 ## 6. validator と fallback を確認
 
@@ -212,6 +234,11 @@ curl -X POST http://localhost:8090/assistant/plan \
 ### `404` または `405`
 
 - `ASSISTANT_LLM_API_BASE_URL` が OpenAI 互換の `/chat/completions` を提供しているか確認してください
+
+### `docker compose --profile assistant-llm up` が失敗する
+
+- `.env.local` を作成したか確認してください
+- `.env.local` の `ASSISTANT_LLM_API_KEY` が空でないか確認してください
 
 ### 実 API で `planned` が返らず、いつも fallback になる
 
