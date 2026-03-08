@@ -13,6 +13,29 @@ The hands-on content grows in three phases.
 | Phase 2: Event Sharing | how events or inference results are shared instead of full raw data | `allowed` / `denied`, consent, audit log |
 | Phase 3: Intelligence Integration | how human requests are interpreted into collection, evaluation, and control | `plan`, `execute`, `planner_diagnostics`, UI |
 
+## Phase Map
+
+<div class="iw3ip-phase-grid">
+  <div class="iw3ip-phase-card iw3ip-phase-1">
+    <div class="iw3ip-phase-kicker">Phase 1 / Data Exchange</div>
+    <h3>📡 Collect and pass data</h3>
+    <p>Start by understanding the basic path from cameras or sensors into the sharing platform.</p>
+    <p class="iw3ip-phase-links"><a href="huskylens2.md">HUSKYLENS2</a> / <a href="webcam.md">USB Webcam</a> / <a href="ha-ssi-publisher.md">HA x SSI Publisher</a></p>
+  </div>
+  <div class="iw3ip-phase-card iw3ip-phase-2">
+    <div class="iw3ip-phase-kicker">Phase 2 / Event Sharing</div>
+    <h3>🧭 Share events under conditions</h3>
+    <p>Move from full raw-data sharing to event and inference-result sharing with consent, purpose, and audit.</p>
+    <p class="iw3ip-phase-links"><a href="webcam-event-sharing.md">Webcam Event Sharing</a> / <a href="environment-disaster.md">Environment Disaster</a></p>
+  </div>
+  <div class="iw3ip-phase-card iw3ip-phase-3">
+    <div class="iw3ip-phase-kicker">Phase 3 / Intelligence Integration</div>
+    <h3>🧠 Interpret requests and trigger actions</h3>
+    <p>This phase connects human requests to planning, execution, diagnostics, and the frontend demo.</p>
+    <p class="iw3ip-phase-links"><a href="regional-safety-assistant.md">Regional Safety Assistant</a> / <a href="llm-planner.md">LLM Planner</a></p>
+  </div>
+</div>
+
 ## What learners should understand first
 
 - **Phase 1** is about how data enters the system.

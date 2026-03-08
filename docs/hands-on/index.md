@@ -13,6 +13,29 @@ IW3IP のハンズオンは、次の 3 段階で発展します。
 | Phase 2: イベント共有 | 生データではなくイベントや推論結果を共有する | `allowed` / `denied`、Consent、監査ログ |
 | Phase 3: 知能統合 | 人間の要求を解釈し、収集・判断・制御まで行う | `plan`、`execute`、`planner_diagnostics`、UI |
 
+## Phase別の見取り図
+
+<div class="iw3ip-phase-grid">
+  <div class="iw3ip-phase-card iw3ip-phase-1">
+    <div class="iw3ip-phase-kicker">Phase 1 / Data Exchange</div>
+    <h3>📡 データを集めて渡す</h3>
+    <p>まずは、カメラやセンサからデータを取り出し、共有基盤へ渡す基本経路を理解します。</p>
+    <p class="iw3ip-phase-links"><a href="huskylens2.md">HUSKYLENS2</a> / <a href="webcam.md">USBウェブカメラ</a> / <a href="ha-ssi-publisher.md">HA x SSI Publisher</a></p>
+  </div>
+  <div class="iw3ip-phase-card iw3ip-phase-2">
+    <div class="iw3ip-phase-kicker">Phase 2 / Event Sharing</div>
+    <h3>🧭 イベントとして条件付き共有する</h3>
+    <p>生データ全量ではなく、イベントや推論結果を目的・同意・監査付きで共有する考え方を学びます。</p>
+    <p class="iw3ip-phase-links"><a href="webcam-event-sharing.md">Webcam Event Sharing</a> / <a href="environment-disaster.md">Environment Disaster</a></p>
+  </div>
+  <div class="iw3ip-phase-card iw3ip-phase-3">
+    <div class="iw3ip-phase-kicker">Phase 3 / Intelligence Integration</div>
+    <h3>🧠 要求を解釈して判断・制御する</h3>
+    <p>人間の要求を AI が解釈し、plan、execute、frontend demo までつなぐ段階です。</p>
+    <p class="iw3ip-phase-links"><a href="regional-safety-assistant.md">Regional Safety Assistant</a> / <a href="llm-planner.md">LLM Planner</a></p>
+  </div>
+</div>
+
 ## まず理解してほしいこと
 
 - **Phase 1** は「データをどう渡すか」を学ぶ段階です。

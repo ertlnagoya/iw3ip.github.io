@@ -25,6 +25,29 @@ IW3IP becomes much easier to understand when the workshop is framed in three pha
 | Phase 2: Event Sharing | why the system moves from raw data to event sharing | inspect Consent VC, purpose, and audit logging |
 | Phase 3: Intelligence Integration | how a human request becomes a plan and execution flow | inspect request -> plan -> execute -> UI |
 
+## Phase Cards for Facilitation
+
+<div class="iw3ip-phase-grid">
+  <div class="iw3ip-phase-card iw3ip-phase-1">
+    <div class="iw3ip-phase-kicker">Phase 1 / Data Exchange</div>
+    <h3>📡 Best for the first practical step</h3>
+    <p>This phase helps participants see where data is created and where it moves.</p>
+    <p class="iw3ip-phase-links"><a href="../hands-on/huskylens2.md">HUSKYLENS2</a> / <a href="../hands-on/webcam.md">USB Webcam</a> / <a href="../hands-on/ha-ssi-publisher.md">HA x SSI Publisher</a></p>
+  </div>
+  <div class="iw3ip-phase-card iw3ip-phase-2">
+    <div class="iw3ip-phase-kicker">Phase 2 / Event Sharing</div>
+    <h3>🧭 Best for explaining conditional sharing</h3>
+    <p>This phase is where instructors explain consent, purpose, and audit as reasons for allow and deny decisions.</p>
+    <p class="iw3ip-phase-links"><a href="../hands-on/webcam-event-sharing.md">Webcam Event Sharing</a> / <a href="../hands-on/environment-disaster.md">Environment Disaster</a></p>
+  </div>
+  <div class="iw3ip-phase-card iw3ip-phase-3">
+    <div class="iw3ip-phase-kicker">Phase 3 / Intelligence Integration</div>
+    <h3>🧠 Best for showing the full intelligent flow</h3>
+    <p>This phase shows request, planning, execution, and the frontend demo as one connected flow.</p>
+    <p class="iw3ip-phase-links"><a href="../hands-on/regional-safety-assistant.md">Regional Safety Assistant</a> / <a href="../hands-on/llm-planner.md">LLM Planner</a></p>
+  </div>
+</div>
+
 ## Recommended explanation order
 
 ### Introduction
