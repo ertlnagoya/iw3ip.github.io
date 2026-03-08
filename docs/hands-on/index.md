@@ -86,14 +86,10 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 
 ### 対応するハンズオン
 
-- [HUSKYLENS2サンプル](huskylens2.md)
-  - HUSKYLENS2 と PC を使ってイベントファイルを生成する
-- [USBウェブカメラサンプル](webcam.md)
-  - Web カメラでイベント候補を扱う基本形を学ぶ
-- [HA x SSI Publisherサンプル](ha-ssi-publisher.md)
-  - Home Assistant / MQTT / Consent VC / audit log の基本構成を学ぶ
-- [スマホ閲覧アプリ](mobile-viewer.md)
-  - 共有された結果をスマホから確認する
+- [HUSKYLENS2サンプル](huskylens2.md): HUSKYLENS2 と PC を使ってイベントファイルを生成する
+- [USBウェブカメラサンプル](webcam.md): Web カメラでイベント候補を扱う基本形を学ぶ
+- [HA x SSI Publisherサンプル](ha-ssi-publisher.md): Home Assistant / MQTT / Consent VC / audit log の基本構成を学ぶ
+- [スマホ閲覧アプリ](mobile-viewer.md): 共有された結果をスマホから確認する
 
 ### Phase 1 の成功判定
 
@@ -111,10 +107,8 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 
 ### 対応するハンズオン
 
-- [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md)
-  - `possible_littering` をイベントとして共有する
-- [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
-  - `flood_risk_high` をイベント共有として扱う
+- [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md): `possible_littering` をイベントとして共有する
+- [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md): `flood_risk_high` をイベント共有として扱う
 
 ### Phase 2 の成功判定
 
@@ -132,12 +126,9 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 
 ### 対応するハンズオン
 
-- [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
-  - 要求から `plan` と `execute` に進む基本形を学ぶ
-- [LLM Plannerハンズオン](llm-planner.md)
-  - rule-based planner を LLM planner に差し替える実践例
-- [LLM Planner置き換え仕様](llm-planner-spec.md)
-  - より厳密に設計意図を理解するための仕様ページ
+- [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md): 要求から `plan` と `execute` に進む基本形を学ぶ
+- [LLM Plannerハンズオン](llm-planner.md): rule-based planner を LLM planner に差し替える実践例
+- [LLM Planner置き換え仕様](llm-planner-spec.md): より厳密に設計意図を理解するための仕様ページ
 
 ### Phase 3 の成功判定
 

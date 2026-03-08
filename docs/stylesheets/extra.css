@@ -149,3 +149,18 @@
   border-color: var(--iw3ip-phase3-border);
   color: var(--iw3ip-phase3-text);
 }
+
+.md-typeset ul ul,
+.md-typeset ol ul,
+.md-typeset ul ol,
+.md-typeset ol ol {
+  margin-top: 0.35rem;
+  margin-bottom: 0.45rem;
+  margin-left: 1rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid rgba(21, 58, 91, 0.12);
+}
+
+.md-typeset li + li {
+  margin-top: 0.25rem;
+}

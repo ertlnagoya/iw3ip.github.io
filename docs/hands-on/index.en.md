@@ -84,14 +84,10 @@ Matching page:
 
 ### Matching hands-on pages
 
-- [HUSKYLENS2 sample](huskylens2.md)
-  - generate event files from HUSKYLENS2 and a PC
-- [USB webcam sample](webcam.md)
-  - learn the basic camera-based path with a common webcam
-- [HA x SSI Publisher sample](ha-ssi-publisher.md)
-  - learn the basic structure of Home Assistant, MQTT, Consent VC, and audit logging
-- [Mobile Viewer](mobile-viewer.md)
-  - inspect shared results from a smartphone
+- [HUSKYLENS2 sample](huskylens2.md): generate event files from HUSKYLENS2 and a PC
+- [USB webcam sample](webcam.md): learn the basic camera-based path with a common webcam
+- [HA x SSI Publisher sample](ha-ssi-publisher.md): learn the basic structure of Home Assistant, MQTT, Consent VC, and audit logging
+- [Mobile Viewer](mobile-viewer.md): inspect shared results from a smartphone
 
 ### Phase 1 success criteria
 
@@ -109,10 +105,8 @@ Matching page:
 
 ### Matching hands-on pages
 
-- [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md)
-  - share `possible_littering` as an event
-- [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
-  - share `flood_risk_high` as an event
+- [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md): share `possible_littering` as an event
+- [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md): share `flood_risk_high` as an event
 
 ### Phase 2 success criteria
 
@@ -130,12 +124,9 @@ Matching page:
 
 ### Matching hands-on pages
 
-- [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md)
-  - learn the basic path from request to `plan` and `execute`
-- [LLM Planner hands-on](llm-planner.md)
-  - practical path for replacing the rule-based planner with an LLM planner
-- [LLM Planner replacement spec](llm-planner-spec.md)
-  - specification-oriented page for understanding the design in more depth
+- [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md): learn the basic path from request to `plan` and `execute`
+- [LLM Planner hands-on](llm-planner.md): practical path for replacing the rule-based planner with an LLM planner
+- [LLM Planner replacement spec](llm-planner-spec.md): specification-oriented page for understanding the design in more depth
 
 ### Phase 3 success criteria
 

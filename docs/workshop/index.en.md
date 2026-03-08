@@ -86,7 +86,7 @@ These are the best starting points for first-time learners.
 
 - with HUSKYLENS2: [HUSKYLENS2 sample](../hands-on/huskylens2.md)
 - with only a USB camera: [USB webcam sample](../hands-on/webcam.md)
-- to show Home Assistant and SSI flow: [HA x SSI Publisher sample](../hands-on/ha-ssi-publisher.md)
+- to show the Home Assistant and SSI flow: [HA x SSI Publisher sample](../hands-on/ha-ssi-publisher.md)
 - to show the viewer side as well: [Mobile Viewer](../hands-on/mobile-viewer.md)
 
 ### Phase 2: Event Sharing
