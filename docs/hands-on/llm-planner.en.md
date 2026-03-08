@@ -36,6 +36,7 @@ References:
 - [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/problem_program.py)
 - [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/answer_program.py)
 - [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/README.md)
+- [React frontend demo](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/tree/codex/phase3-frontend-demo/assistant-ui)
 - [.env.local.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/.env.local.example)
 - [examples/phase3_llm.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm.env.example)
 - [examples/phase3_llm_mock.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_mock.env.example)
@@ -119,6 +120,27 @@ Checkpoints:
 - `planner_name` is `llm-planner-stub-v1`
 - `target_area` is `park-north`
 - `watch_events` is returned as JSON array
+
+## 2.5 Start the React frontend demo
+
+There is also a minimal React screen for calling the Phase 3 assistant from a browser.
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
+docker compose -f infra/docker-compose.yml --profile assistant-ui up --build -d assistant-ui
+```
+
+Open:
+
+- `http://localhost:4173`
+
+This screen lets you check:
+
+- editing the natural-language request
+- `POST /assistant/plan`
+- `POST /assistant/execute`
+- `GET /assistant/executions`
+- badge / alert rendering for `planner_diagnostics`
 
 ## 3. Inspect an English request
 

@@ -36,6 +36,7 @@
 - [問題用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/problem_program.py)
 - [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/answer_program.py)
 - [演習説明](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/README.md)
+- [React フロントデモ](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/tree/codex/phase3-frontend-demo/assistant-ui)
 - [.env.local.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/.env.local.example)
 - [examples/phase3_llm.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm.env.example)
 - [examples/phase3_llm_mock.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_mock.env.example)
@@ -119,6 +120,27 @@ curl -X POST http://localhost:8090/assistant/plan \
 - `planner_name` が `llm-planner-stub-v1`
 - `target_area` が `park-north`
 - `watch_events` が JSON 配列で返る
+
+## 2.5 React フロントデモを起動
+
+Phase 3 assistant の API をブラウザから触る最小 React 画面もあります。
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
+docker compose -f infra/docker-compose.yml --profile assistant-ui up --build -d assistant-ui
+```
+
+開く URL:
+
+- `http://localhost:4173`
+
+この画面で確認できること:
+
+- 自然言語要求の編集
+- `POST /assistant/plan`
+- `POST /assistant/execute`
+- `GET /assistant/executions`
+- `planner_diagnostics` の badge / alert 表示
 
 ## 3. 英語要求で `plan` を確認
 
