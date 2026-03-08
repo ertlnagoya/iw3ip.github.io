@@ -38,7 +38,9 @@
 - [演習説明](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/README.md)
 - [.env.local.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/.env.local.example)
 - [examples/phase3_llm.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm.env.example)
+- [examples/phase3_llm_mock.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_mock.env.example)
 - [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_expected_plan.json)
+- [examples/phase3_llm_mock_server.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_mock_server.py)
 - [examples/phase3_request_station_warning.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_request_station_warning.json)
 
 演習プログラムでは、`/assistant/plan` に送る最小 JSON と、返ってきた `plan` の要約のしかたを確認できます。
@@ -161,6 +163,15 @@ cat .env.local.example
 - `ASSISTANT_LLM_API_KEY`
 - `ASSISTANT_LLM_MODEL`
 
+`planner_diagnostics` の見方:
+
+- `status`
+  - `ok` か `fallback`
+- `summary`
+  - 何が起きたかの短い説明
+- `suggestion`
+  - 次に確認すべき内容
+
 ## 5. OpenAI 互換 API に切り替える
 
 API キーや model を設定済みなら、次のように起動できます。
@@ -185,6 +196,37 @@ curl -X POST http://localhost:8090/assistant/plan \
 参考スクリーンショット:
 
 ![LLM planner response](../assets/llm-planner-response.svg)
+
+## 5.2 local mock server で HTTP 経路を試す
+
+実 API をまだ使いたくない場合は、OpenAI 互換のモックサーバで HTTP 経路だけ確認できます。
+
+まず mock server を起動します。
+
+```bash
+uvicorn examples.phase3_llm_mock_server:app --host 127.0.0.1 --port 18000
+```
+
+別ターミナルで assistant を起動します。
+
+```bash
+source examples/phase3_llm_mock.env.example
+uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
+```
+
+その後は同じ `curl` を使います。
+
+```bash
+curl -X POST http://localhost:8090/assistant/plan \
+  -H 'Content-Type: application/json' \
+  -d @examples/phase3_request_park_safety.json
+```
+
+確認ポイント:
+
+- `planner_name` が `llm-planner-mock-http-v1`
+- `planner_diagnostics.provider_name` が `openai_compatible`
+- `planner_diagnostics.used_fallback` が `false`
 
 ## 5.5 演習用 pytest を使う
 

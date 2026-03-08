@@ -38,7 +38,9 @@ References:
 - [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/hands_on/phase3_llm_planner/README.md)
 - [.env.local.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/.env.local.example)
 - [examples/phase3_llm.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm.env.example)
+- [examples/phase3_llm_mock.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_mock.env.example)
 - [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_expected_plan.json)
+- [examples/phase3_llm_mock_server.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_llm_mock_server.py)
 - [examples/phase3_request_station_warning.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/llm-planner-minimal/examples/phase3_request_station_warning.json)
 
 The exercise programs focus on the minimum request body for `/assistant/plan` and on how to summarize the returned plan.
@@ -161,6 +163,15 @@ Main fields:
 - `ASSISTANT_LLM_API_KEY`
 - `ASSISTANT_LLM_MODEL`
 
+How to read `planner_diagnostics`:
+
+- `status`
+  - `ok` or `fallback`
+- `summary`
+  - short explanation of what happened
+- `suggestion`
+  - next troubleshooting step
+
 ## 5. Switch to an OpenAI-compatible API
 
 If your API key and model are ready, start the server like this:
@@ -185,6 +196,37 @@ The expected JSON shape is documented here:
 Reference screenshot:
 
 ![LLM planner response](../assets/llm-planner-response.svg)
+
+## 5.2 Try the HTTP path with the local mock server
+
+If you do not want to call a real API yet, you can exercise the OpenAI-compatible HTTP path with the local mock server.
+
+Start the mock server:
+
+```bash
+uvicorn examples.phase3_llm_mock_server:app --host 127.0.0.1 --port 18000
+```
+
+In another terminal, start the assistant:
+
+```bash
+source examples/phase3_llm_mock.env.example
+uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
+```
+
+Then call the same endpoint:
+
+```bash
+curl -X POST http://localhost:8090/assistant/plan \
+  -H 'Content-Type: application/json' \
+  -d @examples/phase3_request_park_safety.json
+```
+
+Checkpoints:
+
+- `planner_name` is `llm-planner-mock-http-v1`
+- `planner_diagnostics.provider_name` is `openai_compatible`
+- `planner_diagnostics.used_fallback` is `false`
 
 ## 5.5 Use the exercise pytest
 
