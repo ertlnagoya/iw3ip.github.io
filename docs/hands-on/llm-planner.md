@@ -173,6 +173,12 @@ cat .env.local.example
   - バッジにそのまま載せる短い表示名
 - `color_hint`
   - `green`, `amber`, `red` のような色分けヒント
+- `code`
+  - UI やフロントの分岐に使いやすい固定コード
+- `category`
+  - `success`, `provider`, `validation`, `planner` のような大分類
+- `user_message`
+  - 利用者向けにそのまま表示しやすい短い説明文
 - `summary`
   - 何が起きたかの短い説明
 - `suggestion`
@@ -241,6 +247,9 @@ curl -X POST http://localhost:8090/assistant/plan \
 - `planner_diagnostics.severity` が `info`
 - `planner_diagnostics.label` が `OK`
 - `planner_diagnostics.color_hint` が `green`
+- `planner_diagnostics.code` が `llm_plan_generated`
+- `planner_diagnostics.category` が `success`
+- `planner_diagnostics.user_message` が画面表示用に読める
 - `planner_diagnostics.used_fallback` が `false`
 
 ## 5.5 演習用 pytest を使う

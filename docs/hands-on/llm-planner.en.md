@@ -173,6 +173,12 @@ How to read `planner_diagnostics`:
   - short text that can be shown directly in a badge
 - `color_hint`
   - color hint such as `green`, `amber`, or `red`
+- `code`
+  - stable code that the frontend can branch on
+- `category`
+  - broad group such as `success`, `provider`, `validation`, or `planner`
+- `user_message`
+  - short message that can be shown directly to the end user
 - `summary`
   - short explanation of what happened
 - `suggestion`
@@ -241,6 +247,9 @@ Checkpoints:
 - `planner_diagnostics.severity` is `info`
 - `planner_diagnostics.label` is `OK`
 - `planner_diagnostics.color_hint` is `green`
+- `planner_diagnostics.code` is `llm_plan_generated`
+- `planner_diagnostics.category` is `success`
+- `planner_diagnostics.user_message` is readable enough to show in the UI
 - `planner_diagnostics.used_fallback` is `false`
 
 ## 5.5 Use the exercise pytest
