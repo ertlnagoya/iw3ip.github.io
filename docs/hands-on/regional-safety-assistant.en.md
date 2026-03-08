@@ -51,6 +51,37 @@ The assistant then interprets the request as:
 2. events of interest: `possible_littering` and `suspicious_activity`
 3. actions to run when the threshold is exceeded: `light_on` and `send_notification`
 
+## Sequence Diagram
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant API as Assistant API
+  participant Planner
+  participant Evaluator
+  participant Actuator
+  participant Log as Execution Store
+
+  User->>API: POST /assistant/plan
+  API->>Planner: pass request_text
+  Planner-->>API: return plan
+  API-->>User: plan
+
+  User->>API: POST /assistant/execute
+  API->>Planner: convert request_text into plan
+  Planner-->>API: plan
+  API->>Evaluator: pass plan and observed_events
+  Evaluator-->>API: triggered / reason
+  alt triggered == true
+    API->>Actuator: execute actions
+    Actuator-->>API: executed actions
+  end
+  API->>Log: store execution record
+  API-->>User: execution result
+```
+
+This diagram makes two points explicit: `plan` and `execute` are intentionally separated, and the system evaluates relevant events before it issues any device action.
+
 ## 1. Start the assistant service
 
 Run the following in the `Blockchain_IoT_Marketplace` repository.
@@ -136,6 +167,13 @@ Example expected output:
 ```
 
 This is triggered because the sample event file contains three `possible_littering` events, which is enough to cross the built-in threshold.
+
+How to read this result:
+
+- the `possible_littering` count crosses the threshold
+- the target location matches `park-north`
+- therefore `triggered` becomes `true`
+- as a result, `light_on` and `send_notification` are executed
 
 ## 4. Inspect execution history
 

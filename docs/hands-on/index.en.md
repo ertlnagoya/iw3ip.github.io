@@ -25,6 +25,7 @@ For workshop use, the intended flow is to start with the problem version and mov
    - [HA x SSI Publisher sample](ha-ssi-publisher.md)
    - [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
    - [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md)
+   - [LLM planner replacement spec](llm-planner-spec.md)
 2. Validate the success criteria for the selected sample
 3. Share outcomes, then move to the next sample if needed
 
@@ -46,3 +47,6 @@ For workshop use, the intended flow is to start with the problem version and mov
   - a natural-language request can be converted into a `plan`
   - `light_on` and `send_notification` become `executed` when the condition is triggered
   - `/assistant/executions` can be used to inspect the execution history
+- Phase 3 advanced spec:
+  - learners can explain how to replace the rule-based planner with an LLM planner
+  - learners can explain constraints for structured output, allowed events, and allowed actions

@@ -214,6 +214,20 @@ The system then separates the work into the following steps:
 
 In other words, Phase 3 is the stage where the platform evolves from **data sharing infrastructure into decision and control infrastructure**.
 
+#### Phase 3 Role Diagram
+
+```mermaid
+flowchart LR
+  A["Human request\nExample: respond if anomalies increase in park north"] --> B["Planner\nconvert request into a structured plan"]
+  B --> C["Event Collector / Evaluator\ngather relevant events and check conditions"]
+  C --> D["Actuator\nissue commands such as lighting and notification"]
+  C --> E["Audit / Execution Log\nrecord request, plan, evaluation, and result"]
+  D --> E
+```
+
+The key point is that Phase 3 should not be treated as one black-box "AI" component.  
+Instead, it is better to separate **request interpretation, evaluation, control, and auditability** so that, for example, the planner can later be replaced by an LLM while the evaluator remains rule-based.
+
 ## A simpler summary for high school and university students
 
 IW3IP is a research project that tries to answer questions like these:

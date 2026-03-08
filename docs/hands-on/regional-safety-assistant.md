@@ -51,6 +51,37 @@ Phase 3 では、その先として、次の流れを扱います。
 2. 注目するイベントは `possible_littering` と `suspicious_activity`
 3. しきい値を超えたら `light_on` と `send_notification` を実行する
 
+## シーケンス図
+
+```mermaid
+sequenceDiagram
+  participant User as 利用者
+  participant API as Assistant API
+  participant Planner as Planner
+  participant Evaluator as Evaluator
+  participant Actuator as Actuator
+  participant Log as Execution Store
+
+  User->>API: POST /assistant/plan
+  API->>Planner: request_text を渡す
+  Planner-->>API: 実行計画を返す
+  API-->>User: plan
+
+  User->>API: POST /assistant/execute
+  API->>Planner: request_text を計画へ変換
+  Planner-->>API: plan
+  API->>Evaluator: plan と observed_events を渡す
+  Evaluator-->>API: triggered / reason
+  alt triggered == true
+    API->>Actuator: actions を実行
+    Actuator-->>API: executed actions
+  end
+  API->>Log: 実行履歴を保存
+  API-->>User: execution result
+```
+
+この図では、`plan` と `execute` が分かれていること、そして **判定の前に必要なイベントをまとめて見る**ことが重要です。
+
 ## 1. assistant サービスを起動
 
 `Blockchain_IoT_Marketplace` リポジトリで次を実行します。
@@ -136,6 +167,13 @@ curl -X POST http://localhost:8090/assistant/execute \
 ```
 
 この結果は、サンプルイベントファイルに `possible_littering` が 3 件含まれているため、しきい値を満たしていることを意味します。
+
+判定の見方:
+
+- `possible_littering` の件数がしきい値以上
+- 場所が `park-north`
+- その結果 `triggered: true`
+- そのため `light_on` と `send_notification` を実行
 
 ## 4. 実行履歴を確認
 

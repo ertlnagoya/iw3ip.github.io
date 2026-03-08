@@ -50,6 +50,7 @@ plugins:
             HA SSI Publisher Sample: HA x SSI Publisherサンプル
             Environment Disaster Sample: 環境・防災イベント共有サンプル
             Regional Safety Assistant Sample: 地域安全アシスタントサンプル
+            LLM Planner Replacement Spec: LLM Planner置き換え仕様
             Mobile Viewer: スマホ閲覧アプリ
             Operations: 運用
             Troubleshooting: トラブルシュート
@@ -93,6 +94,7 @@ nav:
       - HA SSI Publisher Sample: hands-on/ha-ssi-publisher.md
       - Environment Disaster Sample: hands-on/environment-disaster.md
       - Regional Safety Assistant Sample: hands-on/regional-safety-assistant.md
+      - LLM Planner Replacement Spec: hands-on/llm-planner-spec.md
       - Mobile Viewer: hands-on/mobile-viewer.md
   - Operations:
       - Overview: operations/index.md
