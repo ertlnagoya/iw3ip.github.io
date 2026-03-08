@@ -1,4 +1,4 @@
-# Learning Roadmap (Beginner)
+# Learning Roadmap
 
 This roadmap helps learners move from "it runs" to "I can explain why it works".
 
@@ -21,7 +21,7 @@ This roadmap helps learners move from "it runs" to "I can explain why it works".
 5. [Quickstart](../workshop/quickstart.md)
 6. [HA x SSI Publisher Sample](../hands-on/ha-ssi-publisher.md)
 
-These six pages are intended to be enough for basic understanding and minimum hands-on completion.
+These six pages provide a compact path through the basic concepts and the minimum hands-on flow.
 
 ## 3-Week Plan (Example)
 

@@ -1,7 +1,7 @@
 # References and Further Learning Materials
 
-This page collects **supplementary material to read after finishing the basic path inside this site**.  
-Basic understanding and hands-on execution are intended to be possible using this site alone.
+This page collects supplementary material that becomes useful after working through the main path in this site.  
+The foundation pages and introductory hands-on chapters are arranged so that readers can complete the basic flow before coming here.
 
 ## Materials for Understanding Social Problems
 

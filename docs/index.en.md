@@ -1,17 +1,17 @@
 # IoTxWeb3 Intelligence Platform (IW3IP) Documentation
 
-This site organizes material for workshop facilitation and learner hands-on execution.
+This site is organized so that readers can move step by step through the IW3IP overview, implementation examples, and hands-on exercises.
 
-## Target Audience
+## Main Use Cases
 
-- University students studying computer science/computer engineering
+- Undergraduate students studying computing or information systems
 - Instructors and TAs running practical sessions
 
-If you are new, start from [Learning Foundations / Course Guide](foundations/course-guide.md).
+[Learning Foundations / Course Guide](foundations/course-guide.md) is the best starting point for understanding the overall structure.
 
-## What Can Be Learned Inside This Site
+## What This Site Covers
 
-This site is intended to be **self-contained for basic study and introductory hands-on practice**.
+This site is organized so that readers can work through the core concepts and the introductory hands-on path within the documentation itself.
 
 - Foundations:
   - blockchain
@@ -22,7 +22,7 @@ This site is intended to be **self-contained for basic study and introductory ha
   - hands-on samples
   - troubleshooting
 
-External websites and papers are positioned as **follow-up material for deeper study**, not as required reading for the basic path.
+External websites and papers are positioned as follow-up material for standards, deeper technical detail, and research background.
 
 ## Documentation model
 

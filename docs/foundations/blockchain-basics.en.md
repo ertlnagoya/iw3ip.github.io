@@ -34,7 +34,7 @@ The main benefit is not \"magic immutability\", but that history becomes easier 
 
 - \"Blockchain is always fast\": no, it optimizes trust and verifiability, not raw throughput
 - \"Store all raw data on-chain\": usually no, keep large payloads off-chain and store references/digests
-- \"Smart contracts are legal contracts themselves\": for beginners, it is better to first think of them as deterministic programs enforcing rules
+- \"Smart contracts are legal contracts themselves\": it is more accurate to first think of them as deterministic programs enforcing rules
 
 ## Position in This System
 

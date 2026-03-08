@@ -1,7 +1,7 @@
 # Hands-on
 
-This section is the practical part of IW3IP where learners run the system themselves.  
-The intended reading order is to first understand the **Phase 1 -> Phase 2 -> Phase 3** structure, and then move into the detailed pages.
+This section is the practical part of IW3IP where readers run the system themselves.  
+It is easiest to begin with the **Phase 1 -> Phase 2 -> Phase 3** structure and then move into the detailed pages.
 
 ## Overall structure
 

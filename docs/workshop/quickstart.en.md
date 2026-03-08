@@ -79,7 +79,7 @@ cargo run --bin mediator-b
 - Merchandise list is available
 - No critical process exits with error
 
-## Common beginner issues
+## Common issues during the first run
 
 - `npx: command not found`
   - Node.js is missing or not in PATH. Check <https://nodejs.org/>.

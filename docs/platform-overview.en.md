@@ -1,7 +1,7 @@
 # Platform Overview
 
 This page explains what IW3IP is trying to build by starting from familiar social systems and their limitations.  
-It is written so that high school students and university students can first understand the problem, and then see why this project matters as a research platform.
+It begins with everyday situations and then moves toward the research questions and technical design behind the platform.
 
 ## Overview Figure
 
@@ -159,7 +159,7 @@ flowchart TD
 In IW3IP, there is a layer that checks whether data should be sent before the data is shared.  
 At that point, user consent conditions and purpose restrictions need to be represented in a form that software can evaluate automatically.
 
-This design is intended to respond to practical concerns such as:
+This design responds to practical concerns such as:
 
 - "I do not want to share the full video, but I do want to share that an abnormal event happened."
 - "Research use is acceptable, but advertising use is not."
@@ -168,7 +168,7 @@ This design is intended to respond to practical concerns such as:
 
 ## What the samples on this site actually demonstrate
 
-The beginner-level samples on this site intentionally simplify the hardest parts first, so that learners can understand the following pipeline:
+The samples on this site first focus on the core flow so that readers can understand the following pipeline:
 
 1. Receive data from Home Assistant or sensors.
 2. Normalize the data into a common schema.
@@ -228,7 +228,7 @@ flowchart LR
 The key point is that Phase 3 should not be treated as one black-box "AI" component.  
 Instead, it is better to separate **request interpretation, evaluation, control, and auditability** so that, for example, the planner can later be replaced by an LLM while the evaluator remains rule-based.
 
-## A simpler summary for high school and university students
+## Put more simply
 
 IW3IP is a research project that tries to answer questions like these:
 
@@ -269,7 +269,7 @@ It is especially well suited to situations where people want to share useful inf
 | Shopping streets and local revitalization | crowd level, changes in pedestrian flow, stay patterns, event-time activity | person-level behavioral history or long-term tracking | It works well for aggregated values and privacy-preserving event sharing |
 
 The common point across all of these cases is that "collect everything all the time" is usually not the right answer.  
-IW3IP is intended to improve the balance among **utility, privacy, and sustainability** by adjusting the granularity and conditions of sharing.
+IW3IP aims to improve the balance among **utility, privacy, and sustainability** by adjusting the granularity and conditions of sharing.
 
 ## Non-Camera Use Cases
 

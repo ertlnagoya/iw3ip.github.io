@@ -19,7 +19,7 @@
 - DID identifies a subject
 - VC expresses verifiable claims about that subject
 
-For beginners, a practical starting analogy is: **DID = ID, VC = certificate, SSI = user-controlled identity architecture**.
+As a practical starting analogy, it is helpful to read this as: **DID = ID, VC = certificate, SSI = user-controlled identity architecture**.
 
 ### Why They Matter
 

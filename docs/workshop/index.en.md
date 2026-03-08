@@ -1,7 +1,7 @@
 # Workshop
 
-This chapter is for instructors and TAs to decide **how to explain the full picture and how to route participants into the correct hands-on pages**.  
-The intended flow is to explain the whole structure first, and then guide learners into Phase 1, 2, or 3 depending on time, equipment, and learning goals.
+This chapter helps instructors and TAs explain the overall structure first and then guide participants into the right hands-on pages.  
+The flow starts from the full picture and then branches into Phase 1, 2, or 3 depending on time, equipment, and learning goals.
 
 ## Workshop and Hands-on
 

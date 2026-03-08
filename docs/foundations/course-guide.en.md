@@ -1,6 +1,6 @@
-# Course Guide (University Students)
+# Course Guide
 
-This chapter helps instructors and learners use IW3IP content in undergraduate computer science education.
+This chapter explains how IW3IP material can be used in classes, workshops, and practical exercises.
 
 ## Target Learners
 
@@ -14,17 +14,17 @@ This chapter helps instructors and learners use IW3IP content in undergraduate c
 - Explain on-chain/off-chain separation rationale
 - Report experimental results with reproducible evidence
 
-## Self-Contained Learning Policy
+## How to Use This Material
 
-This site is designed so that basic study and introductory hands-on work can be completed within the site itself.
+The core concepts and introductory hands-on path are arranged so that readers can move through them within this documentation.
 
-- Completed inside this site:
+- Main topics covered in this site:
   - fundamental terminology
   - system overview
   - quickstart
   - hands-on execution
   - result interpretation
-- Use external material when:
+- External material becomes useful when:
   - you want deeper technical background
   - you need literature review for reports or research
   - you want to confirm standards or primary sources
