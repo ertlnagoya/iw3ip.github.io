@@ -25,6 +25,7 @@
    - [HA x SSI Publisherサンプル](ha-ssi-publisher.md)
    - [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
    - [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
+   - [LLM Plannerハンズオン](llm-planner.md)
    - [LLM Planner置き換え仕様](llm-planner-spec.md)
 2. 選んだサンプルの成功判定を確認する
 3. 結果を共有し、必要に応じて次のサンプルへ進む
@@ -48,5 +49,7 @@
   - 条件成立時に `light_on` と `send_notification` が `executed` になる
   - `/assistant/executions` で履歴を確認できる
 - Phase 3 発展仕様:
+  - `stub` provider で LLM planner を再現できる
+  - OpenAI 互換 API 向けの環境変数を説明できる
   - rule-based planner を LLM planner に差し替える設計方針を説明できる
   - 構造化出力、許可イベント、許可アクションの制約を説明できる
