@@ -18,7 +18,9 @@ Basic execution and validation should be possible using this site alone, without
 1. Choose one input source:
    - [HUSKYLENS2 sample](huskylens2.md)
    - [USB webcam sample](webcam.md)
+   - [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md)
    - [HA x SSI Publisher sample](ha-ssi-publisher.md)
+   - [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
 2. Validate the success criteria for the selected sample
 3. Share outcomes, then move to the next sample if needed
 
@@ -27,6 +29,12 @@ Basic execution and validation should be possible using this site alone, without
 - Camera paths (HUSKYLENS2 / Webcam):
   - event file is generated in `mediator-owner/raw_data/output`
   - merchandise appears in frontend and can be purchased
+- Camera Phase 2 path:
+  - `home/event/possible_littering` can be reproduced as an event-sharing dataset
+  - learners can confirm `allowed` / `denied` using `community_cleaning` and `advertising`
 - HA x SSI Publisher path:
   - both `allowed` and `denied` are reproducible via `/simulate/publish`
   - `/audit/logs` records `allow` / `deny` / `send_error`
+- Non-camera Phase 2 path:
+  - `home/event/flood_risk_high` can be reproduced as an event-sharing dataset
+  - learners can confirm `allowed` / `denied` using `disaster_response` and `advertising`

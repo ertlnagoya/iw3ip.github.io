@@ -18,7 +18,9 @@
 1. どちらかの入力ソースを選ぶ
    - [HUSKYLENS2サンプル](huskylens2.md)
    - [USBウェブカメラサンプル](webcam.md)
+   - [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md)
    - [HA x SSI Publisherサンプル](ha-ssi-publisher.md)
+   - [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
 2. 選んだサンプルの成功判定を確認する
 3. 結果を共有し、必要に応じて次のサンプルへ進む
 
@@ -27,6 +29,12 @@
 - カメラ系（HUSKYLENS2 / Webcam）:
   - `mediator-owner/raw_data/output` にイベントファイルができる
   - フロントに商品が表示され、購入できる
+- カメラ系 Phase 2:
+  - `home/event/possible_littering` をイベント共有として再現できる
+  - `community_cleaning` と `advertising` で `allowed` / `denied` を確認できる
 - HA x SSI Publisher系:
   - `/simulate/publish` で `allowed` / `denied` の両ケースを確認できる
   - `/audit/logs` に `allow` / `deny` / `send_error` が記録される
+- 非カメラ Phase 2 系:
+  - `home/event/flood_risk_high` をイベント共有として再現できる
+  - `disaster_response` と `advertising` で `allowed` / `denied` を確認できる

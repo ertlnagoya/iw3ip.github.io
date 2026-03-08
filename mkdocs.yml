@@ -46,7 +46,9 @@ plugins:
             Hands-on: ハンズオン
             HuskyLens2 Sample: HUSKYLENS2サンプル
             USB Webcam Sample: USBウェブカメラサンプル
+            USB Webcam Event Sharing Sample: USBウェブカメライベント共有サンプル
             HA SSI Publisher Sample: HA x SSI Publisherサンプル
+            Environment Disaster Sample: 環境・防災イベント共有サンプル
             Mobile Viewer: スマホ閲覧アプリ
             Operations: 運用
             Troubleshooting: トラブルシュート
@@ -86,7 +88,9 @@ nav:
       - Overview: hands-on/index.md
       - HuskyLens2 Sample: hands-on/huskylens2.md
       - USB Webcam Sample: hands-on/webcam.md
+      - USB Webcam Event Sharing Sample: hands-on/webcam-event-sharing.md
       - HA SSI Publisher Sample: hands-on/ha-ssi-publisher.md
+      - Environment Disaster Sample: hands-on/environment-disaster.md
       - Mobile Viewer: hands-on/mobile-viewer.md
   - Operations:
       - Overview: operations/index.md

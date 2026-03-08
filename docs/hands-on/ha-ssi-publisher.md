@@ -14,6 +14,19 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 - Docker / Docker Compose が使える
 - `curl` が使える
 
+対応するサンプルファイル:
+
+- `examples/consent_temperature.json`
+- `examples/consent_power.json`
+- `examples/consent_person_detected.json`
+- `examples/consent_flood_risk_high.json`
+- `examples/consent_possible_littering.json`
+- `examples/payload_temperature.json`
+- `examples/payload_power.json`
+- `examples/payload_person_detected.json`
+- `examples/payload_flood_risk_high.json`
+- `examples/payload_possible_littering.json`
+
 ## 1. 起動
 
 ```bash
@@ -39,6 +52,11 @@ curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' 
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_power.json
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_person_detected.json
 ```
+
+Phase 2 の Hands-on と対応する追加ファイル:
+
+- `examples/consent_flood_risk_high.json`
+- `examples/consent_possible_littering.json`
 
 ## 3. 許可されるケース
 
@@ -118,3 +136,8 @@ docker compose -f infra/docker-compose.yml down
 
 - Phase 2: `homeassistant/event/...` 系を中心にイベント共有へ拡張
 - Phase 3: 前段にSSI Gateway（PEP）を追加し、VC提示制御を実装
+
+Phase 2 をすぐ試したい場合は、次の Hands-on を参照してください。
+
+- [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
+- [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md)

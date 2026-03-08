@@ -14,6 +14,19 @@ Pipeline:
 - Docker / Docker Compose
 - `curl`
 
+Matching sample files:
+
+- `examples/consent_temperature.json`
+- `examples/consent_power.json`
+- `examples/consent_person_detected.json`
+- `examples/consent_flood_risk_high.json`
+- `examples/consent_possible_littering.json`
+- `examples/payload_temperature.json`
+- `examples/payload_power.json`
+- `examples/payload_person_detected.json`
+- `examples/payload_flood_risk_high.json`
+- `examples/payload_possible_littering.json`
+
 ## 1. Start services
 
 ```bash
@@ -39,6 +52,11 @@ curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' 
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_power.json
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_person_detected.json
 ```
+
+Additional files used by the Phase 2 hands-on pages:
+
+- `examples/consent_flood_risk_high.json`
+- `examples/consent_possible_littering.json`
 
 ## 3. Allowed case
 
@@ -118,3 +136,8 @@ docker compose -f infra/docker-compose.yml down
 
 - Phase 2: prioritize `homeassistant/event/...` for event-driven sharing
 - Phase 3: add SSI Gateway (PEP) before publisher for VC presentation control
+
+If you want to move directly into Phase 2, continue with:
+
+- [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
+- [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md)

@@ -1,5 +1,8 @@
 # 論文
 
+このページは、サイト内の基礎学習とハンズオンを終えた後に読む **発展学習用** のページです。  
+まずは本サイト内の基礎章と Hands-on を優先し、その後に研究背景や先行研究を深掘りすると理解しやすくなります。
+
 1. Luyonghe Li, Yuichiro Yasue, Yutaka Matsubara, "SSI-Enabled Authentication and Enhanced Metadata Search in Blockchain-based Decentralized IoT Data Platforms", IEEE 1st International Workshop on Blockchain for Decentralized Trust and Digital Identity (B4TI) at BCCA 2025, Croatia, Oct. 2025. DOI: <https://doi.org/10.1109/BCCA66705.2025.11229590>
 
    Abstract: The rapid expansion of the Internet of Things (IoT) has intensified the demand for secure, interoperable, and userfriendly data sharing platforms. While blockchain-based decentralized architectures have been proposed to address privacy and transparency issues, most existing solutions lack a standardized authentication mechanism for both data providers and consumers, as well as flexible search capabilities for efficient data retrieval. This paper presents a blockchain-based decentralized IoT data distribution system that integrates Self-Sovereign Identity (SSI) for trustless authentication and an enhanced metadata search mechanism for condition-based data discovery. In the proposed architecture, raw IoT data remains on the originating devices to preserve privacy, while metadata is managed using PostgreSQL and stored on IPFS, with blockchain smart contracts ensuring transparency and traceability. SSI enables secure, decentralized verification of stakeholders without relying on a central authority, and the search framework allows data consumers to locate and acquire datasets matching specific requirements.
