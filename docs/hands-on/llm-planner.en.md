@@ -184,6 +184,60 @@ How to read `planner_diagnostics`:
 - `suggestion`
   - next troubleshooting step
 
+Example for frontend use:
+
+```ts
+type PlannerDiagnostics = {
+  status: "ok" | "fallback";
+  severity: "info" | "warning" | "error";
+  label: string;
+  color_hint: "green" | "amber" | "red";
+  code: string;
+  category: "success" | "provider" | "validation" | "planner";
+  user_message: string;
+  summary?: string | null;
+  suggestion?: string | null;
+};
+
+type BadgeViewModel = {
+  label: string;
+  tone: "success" | "warning" | "danger" | "neutral";
+  detail: string;
+  code: string;
+  category: string;
+};
+
+export function diagnosticsToBadge(diagnostics: PlannerDiagnostics): BadgeViewModel {
+  const toneMap: Record<PlannerDiagnostics["color_hint"], BadgeViewModel["tone"]> = {
+    green: "success",
+    amber: "warning",
+    red: "danger",
+  };
+
+  return {
+    label: diagnostics.label,
+    tone: toneMap[diagnostics.color_hint] ?? "neutral",
+    detail: diagnostics.user_message,
+    code: diagnostics.code,
+    category: diagnostics.category,
+  };
+}
+```
+
+For example, a fallback case can be rendered like this:
+
+```ts
+const badge = diagnosticsToBadge({
+  status: "fallback",
+  severity: "warning",
+  label: "Fallback",
+  color_hint: "amber",
+  code: "llm_provider_error",
+  category: "provider",
+  user_message: "The LLM API could not be used, so the rule-based planner was used instead.",
+});
+```
+
 ## 5. Switch to an OpenAI-compatible API
 
 If your API key and model are ready, start the server like this:
