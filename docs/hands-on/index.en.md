@@ -1,39 +1,43 @@
 # Hands-on
 
-This section contains participant execution recipes.
+This section is the practical part of IW3IP where learners run the system themselves.  
+The intended reading order is to first understand the **Phase 1 -> Phase 2 -> Phase 3** structure, and then move into the detailed pages.
 
-## Learning Goals (University Students)
+## Overall structure
 
-- explain behavior based on execution evidence
-- explain `allowed` / `denied` by policy conditions
-- explain on-chain/off-chain boundaries in the data flow
+The hands-on content grows in three phases.
 
-## Position of This Chapter
+| Phase | What you learn | Typical checkpoints |
+|---|---|---|
+| Phase 1: Data Exchange | how raw data moves from sensors/cameras into the platform | data is generated, shared, and viewed |
+| Phase 2: Event Sharing | how events or inference results are shared instead of full raw data | `allowed` / `denied`, consent, audit log |
+| Phase 3: Intelligence Integration | how human requests are interpreted into collection, evaluation, and control | `plan`, `execute`, `planner_diagnostics`, UI |
 
-This chapter is where learners verify concepts by actually running the system after reading the foundation pages.  
-Basic execution and validation should be possible using this site alone, without requiring external references.
+## What learners should understand first
 
-Each page now also links to a matching `problem program`, `answer program`, and `exercise guide`.  
-For workshop use, the intended flow is to start with the problem version and move to the answer or guide only when needed.
+- **Phase 1** is about how data enters the system.
+- **Phase 2** is about how events are shared under conditions.
+- **Phase 3** is about how AI interprets a request and coordinates multiple steps.
 
-## Order
+In other words, the learning path is:
 
-1. Choose one input source:
-   - [HUSKYLENS2 sample](huskylens2.md)
-   - [USB webcam sample](webcam.md)
-   - [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md)
-   - [HA x SSI Publisher sample](ha-ssi-publisher.md)
-   - [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
-   - [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md)
-   - [LLM planner hands-on](llm-planner.md)
-   - [LLM planner replacement spec](llm-planner-spec.md)
-2. Validate the success criteria for the selected sample
-3. Share outcomes, then move to the next sample if needed
+1. make data exchange work
+2. make conditional event sharing work
+3. add request understanding and control
 
-## Shortest Demo Path
+## Recommended learning order
 
-If you want to experience Phase 3 first, start with [LLM Planner Hands-on](llm-planner.md).  
-The `assistant-demo` profile starts `assistant-demo`, `llm-mock`, and `assistant-ui` in one command.
+### For first-time learners
+
+1. [HUSKYLENS2 sample](huskylens2.md) or [USB webcam sample](webcam.md)
+2. [HA x SSI Publisher sample](ha-ssi-publisher.md)
+3. [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md) or [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
+4. [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md)
+5. [LLM Planner hands-on](llm-planner.md)
+
+### For learners who want the shortest Phase 3 demo first
+
+You can start the shortest Phase 3 demo with `assistant-demo`.
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
@@ -43,26 +47,81 @@ Open:
 
 - `http://localhost:4173`
 
-## Common success criteria
+Matching page:
 
-- Camera paths (HUSKYLENS2 / Webcam):
-  - event file is generated in `mediator-owner/raw_data/output`
-  - merchandise appears in frontend and can be purchased
-- Camera Phase 2 path:
-  - `home/event/possible_littering` can be reproduced as an event-sharing dataset
-  - learners can confirm `allowed` / `denied` using `community_cleaning` and `advertising`
-- HA x SSI Publisher path:
-  - both `allowed` and `denied` are reproducible via `/simulate/publish`
-  - `/audit/logs` records `allow` / `deny` / `send_error`
-- Non-camera Phase 2 path:
-  - `home/event/flood_risk_high` can be reproduced as an event-sharing dataset
-  - learners can confirm `allowed` / `denied` using `disaster_response` and `advertising`
-- Phase 3 path:
-  - a natural-language request can be converted into a `plan`
-  - `light_on` and `send_notification` become `executed` when the condition is triggered
-  - `/assistant/executions` can be used to inspect the execution history
-- Phase 3 advanced spec:
-  - learners can reproduce the LLM planner path with the `stub` provider
-  - learners can explain the environment variables for an OpenAI-compatible API
-  - learners can explain how to replace the rule-based planner with an LLM planner
-  - learners can explain constraints for structured output, allowed events, and allowed actions
+- [LLM Planner hands-on](llm-planner.md)
+
+## Phase 1: Data Exchange
+
+### Goal of this phase
+
+- obtain data from cameras or sensors
+- understand the basic path before advanced sharing control
+- confirm visible outputs such as generated files or UI screens
+
+### Matching hands-on pages
+
+- [HUSKYLENS2 sample](huskylens2.md)
+  - generate event files from HUSKYLENS2 and a PC
+- [USB webcam sample](webcam.md)
+  - learn the basic camera-based path with a common webcam
+- [HA x SSI Publisher sample](ha-ssi-publisher.md)
+  - learn the basic structure of Home Assistant, MQTT, Consent VC, and audit logging
+- [Mobile Viewer](mobile-viewer.md)
+  - inspect shared results from a smartphone
+
+### Phase 1 success criteria
+
+- data or event files are generated
+- shared results can be checked through APIs or UI
+- learners can explain where data is generated and where it is shared
+
+## Phase 2: Event Sharing
+
+### Goal of this phase
+
+- move from full raw-data sharing to event sharing
+- understand control by Consent VC and purpose
+- explain the meaning of `allowed` / `denied` and the audit log
+
+### Matching hands-on pages
+
+- [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md)
+  - share `possible_littering` as an event
+- [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
+  - share `flood_risk_high` as an event
+
+### Phase 2 success criteria
+
+- both `allowed` and `denied` can be reproduced
+- learners can explain the difference between `purpose` and `dataset_id`
+- learners can explain the role of `/audit/logs` and `/platform/ingest`
+
+## Phase 3: Intelligence Integration
+
+### Goal of this phase
+
+- convert a natural-language human request into a plan
+- understand collection, evaluation, and control as one flow
+- understand why the planner can be replaced by an LLM-based planner
+
+### Matching hands-on pages
+
+- [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md)
+  - learn the basic path from request to `plan` and `execute`
+- [LLM Planner hands-on](llm-planner.md)
+  - practical path for replacing the rule-based planner with an LLM planner
+- [LLM Planner replacement spec](llm-planner-spec.md)
+  - specification-oriented page for understanding the design in more depth
+
+### Phase 3 success criteria
+
+- a natural-language request can be converted into a `plan`
+- `executed` can be confirmed when conditions are met
+- the fields in `planner_diagnostics` can be explained
+- results can be inspected from the frontend demo
+
+## Relation to Workshop
+
+This chapter is the participant execution part of the overall flow described in [Workshop Overview](../workshop/index.md).  
+Instructors and TAs are expected to explain the structure and branching in the Workshop chapter first, and then guide participants into the detailed pages here.

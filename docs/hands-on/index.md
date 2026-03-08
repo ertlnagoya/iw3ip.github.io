@@ -1,39 +1,45 @@
 # Hands-on（実習手順）
 
-この章は、参加者がそのまま実行できるレシピ集です。
+この章は、参加者が実際に手を動かしながら IW3IP を理解するための実習集です。  
+最初に **Phase 1 -> Phase 2 -> Phase 3** という全体像を理解し、その後に各ページへ進む構成にします。
 
-## 学習目標（大学生向け）
+## この章の全体像
 
-- 実行ログを根拠に、システム挙動を説明できる
-- `allowed` / `denied` の差を policy 条件で説明できる
-- データフロー上のオンチェーン/オフチェーン境界を説明できる
+IW3IP のハンズオンは、次の 3 段階で発展します。
 
-## この章の位置付け
+| Phase | 何を学ぶか | 代表的な確認内容 |
+|---|---|---|
+| Phase 1: データ交換 | センサやカメラから得たデータを基盤へ渡す | データが生成される、共有される、閲覧できる |
+| Phase 2: イベント共有 | 生データではなくイベントや推論結果を共有する | `allowed` / `denied`、Consent、監査ログ |
+| Phase 3: 知能統合 | 人間の要求を解釈し、収集・判断・制御まで行う | `plan`、`execute`、`planner_diagnostics`、UI |
 
-この章は、基礎章を読んだあとに「実際に動かして確認する」ための章です。  
-基本的な実行と確認はこのサイト内の説明だけで完結し、外部資料は必須ではありません。
+## まず理解してほしいこと
 
-各ページには、対応する `問題用プログラム`、`解答用プログラム`、`演習説明` へのリンクも追加しています。  
-ワークショップでは、まず問題用を配布し、詰まった場合に解答用や演習説明へ進む使い方を想定しています。
+- **Phase 1** は「データをどう渡すか」を学ぶ段階です。
+- **Phase 2** は「どのイベントを、どの条件で共有するか」を学ぶ段階です。
+- **Phase 3** は「人間の要求を AI がどう解釈し、複数の処理へ分解するか」を学ぶ段階です。
 
-## 進め方
+つまり、
 
-1. どちらかの入力ソースを選ぶ
-   - [HUSKYLENS2サンプル](huskylens2.md)
-   - [USBウェブカメラサンプル](webcam.md)
-   - [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md)
-   - [HA x SSI Publisherサンプル](ha-ssi-publisher.md)
-   - [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
-   - [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
-   - [LLM Plannerハンズオン](llm-planner.md)
-   - [LLM Planner置き換え仕様](llm-planner-spec.md)
-2. 選んだサンプルの成功判定を確認する
-3. 結果を共有し、必要に応じて次のサンプルへ進む
+1. データを扱えるようにする
+2. イベントとして条件付き共有できるようにする
+3. 要求理解と制御まで含める
 
-## 最短デモ導線
+という順に難しくなります。
 
-Phase 3 を最短で体験したい場合は、まず [LLM Plannerハンズオン](llm-planner.md) を選んでください。  
-`assistant-demo` profile を使うと、`assistant-demo`、`llm-mock`、`assistant-ui` を 1 コマンドで起動できます。
+## 学習順の推奨
+
+### はじめて触る人
+
+1. [HUSKYLENS2サンプル](huskylens2.md) または [USBウェブカメラサンプル](webcam.md)
+2. [HA x SSI Publisherサンプル](ha-ssi-publisher.md)
+3. [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md) または [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
+4. [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
+5. [LLM Plannerハンズオン](llm-planner.md)
+
+### 最短で Phase 3 を見たい人
+
+`assistant-demo` を使うと、Phase 3 の最短デモを 1 コマンドで起動できます。
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
@@ -43,26 +49,81 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 
 - `http://localhost:4173`
 
-## 共通の成功判定
+対応ページ:
 
-- カメラ系（HUSKYLENS2 / Webcam）:
-  - `mediator-owner/raw_data/output` にイベントファイルができる
-  - フロントに商品が表示され、購入できる
-- カメラ系 Phase 2:
-  - `home/event/possible_littering` をイベント共有として再現できる
-  - `community_cleaning` と `advertising` で `allowed` / `denied` を確認できる
-- HA x SSI Publisher系:
-  - `/simulate/publish` で `allowed` / `denied` の両ケースを確認できる
-  - `/audit/logs` に `allow` / `deny` / `send_error` が記録される
-- 非カメラ Phase 2 系:
-  - `home/event/flood_risk_high` をイベント共有として再現できる
-  - `disaster_response` と `advertising` で `allowed` / `denied` を確認できる
-- Phase 3 系:
-  - 自然言語要求から `plan` を生成できる
-  - 条件成立時に `light_on` と `send_notification` が `executed` になる
-  - `/assistant/executions` で履歴を確認できる
-- Phase 3 発展仕様:
-  - `stub` provider で LLM planner を再現できる
-  - OpenAI 互換 API 向けの環境変数を説明できる
-  - rule-based planner を LLM planner に差し替える設計方針を説明できる
-  - 構造化出力、許可イベント、許可アクションの制約を説明できる
+- [LLM Plannerハンズオン](llm-planner.md)
+
+## Phase 1: データ交換
+
+### この Phase の目的
+
+- カメラやセンサからデータを取り出す
+- データ共有基盤へ渡す前の基本的な流れを理解する
+- 出力ファイルや画面表示など、目に見える結果を確認する
+
+### 対応するハンズオン
+
+- [HUSKYLENS2サンプル](huskylens2.md)
+  - HUSKYLENS2 と PC を使ってイベントファイルを生成する
+- [USBウェブカメラサンプル](webcam.md)
+  - Web カメラでイベント候補を扱う基本形を学ぶ
+- [HA x SSI Publisherサンプル](ha-ssi-publisher.md)
+  - Home Assistant / MQTT / Consent VC / audit log の基本構成を学ぶ
+- [スマホ閲覧アプリ](mobile-viewer.md)
+  - 共有された結果をスマホから確認する
+
+### Phase 1 の成功判定
+
+- データまたはイベントファイルが生成される
+- API や画面で共有結果を確認できる
+- どこでデータが生成され、どこで共有されるか説明できる
+
+## Phase 2: イベント共有
+
+### この Phase の目的
+
+- 生データ全量共有ではなく、イベント共有へ進む
+- Consent VC と purpose による制御を理解する
+- `allowed` / `denied` と監査ログの意味を説明できるようにする
+
+### 対応するハンズオン
+
+- [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md)
+  - `possible_littering` をイベントとして共有する
+- [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
+  - `flood_risk_high` をイベント共有として扱う
+
+### Phase 2 の成功判定
+
+- `allowed` / `denied` の両方を再現できる
+- `purpose` と `dataset_id` の違いを説明できる
+- `/audit/logs` や `/platform/ingest` の役割を説明できる
+
+## Phase 3: 知能統合
+
+### この Phase の目的
+
+- 人間の自然言語要求を plan に変換する
+- イベント収集、判定、制御を 1 つの流れとして理解する
+- LLM を planner に差し替える設計意図を理解する
+
+### 対応するハンズオン
+
+- [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
+  - 要求から `plan` と `execute` に進む基本形を学ぶ
+- [LLM Plannerハンズオン](llm-planner.md)
+  - rule-based planner を LLM planner に差し替える実践例
+- [LLM Planner置き換え仕様](llm-planner-spec.md)
+  - より厳密に設計意図を理解するための仕様ページ
+
+### Phase 3 の成功判定
+
+- 自然言語要求から `plan` を生成できる
+- 条件成立時に `executed` を確認できる
+- `planner_diagnostics` の各項目を説明できる
+- frontend demo から結果を確認できる
+
+## Workshop との関係
+
+この章は、[Workshop 概要](../workshop/index.md) で示す全体進行のうち、参加者が実際に作業する部分です。  
+講師・TA はまず Workshop 側で全体像と分岐を説明し、その後に参加者をこの章の各ページへ案内する想定です。
