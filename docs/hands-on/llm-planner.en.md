@@ -142,6 +142,18 @@ This screen lets you check:
 - `GET /assistant/executions`
 - badge / alert rendering for `planner_diagnostics`
 
+If you want a one-command path including the local mock LLM:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
+```
+
+This profile starts:
+
+- `assistant-demo`
+- `llm-mock`
+- `assistant-ui`
+
 ## 3. Inspect an English request
 
 ```bash
