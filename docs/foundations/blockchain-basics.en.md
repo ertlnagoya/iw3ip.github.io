@@ -2,12 +2,17 @@
 
 ## Goal
 
+Blockchain is widely discussed, but it is often unclear what it is actually good for and where it should not be used.  
+This chapter first explains the general mechanism and then places it inside the IW3IP architecture.
+
 - understand what blockchain is used for
 - explain its role in IW3IP (auditability and tamper resistance)
 
 ## General Explanation
 
 ### Minimum Concepts
+
+At the start, these four terms are enough.
 
 - Ledger: a record of transactions
 - Block: a unit that groups transactions
@@ -20,6 +25,9 @@ Instead of relying on a single server, blockchain shares transaction history acr
 The main benefit is not \"magic immutability\", but that history becomes easier to verify, compare, and detect tampering against.
 
 ### What It Is Good At, and What It Is Not
+
+Blockchain is not a universal storage or processing layer.  
+The important point is to separate what belongs on-chain from what should remain in another system.
 
 - Good at:
   - traceable history
@@ -55,10 +63,15 @@ C --> E[Auditable History]
 
 ### Connection to IW3IP
 
+In this site, the first step is to understand what should be recorded for verification and what should remain outside the chain.
+
 - This sample focuses on consent policy + audit pipeline first
 - Later phases can add stronger on-chain evidence and access governance
 
 ### What Is On-Chain vs Off-Chain Here
+
+This distinction is central to the design.  
+IW3IP separates information that benefits from verifiable records from information that is too large or too frequent to place on-chain directly.
 
 - On-chain candidates:
   - contract summaries

@@ -2,6 +2,9 @@
 
 ## Goal
 
+SSI, DID, and VC often appear together, which makes their boundaries hard to see at first.  
+This chapter separates their roles and then reconnects them inside the IW3IP design.
+
 - understand Self-Sovereign Identity (SSI)
 - understand how DID and VC are used in policy decisions
 
@@ -30,6 +33,8 @@ SSI-oriented systems aim to let users or organizations hold credentials and pres
 
 ### Minimal Model in This Site
 
+To keep the first explanation manageable, this site uses a minimal model focused on consent-based decisions.
+
 - Consent VC includes `subject_did`, `dataset_id`, `allowed_purposes`, `valid_from/to`
 - Data Publisher validates these fields and decides allow/deny
 
@@ -47,6 +52,8 @@ C -->|deny| E[Audit Log]
 - easier audit trace of policy decisions
 
 ### What This Sample Simplifies
+
+Stating these simplifications explicitly makes it easier to distinguish the purpose of the sample from future extensions.
 
 - signature verification is still a placeholder
 - DID resolution is not fully implemented

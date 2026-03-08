@@ -3,6 +3,9 @@
 This page collects supplementary material that becomes useful after working through the main path in this site.  
 The foundation pages and introductory hands-on chapters are arranged so that readers can complete the basic flow before coming here.
 
+This is not a page that needs to be read all at once.  
+It works better as a reference shelf: first understand the main flow in this site, then return here when you want social background, standards, or deeper technical detail.
+
 ## Materials for Understanding Social Problems
 
 ### Privacy, safety, and community monitoring

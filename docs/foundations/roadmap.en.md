@@ -2,6 +2,9 @@
 
 This roadmap helps learners move from "it runs" to "I can explain why it works".
 
+When it is unclear where to start, this page serves as the main guide.  
+It is arranged so that the same order works both for a short first pass and for a slower multi-week study plan.
+
 ## Priority Order
 
 | Priority | Topic | Goal | Estimated Time |

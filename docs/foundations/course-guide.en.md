@@ -2,6 +2,8 @@
 
 This chapter explains how IW3IP material can be used in classes, workshops, and practical exercises.
 
+Each sample can be run on its own, but class use becomes smoother when the overall picture, the execution step, and the reflection step are separated clearly from the beginning.
+
 ## Target Learners
 
 - Undergraduate CS/CE students (2nd-4th year)
@@ -28,6 +30,8 @@ The core concepts and introductory hands-on path are arranged so that readers ca
   - you want deeper technical background
   - you need literature review for reports or research
   - you want to confirm standards or primary sources
+
+In class settings, it is usually better to align understanding with the site-internal material first and only then expand into external references.
 
 ## Example Placement in a 15-Session Course
 
