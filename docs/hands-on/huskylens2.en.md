@@ -52,10 +52,10 @@ python3 huskylens_bridge.py --mode serial --serial-port /dev/ttyUSB0 --output-di
 
 ## Troubleshooting
 
-- `pyserial` missing:
-  - install with `pip install pyserial`
-- serial port unknown:
-  - check `/dev/ttyUSB0`, `/dev/tty.usbserial-*`, or OS device manager
-- no productization after file generation:
-  - verify `mediator-owner` is running
-  - verify output path matches `../mediator-owner/raw_data/output`
+- Symptom: `pyserial` is missing
+  - Action: install with `pip install pyserial`
+- Symptom: the serial port is unknown
+  - Check: `/dev/ttyUSB0`, `/dev/tty.usbserial-*`, or the OS device manager
+- Symptom: no productization after file generation
+  - Check: `mediator-owner` is running
+  - Check: the output path matches `../mediator-owner/raw_data/output`

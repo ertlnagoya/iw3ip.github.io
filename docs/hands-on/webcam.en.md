@@ -51,11 +51,12 @@ python3 webcam_litter_bridge.py --mode webcam --camera-index 0 --output-dir ../m
 
 ## Troubleshooting
 
-- camera cannot be opened:
-  - check whether another application is using the camera
-  - try another `--camera-index`
-- expected event does not appear:
-  - improve lighting and framing
-  - first verify the pipeline with mock mode
-- no productization:
-  - verify `mediator-owner` status and output path
+- Symptom: the camera cannot be opened
+  - Check: another application is not using the camera
+  - Check: another `--camera-index` was tried
+- Symptom: the expected event does not appear
+  - Check: lighting and framing are appropriate
+  - Check: the pipeline works in mock mode first
+- Symptom: no productization happens
+  - Check: `mediator-owner` is running
+  - Check: the output path is correct

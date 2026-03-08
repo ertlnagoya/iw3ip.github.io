@@ -61,11 +61,13 @@ python3 huskylens_bridge.py \
 
 ## 4. トラブル時
 
-- `pyserial` 未導入: `pip install pyserial`
-- ポート不明: `/dev/tty.usbserial-*` などを確認
-- デバイスが読めない:
-  - ケーブルの給電専用/通信対応を確認
-  - macOS / Linux では権限やポート名を確認
-- イベントが商品化されない:
-  - `mediator-owner` が起動しているか確認
-  - 出力先が `../mediator-owner/raw_data/output` と一致しているか確認
+- 症状: `pyserial` が見つからない
+  - 対応: `pip install pyserial`
+- 症状: シリアルポート名が分からない
+  - 確認: `/dev/tty.usbserial-*` などのデバイス名を確認
+- 症状: デバイスが読めない
+  - 確認: ケーブルが給電専用でなく通信対応か
+  - 確認: macOS / Linux の権限やポート名が正しいか
+- 症状: イベントが商品化されない
+  - 確認: `mediator-owner` が起動しているか
+  - 確認: 出力先が `../mediator-owner/raw_data/output` と一致しているか

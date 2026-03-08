@@ -53,10 +53,10 @@ http://192.168.1.20:5173/mobile
 
 ## Troubleshooting
 
-- smartphone cannot connect:
-  - verify both devices are on the same network
-  - check PC firewall settings
-  - verify the PC LAN IP did not change
-- purchase action does not proceed:
-  - use the MetaMask Mobile in-app browser
-  - verify local chain configuration inside MetaMask
+- Symptom: the smartphone cannot connect
+  - Check: both devices are on the same network
+  - Check: PC firewall settings allow access
+  - Check: the PC LAN IP did not change
+- Symptom: the purchase action does not proceed
+  - Check: MetaMask Mobile in-app browser is being used
+  - Check: the local chain configuration exists inside MetaMask
