@@ -49,6 +49,7 @@ plugins:
             USB Webcam Event Sharing Sample: USBウェブカメライベント共有サンプル
             HA SSI Publisher Sample: HA x SSI Publisherサンプル
             Environment Disaster Sample: 環境・防災イベント共有サンプル
+            Regional Safety Assistant Sample: 地域安全アシスタントサンプル
             Mobile Viewer: スマホ閲覧アプリ
             Operations: 運用
             Troubleshooting: トラブルシュート
@@ -91,6 +92,7 @@ nav:
       - USB Webcam Event Sharing Sample: hands-on/webcam-event-sharing.md
       - HA SSI Publisher Sample: hands-on/ha-ssi-publisher.md
       - Environment Disaster Sample: hands-on/environment-disaster.md
+      - Regional Safety Assistant Sample: hands-on/regional-safety-assistant.md
       - Mobile Viewer: hands-on/mobile-viewer.md
   - Operations:
       - Overview: operations/index.md

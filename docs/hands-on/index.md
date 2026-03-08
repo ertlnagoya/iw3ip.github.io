@@ -24,6 +24,7 @@
    - [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md)
    - [HA x SSI Publisherサンプル](ha-ssi-publisher.md)
    - [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
+   - [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
 2. 選んだサンプルの成功判定を確認する
 3. 結果を共有し、必要に応じて次のサンプルへ進む
 
@@ -41,3 +42,7 @@
 - 非カメラ Phase 2 系:
   - `home/event/flood_risk_high` をイベント共有として再現できる
   - `disaster_response` と `advertising` で `allowed` / `denied` を確認できる
+- Phase 3 系:
+  - 自然言語要求から `plan` を生成できる
+  - 条件成立時に `light_on` と `send_notification` が `executed` になる
+  - `/assistant/executions` で履歴を確認できる

@@ -200,6 +200,20 @@ IW3IP is designed to expand in stages rather than implementing everything at onc
 - control commands
 - stricter access control through a PEP (Policy Enforcement Point)
 
+In Phase 3, the goal is no longer only to share events. The system should also **interpret a human request, identify the relevant events, evaluate conditions, and trigger device actions when needed**.
+
+For example, the Phase 3 sample on this site handles a request such as:
+
+> If littering or risky behavior is increasing on the north side of the park, tell me. If needed, turn on the lights and notify the manager.
+
+The system then separates the work into the following steps:
+
+1. extract the target area and watch events from the request
+2. evaluate event counts such as `possible_littering`
+3. execute actions such as `light_on` and `send_notification` when conditions are satisfied
+
+In other words, Phase 3 is the stage where the platform evolves from **data sharing infrastructure into decision and control infrastructure**.
+
 ## A simpler summary for high school and university students
 
 IW3IP is a research project that tries to answer questions like these:
