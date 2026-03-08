@@ -167,6 +167,8 @@ cat .env.local.example
 
 - `status`
   - `ok` か `fallback`
+- `severity`
+  - `info`, `warning`, `error`
 - `summary`
   - 何が起きたかの短い説明
 - `suggestion`
@@ -207,6 +209,12 @@ curl -X POST http://localhost:8090/assistant/plan \
 uvicorn examples.phase3_llm_mock_server:app --host 127.0.0.1 --port 18000
 ```
 
+Docker Compose 例:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-mock
+```
+
 別ターミナルで assistant を起動します。
 
 ```bash
@@ -226,6 +234,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 - `planner_name` が `llm-planner-mock-http-v1`
 - `planner_diagnostics.provider_name` が `openai_compatible`
+- `planner_diagnostics.severity` が `info`
 - `planner_diagnostics.used_fallback` が `false`
 
 ## 5.5 演習用 pytest を使う

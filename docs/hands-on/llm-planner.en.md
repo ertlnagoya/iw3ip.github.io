@@ -167,6 +167,8 @@ How to read `planner_diagnostics`:
 
 - `status`
   - `ok` or `fallback`
+- `severity`
+  - `info`, `warning`, or `error`
 - `summary`
   - short explanation of what happened
 - `suggestion`
@@ -207,6 +209,12 @@ Start the mock server:
 uvicorn examples.phase3_llm_mock_server:app --host 127.0.0.1 --port 18000
 ```
 
+Docker Compose example:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-mock
+```
+
 In another terminal, start the assistant:
 
 ```bash
@@ -226,6 +234,7 @@ Checkpoints:
 
 - `planner_name` is `llm-planner-mock-http-v1`
 - `planner_diagnostics.provider_name` is `openai_compatible`
+- `planner_diagnostics.severity` is `info`
 - `planner_diagnostics.used_fallback` is `false`
 
 ## 5.5 Use the exercise pytest
