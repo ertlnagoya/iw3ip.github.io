@@ -9,6 +9,18 @@ Pipeline:
 
 `Home Assistant -> MQTT -> (optional Node-RED) -> Data Publisher -> Platform API`
 
+## What this page helps you understand
+
+- the minimum Phase 1 flow: where data is received, checked, and recorded
+- how `topic`, `payload`, and `purpose` form one request
+- how to read `allowed`, `denied`, and the audit log
+
+## Common stumbling points
+
+- the relation between `topic` and `dataset_id` is easy to miss at first
+- a Consent VC can exist and still produce `denied` if `purpose` does not match
+- HTTP simulation and MQTT ingestion are two different checkpoints
+
 ## Prerequisites
 
 - Docker / Docker Compose

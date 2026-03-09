@@ -4,6 +4,18 @@
 
 Use HUSKYLENS2 (or mock input) to generate events and confirm that they are productized in the pipeline.
 
+## What this page helps you understand
+
+- how HUSKYLENS2 detections are turned into event files
+- when to use `mock` and when to use `serial`
+- which outputs confirm that productization really happened
+
+## Common stumbling points
+
+- serial port naming and permissions often block the first run
+- the pipeline stops if the `sensor-bridge` output path does not match what `mediator-owner` watches
+- when real hardware is unstable, it is better to verify the pipeline in `mock` mode first
+
 ## Official links
 
 - HUSKYLENS2 product page: <https://www.dfrobot.com/product-2995.html>

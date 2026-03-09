@@ -7,6 +7,18 @@ This page uses the existing `HA x SSI Publisher` sample as the base and reproduc
 
 `simulated sensor / edge inference -> disaster event -> Consent VC check -> allow / deny -> audit log`
 
+## What this page helps you understand
+
+- why Phase 2 moves from raw-data sharing to event sharing
+- how `flood_risk_high` becomes `allowed` or `denied`
+- how to read `/platform/ingest` and `/audit/logs` separately
+
+## Common stumbling points
+
+- `dataset_id` and `event_type` are easy to mix up
+- the `purpose` in the request must match `allowed_purposes` in the Consent VC
+- even when the flow is correct, `allowed` and `denied` are confirmed in different places
+
 ## What this hands-on demonstrates
 
 - how Phase 1 data sharing can be extended into Phase 2 event sharing

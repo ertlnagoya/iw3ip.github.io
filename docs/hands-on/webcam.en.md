@@ -4,6 +4,18 @@
 
 Generate `person_detected` / `possible_littering` events with only a USB webcam, even without HUSKYLENS2.
 
+## What this page helps you understand
+
+- how to try a Phase 1 event-generation flow with only a USB webcam
+- how `person_detected` and `possible_littering` are used differently
+- which checkpoints show that the pipeline reached productization
+
+## Common stumbling points
+
+- camera index and camera ownership are common first-run failures
+- lighting and framing strongly affect the heuristic output
+- detections can be generated while the downstream pipeline still fails to pick them up
+
 ## Official links
 
 - OpenCV: <https://opencv.org/>

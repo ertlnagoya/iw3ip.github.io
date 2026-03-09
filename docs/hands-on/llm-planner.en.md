@@ -7,6 +7,18 @@ This page is organized in two steps:
 1. reproduce the flow locally with the `stub` provider
 2. switch to an actual OpenAI-compatible API if available
 
+## What this page helps you understand
+
+- what must stay fixed when replacing a rule-based planner with an LLM planner
+- the roles of `planner_factory`, `validator`, and `fallback`
+- how to read success and failure through `planner_diagnostics`
+
+## Common stumbling points
+
+- adding an LLM does not mean evaluator and actuator should change as well
+- the difference between `stub` and `openai_compatible` is mostly in environment settings
+- when something fails, `planner_diagnostics` is often more useful than the plan body itself
+
 ## What you will learn
 
 - why a planner interface and planner factory are needed

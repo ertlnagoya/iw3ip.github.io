@@ -8,6 +8,18 @@ Pipeline:
 
 `USB webcam -> webcam-bridge -> event -> Publisher -> Consent VC check -> Platform API / Audit Log`
 
+## What this page helps you understand
+
+- how a Phase 1 detection event becomes a Phase 2 sharing event
+- what is kept and what is intentionally not shared for `possible_littering`
+- how `allowed`, `denied`, and the audit log fit together
+
+## Common stumbling points
+
+- it is easy to treat Phase 1 detection and Phase 2 sharing as one step, but they are separate
+- changing only `purpose` can change the outcome, which is easy to miss at first
+- checking only `/platform/ingest` hides the `denied` path
+
 ## What this hands-on demonstrates
 
 - how to extend a Phase 1 "detect and visualize" flow into a Phase 2 "share detected events" flow

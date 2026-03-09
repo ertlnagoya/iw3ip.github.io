@@ -5,6 +5,18 @@
 HUSKYLENS2がなくても、USBウェブカメラだけで
 `person_detected` / `possible_littering` イベントを生成します。
 
+## このページで分かること
+
+- USBウェブカメラだけで Phase 1 のイベント生成を試す方法
+- `person_detected` と `possible_littering` をどのように使い分けるか
+- 商品化につながる最小の確認ポイント
+
+## つまずきやすい点
+
+- カメラのインデックスや占有状況で最初に失敗しやすい
+- 照明や画角でヒューリスティックの出力が大きく変わる
+- 検知が動いていても `mediator-owner` 側まで届いていないことがある
+
 ## 公式リンク
 
 - OpenCV: <https://opencv.org/>

@@ -7,6 +7,18 @@
 1. `stub` provider でローカルに再現する
 2. 必要なら OpenAI 互換 API に接続する
 
+## このページで分かること
+
+- rule-based planner を LLM planner に置き換えるときに、何を固定すべきか
+- `planner_factory`、`validator`、`fallback` の役割
+- `planner_diagnostics` を使って結果と失敗をどう読むか
+
+## つまずきやすい点
+
+- LLM を入れると evaluator や actuator まで変える必要があると誤解しやすい
+- `stub` と `openai_compatible` の設定差分が環境変数に集まっている
+- 失敗時は `plan` 本体だけでなく `planner_diagnostics` を見ないと原因が分かりにくい
+
 ## この Hands-on で学べること
 
 - planner interface / factory がなぜ必要か

@@ -8,6 +8,18 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 
 `USB webcam -> webcam-bridge -> event -> Publisher -> Consent VC check -> Platform API / Audit Log`
 
+## このページで分かること
+
+- Phase 1 の検知イベントを Phase 2 の共有イベントとして扱う方法
+- `possible_littering` を共有するときに何を残し、何を送らないか
+- `allowed` / `denied` と監査ログの関係
+
+## つまずきやすい点
+
+- Phase 1 のイベント生成と、Phase 2 の共有判定を同じ処理だと思いやすい
+- `purpose` を変えるだけで結果が変わる理由が見えにくい
+- `/platform/ingest` だけ見ていると `denied` ケースを見落とす
+
 ## この Hands-on で学べること
 
 - Phase 1 の「検知して可視化する」流れを、Phase 2 の「検知イベントを共有する」流れへ拡張する考え方

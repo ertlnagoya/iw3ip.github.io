@@ -7,6 +7,18 @@
 
 `疑似センサ / エッジ推論 -> 防災イベント -> Consent VC 判定 -> 共有 / 拒否 -> 監査ログ`
 
+## このページで分かること
+
+- Phase 2 で「生データ共有」から「イベント共有」へ移る意味
+- `flood_risk_high` を `allowed` / `denied` に分ける条件
+- `/platform/ingest` と `/audit/logs` の見方
+
+## つまずきやすい点
+
+- `dataset_id` と `event_type` の対応が頭の中で混ざりやすい
+- Consent VC の `allowed_purposes` と送信時の `purpose` が一致しないと拒否される
+- `allowed` でも `/platform/ingest`、`denied` でも `/audit/logs` を別々に確認する必要がある
+
 ## この Hands-on で学べること
 
 - Phase 1 の「データ共有」を、Phase 2 の「イベント共有」へ拡張する考え方

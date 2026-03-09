@@ -5,6 +5,18 @@ The goal is to replace the current rule-based planner with an **LLM-based planne
 
 This is not yet an implementation guide. It is a specification that clarifies **what must stay fixed and what can be replaced**.
 
+## What this page helps you understand
+
+- the design boundary for replacing the planner with an LLM-based component
+- why evaluator, actuator, and the existing APIs should remain unchanged
+- why allow lists, validation, and fallback must be defined before implementation
+
+## Common stumbling points
+
+- \"adding an LLM\" can easily be mistaken for \"turn everything into AI\"
+- this page is about responsibility boundaries before it is about code steps
+- the reason for structured JSON output is easy to underestimate
+
 ## Goal
 
 In the current Phase 3 sample, `planner.py` is rule-based.  

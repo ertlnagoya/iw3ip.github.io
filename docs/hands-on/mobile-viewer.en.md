@@ -4,6 +4,18 @@
 
 Confirm that a smartphone can browse the event feed and proceed to purchase actions when needed.
 
+## What this page helps you understand
+
+- what is required to open the viewer from a smartphone
+- what the URL `http://<LAN_IP>:5173/mobile` actually means
+- which screens confirm viewing and purchase behavior
+
+## Common stumbling points
+
+- the frontend must be exposed on `0.0.0.0`, not only on localhost
+- devices can appear to share Wi-Fi while still being on different network segments
+- purchase actions are easiest to test through the MetaMask Mobile in-app browser
+
 ## Official links
 
 - MetaMask Mobile: <https://metamask.io/>

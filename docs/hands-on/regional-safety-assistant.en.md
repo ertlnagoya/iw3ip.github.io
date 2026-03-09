@@ -7,6 +7,18 @@ In Phase 3, the flow becomes:
 
 `human request -> planner -> execution plan -> event evaluation -> device actions`
 
+## What this page helps you understand
+
+- how Phase 2 event sharing expands into Phase 3 decision and control
+- why `plan` and `execute` are separated
+- why planner, evaluator, and actuator are kept as separate modules
+
+## Common stumbling points
+
+- generating a `plan` is different from satisfying the conditions for `execute`
+- event evaluation and device control are easy to collapse mentally into one step, but they are separate
+- this page points to the minimum implementation itself, so the module boundaries matter
+
 ## What you will learn
 
 - how a natural-language request can be converted into a structured execution plan

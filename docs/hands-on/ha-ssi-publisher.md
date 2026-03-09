@@ -9,6 +9,18 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 
 `Home Assistant -> MQTT -> (任意 Node-RED) -> Data Publisher -> Platform API`
 
+## このページで分かること
+
+- Phase 1 の最小構成として、どこでデータを受け取り、どこで判定し、どこに記録するか
+- `topic`、`payload`、`purpose` を 1 つの要求として組み立てる方法
+- `allowed` / `denied` / 監査ログの基本的な読み方
+
+## つまずきやすい点
+
+- `topic` と `dataset_id` の関係が最初は見えにくい
+- Consent VC を登録していても `purpose` が合わなければ拒否される
+- HTTP 疑似投入と MQTT 経路が別の確認ポイントを持つ
+
 ## 前提
 
 - Docker / Docker Compose が使える
