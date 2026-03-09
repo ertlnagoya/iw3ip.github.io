@@ -64,6 +64,7 @@ plugins:
             Operations: 運用
             Troubleshooting: トラブルシュート
             FAQ: FAQ
+            Contact: 問い合わせ先
         - locale: en
           name: English
           build: true
@@ -90,6 +91,7 @@ nav:
       - SSI DID VC Basics: foundations/ssi-did-vc-basics.md
       - References: foundations/references.md
   - Docs: docs.md
+  - Contact: contact.md
   - Workshop:
       - Overview: workshop/index.md
       - Before Class:

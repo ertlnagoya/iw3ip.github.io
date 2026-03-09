@@ -72,25 +72,6 @@ Open:
 7. [Hands-on](hands-on/index.md)
 8. [References](foundations/references.md)
 
-## For Students Interested in the Laboratory
-
-If you would like to work on this area in the laboratory, please apply through the following affiliation.
-
-- Undergraduate students:
-  - Information Systems area, Department of Computer Science, School of Informatics
-- Graduate students:
-  - Department of Information Systems, Graduate School of Informatics
-  - Takada-Matsubara Laboratory
-
-<span style="color: #c62828; font-weight: 700;">Research students are generally not accepted.</span>
-
-If you aim to obtain a doctoral degree, please consult us about entering the doctoral program.
-
-For details on graduate school admissions, see:
-
-- Japanese: <https://www.i.nagoya-u.ac.jp/gs/entranceexamination/>
-- English: <https://www.i.nagoya-u.ac.jp/en/gs/entranceexamination/>
-
 ## Run docs locally
 
 ```bash

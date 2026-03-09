@@ -76,25 +76,6 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 7. [Hands-on](hands-on/index.md)
 8. [参考文献](foundations/references.md)
 
-## 研究室に興味のある方へ
-
-研究室でこの分野に取り組みたい方は、次の所属先を希望してください。
-
-- 学部生:
-  - 情報学部コンピュータ科学科 情報システム系
-- 大学院生:
-  - 情報学研究科 情報システム学専攻
-  - 高田・松原研究室
-
-<span style="color: #c62828; font-weight: 700;">研究生は基本的には受け入れていません。</span>
-
-博士号の取得を目指したい方は、博士後期課程への入学を相談してください。
-
-大学院入試の詳細は、次を参照してください。
-
-- 日本語: <https://www.i.nagoya-u.ac.jp/gs/entranceexamination/>
-- 英語: <https://www.i.nagoya-u.ac.jp/en/gs/entranceexamination/>
-
 ## ローカルでDocsを起動
 
 ```bash
