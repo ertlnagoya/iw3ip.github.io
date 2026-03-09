@@ -19,13 +19,6 @@ This page is organized in two steps:
 - the difference between `stub` and `openai_compatible` is mostly in environment settings
 - when something fails, `planner_diagnostics` is often more useful than the plan body itself
 
-## What you will learn
-
-- why a planner interface and planner factory are needed
-- why LLM output should go through a validator instead of being used directly
-- which environment variables are needed when switching from `stub` to a real API
-- why both `rule_based` and `llm` should share the same `ExecutionPlan` contract
-
 ## Prerequisites
 
 - Docker / Docker Compose

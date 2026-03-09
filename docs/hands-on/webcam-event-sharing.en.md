@@ -20,13 +20,6 @@ Pipeline:
 - changing only `purpose` can change the outcome, which is easy to miss at first
 - checking only `/platform/ingest` hides the `denied` path
 
-## What this hands-on demonstrates
-
-- how to extend a Phase 1 "detect and visualize" flow into a Phase 2 "share detected events" flow
-- why it is useful to share only events such as `person_detected` or `possible_littering`, instead of sharing camera images
-- how the same event can become `allowed` or `denied` depending on `purpose`
-- how to inspect sharing results and audit results separately through `/platform/ingest` and `/audit/logs`
-
 ## Prerequisites
 
 - you understand the [USB Webcam sample](webcam.md)

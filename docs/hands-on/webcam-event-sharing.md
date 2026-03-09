@@ -20,13 +20,6 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 - `purpose` を変えるだけで結果が変わる理由が見えにくい
 - `/platform/ingest` だけ見ていると `denied` ケースを見落とす
 
-## この Hands-on で学べること
-
-- Phase 1 の「検知して可視化する」流れを、Phase 2 の「検知イベントを共有する」流れへ拡張する考え方
-- カメラ画像そのものではなく、`person_detected` や `possible_littering` のようなイベントだけを共有する利点
-- 同じイベントでも、`purpose` によって `allowed` / `denied` が変わること
-- 共有結果と監査結果を、`/platform/ingest` と `/audit/logs` で分けて確認する方法
-
 ## 前提
 
 - [USBウェブカメラサンプル](webcam.md) の内容を理解している

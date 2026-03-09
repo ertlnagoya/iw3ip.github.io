@@ -19,13 +19,6 @@
 - Consent VC の `allowed_purposes` と送信時の `purpose` が一致しないと拒否される
 - `allowed` でも `/platform/ingest`、`denied` でも `/audit/logs` を別々に確認する必要がある
 
-## この Hands-on で学べること
-
-- Phase 1 の「データ共有」を、Phase 2 の「イベント共有」へ拡張する考え方
-- 生データではなく、イベントだけを共有する利点
-- `purpose` によって `allowed` / `denied` が変わること
-- `/platform/ingest` と `/audit/logs` を見て、共有結果と監査結果を分けて確認する方法
-
 ## 前提
 
 - [HA x SSI Publisherサンプル](ha-ssi-publisher.md) を起動できる

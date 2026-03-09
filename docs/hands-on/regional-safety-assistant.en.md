@@ -19,13 +19,6 @@ In Phase 3, the flow becomes:
 - event evaluation and device control are easy to collapse mentally into one step, but they are separate
 - this page points to the minimum implementation itself, so the module boundaries matter
 
-## What you will learn
-
-- how a natural-language request can be converted into a structured execution plan
-- how to extend Phase 2 event sharing into Phase 3 decision and control
-- why `plan` and `execute` are separated
-- why execution history should remain inspectable after the action
-
 ## Prerequisites
 
 - Docker / Docker Compose

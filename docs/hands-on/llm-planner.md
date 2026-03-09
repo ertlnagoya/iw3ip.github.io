@@ -19,13 +19,6 @@
 - `stub` と `openai_compatible` の設定差分が環境変数に集まっている
 - 失敗時は `plan` 本体だけでなく `planner_diagnostics` を見ないと原因が分かりにくい
 
-## この Hands-on で学べること
-
-- planner interface / factory がなぜ必要か
-- LLM の出力をそのまま使わず validator を通す理由
-- `stub` から実 API へ切り替えるときに、何を環境変数で設定するか
-- `rule_based` と `llm` が同じ `ExecutionPlan` 契約を共有する重要性
-
 ## 前提
 
 - Docker / Docker Compose が使える

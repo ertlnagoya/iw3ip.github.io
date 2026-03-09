@@ -19,13 +19,6 @@ This page uses the existing `HA x SSI Publisher` sample as the base and reproduc
 - the `purpose` in the request must match `allowed_purposes` in the Consent VC
 - even when the flow is correct, `allowed` and `denied` are confirmed in different places
 
-## What this hands-on demonstrates
-
-- how Phase 1 data sharing can be extended into Phase 2 event sharing
-- why sharing events can be more practical than sharing raw data
-- how `purpose` changes the result between `allowed` and `denied`
-- how to inspect `/platform/ingest` and `/audit/logs` separately
-
 ## Prerequisites
 
 - you can run the [HA x SSI Publisher sample](ha-ssi-publisher.md)
