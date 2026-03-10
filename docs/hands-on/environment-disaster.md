@@ -7,6 +7,21 @@
 
 `疑似センサ / エッジ推論 -> 防災イベント -> Consent VC 判定 -> 共有 / 拒否 -> 監査ログ`
 
+## 最短ルート
+
+最初は次の 4 手順で十分です。
+
+1. publisher を起動する
+2. `consent_flood_risk_high.json` を登録する
+3. `purpose = disaster_response` で `flood_risk_high` を送る
+4. `/platform/ingest` と `/audit/logs` を確認する
+
+その後の分岐:
+
+- 許可だけ確認したい場合: `allowed` のケースまでで止めてよいです
+- Consent の意味まで確認したい場合: `advertising` を送って `denied` も見るべきです
+- MQTT 経路まで見たい場合: 最後に `mosquitto_pub` で同じイベントを送ります
+
 ## このページで分かること
 
 - Phase 2 で「生データ共有」から「イベント共有」へ移る意味
@@ -41,6 +56,40 @@
 この演習では、`flood_risk_high` イベントを `/simulate/publish` に送るリクエストを完成させます。  
 問題用プログラムでは、同じイベントでも `purpose` によって `allowed` / `denied` が変わることをコードレベルで確認できます。
 
+## 工程別の目次
+
+<details class="iw3ip-toc-details" open>
+  <summary>準備: サービス起動と Consent VC 登録</summary>
+  <p>最初に publisher を起動し、このイベント共有で使う Consent VC を登録します。ここまでは以後の許可・拒否判定の前提作業です。</p>
+  <ol>
+    <li><a href="#1-サービス起動">サービス起動</a></li>
+    <li><a href="#2-この-hands-on-用の-consent-vc-を登録">この Hands-on 用の Consent VC を登録</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>確認 1: allowed と denied を比較する</summary>
+  <p>次に、同じ `flood_risk_high` イベントを使って、共有される場合と拒否される場合を比べます。ここで `purpose` が判定結果を変えることを確認します。</p>
+  <ol>
+    <li><a href="#3-許可されるケースを再現する">許可されるケースを再現する</a></li>
+    <li><a href="#4-platform-api-に届いた内容を確認する">Platform API に届いた内容を確認する</a></li>
+    <li><a href="#5-拒否されるケースを再現する">拒否されるケースを再現する</a></li>
+    <li><a href="#6-監査ログを確認する">監査ログを確認する</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>確認 2: MQTT 経路で同じイベント共有を試す</summary>
+  <p>最後に HTTP 疑似投入ではなく MQTT からも同じイベント共有を再現し、経路が変わっても判定の考え方は同じであることを確認します。</p>
+  <ol>
+    <li><a href="#7-mqtt-経路でも試す">MQTT 経路でも試す</a></li>
+  </ol>
+</details>
+
+## 読み進め方
+
+このページは Phase 2 の代表例として、イベント共有の考え方を丁寧に確認するためのものです。短時間で確認したい場合は `allowed` のケースだけでも構いませんが、このページの主題は「同じイベントでも目的によって共有可否が変わること」なので、できれば `denied` まで見てから先へ進むのが適切です。
+
 ## シナリオ
 
 河川近くのエッジセンサが、水位上昇や周辺情報から `flood_risk_high` というイベントを生成したとします。  
@@ -65,6 +114,8 @@
 このイベントは、`homeassistant/event/flood_risk_high` に送ると、Publisher 側で `dataset_id = home/event/flood_risk_high` に正規化されます。
 
 同じ内容は、ソースコードリポジトリの `examples/payload_flood_risk_high.json` にも入っています。
+
+## Phase 2: イベント共有の前提を整える
 
 ## 1. サービス起動
 
@@ -119,6 +170,10 @@ curl -X POST http://localhost:8080/consents \
 ```bash
 curl http://localhost:8080/consents
 ```
+
+ここまでで、`flood_risk_high` を共有判定できる最小構成が整いました。次は同じイベントを 2 つの目的で送り、`allowed` と `denied` を比較します。
+
+## Phase 2: allowed と denied を比較する
 
 ## 3. 許可されるケースを再現する
 
@@ -207,6 +262,10 @@ curl http://localhost:8080/audit/logs?limit=10
 - `dataset_id` が `home/event/flood_risk_high`
 - `purpose` が `disaster_response` または `advertising`
 - `message_hash` が記録される
+
+ここまで見ると、Phase 2 で重要なのは「イベントを作ること」ではなく、「どの条件で共有されるかを説明できること」だと分かります。最後に MQTT 経路でも同じことを確認します。
+
+## Phase 2: MQTT 経路でも同じ判定を確認する
 
 ## 7. MQTT 経路でも試す
 

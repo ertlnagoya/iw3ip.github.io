@@ -7,6 +7,21 @@ This page uses the existing `HA x SSI Publisher` sample as the base and reproduc
 
 `simulated sensor / edge inference -> disaster event -> Consent VC check -> allow / deny -> audit log`
 
+## Shortest path
+
+For a first pass, these four steps are enough.
+
+1. start the publisher
+2. register `consent_flood_risk_high.json`
+3. send `flood_risk_high` with `purpose = disaster_response`
+4. inspect `/platform/ingest` and `/audit/logs`
+
+Branches after that:
+
+- If you only want to confirm the allowed path: stop after the `allowed` case
+- If you want to understand consent properly: also send `advertising` and confirm the denied case
+- If you want to inspect the MQTT path too: finish with `mosquitto_pub`
+
 ## What this page helps you understand
 
 - why Phase 2 moves from raw-data sharing to event sharing
@@ -41,6 +56,40 @@ Exercise programs:
 This exercise asks learners to complete the request that sends a `flood_risk_high` event to `/simulate/publish`.  
 The problem program makes the `allowed` / `denied` difference visible at code level by changing only the `purpose`.
 
+## Process table of contents
+
+<details class="iw3ip-toc-details" open>
+  <summary>Preparation: start services and register the Consent VC</summary>
+  <p>First start the publisher and register the Consent VC used in this event-sharing scenario. These are the prerequisites for all later allow/deny checks.</p>
+  <ol>
+    <li><a href="#1-start-the-services">Start the services</a></li>
+    <li><a href="#2-register-a-consent-vc-for-this-hands-on">Register a Consent VC for this hands-on</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Check 1: compare allowed and denied</summary>
+  <p>Next, use the same `flood_risk_high` event to compare an allowed case and a denied case. This is where the role of `purpose` becomes explicit.</p>
+  <ol>
+    <li><a href="#3-reproduce-an-allowed-case">Reproduce an allowed case</a></li>
+    <li><a href="#4-inspect-what-reached-the-platform-api">Inspect what reached the Platform API</a></li>
+    <li><a href="#5-reproduce-a-denied-case">Reproduce a denied case</a></li>
+    <li><a href="#6-check-the-audit-logs">Check the audit logs</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Check 2: reproduce the same event flow through MQTT</summary>
+  <p>Finally, reproduce the same event-sharing flow through MQTT instead of HTTP simulation and confirm that the policy logic is the same.</p>
+  <ol>
+    <li><a href="#7-try-the-mqtt-path-as-well">Try the MQTT path as well</a></li>
+  </ol>
+</details>
+
+## How to read this page
+
+This page is one of the core Phase 2 examples, so it is intentionally detailed. If you only need a fast confirmation path, the `allowed` case is enough. However, the main educational point here is that the same event can be either shared or rejected depending on the purpose, so the page works best when you read through the denied case as well.
+
 ## Scenario
 
 Assume an edge sensor near a river generates a `flood_risk_high` event based on rising water level and surrounding conditions.  
@@ -65,6 +114,8 @@ Instead of sharing the raw sensor stream, we share an event like this:
 When this event is sent to `homeassistant/event/flood_risk_high`, the Publisher normalizes it to `dataset_id = home/event/flood_risk_high`.
 
 The same event content is also available in `examples/payload_flood_risk_high.json` in the source repository.
+
+## Phase 2: Prepare the event-sharing baseline
 
 ## 1. Start the services
 
@@ -119,6 +170,10 @@ Check:
 ```bash
 curl http://localhost:8080/consents
 ```
+
+At this point, the minimum setup for evaluating `flood_risk_high` is ready. The next step is to send the same event under two different purposes and compare the result.
+
+## Phase 2: Compare allowed and denied
 
 ## 3. Reproduce an allowed case
 
@@ -207,6 +262,10 @@ Checkpoints:
 - `dataset_id` is `home/event/flood_risk_high`
 - `purpose` is `disaster_response` or `advertising`
 - `message_hash` is recorded
+
+By this point, it should be clear that Phase 2 is not only about generating an event, but about being able to explain why the event is shared or rejected. The last step is to confirm the same behavior through the MQTT path.
+
+## Phase 2: Confirm the same policy through MQTT
 
 ## 7. Try the MQTT path as well
 

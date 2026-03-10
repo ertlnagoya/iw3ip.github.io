@@ -7,6 +7,21 @@ In Phase 3, the flow becomes:
 
 `human request -> planner -> execution plan -> event evaluation -> device actions`
 
+## Shortest path
+
+For a first pass, these four steps are enough.
+
+1. start the `assistant` service
+2. call `/assistant/plan` and confirm the `park-north` plan
+3. call `/assistant/execute` and confirm `triggered: true`
+4. inspect `/assistant/executions` and confirm that request, plan, and execution result are connected
+
+Branches after that:
+
+- If you only want the planning part: stop after `/assistant/plan`
+- If you want the full execution path: continue through `execute` and `executions`
+- If you want to extend this into LLM-based planning: continue to the `LLM Planner` hands-on next
+
 ## What this page helps you understand
 
 - how Phase 2 event sharing expands into Phase 3 decision and control
@@ -43,6 +58,41 @@ This hands-on uses the following files.
 
 Unlike the earlier workshop samples, this page points directly to the **minimum implementation itself** rather than a separate problem/answer pair.  
 That is intentional, because in Phase 3 the module boundaries between planner, evaluator, and actuator are part of what learners should understand.
+
+## Process table of contents
+
+<details class="iw3ip-toc-details" open>
+  <summary>Stage 1: inspect how the planner interprets the request</summary>
+  <p>Start by inspecting how a human request is converted into a `plan`. At this stage, the main focus is not execution yet, but how the system chooses the target area, watch events, and actions.</p>
+  <ol>
+    <li><a href="#1-start-the-assistant-service">Start the assistant service</a></li>
+    <li><a href="#2-inspect-the-generated-plan">Inspect the generated plan</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Stage 2: inspect evaluator and actuator behavior</summary>
+  <p>Next, run the execution path against the sample events. This stage focuses on how `triggered` is decided and how that result is turned into device actions.</p>
+  <ol>
+    <li><a href="#3-execute-the-plan">Execute the plan</a></li>
+    <li><a href="#4-inspect-execution-history">Inspect execution history</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Stage 3: organize the difference from Phase 2</summary>
+  <p>Finally, compare Phase 2 event sharing and Phase 3 request interpretation, evaluation, and control. This makes the separation between planner, evaluator, and actuator easier to understand.</p>
+  <ol>
+    <li><a href="#5-difference-between-phase-2-and-phase-3">Difference between Phase 2 and Phase 3</a></li>
+    <li><a href="#6-success-criteria">Success criteria</a></li>
+    <li><a href="#7-common-issues">Common issues</a></li>
+    <li><a href="#8-stop-services">Stop services</a></li>
+  </ol>
+</details>
+
+## How to read this page
+
+This page is the main Phase 3 explanation page. If you only want a quick confirmation path, looking at `plan` and `execute` is enough. If you want to understand how Phase 3 differs from Phase 2 and why the module boundaries matter, it is worth reading the final comparison and the common issues section as well.
 
 ## Scenario
 
@@ -86,6 +136,8 @@ sequenceDiagram
 ```
 
 This diagram makes two points explicit: `plan` and `execute` are intentionally separated, and the system evaluates relevant events before it issues any device action.
+
+## Phase 3: Inspect how the planner interprets the request
 
 ## 1. Start the assistant service
 
@@ -143,6 +195,10 @@ Checkpoints:
 - `watch_events` includes `possible_littering`
 - `actions` includes `light_on` and `send_notification`
 
+At this point, the request has been converted into a structured `plan`. The next step is to inspect how the system evaluates observed events and turns the result into actions.
+
+## Phase 3: Inspect evaluator and actuator behavior
+
 ## 3. Execute the plan
 
 Now execute the request against the sample event file.
@@ -194,6 +250,10 @@ Checkpoints:
 - executed actions in `actions_executed`
 
 are all kept together as one execution record.
+
+At this point, it should be clearer that Phase 3 is not just event sharing. It is the stage where planning, evaluation, and execution are connected around a human request. The last section makes that contrast with Phase 2 explicit.
+
+## Phase 3: Organize the difference from Phase 2
 
 ## 5. Difference between Phase 2 and Phase 3
 

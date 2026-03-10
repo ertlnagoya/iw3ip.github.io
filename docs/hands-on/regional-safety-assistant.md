@@ -7,6 +7,21 @@ Phase 3 では、その先として、次の流れを扱います。
 
 `人間の要求 -> planner -> 実行計画 -> イベント評価 -> 機器操作`
 
+## 最短ルート
+
+最初は次の 4 手順で十分です。
+
+1. `assistant` サービスを起動する
+2. `/assistant/plan` を呼んで `park-north` の plan を確認する
+3. `/assistant/execute` を呼んで `triggered: true` を確認する
+4. `/assistant/executions` を見て、要求・計画・実行結果が 1 つにつながっていることを確認する
+
+その後の分岐:
+
+- `plan` だけ見たい場合: `/assistant/plan` の確認まででよいです
+- 実行まで確認したい場合: `execute` と `executions` まで続けます
+- LLM まで広げたい場合: 次に `LLM Planner` Hands-on へ進みます
+
 ## このページで分かること
 
 - Phase 2 のイベント共有が、Phase 3 でどのように判断と制御へ広がるか
@@ -43,6 +58,41 @@ Phase 3 では、その先として、次の流れを扱います。
 
 今回は Phase 3 用の `問題用プログラム / 解答用プログラム` ではなく、**最小実装そのもの**を読む形にしています。  
 理由は、Phase 3 では「planner」「evaluator」「actuator」のモジュール境界自体が学習対象だからです。
+
+## 工程別の目次
+
+<details class="iw3ip-toc-details" open>
+  <summary>段階 1: planner が要求をどう解釈するかを見る</summary>
+  <p>最初に、人間の要求がどのように `plan` へ変換されるかを見ます。この段階では、まだ実行結果よりも、対象場所・注目イベント・action の組み立て方に注目します。</p>
+  <ol>
+    <li><a href="#1-assistant-サービスを起動">assistant サービスを起動</a></li>
+    <li><a href="#2-計画生成を確認">計画生成を確認</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>段階 2: evaluate と actuator がどう動くかを見る</summary>
+  <p>次に、既存イベントを使って `execute` を確認します。ここでは `triggered` がどう決まり、その結果としてどの action が実行されるかを見るのが中心です。</p>
+  <ol>
+    <li><a href="#3-実行を確認">実行を確認</a></li>
+    <li><a href="#4-実行履歴を確認">実行履歴を確認</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>段階 3: Phase 2 との違いを整理する</summary>
+  <p>最後に、Phase 2 のイベント共有と Phase 3 の要求解釈・判定・制御の違いを整理します。ここまで読むと、なぜ planner、evaluator、actuator を分離するのかが見えやすくなります。</p>
+  <ol>
+    <li><a href="#5-phase-2-と-phase-3-の違いを整理">Phase 2 と Phase 3 の違いを整理</a></li>
+    <li><a href="#6-成功判定">成功判定</a></li>
+    <li><a href="#7-よくあるつまずき">よくあるつまずき</a></li>
+    <li><a href="#8-停止">停止</a></li>
+  </ol>
+</details>
+
+## 読み進め方
+
+このページは、Phase 3 の考え方を理解するための代表ページです。短時間で確認したい場合は `plan` と `execute` の 2 つだけを見れば十分ですが、Phase 2 との違いやモジュール境界まで理解したい場合は、最後の整理と `よくあるつまずき` まで読む方が効果的です。
 
 ## 想定シナリオ
 
@@ -86,6 +136,8 @@ sequenceDiagram
 ```
 
 この図では、`plan` と `execute` が分かれていること、そして **判定の前に必要なイベントをまとめて見る**ことが重要です。
+
+## Phase 3: planner が要求をどう解釈するかを見る
 
 ## 1. assistant サービスを起動
 
@@ -143,6 +195,10 @@ curl -X POST http://localhost:8090/assistant/plan \
 - `watch_events` に `possible_littering` が入っている
 - `actions` に `light_on` と `send_notification` が入っている
 
+ここまでで、自然言語要求から構造化された `plan` が作られることを確認できました。次は、その `plan` をもとに実際のイベント評価と機器操作がどう進むかを見ます。
+
+## Phase 3: evaluate と actuator がどう動くかを見る
+
 ## 3. 実行を確認
 
 次に、サンプルイベントを使って実際に判定と制御を走らせます。
@@ -194,6 +250,10 @@ curl http://localhost:8090/assistant/executions
 - 実行された `actions_executed`
 
 が 1 つの履歴として残ります。
+
+ここまでで、Phase 3 は単にイベントを共有する段階ではなく、要求に応じて計画・判定・実行をまとめて扱う段階だと見えてきます。最後に、Phase 2 との違いを明示的に整理します。
+
+## Phase 3: Phase 2 との違いを整理する
 
 ## 5. Phase 2 と Phase 3 の違いを整理
 
