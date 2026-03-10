@@ -164,3 +164,33 @@
 .md-typeset li + li {
   margin-top: 0.25rem;
 }
+
+.iw3ip-toc-details {
+  margin: 0.9rem 0;
+  padding: 0.15rem 0 0.1rem;
+  border: 1px solid rgba(21, 58, 91, 0.18);
+  border-radius: 0.8rem;
+  background: #fbfdff;
+}
+
+.iw3ip-toc-details summary {
+  cursor: pointer;
+  padding: 0.8rem 1rem;
+  font-weight: 800;
+  color: #153a5b;
+}
+
+.iw3ip-toc-details[open] summary {
+  border-bottom: 1px solid rgba(21, 58, 91, 0.12);
+}
+
+.iw3ip-toc-details p,
+.iw3ip-toc-details ol,
+.iw3ip-toc-details ul {
+  margin: 0.8rem 1rem 0.9rem;
+}
+
+.iw3ip-toc-details ol,
+.iw3ip-toc-details ul {
+  padding-left: 1.2rem;
+}

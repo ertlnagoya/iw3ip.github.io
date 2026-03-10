@@ -26,6 +26,37 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 - Phase 2 まで進む場合: `possible_littering` を送って `allow` と `deny` の両方を見る
 - Phase 3 まで進む場合: `ha-demo-phase3` を起動して `run_phase3_from_ingest.py --plan-only` を実行する
 
+## Phase 別の目次
+
+<details class="iw3ip-toc-details" open>
+  <summary>Phase 1: 状態共有までを確認する</summary>
+  <p>この段階では、環境起動、Home Assistant 初期設定、Consent VC 登録、基本的な script 実行、`/platform/ingest` の確認まで進みます。</p>
+  <ol>
+    <li><a href="#1-起動">起動</a></li>
+    <li><a href="#2-home-assistant-の初期設定">Home Assistant の初期設定</a></li>
+    <li><a href="#3-consent-vc-を登録">Consent VC を登録</a></li>
+    <li><a href="#4-home-assistant-から-demo-データを送る">Home Assistant から demo データを送る</a></li>
+    <li><a href="#5-publisher-側の結果を確認">publisher 側の結果を確認</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Phase 2: イベント共有と拒否を確認する</summary>
+  <p>この段階では、許可される共有だけでなく、Consent VC に一致しない要求が拒否されることも確認します。</p>
+  <ol>
+    <li><a href="#6-拒否ケースを確認">拒否ケースを確認</a></li>
+    <li><a href="#7-mqtt-経路を直接試す">MQTT 経路を直接試す</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Phase 3: assistant の plan と execute を確認する</summary>
+  <p>最後に、publisher に蓄積されたイベントを assistant 側へ橋渡しし、人間の要求から `plan` と `execute` がどう分かれるかを確認します。</p>
+  <ol>
+    <li><a href="#8-phase-3-を試す">Phase 3 を試す</a></li>
+  </ol>
+</details>
+
 ## このページで分かること
 
 - 実機がなくても `temperature`、`power`、`person_detected`、`flood_risk_high`、`possible_littering` を再現できること
@@ -58,6 +89,16 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 - [configuration.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/home-assistant-demo/config/configuration.yaml)
 - [scripts.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/home-assistant-demo/config/scripts.yaml)
 - [run_phase3_from_ingest.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/run_phase3_from_ingest.py)
+
+## 読み進め方
+
+このページは長めの手順書です。短時間で確認したい場合は `最短ルート` と `Phase 別の目次` を先に見て、必要な段階だけを開いて進めてください。
+
+一方で、ワークショップや自主学習で全体像まで理解したい場合は、Phase 1 から順に読み進める方が流れをつかみやすくなります。特に、`allowed` と `denied`、さらに `plan` と `execute` の違いは、前の段階を見ておくと理解しやすくなります。
+
+## Phase 1: 状態共有を確認する
+
+Phase 1 では、Home Assistant から publisher までの基本経路が正しく動いていることを確かめます。まずは状態データを 1 つ送って、`platform/ingest` に記録されることを見れば十分です。
 
 ## 1. 起動
 
@@ -209,6 +250,10 @@ curl http://localhost:8080/audit/logs?limit=10
 - `/platform/ingest` に `home/event/possible_littering` と `home/event/suspicious_activity` が入っていること
 - `/audit/logs` で `action: allow` と `raw_topic` が対応していること
 
+ここまで確認できれば、Home Assistant から publisher までの基本的な共有経路は動いています。次は、同じ経路でも Consent VC によって拒否されるケースを確認します。
+
+## Phase 2: イベント共有と拒否を確認する
+
 ## 6. 拒否ケースを確認
 
 Home Assistant script では主に許可されるケースを流すので、拒否ケースは HTTP 疑似投入で確認します。
@@ -263,6 +308,10 @@ docker exec -i iw3ip-mosquitto mosquitto_pub \
 - [payload_person_detected.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_person_detected.json)
 - [payload_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_flood_risk_high.json)
 - [payload_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_possible_littering.json)
+
+Phase 2 まで見ると、同じ MQTT 経路を通っても、常に共有されるわけではないことが分かります。次の Phase 3 では、共有されたイベントをさらに assistant 側へ渡し、要求理解と実行を確認します。
+
+## Phase 3: assistant の plan と execute を確認する
 
 ## 8. Phase 3 を試す
 
