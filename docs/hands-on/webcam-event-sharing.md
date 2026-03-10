@@ -8,6 +8,21 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 
 `USB webcam -> webcam-bridge -> event -> Publisher -> Consent VC check -> Platform API / Audit Log`
 
+## 最短ルート
+
+最初は次の 4 手順で十分です。
+
+1. publisher を起動する
+2. `consent_possible_littering.json` を登録する
+3. `purpose = community_cleaning` で `possible_littering` を送る
+4. `/platform/ingest` と `/audit/logs` を確認する
+
+その後の分岐:
+
+- 許可されるケースだけ確認したい場合: `allowed` のケースまでで止めてよいです
+- Consent VC による制御まで理解したい場合: `advertising` を送って `denied` も確認します
+- MQTT 経路まで見たい場合: 最後に `mosquitto_pub` を使います
+
 ## このページで分かること
 
 - Phase 1 の検知イベントを Phase 2 の共有イベントとして扱う方法
@@ -41,6 +56,40 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 この演習では、`possible_littering` イベントを `/simulate/publish` に送るコードを書きます。  
 問題用プログラムでは、Phase 1 の検知イベントが Phase 2 では「条件付き共有イベント」へ変わることを確認できます。
 
+## 工程別の目次
+
+<details class="iw3ip-toc-details" open>
+  <summary>準備: publisher と Consent VC を用意する</summary>
+  <p>最初に publisher を起動し、このイベント共有で必要な Consent VC を登録します。ここまでは共有可否を判定するための準備段階です。</p>
+  <ol>
+    <li><a href="#1-サービス起動">サービス起動</a></li>
+    <li><a href="#2-この-hands-on-用の-consent-vc-を登録">この Hands-on 用の Consent VC を登録</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>確認 1: allowed と denied を比較する</summary>
+  <p>次に、同じ `possible_littering` イベントを 2 つの目的で送り、許可される場合と拒否される場合を比較します。</p>
+  <ol>
+    <li><a href="#3-許可されるケースを再現する">許可されるケースを再現する</a></li>
+    <li><a href="#4-platform-api-に届いた内容を確認する">Platform API に届いた内容を確認する</a></li>
+    <li><a href="#5-拒否されるケースを再現する">拒否されるケースを再現する</a></li>
+    <li><a href="#6-監査ログを確認する">監査ログを確認する</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>確認 2: MQTT 経路でも同じイベント共有を試す</summary>
+  <p>最後に MQTT 経路でも同じイベント共有を再現し、判定の考え方が変わらないことを確認します。</p>
+  <ol>
+    <li><a href="#7-mqtt-経路でも試す">MQTT 経路でも試す</a></li>
+  </ol>
+</details>
+
+## 読み進め方
+
+このページは、Phase 1 のカメラ検知から Phase 2 のイベント共有へ進むときの違いを確認するためのページです。短時間なら `allowed` のケースだけでも構いませんが、この Hands-on の主題は「同じイベントでも目的によって共有結果が変わること」なので、`denied` と監査ログまで見ておく方が理解しやすくなります。
+
 ## シナリオ
 
 地域のカメラでポイ捨ての可能性が検知されたとします。  
@@ -70,6 +119,8 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 このイベントは、`homeassistant/event/possible_littering` に送ると、Publisher 側で `dataset_id = home/event/possible_littering` に正規化されます。
 
 同じ内容は、ソースコードリポジトリの `examples/payload_possible_littering.json` にも入っています。
+
+## Phase 2: イベント共有の前提を整える
 
 ## 1. サービス起動
 
@@ -118,6 +169,10 @@ curl -X POST http://localhost:8080/consents \
 ```bash
 curl http://localhost:8080/consents
 ```
+
+ここまでで、`possible_littering` を共有判定できる最小構成が整いました。次は同じイベントを 2 つの目的で送り、`allowed` と `denied` を比較します。
+
+## Phase 2: allowed と denied を比較する
 
 ## 3. 許可されるケースを再現する
 
@@ -204,6 +259,10 @@ curl http://localhost:8080/audit/logs?limit=10
 - `dataset_id` が `home/event/possible_littering`
 - `purpose` が `community_cleaning` または `advertising`
 - `message_hash` が記録される
+
+ここまで見ると、Phase 2 の中心が「検知」ではなく「条件付き共有」に移っていることが分かります。最後に MQTT 経路でも同じ共有を再現します。
+
+## Phase 2: MQTT 経路でも同じ判定を確認する
 
 ## 7. MQTT 経路でも試す
 

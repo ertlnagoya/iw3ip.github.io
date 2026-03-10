@@ -8,6 +8,21 @@ Pipeline:
 
 `USB webcam -> webcam-bridge -> event -> Publisher -> Consent VC check -> Platform API / Audit Log`
 
+## Shortest path
+
+For a first pass, these four steps are enough.
+
+1. start the publisher
+2. register `consent_possible_littering.json`
+3. send `possible_littering` with `purpose = community_cleaning`
+4. inspect `/platform/ingest` and `/audit/logs`
+
+Branches after that:
+
+- If you only want the allowed path: stop after the `allowed` case
+- If you want to understand consent control properly: also send the `advertising` case and confirm `denied`
+- If you want to inspect the MQTT path too: finish with `mosquitto_pub`
+
 ## What this page helps you understand
 
 - how a Phase 1 detection event becomes a Phase 2 sharing event
@@ -41,6 +56,40 @@ Exercise programs:
 This exercise asks learners to write the code that sends a `possible_littering` event to `/simulate/publish`.  
 The problem program makes it clear that a Phase 1 detection event becomes a Phase 2 condition-controlled sharing event.
 
+## Process table of contents
+
+<details class="iw3ip-toc-details" open>
+  <summary>Preparation: start the publisher and register the Consent VC</summary>
+  <p>First start the publisher and register the Consent VC needed for this event-sharing scenario. These steps prepare the minimum baseline for policy evaluation.</p>
+  <ol>
+    <li><a href="#1-start-the-services">Start the services</a></li>
+    <li><a href="#2-register-a-consent-vc-for-this-hands-on">Register a Consent VC for this hands-on</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Check 1: compare allowed and denied</summary>
+  <p>Next, send the same `possible_littering` event under two different purposes and compare the result.</p>
+  <ol>
+    <li><a href="#3-reproduce-an-allowed-case">Reproduce an allowed case</a></li>
+    <li><a href="#4-inspect-what-reached-the-platform-api">Inspect what reached the Platform API</a></li>
+    <li><a href="#5-reproduce-a-denied-case">Reproduce a denied case</a></li>
+    <li><a href="#6-check-the-audit-logs">Check the audit logs</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Check 2: reproduce the same sharing path through MQTT</summary>
+  <p>Finally, reproduce the same event-sharing path through MQTT and confirm that the policy logic remains the same.</p>
+  <ol>
+    <li><a href="#7-try-the-mqtt-path-as-well">Try the MQTT path as well</a></li>
+  </ol>
+</details>
+
+## How to read this page
+
+This page is meant to show the transition from Phase 1 camera detection to Phase 2 event sharing. If you only need a quick confirmation path, the `allowed` case is enough. If you want to understand the actual point of the hands-on, it is better to continue through the denied case and the audit log as well.
+
 ## Scenario
 
 Suppose a community camera detects possible littering in a public park.  
@@ -70,6 +119,8 @@ The shared event may look like this:
 When sent to `homeassistant/event/possible_littering`, the Publisher normalizes it to `dataset_id = home/event/possible_littering`.
 
 The same event content is also available in `examples/payload_possible_littering.json` in the source repository.
+
+## Phase 2: Prepare the event-sharing baseline
 
 ## 1. Start the services
 
@@ -118,6 +169,10 @@ Check:
 ```bash
 curl http://localhost:8080/consents
 ```
+
+At this point, the minimum setup for evaluating `possible_littering` is ready. The next step is to compare the same event under two different purposes.
+
+## Phase 2: Compare allowed and denied
 
 ## 3. Reproduce an allowed case
 
@@ -204,6 +259,10 @@ Checkpoints:
 - `dataset_id` is `home/event/possible_littering`
 - `purpose` is `community_cleaning` or `advertising`
 - `message_hash` is recorded
+
+By this point, it should be clear that the center of Phase 2 is no longer detection itself, but conditional sharing. The last step is to reproduce the same logic through the MQTT path.
+
+## Phase 2: Confirm the same policy through MQTT
 
 ## 7. Try the MQTT path as well
 
