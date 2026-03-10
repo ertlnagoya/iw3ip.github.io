@@ -37,12 +37,65 @@ Use HUSKYLENS2 (or mock input) to generate events and confirm that they are prod
 This exercise asks learners to build a mock event file under `mediator-owner/raw_data/output`.  
 In the problem program, the main task is to complete `build_event()` and understand the minimum JSON structure for a HUSKYLENS2 detection event.
 
+## Shortest path
+
+For a first pass, these four steps are enough.
+
+1. start `huskylens_bridge.py` in `mock` mode
+2. confirm that event files appear under `raw_data/output`
+3. confirm that `mediator-owner` picks them up
+4. confirm that merchandise appears in the frontend
+
+Branches after that:
+
+- If you only want to confirm the pipeline: `mock` mode is enough
+- If you want to confirm the real device path: continue with `serial` mode
+- If serial mode fails early: jump to the troubleshooting section first
+
+## Process table of contents
+
+<details class="iw3ip-toc-details" open>
+  <summary>Check 1: confirm event generation in mock mode</summary>
+  <p>Start with mock mode so you can confirm that the downstream pipeline works even without a physical sensor input.</p>
+  <ol>
+    <li><a href="#mock-first">Mock first</a></li>
+    <li><a href="#expected">Expected</a></li>
+    <li><a href="#success-example">Success example</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Check 2: try the same flow in serial mode</summary>
+  <p>Next, use the real HUSKYLENS2 device and confirm that it can feed the same downstream path as the mock mode.</p>
+  <ol>
+    <li><a href="#real-device-serial">Real device (serial)</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Check 3: troubleshoot typical serial and path issues</summary>
+  <p>Finally, isolate the common failure points such as serial ports, missing libraries, and mismatched output paths.</p>
+  <ol>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+  </ol>
+</details>
+
+## How to read this page
+
+This is a Phase 1 device-integration page, so there is no need to start with the hardware path immediately. In practice, it is easier to confirm the downstream pipeline with `mock` first and only then switch to `serial` when the basic flow is already known to work.
+
+## Phase 1: Confirm the pipeline in mock mode
+
 ## Mock first
 
 ```bash
 cd sensor-bridge
 python3 huskylens_bridge.py --mode mock --output-dir ../mediator-owner/raw_data/output
 ```
+
+At this point, the downstream pipeline itself has been confirmed. The next step is to try the same flow with the physical serial input.
+
+## Phase 1: Try the same flow with serial input
 
 ## Real device (serial)
 
