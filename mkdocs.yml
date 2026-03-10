@@ -105,6 +105,7 @@ nav:
           - HuskyLens2 Sample: hands-on/huskylens2.md
           - USB Webcam Sample: hands-on/webcam.md
           - HA SSI Publisher Sample: hands-on/ha-ssi-publisher.md
+          - Home Assistant Demo Simulator Sample: hands-on/ha-demo-simulator.md
           - Mobile Viewer: hands-on/mobile-viewer.md
       - Phase 2 Event Sharing:
           - USB Webcam Event Sharing Sample: hands-on/webcam-event-sharing.md

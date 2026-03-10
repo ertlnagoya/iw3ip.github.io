@@ -89,6 +89,7 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 - [HUSKYLENS2サンプル](huskylens2.md): HUSKYLENS2 と PC を使ってイベントファイルを生成する
 - [USBウェブカメラサンプル](webcam.md): Web カメラでイベント候補を扱う基本形を学ぶ
 - [HA x SSI Publisherサンプル](ha-ssi-publisher.md): Home Assistant / MQTT / Consent VC / audit log の基本構成を学ぶ
+- [Home Assistant Demo Simulator サンプル](ha-demo-simulator.md): 実機なしで Home Assistant demo から Phase 1 / Phase 2 を再現する
 - [スマホ閲覧アプリ](mobile-viewer.md): 共有された結果をスマホから確認する
 
 ### Phase 1 の成功判定
