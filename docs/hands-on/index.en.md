@@ -87,7 +87,7 @@ Matching page:
 - [HUSKYLENS2 sample](huskylens2.md): generate event files from HUSKYLENS2 and a PC
 - [USB webcam sample](webcam.md): learn the basic camera-based path with a common webcam
 - [HA x SSI Publisher sample](ha-ssi-publisher.md): learn the basic structure of Home Assistant, MQTT, Consent VC, and audit logging
-- [Home Assistant Demo Simulator sample](ha-demo-simulator.md): reproduce Phase 1 and Phase 2 from Home Assistant demo without physical devices
+- [Home Assistant Demo Simulator sample](ha-demo-simulator.md): connect Phase 1, Phase 2, and Phase 3 from Home Assistant demo without physical devices
 - [Mobile Viewer](mobile-viewer.md): inspect shared results from a smartphone
 
 ### Phase 1 success criteria

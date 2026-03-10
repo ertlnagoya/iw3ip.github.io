@@ -1,4 +1,4 @@
-# Home Assistant Demo Simulator Sample (Phase 1 / Phase 2)
+# Home Assistant Demo Simulator Sample (Phase 1 / Phase 2 / Phase 3)
 
 ## Goal
 
@@ -8,7 +8,7 @@ It uses Home Assistant `demo` entities to reproduce the following local flow:
 
 `Home Assistant demo -> MQTT -> (optional Node-RED) -> Data Publisher -> Platform API / Audit Log`
 
-This page uses one environment to show both Phase 1 state sharing and Phase 2 event sharing.
+This page uses one environment to show Phase 1 state sharing, Phase 2 event sharing, and a Phase 3 assistant execution flow.
 
 ## What this page helps you understand
 
@@ -16,6 +16,7 @@ This page uses one environment to show both Phase 1 state sharing and Phase 2 ev
 - how IW3IP publisher receives, normalizes, and records data coming from Home Assistant through MQTT
 - the difference between Phase 1 state sharing and Phase 2 event sharing
 - how Consent VC changes `allowed` and `denied`
+- how to bridge `/platform/ingest` records into the Phase 3 `assistant`
 
 ## Common stumbling points
 
@@ -23,6 +24,7 @@ This page uses one environment to show both Phase 1 state sharing and Phase 2 ev
 - if Consent VCs are not registered, the scripts may run but the expected sharing behavior will not appear
 - Home Assistant can publish an event correctly and the publisher can still reject it if `purpose` does not match
 - because there are no physical devices, the flow is easier to lose sight of, so check both `/platform/ingest` and `/audit/logs`
+- in Phase 3 it is easy to mix up sharing and execution, because publisher and assistant are separate services
 
 ## Prerequisites
 
@@ -39,6 +41,7 @@ Main matching files:
 - [examples/ha_demo/README.md](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/README.md)
 - [configuration.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/home-assistant-demo/config/configuration.yaml)
 - [scripts.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/home-assistant-demo/config/scripts.yaml)
+- [run_phase3_from_ingest.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/run_phase3_from_ingest.py)
 
 ## 1. Start services
 
@@ -91,6 +94,7 @@ curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' 
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/ha_demo/consent_person_detected.json
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/ha_demo/consent_flood_risk_high.json
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/ha_demo/consent_possible_littering.json
+curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/ha_demo/consent_suspicious_activity.json
 ```
 
 Expected:
@@ -104,6 +108,7 @@ Matching files:
 - [consent_person_detected.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_person_detected.json)
 - [consent_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_flood_risk_high.json)
 - [consent_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_possible_littering.json)
+- [consent_suspicious_activity.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_suspicious_activity.json)
 
 ## 4. Send demo data from Home Assistant
 
@@ -114,6 +119,8 @@ In Home Assistant, open `Developer Tools -> Actions` and run these scripts:
 - `script.iw3ip_publish_demo_person_detected`
 - `script.iw3ip_publish_demo_flood_risk_high`
 - `script.iw3ip_publish_demo_possible_littering`
+- `script.iw3ip_publish_demo_suspicious_activity`
+- `script.iw3ip_publish_demo_phase3_safety_scenario`
 
 These scripts call `mqtt.publish` defined in `scripts.yaml`.
 
@@ -126,6 +133,7 @@ Phase mapping:
 - Phase 2:
   - `flood_risk_high`
   - `possible_littering`
+  - `suspicious_activity`
 
 ## 5. Check publisher results
 
@@ -190,7 +198,40 @@ Related files:
 - [payload_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_flood_risk_high.json)
 - [payload_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_possible_littering.json)
 
-## 8. If you want to use Node-RED
+## 8. Try Phase 3
+
+In Phase 3, the events accumulated by the publisher are converted into `assistant` `observed_events`, and then you inspect `plan -> execute`.
+
+Start:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 up --build -d
+```
+
+Then run this Home Assistant script:
+
+- `script.iw3ip_publish_demo_phase3_safety_scenario`
+
+That script publishes the following sequence for `park-north`:
+
+- three `possible_littering` events
+- one `suspicious_activity` event
+
+Next, bridge the publisher events into the assistant:
+
+```bash
+python3 examples/ha_demo/run_phase3_from_ingest.py \
+  --request-file examples/ha_demo/phase3_request_park_safety.json
+```
+
+Expected:
+
+- `execution.evaluation.triggered` is `true`
+- `actions_executed` includes `light_on` and `send_notification`
+
+At this stage the key point is that event sharing can become the input to a later intelligence step.
+
+## 9. If you want to use Node-RED
 
 Node-RED is useful when you want easier manual injection or time-based pseudo events.
 
@@ -201,7 +242,7 @@ Import flow:
 Node-RED is optional in this setup.  
 It is better to first understand the full path with Home Assistant demo alone, and only then add Node-RED if you want clearer event injection.
 
-## 9. What is Phase 1 and what is Phase 2 here?
+## 10. What is Phase 1, Phase 2, and Phase 3 here?
 
 One important point of this sample is that one environment can show both Phase 1 and Phase 2.
 
@@ -211,13 +252,17 @@ One important point of this sample is that one environment can show both Phase 1
 - Phase 2:
   - event sharing such as `flood_risk_high` and `possible_littering`
   - conditional sharing based on `purpose` and Consent VC
+- Phase 3:
+  - pass publisher events to the assistant and execute the plan
+  - inspect `triggered` and `actions_executed`
 
 This page also works as a bridge between these two hands-on pages:
 
 - [HA x SSI Publisher sample (Phase 1)](ha-ssi-publisher.md)
 - [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
+- [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md)
 
-## 10. Stop services
+## 11. Stop services
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile ha-demo down
@@ -227,4 +272,10 @@ If Node-RED is also running:
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile ha-demo --profile nodered down
+```
+
+If you also started the Phase 3 path:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 down
 ```
