@@ -75,18 +75,24 @@ curl http://localhost:8080/health
 
 - `http://localhost:8123`
 
-初回はローカルユーザを作成します。その後、`MQTT` integration を追加してください。
+初回はローカルユーザを作成します。ログインできたら、まず Overview が見えることを確認してください。
+
+実画面例:
+
+![Home Assistant overview](../assets/screenshots/ha-dashboard-overview.png)
+
+その後、`Settings -> Devices & Services -> Integrations` で `MQTT` integration を追加してください。
 
 設定値:
 
 - Host: `mosquitto`
 - Port: `1883`
 
-ここでの目的は、Home Assistant の script から `mqtt.publish` を使える状態にすることです。
+ここでの目的は、Home Assistant の script から `mqtt.publish` を使える状態にすることです。追加後は `MQTT` の詳細画面で `mosquitto` が見えていれば、この Hands-on の前提は満たせています。
 
-画面イメージ:
+実画面例:
 
-![Home Assistant actions screen](../assets/ha-demo-homeassistant-actions.svg)
+![Home Assistant MQTT integration](../assets/screenshots/ha-mqtt-integration.png)
 
 ## 3. Consent VC を登録
 
@@ -116,7 +122,11 @@ curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' 
 
 ## 4. Home Assistant から demo データを送る
 
-Home Assistant の `Developer Tools -> Actions` から、次の script を実行します。
+Home Assistant の `Developer Tools -> Actions` から、次の script を実行します。画面上部の action 選択欄で `script.turn_on` を選び、target entity に対象の script を指定すると再現しやすいです。
+
+実画面例:
+
+![Home Assistant Developer Tools Actions](../assets/screenshots/ha-developer-tools-actions.png)
 
 - `script.iw3ip_publish_demo_temperature`
 - `script.iw3ip_publish_demo_power`

@@ -75,18 +75,24 @@ Open:
 
 - `http://localhost:8123`
 
-On the first run, create a local user. Then add the `MQTT` integration.
+On the first run, create a local user. After logging in, first confirm that the Overview page opens correctly.
+
+Real screen example:
+
+![Home Assistant overview](../assets/screenshots/ha-dashboard-overview.png)
+
+Then open `Settings -> Devices & Services -> Integrations` and add the `MQTT` integration.
 
 Settings:
 
 - Host: `mosquitto`
 - Port: `1883`
 
-The purpose of this step is to make `mqtt.publish` available from Home Assistant scripts.
+The purpose of this step is to make `mqtt.publish` available from Home Assistant scripts. After the integration is added, the setup for this hands-on is ready when the `MQTT` detail screen shows the `mosquitto` service.
 
-Illustrative screen:
+Real screen example:
 
-![Home Assistant actions screen](../assets/ha-demo-homeassistant-actions.svg)
+![Home Assistant MQTT integration](../assets/screenshots/ha-mqtt-integration.png)
 
 ## 3. Register Consent VCs
 
@@ -116,7 +122,11 @@ Matching files:
 
 ## 4. Send demo data from Home Assistant
 
-In Home Assistant, open `Developer Tools -> Actions` and run these scripts:
+In Home Assistant, open `Developer Tools -> Actions` and run these scripts. In practice, it is easiest to choose `script.turn_on` in the action selector and then specify the target script entity.
+
+Real screen example:
+
+![Home Assistant Developer Tools Actions](../assets/screenshots/ha-developer-tools-actions.png)
 
 - `script.iw3ip_publish_demo_temperature`
 - `script.iw3ip_publish_demo_power`
