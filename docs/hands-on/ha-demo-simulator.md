@@ -84,6 +84,10 @@ curl http://localhost:8080/health
 
 ここでの目的は、Home Assistant の script から `mqtt.publish` を使える状態にすることです。
 
+画面イメージ:
+
+![Home Assistant actions screen](../assets/ha-demo-homeassistant-actions.svg)
+
 ## 3. Consent VC を登録
 
 Home Assistant demo で扱うデータセットに対応する Consent VC を登録します。
@@ -151,6 +155,15 @@ curl http://localhost:8080/audit/logs?limit=10
 - `dataset_id`, `purpose`, `message_hash`, `raw_topic` が確認できる
 
 ここで「データを送れたか」だけでなく、「どの条件で送られたか」を監査ログから読むのが重要です。
+
+出力例:
+
+![Publisher outputs](../assets/ha-demo-publisher-output.svg)
+
+特に見る点:
+
+- `/platform/ingest` に `home/event/possible_littering` と `home/event/suspicious_activity` が入っていること
+- `/audit/logs` で `action: allow` と `raw_topic` が対応していること
 
 ## 6. 拒否ケースを確認
 
@@ -231,6 +244,22 @@ python3 examples/ha_demo/run_phase3_from_ingest.py \
 - `plan.watch_events` に `possible_littering` と `suspicious_activity` が入る
 - `plan.actions` に `light_on` と `send_notification` が入る
 
+出力例:
+
+```json
+{
+  "status": "planned",
+  "plan": {
+    "target_area": "park-north",
+    "watch_events": ["possible_littering", "suspicious_activity"],
+    "actions": [
+      {"action_type": "light_on", "target": "park-north-light-1"},
+      {"action_type": "send_notification", "target": "park-north-manager"}
+    ]
+  }
+}
+```
+
 その後、publisher に蓄積されたイベントを assistant へ橋渡しして `execute` を確認します。
 
 ```bash
@@ -244,6 +273,17 @@ python3 examples/ha_demo/run_phase3_from_ingest.py \
 - `actions_executed` に `light_on` と `send_notification` が含まれる
 
 この段階では、「要求から plan を作る段階」と、「観測済みイベントを使って execute する段階」が分かれていることを確認できます。
+
+出力例:
+
+![Plan and execute outputs](../assets/ha-demo-plan-execute.svg)
+
+`execute` で特に見る点:
+
+- `evaluation.triggered` が `true`
+- `matched_counts.possible_littering = 3`
+- `matched_counts.suspicious_activity = 1`
+- `actions_executed` に 2 件の action が入る
 
 ## 9. Node-RED を使う場合
 

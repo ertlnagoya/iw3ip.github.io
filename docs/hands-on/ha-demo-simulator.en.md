@@ -84,6 +84,10 @@ Settings:
 
 The purpose of this step is to make `mqtt.publish` available from Home Assistant scripts.
 
+Illustrative screen:
+
+![Home Assistant actions screen](../assets/ha-demo-homeassistant-actions.svg)
+
 ## 3. Register Consent VCs
 
 Register the Consent VCs used by the demo datasets.
@@ -151,6 +155,15 @@ Checkpoints:
 - `dataset_id`, `purpose`, `message_hash`, and `raw_topic` are visible
 
 The important point here is not only whether data was sent, but also under which conditions it was allowed.
+
+Example output:
+
+![Publisher outputs](../assets/ha-demo-publisher-output.svg)
+
+Focus points:
+
+- `/platform/ingest` contains both `home/event/possible_littering` and `home/event/suspicious_activity`
+- `/audit/logs` shows `action: allow` with the expected `raw_topic`
 
 ## 6. Check a denied case
 
@@ -231,6 +244,22 @@ At this stage, check:
 - `plan.watch_events` includes `possible_littering` and `suspicious_activity`
 - `plan.actions` includes `light_on` and `send_notification`
 
+Example output:
+
+```json
+{
+  "status": "planned",
+  "plan": {
+    "target_area": "park-north",
+    "watch_events": ["possible_littering", "suspicious_activity"],
+    "actions": [
+      {"action_type": "light_on", "target": "park-north-light-1"},
+      {"action_type": "send_notification", "target": "park-north-manager"}
+    ]
+  }
+}
+```
+
 Then bridge the publisher events into the assistant:
 
 ```bash
@@ -244,6 +273,17 @@ Expected:
 - `actions_executed` includes `light_on` and `send_notification`
 
 At this stage, the important point is that request interpretation (`plan`) and execution against observed events (`execute`) are separate steps.
+
+Example output:
+
+![Plan and execute outputs](../assets/ha-demo-plan-execute.svg)
+
+Focus points in `execute`:
+
+- `evaluation.triggered` is `true`
+- `matched_counts.possible_littering = 3`
+- `matched_counts.suspicious_activity = 1`
+- `actions_executed` contains two actions
 
 ## 9. If you want to use Node-RED
 

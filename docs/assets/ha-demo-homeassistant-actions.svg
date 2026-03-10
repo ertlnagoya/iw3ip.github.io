@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <rect width="1200" height="760" fill="#f4f1ea"/>
+  <rect x="40" y="40" width="1120" height="680" rx="18" fill="#fffdf8" stroke="#d7c9b8" stroke-width="3"/>
+  <rect x="40" y="40" width="1120" height="64" rx="18" fill="#284b63"/>
+  <text x="72" y="82" fill="#ffffff" font-size="28" font-family="Arial, Helvetica, sans-serif" font-weight="700">Home Assistant - Developer Tools / Actions</text>
+  <rect x="72" y="134" width="250" height="520" rx="12" fill="#f1f5f8" stroke="#c7d4df"/>
+  <text x="96" y="174" fill="#284b63" font-size="24" font-family="Arial, Helvetica, sans-serif" font-weight="700">Actions</text>
+  <text x="96" y="216" fill="#36586d" font-size="18" font-family="Arial, Helvetica, sans-serif">- iw3ip_publish_demo_temperature</text>
+  <text x="96" y="250" fill="#36586d" font-size="18" font-family="Arial, Helvetica, sans-serif">- iw3ip_publish_demo_power</text>
+  <text x="96" y="284" fill="#36586d" font-size="18" font-family="Arial, Helvetica, sans-serif">- iw3ip_publish_demo_person_detected</text>
+  <text x="96" y="318" fill="#36586d" font-size="18" font-family="Arial, Helvetica, sans-serif">- iw3ip_publish_demo_flood_risk_high</text>
+  <text x="96" y="352" fill="#36586d" font-size="18" font-family="Arial, Helvetica, sans-serif">- iw3ip_publish_demo_possible_littering</text>
+  <text x="96" y="386" fill="#36586d" font-size="18" font-family="Arial, Helvetica, sans-serif">- iw3ip_publish_demo_suspicious_activity</text>
+  <text x="96" y="420" fill="#36586d" font-size="18" font-family="Arial, Helvetica, sans-serif">- iw3ip_publish_demo_phase3_safety_scenario</text>
+  <rect x="370" y="140" width="740" height="500" rx="14" fill="#fff" stroke="#d8e0e7"/>
+  <text x="404" y="190" fill="#284b63" font-size="26" font-family="Arial, Helvetica, sans-serif" font-weight="700">Selected action</text>
+  <rect x="404" y="220" width="640" height="62" rx="10" fill="#fff8e7" stroke="#e9c46a"/>
+  <text x="430" y="260" fill="#6d4c10" font-size="24" font-family="Arial, Helvetica, sans-serif" font-weight="700">iw3ip_publish_demo_phase3_safety_scenario</text>
+  <text x="404" y="330" fill="#36586d" font-size="22" font-family="Arial, Helvetica, sans-serif">This action publishes:</text>
+  <text x="430" y="372" fill="#36586d" font-size="20" font-family="Arial, Helvetica, sans-serif">1. possible_littering</text>
+  <text x="430" y="406" fill="#36586d" font-size="20" font-family="Arial, Helvetica, sans-serif">2. possible_littering</text>
+  <text x="430" y="440" fill="#36586d" font-size="20" font-family="Arial, Helvetica, sans-serif">3. possible_littering</text>
+  <text x="430" y="474" fill="#36586d" font-size="20" font-family="Arial, Helvetica, sans-serif">4. suspicious_activity</text>
+  <rect x="404" y="532" width="160" height="54" rx="12" fill="#2a9d8f"/>
+  <text x="446" y="567" fill="#ffffff" font-size="24" font-family="Arial, Helvetica, sans-serif" font-weight="700">Run</text>
+  <text x="72" y="700" fill="#6b7280" font-size="18" font-family="Arial, Helvetica, sans-serif">Illustrative screenshot for the hands-on flow. Use this screen to trigger demo MQTT events from Home Assistant.</text>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="930" viewBox="0 0 1200 930">
+  <rect width="1200" height="930" fill="#102a43"/>
+  <text x="44" y="56" fill="#f0f9ff" font-size="28" font-family="Menlo, Monaco, Consolas, monospace" font-weight="700">Assistant outputs: /assistant/plan and /assistant/execute</text>
+  <rect x="36" y="84" width="1128" height="318" rx="16" fill="#0f172a" stroke="#3b82f6"/>
+  <text x="60" y="122" fill="#93c5fd" font-size="20" font-family="Menlo, Monaco, Consolas, monospace">$ python3 examples/ha_demo/run_phase3_from_ingest.py --plan-only --request-file ...</text>
+  <text x="60" y="162" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">{</text>
+  <text x="80" y="194" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">"status": "planned",</text>
+  <text x="80" y="226" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">"plan": { "target_area": "park-north",</text>
+  <text x="80" y="258" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">  "watch_events": ["possible_littering", "suspicious_activity"],</text>
+  <text x="80" y="290" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">  "actions": ["light_on", "send_notification"] },</text>
+  <text x="80" y="322" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">"planner_diagnostics": { "status": "ok", "label": "OK", "code": "rule_based_plan_generated" }</text>
+  <text x="60" y="354" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">}</text>
+  <rect x="36" y="434" width="1128" height="442" rx="16" fill="#0f172a" stroke="#34d399"/>
+  <text x="60" y="472" fill="#86efac" font-size="20" font-family="Menlo, Monaco, Consolas, monospace">$ python3 examples/ha_demo/run_phase3_from_ingest.py --request-file ...</text>
+  <text x="60" y="512" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">{</text>
+  <text x="80" y="544" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">"status": "executed",</text>
+  <text x="80" y="576" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">"execution": { "evaluation": { "triggered": true,</text>
+  <text x="80" y="608" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">  "matched_counts": { "possible_littering": 3, "suspicious_activity": 1 },</text>
+  <text x="80" y="640" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">  "reason": "possible_littering=3 &gt;= 3, suspicious_activity=1 &gt;= 1" },</text>
+  <text x="80" y="672" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">"actions_executed": [</text>
+  <text x="100" y="704" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">{ "action_type": "light_on", "target": "park-north-light-1" },</text>
+  <text x="100" y="736" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">{ "action_type": "send_notification", "target": "park-north-manager" }</text>
+  <text x="80" y="768" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">]</text>
+  <text x="60" y="800" fill="#e5e7eb" font-size="18" font-family="Menlo, Monaco, Consolas, monospace">}</text>
+  <text x="48" y="904" fill="#cbd5e1" font-size="18" font-family="Arial, Helvetica, sans-serif">Captured from the actual ha-demo-phase3 run on 2026-03-10.</text>
+</svg>
