@@ -86,13 +86,38 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 - データ共有基盤へ渡す前の基本的な流れを理解する
 - 出力ファイルや画面表示など、目に見える結果を確認する
 
+### Phase 1 のページ構成
+
+<div class="iw3ip-subphase-grid">
+  <div class="iw3ip-subphase-card">
+    <div class="iw3ip-subphase-kicker">最初に試す入口</div>
+    <h4>実機なしで始める</h4>
+    <p>まずは配線やカメラ準備なしで全体像を確認したい場合の入口です。Consent、MQTT、監査ログまで含めて順に確認できます。</p>
+    <p><a href="ha-demo-simulator.md">Home Assistant Demo Simulator サンプル</a>: 実機なしで Home Assistant demo から Phase 1 / Phase 2 / Phase 3 をつなぐ</p>
+    <p><a href="ha-ssi-publisher.md">HA x SSI Publisherサンプル</a>: Home Assistant / MQTT / Consent VC / audit log の基本構成を学ぶ</p>
+  </div>
+  <div class="iw3ip-subphase-card">
+    <div class="iw3ip-subphase-kicker">デバイス入力の基本</div>
+    <h4>Phase 1 device pages</h4>
+    <p>実機や mock 入力を使って、イベントファイル生成から商品化までの流れを確かめるページ群です。まず `mock`、次に実機、最後にトラブル切り分けという順で読むと迷いにくくなります。</p>
+    <p><a href="huskylens2.md">HUSKYLENS2サンプル</a>: HUSKYLENS2 と PC を使ってイベントファイルを生成する</p>
+    <p><a href="webcam.md">USBウェブカメラサンプル</a>: USB カメラでイベント候補を扱う基本形を学ぶ</p>
+  </div>
+  <div class="iw3ip-subphase-card">
+    <div class="iw3ip-subphase-kicker">結果の見え方</div>
+    <h4>閲覧と確認</h4>
+    <p>共有された結果や商品化の見え方を別の端末から確かめる段階です。データが生成された後に、どこで確認するかを整理できます。</p>
+    <p><a href="mobile-viewer.md">スマホ閲覧アプリ</a>: 共有された結果をスマホから確認する</p>
+  </div>
+</div>
+
 ### 対応するハンズオン
 
-- [HUSKYLENS2サンプル](huskylens2.md): HUSKYLENS2 と PC を使ってイベントファイルを生成する
-- [USBウェブカメラサンプル](webcam.md): Web カメラでイベント候補を扱う基本形を学ぶ
-- [HA x SSI Publisherサンプル](ha-ssi-publisher.md): Home Assistant / MQTT / Consent VC / audit log の基本構成を学ぶ
-- [Home Assistant Demo Simulator サンプル](ha-demo-simulator.md): 実機なしで Home Assistant demo から Phase 1 / Phase 2 / Phase 3 をつなぐ
-- [スマホ閲覧アプリ](mobile-viewer.md): 共有された結果をスマホから確認する
+- [Home Assistant Demo Simulator サンプル](ha-demo-simulator.md): 実機なしで始める最短入口
+- [HUSKYLENS2サンプル](huskylens2.md): HUSKYLENS2 と PC を使う Phase 1 device page
+- [USBウェブカメラサンプル](webcam.md): USB カメラを使う Phase 1 device page
+- [HA x SSI Publisherサンプル](ha-ssi-publisher.md): Home Assistant / MQTT / Consent VC / audit log の基本構成
+- [スマホ閲覧アプリ](mobile-viewer.md): 共有結果の閲覧確認
 
 ### Phase 1 の成功判定
 

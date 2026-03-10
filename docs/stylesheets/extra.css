@@ -132,6 +132,41 @@
   font-weight: 700;
 }
 
+.iw3ip-subphase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+  margin: 1rem 0 1.35rem;
+}
+
+.iw3ip-subphase-card {
+  background: #fcfdff;
+  border: 1px solid rgba(21, 58, 91, 0.16);
+  border-radius: 0.9rem;
+  padding: 0.95rem 1rem 0.85rem;
+  box-shadow: 0 8px 20px rgba(20, 33, 61, 0.04);
+}
+
+.iw3ip-subphase-card h4 {
+  margin: 0.1rem 0 0.45rem;
+  font-size: 0.98rem;
+  color: #153a5b;
+}
+
+.iw3ip-subphase-card p {
+  margin: 0.4rem 0;
+}
+
+.iw3ip-subphase-kicker {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0f766e;
+}
+
 .iw3ip-phase-1 {
   background: var(--iw3ip-phase1-bg);
   border-color: var(--iw3ip-phase1-border);

@@ -84,13 +84,38 @@ Matching page:
 - understand the basic path before advanced sharing control
 - confirm visible outputs such as generated files or UI screens
 
+### Phase 1 page groups
+
+<div class="iw3ip-subphase-grid">
+  <div class="iw3ip-subphase-card">
+    <div class="iw3ip-subphase-kicker">Suggested first entry</div>
+    <h4>Start without physical devices</h4>
+    <p>Use these pages when you want to understand the full path first without wiring or camera setup. They let you inspect MQTT, consent, and audit behavior in a controlled way.</p>
+    <p><a href="ha-demo-simulator.md">Home Assistant Demo Simulator sample</a>: connect Phase 1, Phase 2, and Phase 3 from Home Assistant demo without physical devices</p>
+    <p><a href="ha-ssi-publisher.md">HA x SSI Publisher sample</a>: learn the basic structure of Home Assistant, MQTT, Consent VC, and audit logging</p>
+  </div>
+  <div class="iw3ip-subphase-card">
+    <div class="iw3ip-subphase-kicker">Device input basics</div>
+    <h4>Phase 1 device pages</h4>
+    <p>These pages focus on physical or mock device input and on the path from event-file generation to productization. The recommended order is mock first, then real device input, then troubleshooting.</p>
+    <p><a href="huskylens2.md">HUSKYLENS2 sample</a>: generate event files from HUSKYLENS2 and a PC</p>
+    <p><a href="webcam.md">USB webcam sample</a>: learn the basic camera-based path with a common webcam</p>
+  </div>
+  <div class="iw3ip-subphase-card">
+    <div class="iw3ip-subphase-kicker">Result inspection</div>
+    <h4>View and confirm outputs</h4>
+    <p>After data is generated and shared, this page helps learners inspect the result from another device and confirm what was actually exposed to the user side.</p>
+    <p><a href="mobile-viewer.md">Mobile Viewer</a>: inspect shared results from a smartphone</p>
+  </div>
+</div>
+
 ### Matching hands-on pages
 
-- [HUSKYLENS2 sample](huskylens2.md): generate event files from HUSKYLENS2 and a PC
-- [USB webcam sample](webcam.md): learn the basic camera-based path with a common webcam
-- [HA x SSI Publisher sample](ha-ssi-publisher.md): learn the basic structure of Home Assistant, MQTT, Consent VC, and audit logging
-- [Home Assistant Demo Simulator sample](ha-demo-simulator.md): connect Phase 1, Phase 2, and Phase 3 from Home Assistant demo without physical devices
-- [Mobile Viewer](mobile-viewer.md): inspect shared results from a smartphone
+- [Home Assistant Demo Simulator sample](ha-demo-simulator.md): shortest entry without physical devices
+- [HUSKYLENS2 sample](huskylens2.md): Phase 1 device page with HUSKYLENS2 and a PC
+- [USB webcam sample](webcam.md): Phase 1 device page with a common webcam
+- [HA x SSI Publisher sample](ha-ssi-publisher.md): Home Assistant / MQTT / Consent VC / audit logging basics
+- [Mobile Viewer](mobile-viewer.md): inspection of shared results
 
 ### Phase 1 success criteria
 
