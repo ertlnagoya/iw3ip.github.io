@@ -60,6 +60,8 @@ cd Blockchain_IoT_Marketplace
 
 初回 clone に時間がかかることがあります。これは submodule を含むため正常です。
 
+実機を使わずに IW3IP の基本動作だけを確認したい場合は、クローン後に [Home Assistant Demo Simulator サンプル](../hands-on/ha-demo-simulator.md) へ進むと、Phase 1 / Phase 2 の確認を比較的少ない前提で始められます。
+
 ## OS別の補足
 
 - Windows:

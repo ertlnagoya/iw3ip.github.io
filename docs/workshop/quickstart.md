@@ -7,6 +7,7 @@
 - ここでは「全部を深く理解する」よりも、「まず全体を起動して観察する」ことを優先します。
 - 途中で止まったら、[トラブルシュート](../operations/troubleshooting.md) を参照してください。
 - ブロックチェーンの基礎が不安な場合は、先に [Hardhat基礎](../foundations/hardhat-basics.md) を読むと理解しやすくなります。
+- もし実機や複数プロセスの起動が難しい場合は、代替として [Home Assistant Demo Simulator サンプル](../hands-on/ha-demo-simulator.md) から始めると、Phase 1 / Phase 2 の流れを軽い構成で確認できます。
 
 ## 起動順
 

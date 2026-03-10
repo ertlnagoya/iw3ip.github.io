@@ -60,6 +60,8 @@ cd Blockchain_IoT_Marketplace
 
 The first clone may take time because submodules are included.
 
+If the goal is to verify the basic IW3IP flow without physical devices, continue to the [Home Assistant Demo Simulator sample](../hands-on/ha-demo-simulator.md) after cloning. It is a lighter entry point into Phase 1 and Phase 2.
+
 ## OS Notes
 
 - Windows:

@@ -32,7 +32,7 @@ IW3IP becomes much easier to understand when the workshop is framed in three pha
     <div class="iw3ip-phase-kicker">Phase 1 / Data Exchange</div>
     <h3>📡 Best for the first practical step</h3>
     <p>This phase helps participants see where data is created and where it moves.</p>
-    <p class="iw3ip-phase-links"><a href="../hands-on/huskylens2.md">HUSKYLENS2</a> / <a href="../hands-on/webcam.md">USB Webcam</a> / <a href="../hands-on/ha-ssi-publisher.md">HA x SSI Publisher</a></p>
+    <p class="iw3ip-phase-links"><a href="../hands-on/huskylens2.md">HUSKYLENS2</a> / <a href="../hands-on/webcam.md">USB Webcam</a> / <a href="../hands-on/ha-ssi-publisher.md">HA x SSI Publisher</a> / <a href="../hands-on/ha-demo-simulator.md">HA Demo Simulator</a></p>
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-2">
     <div class="iw3ip-phase-kicker">Phase 2 / Event Sharing</div>
@@ -87,7 +87,10 @@ These are the best starting points for first-time learners.
 - with HUSKYLENS2: [HUSKYLENS2 sample](../hands-on/huskylens2.md)
 - with only a USB camera: [USB webcam sample](../hands-on/webcam.md)
 - to show the Home Assistant and SSI flow: [HA x SSI Publisher sample](../hands-on/ha-ssi-publisher.md)
+- to show the Home Assistant and MQTT flow without physical devices: [Home Assistant Demo Simulator sample](../hands-on/ha-demo-simulator.md)
 - to show the viewer side as well: [Mobile Viewer](../hands-on/mobile-viewer.md)
+
+In classes where device availability is uneven or the setup should stay as uniform as possible, `Home Assistant Demo Simulator` is the most stable shared path across Phase 1 and Phase 2.
 
 ### Phase 2: Event Sharing
 

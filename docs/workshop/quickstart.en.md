@@ -7,6 +7,7 @@ Goal: boot the whole stack first.
 - The goal here is not to understand every subsystem first, but to boot the full stack and observe the flow.
 - If you get stuck, check [Troubleshooting](../operations/troubleshooting.md).
 - If blockchain terms are unfamiliar, read [Hardhat Basics](../foundations/hardhat-basics.md) first.
+- If physical devices or many simultaneous processes are difficult to manage, start with the [Home Assistant Demo Simulator sample](../hands-on/ha-demo-simulator.md) first. It gives you a lighter path through Phase 1 and Phase 2.
 
 ## Startup order
 
