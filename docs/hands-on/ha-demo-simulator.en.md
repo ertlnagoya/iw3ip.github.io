@@ -217,7 +217,21 @@ That script publishes the following sequence for `park-north`:
 - three `possible_littering` events
 - one `suspicious_activity` event
 
-Next, bridge the publisher events into the assistant:
+Next, inspect the `plan` first:
+
+```bash
+python3 examples/ha_demo/run_phase3_from_ingest.py \
+  --plan-only \
+  --request-file examples/ha_demo/phase3_request_park_safety.json
+```
+
+At this stage, check:
+
+- `status` is `planned`
+- `plan.watch_events` includes `possible_littering` and `suspicious_activity`
+- `plan.actions` includes `light_on` and `send_notification`
+
+Then bridge the publisher events into the assistant:
 
 ```bash
 python3 examples/ha_demo/run_phase3_from_ingest.py \
@@ -229,7 +243,7 @@ Expected:
 - `execution.evaluation.triggered` is `true`
 - `actions_executed` includes `light_on` and `send_notification`
 
-At this stage the key point is that event sharing can become the input to a later intelligence step.
+At this stage, the important point is that request interpretation (`plan`) and execution against observed events (`execute`) are separate steps.
 
 ## 9. If you want to use Node-RED
 

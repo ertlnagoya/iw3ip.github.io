@@ -217,7 +217,21 @@ docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 up --build -
 - `possible_littering` を 3 回
 - `suspicious_activity` を 1 回
 
-次に、publisher に蓄積されたイベントを assistant へ橋渡しします。
+次に、まず `plan` を確認します。
+
+```bash
+python3 examples/ha_demo/run_phase3_from_ingest.py \
+  --plan-only \
+  --request-file examples/ha_demo/phase3_request_park_safety.json
+```
+
+この段階で確認する項目:
+
+- `status` が `planned`
+- `plan.watch_events` に `possible_littering` と `suspicious_activity` が入る
+- `plan.actions` に `light_on` と `send_notification` が入る
+
+その後、publisher に蓄積されたイベントを assistant へ橋渡しして `execute` を確認します。
 
 ```bash
 python3 examples/ha_demo/run_phase3_from_ingest.py \
@@ -229,7 +243,7 @@ python3 examples/ha_demo/run_phase3_from_ingest.py \
 - `execution.evaluation.triggered` が `true`
 - `actions_executed` に `light_on` と `send_notification` が含まれる
 
-この段階では、「イベント共有まで完了した結果を、次の知能処理へ渡す」構造を確認できます。
+この段階では、「要求から plan を作る段階」と、「観測済みイベントを使って execute する段階」が分かれていることを確認できます。
 
 ## 9. Node-RED を使う場合
 
