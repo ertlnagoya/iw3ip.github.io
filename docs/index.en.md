@@ -41,6 +41,28 @@ In short, **Hands-on is a part of Workshop**.
 
 ## If You Want To Run One Demo First
 
+If you want the simplest Phase 1 / Phase 2 entry without physical devices, `ha-demo-simulator` is the best starting point.
+
+- Matching page: [Home Assistant Demo Simulator sample](hands-on/ha-demo-simulator.md)
+- What you can confirm:
+  - `Home Assistant demo -> MQTT -> publisher`
+  - state sharing for `temperature` and `power`
+  - event sharing for `flood_risk_high` and `possible_littering`
+  - `allowed`, `denied`, and the `audit log`
+
+Start command:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d
+```
+
+Open:
+
+- `http://localhost:8123`
+- `http://localhost:8080/health`
+
+After that, `assistant-demo` is the shortest one-command path into Phase 3 and intelligence integration.
+
 As the shortest Phase 3 demo path, `assistant-demo` starts the following in one command:
 
 - `assistant-demo`
@@ -68,9 +90,10 @@ Open:
 3. [Blockchain Basics](foundations/blockchain-basics.md)
 4. [Hardhat Basics](foundations/hardhat-basics.md)
 5. [SSI/DID/VC Basics](foundations/ssi-did-vc-basics.md)
-6. [Quickstart](workshop/quickstart.md)
-7. [Hands-on](hands-on/index.md)
-8. [References](foundations/references.md)
+6. [Home Assistant Demo Simulator sample](hands-on/ha-demo-simulator.md)
+7. [Quickstart](workshop/quickstart.md)
+8. [Hands-on](hands-on/index.md)
+9. [References](foundations/references.md)
 
 ## Run docs locally
 

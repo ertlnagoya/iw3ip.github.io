@@ -45,6 +45,28 @@
 
 ## まず 1 つ動かしたい場合
 
+実機なしで Phase 1 / Phase 2 の基本経路を確認したい場合は、`ha-demo-simulator` が最も始めやすい入口です。
+
+- 対応ページ: [Home Assistant Demo Simulator サンプル](hands-on/ha-demo-simulator.md)
+- 確認できること:
+  - `Home Assistant demo -> MQTT -> publisher`
+  - `temperature` / `power` の状態共有
+  - `flood_risk_high` / `possible_littering` のイベント共有
+  - `allowed` / `denied` / `audit log`
+
+起動コマンド:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d
+```
+
+開く URL:
+
+- `http://localhost:8123`
+- `http://localhost:8080/health`
+
+その後、Phase 3 の最短デモとして `assistant-demo` を使うと、知能統合まで 1 コマンドで確認できます。
+
 Phase 3 の最短デモとして、`assistant-demo` を使うと 1 コマンドで次をまとめて起動できます。
 
 - `assistant-demo`
@@ -72,9 +94,10 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 3. [ブロックチェーン基礎](foundations/blockchain-basics.md)
 4. [Hardhat基礎](foundations/hardhat-basics.md)
 5. [SSI/DID/VC基礎](foundations/ssi-did-vc-basics.md)
-6. [最短起動](workshop/quickstart.md)
-7. [Hands-on](hands-on/index.md)
-8. [参考文献](foundations/references.md)
+6. [Home Assistant Demo Simulator サンプル](hands-on/ha-demo-simulator.md)
+7. [最短起動](workshop/quickstart.md)
+8. [Hands-on](hands-on/index.md)
+9. [参考文献](foundations/references.md)
 
 ## ローカルでDocsを起動
 
