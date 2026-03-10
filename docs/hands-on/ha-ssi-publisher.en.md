@@ -9,6 +9,21 @@ Pipeline:
 
 `Home Assistant -> MQTT -> (optional Node-RED) -> Data Publisher -> Platform API`
 
+## Shortest path
+
+For a first pass, these four steps are enough.
+
+1. `docker compose -f infra/docker-compose.yml up --build -d`
+2. Register `consent_temperature.json`
+3. Send the `temperature` request through `/simulate/publish`
+4. Inspect `/audit/logs` and confirm `allow`
+
+Branches after that:
+
+- If you only want HTTP simulation: compare one `allowed` and one `denied` case
+- If you want to inspect MQTT ingestion as well: publish `person_detected` with `mosquitto_pub`
+- If you want to move into Phase 2: continue with the `flood_risk_high` or `possible_littering` hands-on pages
+
 ## What this page helps you understand
 
 - the minimum Phase 1 flow: where data is received, checked, and recorded
@@ -48,6 +63,42 @@ Exercise programs:
 This exercise asks learners to construct the minimum request body for `/simulate/publish`.  
 The problem program focuses on how `topic`, `payload`, and `purpose` are combined into one request.
 
+## Process table of contents
+
+<details class="iw3ip-toc-details" open>
+  <summary>Preparation: start the publisher and register Consent VCs</summary>
+  <p>First confirm that the publisher is running and then register the minimum Consent VCs. These steps are the prerequisites for the later allow/deny checks.</p>
+  <ol>
+    <li><a href="#1-start-services">Start services</a></li>
+    <li><a href="#2-register-consent-vcs">Register Consent VCs</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Check 1: compare allowed and denied through HTTP simulation</summary>
+  <p>Next, compare an allowed request and a denied request through the same API entry point. This is where the relation between `purpose` and `dataset_id` becomes clear.</p>
+  <ol>
+    <li><a href="#3-allowed-case">Allowed case</a></li>
+    <li><a href="#4-denied-case">Denied case</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Check 2: inspect MQTT ingestion and audit logs</summary>
+  <p>Finally, send data through MQTT instead of HTTP simulation and check what remains in the audit log.</p>
+  <ol>
+    <li><a href="#5-test-mqtt-ingestion-path">Test MQTT ingestion path</a></li>
+    <li><a href="#6-check-audit-logs">Check audit logs</a></li>
+    <li><a href="#7-stop-services">Stop services</a></li>
+  </ol>
+</details>
+
+## How to read this page
+
+This page is meant to explain the Phase 1 baseline carefully. If you only need a short confirmation path, `Shortest path` is enough. If you want to understand consent-based sharing properly, it is better to compare both `allowed` and `denied` before moving on to the MQTT path.
+
+## Phase 1: Confirm the minimum baseline
+
 ## 1. Start services
 
 ```bash
@@ -78,6 +129,10 @@ Additional files used by the Phase 2 hands-on pages:
 
 - `examples/consent_flood_risk_high.json`
 - `examples/consent_possible_littering.json`
+
+At this point the minimum policy setup is ready. The next step is to compare a request that is allowed and a request that is denied through the same API entry point.
+
+## Phase 1: Compare allowed and denied
 
 ## 3. Allowed case
 
@@ -126,6 +181,10 @@ Expected:
 ```json
 {"status":"denied","dataset_id":"home/energy/power","reason":"no_matching_consent"}
 ```
+
+The important point here is that a request can have the correct structure and still be rejected when `purpose` does not match. Next, inspect the same overall behavior through the MQTT path.
+
+## Phase 1: Inspect MQTT ingestion and audit logs
 
 ## 5. Test MQTT ingestion path
 

@@ -7,6 +7,22 @@ This page is organized in two steps:
 1. reproduce the flow locally with the `stub` provider
 2. switch to an actual OpenAI-compatible API if available
 
+## Shortest path
+
+For a first pass, these five steps are enough.
+
+1. start the `assistant`
+2. call `/assistant/plan` with the `stub` provider
+3. inspect `planner_diagnostics`
+4. if needed, start `assistant-demo` and inspect the same result from the UI
+5. finally switch to `openai_compatible`
+
+Branches after that:
+
+- If you only need the API path: the `stub` provider and `curl` are enough
+- If you also want the UI path: start `assistant-demo`
+- If you want to connect to a real API: continue to `assistant-llm` with `.env.local.example`
+
 ## What this page helps you understand
 
 - what must stay fixed when replacing a rule-based planner with an LLM planner
@@ -51,6 +67,39 @@ References:
 
 The exercise programs focus on the minimum request body for `/assistant/plan` and on how to summarize the returned plan.
 
+## Process table of contents
+
+<details class="iw3ip-toc-details" open>
+  <summary>Stage 1: understand the planner shape with the stub provider</summary>
+  <p>Start without any external LLM API. In this stage, the goal is to understand the basic shape of the planner input and output, including `plan` and `planner_diagnostics`.</p>
+  <ol>
+    <li><a href="#1-start-with-the-stub-provider">Start with the `stub` provider</a></li>
+    <li><a href="#2-inspect-a-japanese-request">Inspect a Japanese request</a></li>
+    <li><a href="#3-inspect-an-english-request">Inspect an English request</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Stage 2: inspect the frontend demo and diagnostics</summary>
+  <p>Next, inspect the same planner result from the frontend side. This stage focuses on `assistant-demo`, badges, alert panels, and how `planner_diagnostics` should be read in the UI.</p>
+  <ol>
+    <li><a href="#25-start-the-react-frontend-demo">Start the React frontend demo</a></li>
+    <li><a href="#4-inspect-the-real-api-environment-template">Inspect the real-API environment template</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>Stage 3: switch to an OpenAI-compatible API</summary>
+  <p>Finally, switch to the `openai_compatible` provider while keeping the same overall structure. This is where provider-side failures become visible through `planner_diagnostics`.</p>
+  <ol>
+    <li><a href="#5-switch-to-an-openai-compatible-api">Switch to an OpenAI-compatible API</a></li>
+  </ol>
+</details>
+
+## How to read this page
+
+This page is a detailed explanation of the planner part of Phase 3. It is easiest to start with the `stub` provider to understand the structure, then move to the frontend view, and only after that switch to a real API. That order makes it clear what changes and what stays fixed.
+
 ## Architecture Diagram
 
 ```mermaid
@@ -65,6 +114,8 @@ flowchart LR
 
 The important point is that the LLM is not embedded directly inside `main.py`.  
 The replacement is isolated behind `planner_factory`.
+
+## Stage 1: Understand the planner shape with the stub provider
 
 ## 1. Start with the `stub` provider
 
@@ -125,6 +176,10 @@ Checkpoints:
 - `planner_name` is `llm-planner-stub-v1`
 - `target_area` is `park-north`
 - `watch_events` is returned as JSON array
+
+At this point, the minimum path from natural-language request to `plan` is working. The next step is to inspect how the same planner output should be read from the frontend side.
+
+## Stage 2: Inspect the frontend demo and diagnostics
 
 ## 2.5 Start the React frontend demo
 
@@ -399,6 +454,10 @@ Minimal CSS example:
   background: #fef3f2;
 }
 ```
+
+At this point, `planner_diagnostics` can be read from both the API and the UI. The last step is to replace the provider while keeping the same structure.
+
+## Stage 3: Switch to an OpenAI-compatible API
 
 ## 5. Switch to an OpenAI-compatible API
 

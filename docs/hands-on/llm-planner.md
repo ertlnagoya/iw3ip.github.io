@@ -7,6 +7,22 @@
 1. `stub` provider でローカルに再現する
 2. 必要なら OpenAI 互換 API に接続する
 
+## 最短ルート
+
+最初は次の 5 手順で十分です。
+
+1. `assistant` を起動する
+2. `stub` provider で `/assistant/plan` を呼ぶ
+3. `planner_diagnostics` を確認する
+4. 必要なら `assistant-demo` を起動して UI から同じ結果を見る
+5. 最後に `openai_compatible` へ切り替える
+
+その後の分岐:
+
+- API だけ見たい場合: `stub` provider と `curl` で十分です
+- UI まで確認したい場合: `assistant-demo` を起動します
+- 実 API までつなぎたい場合: `.env.local.example` を使って `assistant-llm` へ進みます
+
 ## このページで分かること
 
 - rule-based planner を LLM planner に置き換えるときに、何を固定すべきか
@@ -51,6 +67,39 @@
 
 演習プログラムでは、`/assistant/plan` に送る最小 JSON と、返ってきた `plan` の要約のしかたを確認できます。
 
+## 工程別の目次
+
+<details class="iw3ip-toc-details" open>
+  <summary>段階 1: stub provider で planner の骨格を理解する</summary>
+  <p>まずは LLM の外部 API を使わず、`stub` provider で planner の入力と出力の形を確認します。ここでは `plan` と `planner_diagnostics` の基本が見えれば十分です。</p>
+  <ol>
+    <li><a href="#1-stub-provider-で起動">`stub` provider で起動</a></li>
+    <li><a href="#2-日本語要求で-plan-を確認">日本語要求で `plan` を確認</a></li>
+    <li><a href="#3-英語要求で-plan-を確認">英語要求で `plan` を確認</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>段階 2: frontend demo と diagnostics の見方を確認する</summary>
+  <p>次に、同じ planner の結果をフロントからどう読むかを確認します。ここでは `assistant-demo`、`badge`、`alert`、`planner_diagnostics` の役割を押さえます。</p>
+  <ol>
+    <li><a href="#25-react-フロントデモを起動">React フロントデモを起動</a></li>
+    <li><a href="#4-実-api-用の環境変数を確認">実 API 用の環境変数を確認</a></li>
+  </ol>
+</details>
+
+<details class="iw3ip-toc-details">
+  <summary>段階 3: OpenAI 互換 API へ切り替える</summary>
+  <p>最後に、同じ構造を保ったまま `openai_compatible` provider へ切り替えます。ここでは `stub` と違って、外部 API の失敗が `planner_diagnostics` にどう表れるかも確認できます。</p>
+  <ol>
+    <li><a href="#5-openai-互換-api-に切り替える">OpenAI 互換 API に切り替える</a></li>
+  </ol>
+</details>
+
+## 読み進め方
+
+このページは、Phase 3 の中でも planner 部分に絞って詳しく説明するページです。まずは `stub` provider で構造だけを理解し、その後に UI、最後に実 API という順で進むと、どこで何が変わるのかが見えやすくなります。
+
 ## アーキテクチャ図
 
 ```mermaid
@@ -65,6 +114,8 @@ flowchart LR
 
 この構成では、LLM を直接 `main.py` に埋め込まないことが重要です。  
 差し替えは `planner_factory` に閉じ込めます。
+
+## 段階 1: stub provider で planner の骨格を理解する
 
 ## 1. `stub` provider で起動
 
@@ -125,6 +176,10 @@ curl -X POST http://localhost:8090/assistant/plan \
 - `planner_name` が `llm-planner-stub-v1`
 - `target_area` が `park-north`
 - `watch_events` が JSON 配列で返る
+
+ここまでで、自然言語要求から `plan` を作る最小経路は確認できています。次は同じ構成をフロントエンドから見たときに、どこを確認すべきかを整理します。
+
+## 段階 2: frontend demo と diagnostics を確認する
 
 ## 2.5 React フロントデモを起動
 
@@ -399,6 +454,10 @@ defineProps<{
   background: #fef3f2;
 }
 ```
+
+ここまでで、`planner_diagnostics` を API と UI の両方から読めるようになります。次は provider を差し替えて、同じ構造のまま実 API へ切り替えます。
+
+## 段階 3: OpenAI 互換 API へ切り替える
 
 ## 5. OpenAI 互換 API に切り替える
 
