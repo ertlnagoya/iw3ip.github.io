@@ -398,6 +398,31 @@ Import flow:
 Node-RED is optional in this setup.  
 It is better to first understand the full path with Home Assistant demo alone, and only then add Node-RED if you want clearer event injection.
 
+## Future extensions
+
+This sample is the entry point for understanding the basic IW3IP path with Home Assistant. If you want to expand the scope later, the following environments are natural next steps.
+
+### FIWARE
+
+FIWARE is an IoT platform family centered on `Context Broker` and `IoT Agent` components for cities, facilities, and multi-organization data flows. It is heavier than Home Assistant, but it is a strong candidate when you want to study cross-system sharing and subscription-based notification.
+
+- Official site: <https://www.fiware.org/>
+- Tutorials: <https://fiware-tutorials.readthedocs.io/en/latest/>
+
+### Eclipse Ditto
+
+Eclipse Ditto is a digital-twin platform for device state and command handling. Combined with IW3IP Phase 3, it is useful when you want to trace not only shared events but also later state updates and control results.
+
+- Official site: <https://eclipse.dev/ditto/>
+- MQTT binding: <https://eclipse.dev/ditto/connectivity-protocol-bindings-mqtt.html>
+
+### CARLA
+
+CARLA is a simulator for urban spaces, vehicles, pedestrians, and virtual sensors. It is much heavier than Home Assistant, but it becomes useful when you want advanced event-generation scenarios for safety, disaster response, and mobility in Phase 2 or Phase 3.
+
+- Official site: <https://carla.org/>
+- Documentation: <https://carla.readthedocs.io/>
+
 ## 10. What is Phase 1, Phase 2, and Phase 3 here?
 
 One important point of this sample is that one environment can show both Phase 1 and Phase 2.
