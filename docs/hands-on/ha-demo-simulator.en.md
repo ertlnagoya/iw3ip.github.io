@@ -10,6 +10,22 @@ It uses Home Assistant `demo` entities to reproduce the following local flow:
 
 This page uses one environment to show Phase 1 state sharing, Phase 2 event sharing, and a Phase 3 assistant execution flow.
 
+## Shortest path
+
+For a first pass, these five steps are enough.
+
+1. `docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d`
+2. Open `http://localhost:8123` and add the `MQTT` integration
+3. Register the Consent VCs
+4. Run `script.iw3ip_publish_demo_temperature` or `script.iw3ip_publish_demo_possible_littering` from `Developer Tools -> Actions`
+5. Check the shared result with `curl http://localhost:8080/platform/ingest`
+
+Branches:
+
+- If you only want Phase 1: send `temperature` and `power`, then inspect `platform/ingest`
+- If you want to continue to Phase 2: send `possible_littering` and inspect both `allow` and `deny`
+- If you want to continue to Phase 3: start `ha-demo-phase3` and run `run_phase3_from_ingest.py --plan-only`
+
 ## What this page helps you understand
 
 - how to reproduce `temperature`, `power`, `person_detected`, `flood_risk_high`, and `possible_littering` without real devices
@@ -81,6 +97,12 @@ Real screen example:
 
 ![Home Assistant overview](../assets/screenshots/ha-dashboard-overview.png)
 
+What to check:
+
+- `Settings` is visible in the lower-left navigation
+- the central page is the normal `Overview` screen
+- login has completed and the standard dashboard is open
+
 Then open `Settings -> Devices & Services -> Integrations` and add the `MQTT` integration.
 
 Settings:
@@ -93,6 +115,12 @@ The purpose of this step is to make `mqtt.publish` available from Home Assistant
 Real screen example:
 
 ![Home Assistant MQTT integration](../assets/screenshots/ha-mqtt-integration.png)
+
+What to check:
+
+- the integration name `MQTT` is visible
+- the `mosquitto` service is shown
+- once this screen is visible, Home Assistant is ready to use `mqtt.publish`
 
 ## 3. Register Consent VCs
 
@@ -127,6 +155,12 @@ In Home Assistant, open `Developer Tools -> Actions` and run these scripts. In p
 Real screen example:
 
 ![Home Assistant Developer Tools Actions](../assets/screenshots/ha-developer-tools-actions.png)
+
+What to check:
+
+- the `Actions` tab is selected
+- `script.turn_on` can be chosen in the action selector
+- the execution button can be used to invoke the target script
 
 - `script.iw3ip_publish_demo_temperature`
 - `script.iw3ip_publish_demo_power`
@@ -201,6 +235,15 @@ Expected:
 ```
 
 This makes it clear that generating an event and being allowed to share it are separate questions.
+
+How to read the flow:
+
+![Denied flow](../assets/ha-demo-denied-flow.svg)
+
+What to check here:
+
+- the input topic can be correct and still be rejected when `purpose` does not match the Consent VC
+- you should confirm the rejection in both the `simulate/publish` response and `audit/logs`
 
 ## 7. Test the MQTT path directly
 

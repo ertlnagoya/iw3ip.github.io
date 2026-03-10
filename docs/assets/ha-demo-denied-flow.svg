@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-labelledby="title desc">
+  <title id="title">HA Demo Denied Flow</title>
+  <desc id="desc">A denied sharing flow from simulate publish to policy deny to audit log.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 18; ry: 18; }
+      .deny { fill: #fff1f2; stroke: #ef4444; stroke-width: 2; rx: 18; ry: 18; }
+      .audit { fill: #fffbeb; stroke: #f59e0b; stroke-width: 2; rx: 18; ry: 18; }
+      .title { font: 700 24px Arial, sans-serif; fill: #0f172a; }
+      .label { font: 700 18px Arial, sans-serif; fill: #0f172a; }
+      .text { font: 15px Arial, sans-serif; fill: #334155; }
+      .mono { font: 14px 'Courier New', monospace; fill: #1e293b; }
+      .arrow { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1200" height="340" />
+  <text class="title" x="40" y="42">Denied case: topic is valid, but purpose does not match the Consent VC</text>
+
+  <rect class="box" x="40" y="84" width="300" height="170" />
+  <text class="label" x="64" y="118">1. simulate/publish</text>
+  <text class="mono" x="64" y="154">topic: homeassistant/event/flood_risk_high</text>
+  <text class="mono" x="64" y="180">purpose: advertising</text>
+  <text class="text" x="64" y="214">The payload format is correct.</text>
+  <text class="text" x="64" y="238">The publisher receives the request normally.</text>
+
+  <rect class="deny" x="450" y="84" width="300" height="170" />
+  <text class="label" x="474" y="118">2. Policy Engine</text>
+  <text class="mono" x="474" y="154">dataset_id: home/event/flood_risk_high</text>
+  <text class="mono" x="474" y="180">allowed purpose: disaster_response</text>
+  <text class="mono" x="474" y="206">requested purpose: advertising</text>
+  <text class="text" x="474" y="238">Result: deny</text>
+
+  <rect class="audit" x="860" y="84" width="300" height="170" />
+  <text class="label" x="884" y="118">3. Audit Log</text>
+  <text class="mono" x="884" y="154">action: deny</text>
+  <text class="mono" x="884" y="180">reason: no_matching_consent</text>
+  <text class="mono" x="884" y="206">raw_topic: homeassistant/event/flood_risk_high</text>
+  <text class="text" x="884" y="238">Confirm the same result in the response</text>
+  <text class="text" x="884" y="260">and in /audit/logs.</text>
+
+  <path class="arrow" d="M340 169 C390 169, 400 169, 450 169" />
+  <path class="arrow" d="M750 169 C800 169, 810 169, 860 169" />
+</svg>

@@ -20,7 +20,8 @@ The hands-on content grows in three phases.
     <div class="iw3ip-phase-kicker">Phase 1 / Data Exchange</div>
     <h3>📡 Collect and pass data</h3>
     <p>Start by understanding the basic path from cameras or sensors into the sharing platform.</p>
-    <p class="iw3ip-phase-links"><a href="huskylens2.md">HUSKYLENS2</a> / <a href="webcam.md">USB Webcam</a> / <a href="ha-ssi-publisher.md">HA x SSI Publisher</a></p>
+    <p>If you want to start without physical devices, <a href="ha-demo-simulator.md">Home Assistant Demo Simulator</a> is the shortest path.</p>
+    <p class="iw3ip-phase-links"><a href="ha-demo-simulator.md">HA Demo Simulator</a> / <a href="huskylens2.md">HUSKYLENS2</a> / <a href="webcam.md">USB Webcam</a> / <a href="ha-ssi-publisher.md">HA x SSI Publisher</a></p>
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-2">
     <div class="iw3ip-phase-kicker">Phase 2 / Event Sharing</div>
@@ -52,11 +53,12 @@ In other words, the learning path is:
 
 ### For first-time learners
 
-1. [HUSKYLENS2 sample](huskylens2.md) or [USB webcam sample](webcam.md)
-2. [HA x SSI Publisher sample](ha-ssi-publisher.md)
-3. [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md) or [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
-4. [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md)
-5. [LLM Planner hands-on](llm-planner.md)
+1. If you want to start without physical devices, begin with the [Home Assistant Demo Simulator sample](ha-demo-simulator.md)
+2. If you want a hardware-based path, use the [HUSKYLENS2 sample](huskylens2.md) or the [USB webcam sample](webcam.md)
+3. [HA x SSI Publisher sample](ha-ssi-publisher.md)
+4. [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md) or [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
+5. [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md)
+6. [LLM Planner hands-on](llm-planner.md)
 
 ### For learners who want the shortest Phase 3 demo first
 

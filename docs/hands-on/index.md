@@ -20,7 +20,8 @@ IW3IP のハンズオンは、次の 3 段階で発展します。
     <div class="iw3ip-phase-kicker">Phase 1 / Data Exchange</div>
     <h3>📡 データを集めて渡す</h3>
     <p>まずは、カメラやセンサからデータを取り出し、共有基盤へ渡す基本経路を理解します。</p>
-    <p class="iw3ip-phase-links"><a href="huskylens2.md">HUSKYLENS2</a> / <a href="webcam.md">USBウェブカメラ</a> / <a href="ha-ssi-publisher.md">HA x SSI Publisher</a></p>
+    <p>実機なしで始める場合は <a href="ha-demo-simulator.md">Home Assistant Demo Simulator</a> が最短です。</p>
+    <p class="iw3ip-phase-links"><a href="ha-demo-simulator.md">HA Demo Simulator</a> / <a href="huskylens2.md">HUSKYLENS2</a> / <a href="webcam.md">USBウェブカメラ</a> / <a href="ha-ssi-publisher.md">HA x SSI Publisher</a></p>
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-2">
     <div class="iw3ip-phase-kicker">Phase 2 / Event Sharing</div>
@@ -54,11 +55,12 @@ IW3IP のハンズオンは、次の 3 段階で発展します。
 
 ### はじめて触る人
 
-1. [HUSKYLENS2サンプル](huskylens2.md) または [USBウェブカメラサンプル](webcam.md)
-2. [HA x SSI Publisherサンプル](ha-ssi-publisher.md)
-3. [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md) または [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
-4. [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
-5. [LLM Plannerハンズオン](llm-planner.md)
+1. 実機なしで始めるなら [Home Assistant Demo Simulator サンプル](ha-demo-simulator.md)
+2. 実機を使うなら [HUSKYLENS2サンプル](huskylens2.md) または [USBウェブカメラサンプル](webcam.md)
+3. [HA x SSI Publisherサンプル](ha-ssi-publisher.md)
+4. [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md) または [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
+5. [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
+6. [LLM Plannerハンズオン](llm-planner.md)
 
 ### 最短で Phase 3 を見たい人
 

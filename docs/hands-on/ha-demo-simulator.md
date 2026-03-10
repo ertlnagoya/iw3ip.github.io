@@ -10,6 +10,22 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 
 このページでは、Phase 1 の状態共有、Phase 2 のイベント共有、Phase 3 の assistant 実行までを同じ環境で確認します。
 
+## 最短ルート
+
+最初は次の 5 手順だけで十分です。
+
+1. `docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d`
+2. `http://localhost:8123` を開き、`MQTT` integration を追加する
+3. Consent VC を登録する
+4. `Developer Tools -> Actions` から `script.iw3ip_publish_demo_temperature` または `script.iw3ip_publish_demo_possible_littering` を実行する
+5. `curl http://localhost:8080/platform/ingest` で共有結果を見る
+
+分岐:
+
+- Phase 1 だけ確認したい場合: `temperature` と `power` を送って `platform/ingest` を見る
+- Phase 2 まで進む場合: `possible_littering` を送って `allow` と `deny` の両方を見る
+- Phase 3 まで進む場合: `ha-demo-phase3` を起動して `run_phase3_from_ingest.py --plan-only` を実行する
+
 ## このページで分かること
 
 - 実機がなくても `temperature`、`power`、`person_detected`、`flood_risk_high`、`possible_littering` を再現できること
@@ -81,6 +97,12 @@ curl http://localhost:8080/health
 
 ![Home Assistant overview](../assets/screenshots/ha-dashboard-overview.png)
 
+確認ポイント:
+
+- 左下に `Settings` が見えていること
+- 中央に `Overview` が表示されていること
+- ログイン後の通常画面まで到達していること
+
 その後、`Settings -> Devices & Services -> Integrations` で `MQTT` integration を追加してください。
 
 設定値:
@@ -93,6 +115,12 @@ curl http://localhost:8080/health
 実画面例:
 
 ![Home Assistant MQTT integration](../assets/screenshots/ha-mqtt-integration.png)
+
+確認ポイント:
+
+- `MQTT` という integration 名が見えていること
+- `mosquitto` サービスが表示されていること
+- この画面が見えれば `mqtt.publish` を使う準備は完了していること
 
 ## 3. Consent VC を登録
 
@@ -127,6 +155,12 @@ Home Assistant の `Developer Tools -> Actions` から、次の script を実行
 実画面例:
 
 ![Home Assistant Developer Tools Actions](../assets/screenshots/ha-developer-tools-actions.png)
+
+確認ポイント:
+
+- 上部タブで `Actions` が選ばれていること
+- action 選択欄で `script.turn_on` を使えること
+- 右下の実行ボタンから対象 script を呼び出せること
 
 - `script.iw3ip_publish_demo_temperature`
 - `script.iw3ip_publish_demo_power`
@@ -201,6 +235,15 @@ curl -X POST http://localhost:8080/simulate/publish \
 ```
 
 この確認により、「イベントを作れたこと」と「共有が許可されること」は別であると分かります。
+
+流れの見方:
+
+![Denied flow](../assets/ha-demo-denied-flow.svg)
+
+ここで見る点:
+
+- 入力 topic は正しくても、`purpose` が Consent VC と一致しないと拒否されること
+- `simulate/publish` のレスポンスと `audit/logs` の両方で拒否を確認すること
 
 ## 7. MQTT 経路を直接試す
 
