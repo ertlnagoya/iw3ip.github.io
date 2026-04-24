@@ -56,6 +56,7 @@ plugins:
             USB Webcam Sample: USBウェブカメラサンプル
             USB Webcam Event Sharing Sample: USBウェブカメライベント共有サンプル
             HA SSI Publisher Sample: HA x SSI Publisherサンプル
+            HA SSI Wallet Sample: スマホSSIウォレットサンプル
             Environment Disaster Sample: 環境・防災イベント共有サンプル
             Regional Safety Assistant Sample: 地域安全アシスタントサンプル
             LLM Planner Hands-on: LLM Plannerハンズオン
@@ -110,6 +111,7 @@ nav:
       - Phase 2 Event Sharing:
           - USB Webcam Event Sharing Sample: hands-on/webcam-event-sharing.md
           - Environment Disaster Sample: hands-on/environment-disaster.md
+          - HA SSI Wallet Sample: hands-on/ha-ssi-wallet.md
       - Phase 3 Intelligence Integration:
           - Regional Safety Assistant Sample: hands-on/regional-safety-assistant.md
           - LLM Planner Hands-on: hands-on/llm-planner.md
