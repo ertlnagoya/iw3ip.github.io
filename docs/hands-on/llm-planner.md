@@ -1,6 +1,6 @@
 # LLM Plannerハンズオン
 
-この Hands-on は、Phase 3 の [地域安全アシスタントサンプル](regional-safety-assistant.md) を発展させ、**rule-based planner を LLM planner に差し替える最小構成**を体験するためのものです。
+Phase 3 の [地域安全アシスタントサンプル](regional-safety-assistant.md) を発展させ、**rule-based planner を LLM planner に差し替える最小構成** を体験します。
 
 このページでは 2 段階で進めます。
 
@@ -98,7 +98,7 @@
 
 ## 読み進め方
 
-このページは、Phase 3 の中でも planner 部分に絞って詳しく説明するページです。まずは `stub` provider で構造だけを理解し、その後に UI、最後に実 API という順で進むと、どこで何が変わるのかが見えやすくなります。
+Phase 3 の planner 部分に絞ったページです。`stub` provider → UI → 実 API の順で進めると、差分が見えやすい。
 
 ## アーキテクチャ図
 
@@ -112,8 +112,7 @@ flowchart LR
   F --> G["Evaluator / Actuator"]
 ```
 
-この構成では、LLM を直接 `main.py` に埋め込まないことが重要です。  
-差し替えは `planner_factory` に閉じ込めます。
+LLM を直接 `main.py` に埋め込まず、差し替えを `planner_factory` に閉じ込めます。
 
 ## 段階 1: stub provider で planner の骨格を理解する
 
@@ -177,7 +176,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 - `target_area` が `park-north`
 - `watch_events` が JSON 配列で返る
 
-ここまでで、自然言語要求から `plan` を作る最小経路は確認できています。次は同じ構成をフロントエンドから見たときに、どこを確認すべきかを整理します。
+自然言語要求 → `plan` の最小経路を確認できました。次にフロントエンドからの確認方法を見ます。
 
 ## 段階 2: frontend demo と diagnostics を確認する
 
@@ -455,7 +454,7 @@ defineProps<{
 }
 ```
 
-ここまでで、`planner_diagnostics` を API と UI の両方から読めるようになります。次は provider を差し替えて、同じ構造のまま実 API へ切り替えます。
+`planner_diagnostics` を API と UI の両方から読めることを確認したら、provider を差し替えて実 API に切り替えます。
 
 ## 段階 3: OpenAI 互換 API へ切り替える
 
@@ -546,8 +545,7 @@ pytest -q tests/test_phase3_llm_hands_on_program.py
 
 ## 6. validator と fallback を確認
 
-この実装では、LLM の出力をそのまま採用しません。  
-次を必ず確認します。
+LLM の出力はそのまま採用せず、次を必ず検証します。
 
 - 許可イベントか
 - 許可アクションか

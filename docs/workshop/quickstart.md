@@ -2,12 +2,12 @@
 
 この章は「まず全体を動かす」ための最短手順です。
 
-## 先に理解しておくこと
+## 方針
 
-- ここでは「全部を深く理解する」よりも、「まず全体を起動して観察する」ことを優先します。
-- 途中で止まったら、[トラブルシュート](../operations/troubleshooting.md) を参照してください。
-- ブロックチェーンの基礎が不安な場合は、先に [Hardhat基礎](../foundations/hardhat-basics.md) を読むと理解しやすくなります。
-- もし実機や複数プロセスの起動が難しい場合は、代替として [Home Assistant Demo Simulator サンプル](../hands-on/ha-demo-simulator.md) から始めると、Phase 1 / Phase 2 の流れを軽い構成で確認できます。
+- 深い理解より「まず全体を起動して観察する」ことを優先
+- 途中で止まったら [トラブルシュート](../operations/troubleshooting.md) を参照
+- ブロックチェーンの基礎が不安なら先に [Hardhat基礎](../foundations/hardhat-basics.md) を読む
+- 実機や複数プロセスの起動が難しい場合は [Home Assistant Demo Simulator サンプル](../hands-on/ha-demo-simulator.md) で代替可
 
 ## 起動順
 

@@ -95,7 +95,7 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 
 ## 読み進め方
 
-このページは Phase 1 の基本構成を丁寧に確認するためのものです。短時間で確認したい場合は `最短ルート` だけでも十分ですが、Consent VC を使った共有制御の考え方まで理解したい場合は、`allowed` と `denied` を両方見てから MQTT 経路へ進む方が分かりやすくなります。
+Phase 1 の基本構成を確認するページです。短時間なら `最短ルート` だけで十分。共有制御の考え方まで理解したい場合は `allowed` と `denied` を両方見てから MQTT 経路へ進んでください。
 
 ## Phase 1: 最小構成を確認する
 
@@ -130,7 +130,7 @@ Phase 2 の Hands-on と対応する追加ファイル:
 - `examples/consent_flood_risk_high.json`
 - `examples/consent_possible_littering.json`
 
-ここまでで、判定に必要な最小準備は整いました。次は同じ API 入口に対して、許可される要求と拒否される要求を比較します。
+判定に必要な準備は完了です。次に、許可される要求と拒否される要求を比較します。
 
 ## Phase 1: allowed と denied を比較する
 
@@ -182,7 +182,7 @@ curl -X POST http://localhost:8080/simulate/publish \
 {"status":"denied","dataset_id":"home/energy/power","reason":"no_matching_consent"}
 ```
 
-ここで重要なのは、入力形式が正しくても `purpose` が一致しなければ拒否される点です。次は、同じ判定を MQTT 経路でも確認します。
+入力形式が正しくても `purpose` が一致しなければ拒否される、というのがポイントです。同じ判定を MQTT 経路でも確認します。
 
 ## Phase 1: MQTT 経路と監査ログを確認する
 

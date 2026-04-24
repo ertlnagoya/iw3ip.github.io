@@ -1,7 +1,7 @@
 # 論文
 
-このページは、サイト内の基礎学習とハンズオンを終えた後に読む **発展学習用** のページです。  
-まずは本サイト内の基礎章と Hands-on を優先し、その後に研究背景や先行研究を深掘りすると理解しやすくなります。
+サイト内の基礎学習とハンズオンを終えた後の **発展学習用** ページです。  
+まずサイト内の基礎章と Hands-on を終えてから、研究背景や先行研究の深掘りに進んでください。
 
 1. Luyonghe Li, Yuichiro Yasue, Yutaka Matsubara, "SSI-Enabled Authentication and Enhanced Metadata Search in Blockchain-based Decentralized IoT Data Platforms", IEEE 1st International Workshop on Blockchain for Decentralized Trust and Digital Identity (B4TI) at BCCA 2025, Croatia, Oct. 2025. DOI: <https://doi.org/10.1109/BCCA66705.2025.11229590>
 

@@ -1,7 +1,6 @@
 # 事前準備
 
-このページは、初めて環境構築する受講者向けの入口です。  
-各ツールは公式サイトからインストールし、インストール後にバージョン確認コマンドを実行してください。
+初めて環境構築する受講者向けのページです。各ツールを公式サイトからインストールし、バージョン確認コマンドで動作を確認してください。
 
 ## 必須ソフト
 
@@ -60,7 +59,7 @@ cd Blockchain_IoT_Marketplace
 
 初回 clone に時間がかかることがあります。これは submodule を含むため正常です。
 
-実機を使わずに IW3IP の基本動作だけを確認したい場合は、クローン後に [Home Assistant Demo Simulator サンプル](../hands-on/ha-demo-simulator.md) へ進むと、Phase 1 / Phase 2 の確認を比較的少ない前提で始められます。
+実機なしで基本動作だけ確認したい場合は、クローン後に [Home Assistant Demo Simulator サンプル](../hands-on/ha-demo-simulator.md) へ進んでください。Phase 1 / Phase 2 を軽い構成で試せます。
 
 ## OS別の補足
 
