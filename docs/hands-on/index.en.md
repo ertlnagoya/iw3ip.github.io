@@ -181,6 +181,7 @@ authorization logic (dataset × purpose) over two transports
 | [Environment and disaster event sharing](environment-disaster.md) | publisher server | `/consents` JSON | write | none |
 | [Mobile SSI wallet sample (Stage 1)](ha-ssi-wallet.md) | mobile wallet | OID4VP presentation | write | PolicyToken (5 min, single-use) |
 | [SSI Viewer sample (Stage 3)](ha-ssi-viewer.md) | mobile wallet | OID4VP presentation | read (`GET /platform/data`) | ViewerToken (60 s, multi-use) |
+| [SSI Service sample (Stage 4 prep)](ha-ssi-service.md) | service holder | OID4VP presentation | continuous write | ServiceToken (1 h, multi-use) |
 
 #### What each stage adds and what you can learn
 
@@ -250,18 +251,36 @@ of the previous one.
       independence of the PolicyToken / ViewerToken namespaces
       (cross-use is rejected)
 
+##### Stage 4 prep: M2M continuous write authz (`ha-ssi-service`)
+
+- **Added on top of Stages 1/3**
+    - ServiceVC (M2M credential with claims `dataset_id` and
+      `allowed_actions=["write_continuous"]`)
+    - `vc_kind=ServiceVC` dispatch in `/verifier/request`
+    - ServiceToken (1 h TTL, multi-use within TTL)
+    - `/platform/ingest` accepts both PolicyToken and ServiceToken
+      (PolicyToken first, fall through to ServiceToken on unknown)
+    - Audit log entries with `reason=service_token_used:<jti>:<write_count>`
+    - Issuer metadata exposes ConsentVC + ViewerVC + ServiceVC
+- **What you learn**
+    - Why a separate VC kind exists for non-human services
+    - The three token shapes: single-use, multi-use read, multi-use write
+    - How PolicyToken and ServiceToken share one ingest API while
+      occupying independent token namespaces
+    - The need for a publisher-embedded holder (future work)
+
 #### Design symmetry
 
 ```
-              write                          read
-              ───────────────────────────   ───────────────────────────
-JSON-based   │ POST /consents              │ (no equivalent yet)
-Wallet-based │ ConsentVC → PolicyToken     │ ViewerVC → ViewerToken
-              ↓ POST /platform/ingest      ↓ GET /platform/data
+              write (single)                write (continuous)            read
+              ───────────────────────────   ───────────────────────────   ───────────────────────────
+JSON-based   │ POST /consents              │ (no equivalent yet)         │ (no equivalent yet)
+Wallet-based │ ConsentVC → PolicyToken     │ ServiceVC → ServiceToken    │ ViewerVC → ViewerToken
+              ↓ POST /platform/ingest      ↓ POST /platform/ingest       ↓ GET /platform/data
 ```
 
-Continuous MQTT under wallet mode requires a **multi-use M2M ServiceVC**,
-covered by a future hands-on.
+`/platform/ingest` accepts both PolicyToken and ServiceToken: it
+tries PolicyToken first and falls through to ServiceToken on unknown.
 
 ### Phase 2 success criteria
 
