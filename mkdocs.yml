@@ -112,6 +112,7 @@ nav:
           - USB Webcam Event Sharing Sample: hands-on/webcam-event-sharing.md
           - Environment Disaster Sample: hands-on/environment-disaster.md
           - HA SSI Wallet Sample: hands-on/ha-ssi-wallet.md
+          - HA SSI Viewer Sample: hands-on/ha-ssi-viewer.md
       - Phase 3 Intelligence Integration:
           - Regional Safety Assistant Sample: hands-on/regional-safety-assistant.md
           - LLM Planner Hands-on: hands-on/llm-planner.md

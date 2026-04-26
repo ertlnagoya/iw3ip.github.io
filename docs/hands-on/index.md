@@ -27,7 +27,7 @@ IW3IP のハンズオンは、次の 3 段階で発展します。
     <div class="iw3ip-phase-kicker">Phase 2 / Event Sharing</div>
     <h3>🧭 イベントとして条件付き共有する</h3>
     <p>生データ全量ではなく、イベントや推論結果を目的・同意・監査付きで共有する考え方を学びます。</p>
-    <p class="iw3ip-phase-links"><a href="webcam-event-sharing.md">Webcam Event Sharing</a> / <a href="environment-disaster.md">Environment Disaster</a> / <a href="ha-ssi-wallet.md">HA x SSI Wallet</a></p>
+    <p class="iw3ip-phase-links"><a href="webcam-event-sharing.md">Webcam Event Sharing</a> / <a href="environment-disaster.md">Environment Disaster</a> / <a href="ha-ssi-wallet.md">HA x SSI Wallet</a> / <a href="ha-ssi-viewer.md">HA x SSI Viewer</a></p>
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-3">
     <div class="iw3ip-phase-kicker">Phase 3 / Intelligence Integration</div>
@@ -132,6 +132,7 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 - [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md): `possible_littering` をイベントとして共有する
 - [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md): `flood_risk_high` をイベント共有として扱う
 - [スマホSSIウォレットサンプル（Phase 2）](ha-ssi-wallet.md): スマホウォレットが保持する VC を OID4VP で提示・検証する
+- [SSIビューワサンプル（Phase 2 / Stage 3）](ha-ssi-viewer.md): ViewerVC を提示してデータ取得 (`/platform/data`) を VC ゲートする
 
 ### Phase 2 の成功判定
 
