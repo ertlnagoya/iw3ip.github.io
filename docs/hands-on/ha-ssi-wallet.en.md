@@ -166,8 +166,18 @@ Scan the QR with the wallet and select the matching VC to present.
 Expected result:
 
 ```json
-{"status":"allowed","dataset_id":"home/env/temperature"}
+{
+  "status": "allowed",
+  "dataset_id": "home/env/temperature",
+  "policy_token": "VHA9X1d...",
+  "policy_token_jti": "9b2fc3...",
+  "expires_in": 300
+}
 ```
+
+`policy_token` is the short-lived authorization token used in §8.
+It is valid for 5 minutes and single-use: one call to `/platform/ingest`
+consumes it.
 
 ## 6. Denial case
 
@@ -193,6 +203,72 @@ Points to verify:
 - `holder_did`, `vc_hash`, `purpose` are preserved
 - Compared with HA x SSI Publisher, the log additionally records
   "who presented which VC" rather than just the policy outcome
+
+## 8. Pull shared data
+
+Pass the `policy_token` from §5 as a `Authorization: Bearer` header to
+`/platform/ingest` to actually share data backed by the verified VC.
+The legacy `/consents` JSON registration path still works without a header.
+
+PolicyToken properties:
+
+- TTL: 5 minutes (returned as `expires_in`)
+- Single-use: one successful `/platform/ingest` call invalidates it
+- Scope: only accepts a body whose `dataset_id` matches the issuance time
+- Format: opaque string (server-side in-memory)
+
+Request:
+
+```bash
+TOKEN=<policy_token>  # from the verifier response in §5
+
+curl -X POST http://<PC_LAN_IP>:8080/platform/ingest \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"dataset_id":"home/env/temperature","purpose":"research","value":21.4}'
+```
+
+Expected result:
+
+```json
+{"status":"received","count":1}
+```
+
+The audit log gains a PolicyToken consumption entry:
+
+```bash
+curl 'http://<PC_LAN_IP>:8080/audit/logs?limit=5'
+```
+
+```json
+{
+  "action": "allow",
+  "raw_topic": "platform/ingest",
+  "reason": "policy_token_consumed:9b2fc3...",
+  "dataset_id": "home/env/temperature",
+  "purpose": "research",
+  "holder_did": "did:jwk:...",
+  "presentation_verified": "allow"
+}
+```
+
+Error cases:
+
+| Situation | HTTP | `detail` |
+| --- | --- | --- |
+| Reusing the same token | 403 | `policy_token_already_consumed` |
+| Expired | 401 | `policy_token_expired` |
+| Body `dataset_id` differs from token | 403 | `policy_token_dataset_mismatch` |
+| Unknown token | 401 | `policy_token_unknown` |
+
+To grab the token, either inspect the publisher container log when the wallet
+finishes the presentation (the `/verifier/response` body is logged), or read
+the completion screen on the phone. In a hands-on session, scraping the
+publisher log into curl is the quickest route.
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ssi-wallet logs -f publisher | grep policy_token
+```
 
 ## Extension ideas
 
