@@ -107,17 +107,53 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 
 ### 対応するハンズオン
 
-- [Home Assistant Demo Simulator サンプル](ha-demo-simulator.md): 実機なしで始める最短入口
-- [HUSKYLENS2サンプル](huskylens2.md): HUSKYLENS2 と PC を使う Phase 1 device page
-- [USBウェブカメラサンプル](webcam.md): USB カメラを使う Phase 1 device page
-- [HA x SSI Publisherサンプル](ha-ssi-publisher.md): Home Assistant / MQTT / Consent VC / audit log の基本構成
-- [スマホ閲覧アプリ](mobile-viewer.md): 共有結果の閲覧確認
+Phase 1 は **データの発生から共有までの一往復**を体験する Phase です。
+ハンズオンは依存順で並べると次のようになります (前段ほど薄く、
+後段に向かって構成要素が増えます)。
+
+#### 段階ごとに追加される機能と学べること
+
+##### 段階 1A: 入力ソースを 1 つ動かす (`huskylens2` / `webcam` / `ha-demo-simulator`)
+
+- **追加される機能**
+    - 入力デバイス → JSON ペイロードの生成
+    - イベントファイル / シミュレータ出力の確認
+    - (ha-demo-simulator のみ) Home Assistant コンテナ + Mosquitto が
+      実機なしで起動
+- **学べること**
+    - センサーや画像入力からデータが生まれる地点
+    - JSON ペイロードのスキーマ (timestamp, payload, source)
+    - 実機を持っていないときの代替入口 (シミュレータ)
+
+##### 段階 1B: パイプラインに繋ぐ (`ha-ssi-publisher`)
+
+- **段階 1A から追加される機能**
+    - MQTT subscriber → publisher → `/platform/ingest` の一連のフロー
+    - `/consents` JSON 登録による許可データの絞り込み
+    - 監査ログ (`/audit/logs`) への記録 (purpose, allow/deny)
+    - Consent VC の有効期間 (`valid_from` / `valid_to`) チェック
+- **学べること**
+    - 「入力 → 共有判定 → 配信 → 監査」の最小パイプライン
+    - Consent VC の役割と `purpose`, `dataset_id` の組み合わせ
+    - publisher コンテナと外部 API (`PLATFORM_API_URL`) の関係
+
+##### 段階 1C: 結果の閲覧 (`mobile-viewer`)
+
+- **段階 1B から追加される機能**
+    - スマホブラウザから `iot-market-ui` 画面を開く確認手順
+    - LAN IP / 0.0.0.0 公開設定の整備
+- **学べること**
+    - 共有結果が「どこから見えるのか」というユーザ視点
+    - PC とスマホをまたぐネットワーク構成の最低条件
+    - (注) この段階は閲覧確認用で、認可はまだ介在しません。
+      Phase 2 Stage 3 (ha-ssi-viewer) で読み出しに VC が入ります
 
 ### Phase 1 の成功判定
 
 - データまたはイベントファイルが生成される
 - API や画面で共有結果を確認できる
 - どこでデータが生成され、どこで共有されるか説明できる
+- `/consents` 登録の意味と監査ログへの反映を説明できる
 
 ## Phase 2: イベント共有
 
@@ -228,9 +264,54 @@ JSON 登録    │ /consents POST              │ (既存対応なし)
 
 ### 対応するハンズオン
 
-- [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md): 要求から `plan` と `execute` に進む基本形を学ぶ
-- [LLM Plannerハンズオン](llm-planner.md): rule-based planner を LLM planner に差し替える実践例
-- [LLM Planner置き換え仕様](llm-planner-spec.md): より厳密に設計意図を理解するための仕様ページ
+Phase 3 は **要求 → 計画 → 実行**の 1 ループを段階的に組み立てる
+Phase です。最初に rule-based の最小形を動かし、次に LLM へ差し替え、
+最後に仕様面を読みます。
+
+#### 段階ごとに追加される機能と学べること
+
+##### 段階 3A: 要求 → plan → execute の最小ループ (`regional-safety-assistant`)
+
+- **追加される機能**
+    - `assistant` サービス (`/plan`, `/execute` API)
+    - 自然言語要求を **rule-based で plan に変換**するパス
+    - Phase 2 で蓄積されたイベント (`/audit/logs` / `/platform/ingest`)
+      を planner が参照
+    - frontend demo (`assistant` web UI) で plan 結果を可視化
+- **学べること**
+    - 「要求 → plan → execute → 検証」のループ構造
+    - assistant が Phase 2 のイベントをどう材料にするか (依存方向)
+    - rule-based planner の表現力の限界 (条件分岐や長い文脈で破綻)
+
+##### 段階 3B: planner を LLM に差し替える (`llm-planner`)
+
+- **段階 3A から追加される機能**
+    - rule-based planner と同じ I/O を持つ LLM planner 実装
+    - LLM が呼べるツール (Phase 2 の `/audit/logs` 検索など) の宣言
+    - `planner_diagnostics` (LLM の判断トレース) の出力
+    - 自然言語のゆらぎや複合条件への対応
+- **学べること**
+    - 「同じ I/O 契約で planner を入れ替える」設計の利点
+    - LLM ツール呼び出し (function calling) と plan の対応関係
+    - `planner_diagnostics` を読んで LLM の判断過程を追う方法
+    - rule-based / LLM の **適材適所** (どちらを選ぶ判断軸)
+
+##### 段階 3C: 仕様レベルの理解 (`llm-planner-spec`)
+
+- **段階 3B から追加される機能** (ドキュメントのみ)
+    - LLM planner の入出力契約、エラーケース、評価指標の文書化
+- **学べること**
+    - 自分で planner を再実装するときの仕様面の指針
+    - rule-based / LLM 以外の方式 (ハイブリッド、検証付き LLM など)
+      へ拡張するための地ならし
+
+##### (将来) 段階 3D: VC を絡めた認可付き plan 実行 (Stage 4 / 計画中)
+
+Phase 2 の Stage 1/3 で導入した PolicyToken / ViewerToken を、
+Phase 3 の plan 実行ステップに紐付ける拡張を予定しています。
+plan の各ツール呼び出しが要求する dataset スコープを VC で証明
+させ、planner が認可済みの操作だけを実行できるようにする狙いです。
+詳細は将来のハンズオンで扱います。
 
 ### Phase 3 の成功判定
 
@@ -238,6 +319,7 @@ JSON 登録    │ /consents POST              │ (既存対応なし)
 - 条件成立時に `executed` を確認できる
 - `planner_diagnostics` の各項目を説明できる
 - frontend demo から結果を確認できる
+- rule-based / LLM の差を I/O 契約と適材適所の観点で説明できる
 
 ## Workshop との関係
 
