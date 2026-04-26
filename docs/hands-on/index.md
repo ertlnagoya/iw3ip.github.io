@@ -140,15 +140,63 @@ Phase 2 は 4 つのハンズオンで構成され、**同じ認可ロジック 
 | [スマホSSIウォレットサンプル (Stage 1)](ha-ssi-wallet.md) | スマホウォレット | OID4VP 提示 | 書き込み | PolicyToken (5 分・単回) |
 | [SSI ビューワサンプル (Stage 3)](ha-ssi-viewer.md) | スマホウォレット | OID4VP 提示 | 読み出し (`GET /platform/data`) | ViewerToken (60 秒・多回) |
 
-#### 推奨する読む順序
+#### 段階ごとに追加される機能と学べること
 
-1. **webcam-event-sharing** または **environment-disaster** で
-   「同意 + 目的 + 監査ログ」の基本を `/consents` 登録の最短経路で掴む
-2. **ha-ssi-wallet** で同じ認可をスマホウォレットの VC 提示で扱う
-   = 同意者の身元が VC で裏付けられる形にアップグレード
-3. **ha-ssi-viewer** で書き込みと読み出しが対称な VC ゲートになることを確認
-4. (任意) 最初の 2 つの末尾「補論: ウォレットモードによる認可」で
-   1 と 2 の等価性を 1 件の curl で実証
+以下の順で進めると、**前の段階に少しずつ機能を足していく形**で
+イベント共有の認可モデルを段階的に深められます。
+
+##### 段階 0: ベースライン (`webcam-event-sharing` / `environment-disaster`)
+
+- **追加される機能**
+    - publisher への `/consents` JSON 登録 API
+    - MQTT トピック → `dataset_id` 正規化 → `(dataset_id, purpose)`
+      ペアによる `allow` / `deny` 判定
+    - `/audit/logs` への判定結果の永続化
+- **学べること**
+    - 「生データ共有」と「イベント共有」の違い
+    - 同意 (consent)、目的 (purpose)、データセット (dataset) という
+      3 軸の役割
+    - 監査ログ (`raw_topic`, `purpose`, `reason`) の構造と読み方
+
+##### 段階 1: ウォレット書き込み認可 (`ha-ssi-wallet`)
+
+- **段階 0 から追加される機能**
+    - OID4VCI による ConsentVC の発行 (`/issuer/offer` 等)
+    - OID4VP による ConsentVC の提示 (`/verifier/request` / `/verifier/response`)
+    - 短命 PolicyToken (5 分・単回利用) の発行
+    - `POST /platform/ingest` の Bearer 認証 (PolicyToken)
+    - 監査ログに `holder_did` / `vc_hash` / `presentation_verified` を追加
+- **学べること**
+    - 同意主体の身元が VC で裏付けられる意味 (誰が同意したかの証跡)
+    - SD-JWT VC、`did:jwk`、DCQL の概要
+    - 「単回消費トークン」が書き込み認可に向く理由
+    - JSON 登録方式とウォレット方式の **等価性と差異** (両方の対比表)
+
+##### 段階 2: 既存ハンズオンへのウォレット連携 (補論セクション)
+
+- **段階 1 から追加される機能** (ドキュメントのみ、バックエンド変更なし)
+    - `webcam-event-sharing.md` / `environment-disaster.md` 末尾に
+      「補論: ウォレットモードによる認可」を追加
+    - 1 件のイベントを curl で wallet 経由 ingest する手順
+- **学べること**
+    - 既存サンプルが wallet 化したときに何がそのままで何が変わるか
+    - 「連続 MQTT を wallet で回す」には別仕組み (M2M ServiceVC) が
+      要る理由 (PolicyToken の単回消費仕様の限界)
+
+##### 段階 3: ウォレット読み出し認可 (`ha-ssi-viewer`)
+
+- **段階 1 から追加される機能**
+    - ViewerVC (read 用 VC、claim: `dataset_id`, `allowed_actions=["read"]`)
+    - `vc_kind=ViewerVC` でディスパッチする `/verifier/request`
+    - ViewerToken (60 秒・TTL 内多回利用)
+    - `GET /platform/data?dataset_id=...` の Bearer 認証 (ViewerToken)
+    - 監査ログ `raw_topic=platform/data` の read イベント記録
+    - issuer metadata に ConsentVC + ViewerVC の両方を露出
+- **学べること**
+    - 「書き込み認可」と「読み出し認可」を VC で対称に扱う設計
+    - 単回消費 (write) vs TTL 内多回利用 (read) のセマンティクスの差
+    - VC の役割分離 (ConsentVC vs ViewerVC) と PolicyToken / ViewerToken
+      の token 空間の独立性 (流用拒否)
 
 #### 設計上の対称性
 

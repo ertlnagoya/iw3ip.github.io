@@ -145,17 +145,73 @@ authorization logic (dataset × purpose) over two transports
 | [Mobile SSI wallet sample (Stage 1)](ha-ssi-wallet.md) | mobile wallet | OID4VP presentation | write | PolicyToken (5 min, single-use) |
 | [SSI Viewer sample (Stage 3)](ha-ssi-viewer.md) | mobile wallet | OID4VP presentation | read (`GET /platform/data`) | ViewerToken (60 s, multi-use) |
 
-#### Recommended reading order
+#### What each stage adds and what you can learn
 
-1. Start with **webcam-event-sharing** or **environment-disaster** to
-   absorb "consent + purpose + audit log" through the shortest path
-   (`/consents` JSON registration)
-2. Move to **ha-ssi-wallet** to handle the same authorization via
-   wallet presentation, where the consenter's identity is backed by a VC
-3. Read **ha-ssi-viewer** to see write and read become symmetric VC gates
-4. (Optional) The "wallet-mode authorization" appendix at the bottom of
-   each of the first two pages walks one event through the wallet
-   route by curl to demonstrate equivalence
+Following these in order lets you **deepen the authorization model
+incrementally**, with each stage adding a focused capability on top
+of the previous one.
+
+##### Stage 0: baseline (`webcam-event-sharing` / `environment-disaster`)
+
+- **Capabilities introduced**
+    - `/consents` JSON registration on the publisher
+    - MQTT topic → `dataset_id` normalization → `(dataset_id, purpose)`
+      → `allow` / `deny`
+    - persistent audit log via `/audit/logs`
+- **What you learn**
+    - The difference between "raw-data sharing" and "event sharing"
+    - The three axes: consent, purpose, dataset
+    - The structure and reading of audit log fields
+      (`raw_topic`, `purpose`, `reason`)
+
+##### Stage 1: wallet-side write authz (`ha-ssi-wallet`)
+
+- **Added on top of Stage 0**
+    - ConsentVC issuance via OID4VCI (`/issuer/offer` etc.)
+    - ConsentVC presentation via OID4VP
+      (`/verifier/request` / `/verifier/response`)
+    - Short-lived PolicyToken (5 min, single-use)
+    - Bearer-authenticated `POST /platform/ingest` (PolicyToken)
+    - Audit log gains `holder_did`, `vc_hash`, `presentation_verified`
+- **What you learn**
+    - What it means for the consenter's identity to be VC-backed
+      (a verifiable trail of "who consented")
+    - Overview of SD-JWT VC, `did:jwk`, and DCQL
+    - Why "single-use tokens" fit write authorization
+    - **Equivalence and differences** between JSON registration and
+      the wallet path (the side-by-side appendix table)
+
+##### Stage 2: cross-link from existing samples (docs only)
+
+- **Added on top of Stage 1** (no backend change)
+    - "Wallet-mode authorization" appendix appended to
+      `webcam-event-sharing.md` / `environment-disaster.md`
+    - One-event curl recipe routing through the wallet
+- **What you learn**
+    - What stays and what changes when an existing sample is
+      wallet-ified
+    - Why running continuous MQTT through the wallet needs a different
+      mechanism (M2M ServiceVC) — the limit imposed by PolicyToken's
+      single-use semantics
+
+##### Stage 3: wallet-side read authz (`ha-ssi-viewer`)
+
+- **Added on top of Stage 1**
+    - ViewerVC (read-side credential with claims `dataset_id` and
+      `allowed_actions=["read"]`)
+    - `vc_kind=ViewerVC` dispatch in `/verifier/request`
+    - ViewerToken (60 s TTL, multi-use within the TTL)
+    - Bearer-authenticated `GET /platform/data?dataset_id=...`
+      (ViewerToken)
+    - Audit log entries with `raw_topic=platform/data` for reads
+    - Issuer metadata exposes both ConsentVC and ViewerVC
+- **What you learn**
+    - The symmetric design of VC-gated write and read authorization
+    - The semantic difference between single-use (write) and
+      TTL-multi-use (read)
+    - Role separation between ConsentVC and ViewerVC, and the
+      independence of the PolicyToken / ViewerToken namespaces
+      (cross-use is rejected)
 
 #### Design symmetry
 
