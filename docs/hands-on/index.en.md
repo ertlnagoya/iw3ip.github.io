@@ -111,17 +111,54 @@ Matching page:
 
 ### Matching hands-on pages
 
-- [Home Assistant Demo Simulator sample](ha-demo-simulator.md): shortest entry without physical devices
-- [HUSKYLENS2 sample](huskylens2.md): Phase 1 device page with HUSKYLENS2 and a PC
-- [USB webcam sample](webcam.md): Phase 1 device page with a common webcam
-- [HA x SSI Publisher sample](ha-ssi-publisher.md): Home Assistant / MQTT / Consent VC / audit logging basics
-- [Mobile Viewer](mobile-viewer.md): inspection of shared results
+Phase 1 walks through **one full round-trip from sensor input to
+downstream sharing**. The pages stack in dependency order — earlier
+stages are thin, later ones add structure on top.
+
+#### What each stage adds and what you can learn
+
+##### Stage 1A: bring up one input source (`huskylens2` / `webcam` / `ha-demo-simulator`)
+
+- **Capabilities introduced**
+    - input device → JSON payload generation
+    - inspection of event files / simulator output
+    - (ha-demo-simulator only) Home Assistant container + Mosquitto
+      running without physical devices
+- **What you learn**
+    - Where data is born from sensors or images
+    - JSON payload schema (timestamp, payload, source)
+    - The fallback entry point when you don't have hardware (simulator)
+
+##### Stage 1B: hook into the pipeline (`ha-ssi-publisher`)
+
+- **Added on top of Stage 1A**
+    - MQTT subscriber → publisher → `/platform/ingest` flow
+    - Permission filtering through `/consents` JSON registration
+    - Audit log persistence (`/audit/logs`) with purpose / allow-deny
+    - Consent VC validity window (`valid_from` / `valid_to`) checks
+- **What you learn**
+    - The minimal pipeline: input → decision → delivery → audit
+    - The role of Consent VC and how `purpose` × `dataset_id` decides
+    - The relationship between the publisher container and the
+      external API (`PLATFORM_API_URL`)
+
+##### Stage 1C: viewing the result (`mobile-viewer`)
+
+- **Added on top of Stage 1B**
+    - Procedure for opening the `iot-market-ui` from a phone browser
+    - LAN IP / `0.0.0.0` exposure setup
+- **What you learn**
+    - The user-side perspective: where shared results become visible
+    - Minimum cross-device network requirements (PC ↔ phone)
+    - (Note) viewing here is unauthenticated; VC-gated read is
+      introduced later in Phase 2 Stage 3 (`ha-ssi-viewer`)
 
 ### Phase 1 success criteria
 
 - data or event files are generated
 - shared results can be checked through APIs or UI
 - learners can explain where data is generated and where it is shared
+- learners can explain `/consents` registration and its audit log effect
 
 ## Phase 2: Event Sharing
 
@@ -244,9 +281,56 @@ covered by a future hands-on.
 
 ### Matching hands-on pages
 
-- [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md): learn the basic path from request to `plan` and `execute`
-- [LLM Planner hands-on](llm-planner.md): practical path for replacing the rule-based planner with an LLM planner
-- [LLM Planner replacement spec](llm-planner-spec.md): specification-oriented page for understanding the design in more depth
+Phase 3 builds the **request → plan → execute** loop incrementally.
+You first run a minimal rule-based loop, then swap the planner for
+an LLM, then read the spec page.
+
+#### What each stage adds and what you can learn
+
+##### Stage 3A: minimal request → plan → execute loop (`regional-safety-assistant`)
+
+- **Capabilities introduced**
+    - The `assistant` service (`/plan`, `/execute` APIs)
+    - **Rule-based** request → plan conversion
+    - Planner reads events accumulated in Phase 2
+      (`/audit/logs`, `/platform/ingest`)
+    - Frontend demo (`assistant` web UI) visualizing plan results
+- **What you learn**
+    - The loop: request → plan → execute → verify
+    - How the assistant consumes Phase 2 events as input
+      (the dependency direction)
+    - Where rule-based planners break down (branching, long context)
+
+##### Stage 3B: replace the planner with an LLM (`llm-planner`)
+
+- **Added on top of Stage 3A**
+    - LLM-backed planner with the same I/O contract
+    - Tool declarations the LLM can call (e.g. `/audit/logs` lookup)
+    - `planner_diagnostics` exposing the LLM's reasoning trace
+    - Coverage of natural-language variation and compound conditions
+- **What you learn**
+    - The benefit of "swap the planner under the same I/O contract"
+    - How LLM tool calls (function calling) map to plan steps
+    - How to read `planner_diagnostics` to follow the LLM's reasoning
+    - **Where each fits**: when rule-based vs LLM is the right choice
+
+##### Stage 3C: spec-level understanding (`llm-planner-spec`)
+
+- **Added on top of Stage 3B** (docs only)
+    - Documented I/O contract, error cases, and evaluation metrics
+- **What you learn**
+    - The specification surface you'd reproduce when building your
+      own planner
+    - The groundwork for hybrid or verified-LLM approaches beyond
+      rule-based / LLM
+
+##### (Future) Stage 3D: VC-gated plan execution (Stage 4, planned)
+
+A future hands-on will tie the PolicyToken / ViewerToken introduced
+in Phase 2 Stage 1/3 to plan execution: each tool call asserts the
+required dataset scope via VC, so the planner can only invoke
+operations the holder has been authorized for. Details will land in
+a future page.
 
 ### Phase 3 success criteria
 
@@ -254,6 +338,8 @@ covered by a future hands-on.
 - `executed` can be confirmed when conditions are met
 - the fields in `planner_diagnostics` can be explained
 - results can be inspected from the frontend demo
+- learners can explain the rule-based vs LLM trade-off in terms of
+  I/O contract and fit
 
 ## Relation to Workshop
 
