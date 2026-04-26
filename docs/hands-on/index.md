@@ -175,6 +175,7 @@ Phase 2 は 4 つのハンズオンで構成され、**同じ認可ロジック 
 | [環境・防災イベント共有](environment-disaster.md) | publisher サーバ | `/consents` JSON | 書き込み | なし |
 | [スマホSSIウォレットサンプル (Stage 1)](ha-ssi-wallet.md) | スマホウォレット | OID4VP 提示 | 書き込み | PolicyToken (5 分・単回) |
 | [SSI ビューワサンプル (Stage 3)](ha-ssi-viewer.md) | スマホウォレット | OID4VP 提示 | 読み出し (`GET /platform/data`) | ViewerToken (60 秒・多回) |
+| [SSI サービスサンプル (Stage 4 prep)](ha-ssi-service.md) | サービス holder | OID4VP 提示 | 書き込み (連続) | ServiceToken (1 時間・多回) |
 
 #### 段階ごとに追加される機能と学べること
 
@@ -234,18 +235,34 @@ Phase 2 は 4 つのハンズオンで構成され、**同じ認可ロジック 
     - VC の役割分離 (ConsentVC vs ViewerVC) と PolicyToken / ViewerToken
       の token 空間の独立性 (流用拒否)
 
+##### 段階 4 prep: M2M 連続書き込み認可 (`ha-ssi-service`)
+
+- **段階 1/3 から追加される機能**
+    - ServiceVC (M2M 用 VC、claim: `dataset_id`, `allowed_actions=["write_continuous"]`)
+    - `vc_kind=ServiceVC` でディスパッチする `/verifier/request`
+    - ServiceToken (1 時間・TTL 内多回利用)
+    - `/platform/ingest` が PolicyToken と ServiceToken の両方を受理
+      (PolicyToken → 不一致なら ServiceToken の順)
+    - 監査ログ `reason=service_token_used:<jti>:<write_count>`
+    - issuer metadata に ConsentVC + ViewerVC + ServiceVC の 3 種類
+- **学べること**
+    - 「人の VC」と「サービスの VC」を分ける動機
+    - 単回 / 多回 read / 多回 write の **3 つのトークン形態**
+    - PolicyToken と ServiceToken の独立空間で同じ ingest API を共有する仕組み
+    - publisher 内蔵 holder の必要性 (現状未実装、将来課題)
+
 #### 設計上の対称性
 
 ```
-              書き込み (write)              読み出し (read)
-              ───────────────────────────   ───────────────────────────
-JSON 登録    │ /consents POST              │ (既存対応なし)
-ウォレット   │ ConsentVC → PolicyToken     │ ViewerVC → ViewerToken
-              ↓ POST /platform/ingest      ↓ GET /platform/data
+              書き込み (write, 単回)        書き込み (write, 連続)        読み出し (read)
+              ───────────────────────────   ───────────────────────────   ───────────────────────────
+JSON 登録    │ /consents POST              │ (既存対応なし)              │ (既存対応なし)
+ウォレット   │ ConsentVC → PolicyToken     │ ServiceVC → ServiceToken    │ ViewerVC → ViewerToken
+              ↓ POST /platform/ingest      ↓ POST /platform/ingest       ↓ GET /platform/data
 ```
 
-連続 MQTT を wallet モードで回すには **多回利用可の M2M ServiceVC**
-が必要で、これは将来のハンズオンで扱う予定です。
+`/platform/ingest` は PolicyToken と ServiceToken の両方を受け付け、
+PolicyToken を試した後に ServiceToken にフォールバックする仕様です。
 
 ### Phase 2 の成功判定
 
