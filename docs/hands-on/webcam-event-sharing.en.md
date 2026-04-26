@@ -310,3 +310,55 @@ The key change is that the theme moves from **detection** to **condition-based s
 2. split sharing destinations across community cleaning, research, and municipality workflows
 3. make the policy explicit that raw video is not shared and only events are shared
 4. connect the results to the mobile viewer app for event lists and notifications
+
+## Appendix: wallet-mode authorization
+
+The main flow registers `consent_possible_littering.json` via POST to
+`/consents` — i.e. consent is stored as plaintext JSON on the publisher.
+The [Mobile SSI wallet hands-on](ha-ssi-wallet.md) takes a different
+route: the participant's phone wallet holds a VC and presents it via
+OID4VP.
+
+### What's the same, what's different
+
+| Aspect | Main flow (`/consents` JSON) | Wallet mode (Stage 1: ConsentVC) |
+| --- | --- | --- |
+| Consent storage | publisher server | mobile wallet |
+| Transport | JSON POST | OID4VP (QR / deeplink) |
+| Validity window | `valid_to` TTL | short-lived PolicyToken per presentation (5 min, single-use) |
+| Revocation | DELETE `/consents` | revoke VC / drop from wallet |
+| Audit log | `purpose` / `dataset_id` | also `holder_did` / `vc_hash` |
+
+The **decision logic is identical**: `(dataset_id, purpose)` decides
+`allow` / `deny`. What changes is whether the consenter's identity is
+backed by a verifiable credential and how the consent is transmitted.
+
+### How to try it (sketch)
+
+Gating every MQTT event through the wallet doesn't fit PolicyToken's
+single-use semantics. Instead, send **one event** by hand to feel the
+flow:
+
+1. Issue and present a ConsentVC per [SSI Wallet hands-on §1〜§5](ha-ssi-wallet.md)
+   to obtain a PolicyToken
+2. Pause MQTT if it's running
+3. POST one event with the PolicyToken in the Bearer header:
+   ```bash
+   curl -X POST http://localhost:8080/platform/ingest \
+     -H "Authorization: Bearer $POLICY" \
+     -H "Content-Type: application/json" \
+     -d '{"dataset_id":"home/env/temperature","purpose":"research","value":21.4}'
+   ```
+4. Confirm `/audit/logs` shows `reason=policy_token_consumed:<jti>`
+
+### Limits of this appendix
+
+- The publisher currently registers Presentation Definitions for
+  `home/env/temperature` etc., not `home/event/possible_littering`.
+  Use the `home/env/temperature` flow as the easiest demonstrator.
+- Continuous MQTT under wallet mode requires a **multi-use M2M token
+  (ServiceVC)**, which is left to a future hands-on.
+
+### Related
+
+- Symmetric read-side gating: [SSI Viewer sample](ha-ssi-viewer.md)
