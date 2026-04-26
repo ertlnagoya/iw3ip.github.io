@@ -133,14 +133,50 @@ Matching page:
 
 ### Matching hands-on pages
 
-- [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md): share `possible_littering` as an event
-- [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md): share `flood_risk_high` as an event
+Phase 2 ships four hands-on pages. Together they exercise the **same
+authorization logic (dataset × purpose) over two transports
+(JSON registration vs wallet presentation) and two directions
+(write vs read)**.
+
+| Hands-on | Consent storage | Transport | Gated operation | Token |
+| --- | --- | --- | --- | --- |
+| [USB webcam event sharing](webcam-event-sharing.md) | publisher server | `/consents` JSON | write (`POST /platform/ingest`) | none (registration-based) |
+| [Environment and disaster event sharing](environment-disaster.md) | publisher server | `/consents` JSON | write | none |
+| [Mobile SSI wallet sample (Stage 1)](ha-ssi-wallet.md) | mobile wallet | OID4VP presentation | write | PolicyToken (5 min, single-use) |
+| [SSI Viewer sample (Stage 3)](ha-ssi-viewer.md) | mobile wallet | OID4VP presentation | read (`GET /platform/data`) | ViewerToken (60 s, multi-use) |
+
+#### Recommended reading order
+
+1. Start with **webcam-event-sharing** or **environment-disaster** to
+   absorb "consent + purpose + audit log" through the shortest path
+   (`/consents` JSON registration)
+2. Move to **ha-ssi-wallet** to handle the same authorization via
+   wallet presentation, where the consenter's identity is backed by a VC
+3. Read **ha-ssi-viewer** to see write and read become symmetric VC gates
+4. (Optional) The "wallet-mode authorization" appendix at the bottom of
+   each of the first two pages walks one event through the wallet
+   route by curl to demonstrate equivalence
+
+#### Design symmetry
+
+```
+              write                          read
+              ───────────────────────────   ───────────────────────────
+JSON-based   │ POST /consents              │ (no equivalent yet)
+Wallet-based │ ConsentVC → PolicyToken     │ ViewerVC → ViewerToken
+              ↓ POST /platform/ingest      ↓ GET /platform/data
+```
+
+Continuous MQTT under wallet mode requires a **multi-use M2M ServiceVC**,
+covered by a future hands-on.
 
 ### Phase 2 success criteria
 
 - both `allowed` and `denied` can be reproduced
 - learners can explain the difference between `purpose` and `dataset_id`
 - learners can explain the role of `/audit/logs` and `/platform/ingest`
+- learners can explain the **equivalence and differences** between
+  the wallet path (Stage 1 / 3) and the JSON-registration path
 
 ## Phase 3: Intelligence Integration
 

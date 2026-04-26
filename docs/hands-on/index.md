@@ -129,16 +129,46 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 
 ### 対応するハンズオン
 
-- [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md): `possible_littering` をイベントとして共有する
-- [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md): `flood_risk_high` をイベント共有として扱う
-- [スマホSSIウォレットサンプル（Phase 2）](ha-ssi-wallet.md): スマホウォレットが保持する VC を OID4VP で提示・検証する
-- [SSIビューワサンプル（Phase 2 / Stage 3）](ha-ssi-viewer.md): ViewerVC を提示してデータ取得 (`/platform/data`) を VC ゲートする
+Phase 2 は 4 つのハンズオンで構成され、**同じ認可ロジック (dataset × purpose)
+を 2 つの伝達経路 (JSON 登録 vs ウォレット提示) と 2 つの方向
+(書き込み vs 読み出し) で体験する**構造になっています。
+
+| ハンズオン | 認可の保持 | 伝達経路 | ゲート対象 | トークン |
+| --- | --- | --- | --- | --- |
+| [USBウェブカメライベント共有](webcam-event-sharing.md) | publisher サーバ | `/consents` JSON | 書き込み (`POST /platform/ingest`) | なし (登録ベース) |
+| [環境・防災イベント共有](environment-disaster.md) | publisher サーバ | `/consents` JSON | 書き込み | なし |
+| [スマホSSIウォレットサンプル (Stage 1)](ha-ssi-wallet.md) | スマホウォレット | OID4VP 提示 | 書き込み | PolicyToken (5 分・単回) |
+| [SSI ビューワサンプル (Stage 3)](ha-ssi-viewer.md) | スマホウォレット | OID4VP 提示 | 読み出し (`GET /platform/data`) | ViewerToken (60 秒・多回) |
+
+#### 推奨する読む順序
+
+1. **webcam-event-sharing** または **environment-disaster** で
+   「同意 + 目的 + 監査ログ」の基本を `/consents` 登録の最短経路で掴む
+2. **ha-ssi-wallet** で同じ認可をスマホウォレットの VC 提示で扱う
+   = 同意者の身元が VC で裏付けられる形にアップグレード
+3. **ha-ssi-viewer** で書き込みと読み出しが対称な VC ゲートになることを確認
+4. (任意) 最初の 2 つの末尾「補論: ウォレットモードによる認可」で
+   1 と 2 の等価性を 1 件の curl で実証
+
+#### 設計上の対称性
+
+```
+              書き込み (write)              読み出し (read)
+              ───────────────────────────   ───────────────────────────
+JSON 登録    │ /consents POST              │ (既存対応なし)
+ウォレット   │ ConsentVC → PolicyToken     │ ViewerVC → ViewerToken
+              ↓ POST /platform/ingest      ↓ GET /platform/data
+```
+
+連続 MQTT を wallet モードで回すには **多回利用可の M2M ServiceVC**
+が必要で、これは将来のハンズオンで扱う予定です。
 
 ### Phase 2 の成功判定
 
 - `allowed` / `denied` の両方を再現できる
 - `purpose` と `dataset_id` の違いを説明できる
 - `/audit/logs` や `/platform/ingest` の役割を説明できる
+- ウォレット経由 (Stage 1/3) と JSON 登録経由の **等価性と差異** を説明できる
 
 ## Phase 3: 知能統合
 
