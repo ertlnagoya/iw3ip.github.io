@@ -310,3 +310,67 @@ The focus therefore changes as follows:
 2. keep water-level values private and share only events
 3. connect the events to map visualization or notification apps
 4. split Consent VCs by sharing destination
+
+## Appendix: wallet-mode authorization
+
+The main flow registers `consent_flood_risk_high.json` via POST to
+`/consents` — i.e. consent is stored as plaintext JSON on the publisher.
+The [Mobile SSI wallet hands-on](ha-ssi-wallet.md) takes a different
+route: residents or observers hold a VC in their phone wallet and present
+it via OID4VP. The publisher already ships a ConsentVC Presentation
+Definition for `home/env/flood_risk_high`
+([consent-flood-risk-high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-flood-risk-high.json)),
+so disaster events can be gated directly through the wallet.
+
+### What's the same, what's different
+
+| Aspect | Main flow (`/consents` JSON) | Wallet mode (Stage 1: ConsentVC) |
+| --- | --- | --- |
+| Consent storage | publisher server | mobile wallet |
+| Transport | JSON POST | OID4VP (QR / deeplink) |
+| Validity window | `valid_to` TTL | short-lived PolicyToken per presentation (5 min, single-use) |
+| Revocation | DELETE `/consents` | revoke VC / drop from wallet |
+| Audit log | `purpose` / `dataset_id` | also `holder_did` / `vc_hash` |
+
+The **decision logic is identical**: `(dataset_id, purpose)` decides
+`allow` / `deny`. What changes is whether the consenter's identity is
+backed by a verifiable credential and how the consent travels. In a
+disaster-response setting, the resident's wallet asserts "I authorize
+sharing of my district's data."
+
+### How to try it (sketch)
+
+Gating every MQTT event through the wallet doesn't fit PolicyToken's
+single-use semantics. Instead, send **one event** by hand to feel the
+flow:
+
+1. Issue a ConsentVC (`type=ConsentVC`, `dataset_id=home/env/flood_risk_high`,
+   `purpose=safety` or `emergency_planning`):
+   ```
+   http://localhost:8080/issuer/offer?type=ConsentVC&dataset_id=home/env/flood_risk_high&purpose=safety
+   ```
+2. Receive in the wallet, then present:
+   ```
+   http://localhost:8080/verifier/request?dataset_id=home/env/flood_risk_high&purpose=safety
+   ```
+3. Take the PolicyToken from the response and POST one event:
+   ```bash
+   curl -X POST http://localhost:8080/platform/ingest \
+     -H "Authorization: Bearer $POLICY" \
+     -H "Content-Type: application/json" \
+     -d '{"dataset_id":"home/env/flood_risk_high","purpose":"safety","water_level_m":1.82}'
+   ```
+4. Confirm `/audit/logs` shows `reason=policy_token_consumed:<jti>`
+
+### Limits of this appendix
+
+- The main flow normalizes MQTT topic `homeassistant/event/flood_risk_high`
+  to `dataset_id=home/event/flood_risk_high`, while the ConsentVC PD is
+  registered under `home/env/flood_risk_high`. Aligning the two
+  namespaces is left to a future change.
+- Continuous MQTT under wallet mode requires a **multi-use M2M token
+  (ServiceVC)**, which is left to a future hands-on.
+
+### Related
+
+- Symmetric read-side gating: [SSI Viewer sample](ha-ssi-viewer.md)
