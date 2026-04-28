@@ -259,6 +259,25 @@ of the previous one.
       independence of the PolicyToken / ViewerToken namespaces
       (cross-use is rejected)
 
+##### Stage A: PWA-style mobile experience (`marketplace-mobile-app`)
+
+The Stage 1–7 flow polished into a **CLI-free smartphone experience**.
+See the [hands-on](marketplace-mobile-app.md).
+
+- **Added on top of Stage 7** (no backend changes)
+    - iot-market-ui as a PWA (manifest, service worker, iOS meta tags)
+      installable via "Add to Home Screen"
+    - **`/welcome`** 3-step onboarding with layperson terminology
+    - **`/my-data`** purchase history (localStorage) + data-viewing form
+    - **`/purchased/[txHash]`** persists success entries to localStorage
+    - Mobile menu links to `/my-data`, `/seller`, `/welcome`
+- **What you learn**
+    - The existing Stage 5/6/7 backend is enough; one UI layer turns
+      it into a layperson app
+    - PWA limits (iOS push/notification restrictions, three-app
+      deeplink switching)
+    - Why a true single-app experience needs case B (Stage 9 / native RN)
+
 ##### Stage 7: Seller-side VC (`marketplace-seller-vc`)
 
 See the [SellerVC design spec](../design/seller-vc-spec.md) and the

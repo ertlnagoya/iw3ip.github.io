@@ -242,6 +242,25 @@ Phase 2 は 4 つのハンズオンで構成され、**同じ認可ロジック 
     - VC の役割分離 (ConsentVC vs ViewerVC) と PolicyToken / ViewerToken
       の token 空間の独立性 (流用拒否)
 
+##### 段階 A: モバイル PWA で素人向け体験 (`marketplace-mobile-app`)
+
+Stage 1〜7 の動線を **コマンドライン操作なしで iPhone から完結**できる
+形に磨いた段階。詳細は [ハンズオン](marketplace-mobile-app.md)。
+
+- **段階 7 までの動線に追加される機能** (バックエンド変更なし)
+    - **iot-market-ui の PWA 化** (manifest, service worker, iOS meta)
+        - iPhone Safari の「ホーム画面に追加」で standalone アプリ化
+    - **`/welcome`** 3 ステップオンボーディング (素人向け語彙: お財布 / 閲覧チケット)
+    - **`/my-data`** 購入履歴ページ (localStorage 保存) + データ閲覧フォーム
+    - **`/purchased/[txHash]`** が成功時に履歴を localStorage に保存
+    - モバイルメニューに `/my-data` `/seller` `/welcome` の導線
+- **学べること**
+    - 既存 backend (Stage 5/6/7) はそのまま、UI 1 層だけで素人向け体験が
+      作れること
+    - PWA の制約 (iOS の push / 通知制限、deeplink で 3 アプリ間遷移)
+    - 「真のシングルアプリ体験」を目指すと案 B (RN ネイティブ) =
+      Stage 9 が必要になる動機
+
 ##### 段階 7: 出品身元の SellerVC (`marketplace-seller-vc`)
 
 詳細は [SellerVC 設計仕様](../design/seller-vc-spec.md) と
