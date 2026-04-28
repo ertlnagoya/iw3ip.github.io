@@ -162,6 +162,11 @@ stages are thin, later ones add structure on top.
 
 ## Phase 2: Event Sharing
 
+!!! tip "Whole picture on one page"
+    7 stages, 5 VC kinds, 4 token kinds, v1/v2 marketplace coexistence,
+    and the audit-log chain are summarized in
+    [VC Architecture Overview](../design/vc-architecture-overview.md).
+
 ### Goal of this phase
 
 - move from full raw-data sharing to event sharing
