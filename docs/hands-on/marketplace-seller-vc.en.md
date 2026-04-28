@@ -36,6 +36,19 @@
 - set + RPC OK → `owner_verify=verified` (success) or 403 `owner_mismatch`
 - set + RPC fail → 502 `chain_rpc_failed` (fail-closed)
 
+## Common pitfalls (from e2e validation)
+
+| Symptom | Root cause | Fix |
+| --- | --- | --- |
+| Hardhat console rejects multi-line `try`/`catch` | REPL evaluates one line at a time | Collapse to a one-liner |
+| `getCode(addr)` returns `"0x"` after Hardhat restart | Restart wipes on-chain state | Re-run `deployMerchandiseWithIoTMarket.ts`; use script-deployed Merchandises only |
+| Purchase fails with "function returned an unexpected amount of data" | PubKey contract is gone or buyer has no PubKey entry | Re-register with `pubKey.registerKey("[...]")` for the affected account |
+| Bridge silent on a new Purchase | Bridge cursor stuck on old block after Hardhat restart | `docker compose ... up -d --force-recreate bridge` |
+| Wallet error "Retrieving an access token ... failed with status: 400" | Wallet replayed an already-consumed `pre_authorized_code` | Discard old deeplink, take a fresh one from the latest `bridge: claim ok` log |
+| MetaMask "invalid chainId" | Stale nonce/chainId cache after Hardhat restart | Settings → Advanced → Clear activity tab data |
+
+See also Stage 5 troubleshooting for issues that span both stages.
+
 ## Limits / future
 
 - on-chain registration guard (Solidity-side) is Stage 8+

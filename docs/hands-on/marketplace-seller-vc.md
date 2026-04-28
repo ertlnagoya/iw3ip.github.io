@@ -329,16 +329,20 @@ UI の手順:
 
 ## 完了判定マトリクス
 
-| 工程 | 確認項目 | 出力例 |
+| 工程 | 確認項目 | 出力例 (実機検証で得た値) |
 | --- | --- | --- |
-| S0 | 5 種類目の SellerVC が metadata に出る | `"vct": "...SellerVC/v1"` |
-| S1 | wallet に SellerVC | claim に `seller_id`, `licensed_datasets` |
-| S2 | SellerToken 発行 | `seller_token_issued ttl=86400s` |
-| S3 | Merchandise + IoTMarket 登録 | tx hash 2 件 |
-| S4 | `/marketplace/register` 成功 | `{registered: true, seller_did, register_count: 1}` |
-| S4 | audit log | `raw_topic=marketplace/seller_registered`, `seller_register:...:owner_verify=...` |
-| S5 | buyer side seller_did 表示 | `/platform/data` レスポンスに did:jwk: |
-| S6 | UI 経由でも登録可 | `/seller` ページで成功 |
+| S0 | 5 種類目の SellerVC が metadata に出る | `"vct": "https://iw3ip.example/credentials/SellerVC/v1"` |
+| S1 | wallet に SellerVC | claim に `seller_id: "ertl-seller-001"`、`licensed_datasets: ["home/env/temperature", "home/env/humidity"]` |
+| S2 | SellerToken 発行 | `seller_token_issued jti=... seller_id=ertl-seller-001 licensed=['home/env/temperature', 'home/env/humidity'] ttl=86400s` |
+| S3 | Merchandise + IoTMarket 登録 | deploy tx + register tx の 2 件 |
+| S4 | `/marketplace/register` 成功 | `{ "registered": true, "seller_did": "did:jwk:...", "register_count": <累積回数>, "owner_verify": "verified" / "skipped" }` |
+| S4 | audit log | `raw_topic=marketplace/seller_registered`, `reason=seller_register:jti=...:merchandise=0x...:eth=0x...:tx=0x...:owner_verify=...` |
+| S5 | buyer side seller_did 表示 | `{ "dataset_id": "home/env/temperature", "seller_did": "did:jwk:...", ... }` |
+| S6 | UI 経由でも登録可 | `/seller` フォーム送信後にレスポンス JSON が画面下に表示 |
+
+**Stage 7 のキー判定**: `/platform/data?merchandise=<addr>` のレスポンス
+JSON に **`seller_did` フィールドが did:jwk: で出る**こと。これが「どの
+seller がそのデータを売ったか」が VC で裏付けられた証跡です。
 
 ---
 
@@ -368,9 +372,91 @@ deploy した Hardhat account と SellerVC を取った eth account が違うと
 **対処**: 同じ Hardhat signer (例: Account #1 = `iotOwner`) で SellerVC 受領 +
 Merchandise deploy をやり直す。
 
-### D. その他
+### D. Hardhat console で `try { ... } catch (e) { ... }` が SyntaxError
+
+```
+Uncaught SyntaxError: missing ) after argument list
+```
+
+**原因**: Hardhat console (Node REPL) は文を 1 行ずつ評価するので、複数行
+にわたる `try`/`catch` を貼ると最初の行で構文エラーになる。
+
+**対処**: 1 行に潰す one-liner で書く。例:
+
+```javascript
+let r; try { r = await (await pubKey.registerKey("[buyer-key]")).wait(); console.log("ok:", r.status); } catch (e) { console.log("err:", e.message); }
+```
+
+### E. Hardhat ノードを再起動した後、`getState()` 等が 0x で返り `BAD_DATA` になる
+
+```
+ERROR: could not decode result data (value="0x", info={ "method": "getState", ...
+```
+
+**原因**: Hardhat ノードを `Ctrl+C` 等で停止すると **on-chain state が
+全消去**される。すでにデプロイ済の PubKey / IoTMarket / Merchandise も
+コードがなくなる。`provider.getCode(addr)` が `"0x"` (= 長さ 2) を返す
+アドレスは contract が存在しないことを示す。
+
+**対処**:
+
+```javascript
+// 主要アドレスにコードがあるか確認
+const c1 = await ethers.provider.getCode("0x5FbDB2315678afecb367f032d93F642f64180aa3");  // PubKey
+const c2 = await ethers.provider.getCode("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512");  // IoTMarket
+console.log({ pubKey: c1.length, ioTMarket: c2.length });
+// 2 が出ていたら消えている
+```
+
+消えていれば `npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost`
+で再デプロイ。
+
+注意: ノード再起動後の chain には、前セッションで自分が手動デプロイした
+Merchandise (script の決定的アドレス以外) は復元されない。**chain reset
+後は script デプロイ由来の 5 種だけを使う**のが安全。
+
+### F. チェーン再デプロイ後、Account #2 の購入で `function returned an unexpected amount of data`
+
+**原因**: PubKey contract が再デプロイされて state がリセットされたため、
+buyer (Account #2) の公開鍵登録が消えている。Merchandise.purchase() 内
+で呼ばれる `i_pubKey.getPubKey(tx.origin)` が空応答になり、Solidity が
+`string` のデコードに失敗する。
+
+**対処**: PubKey を再登録する。
+
+```javascript
+const [_, __, buyer] = await ethers.getSigners();
+const pk = await ethers.getContractAt("PubKey", "0x5FbDB2315678afecb367f032d93F642f64180aa3", buyer);
+let r; try { r = await (await pk.registerKey("[buyer-key]")).wait(); console.log("ok:", r.status); } catch (e) { console.log("err:", e.message); }
+```
+
+seller (Account #1) を使う場合も同様に登録すること。
+
+### G. Bridge ログに新しい Purchase event が出ない / wallet が `/issuer/token` で 400
+
+**原因**: bridge listener は起動時に取得した block cursor から先のみを
+ポーリングする。Hardhat を再起動すると block 番号が 0 にリセットされる
+ので、bridge は「過去」の block しか見えなくなる。あるいは wallet が
+旧チェーンで発行された pre_authorized_code を再利用しようとして
+publisher 側で consumed 扱いになり 400 を返す。
+
+**対処**: bridge コンテナを強制再作成して cursor をリセット:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
+sleep 5
+docker logs iw3ip-mv-bridge 2>&1 | tail -5
+# → bridge: starting poll from block <現在の番号>
+```
+
+その後、再度 `Merchandise.purchase()` を実行すると新しい Purchase event
+を捕捉できる。古い deeplink は破棄して、新しい `bridge: claim ok` 行から
+取り直すこと。
+
+### H. その他
 
 [Stage 5 のトラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング)
+(MetaMask chainId キャッシュ、`BRIDGE_PUBLIC_PUBLISHER_URL` 未設定 等)
 が引き続き有効。
 
 ---
