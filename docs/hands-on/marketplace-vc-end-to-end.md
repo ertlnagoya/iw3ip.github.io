@@ -8,8 +8,10 @@
 
 ## 目的
 
-- 4 種類の VC (ConsentVC / ViewerVC / **ServiceVC** / **PurchaseViewerVC**)
-  が **1 つの dataset を介して協調**することを体験
+- データフローに関わる 4 種類の VC (ConsentVC / ViewerVC /
+  **ServiceVC** / **PurchaseViewerVC**) が **1 つの dataset を介して協調**
+  することを体験 (5 種目の SellerVC は出品身元のガバナンス層なので
+  本ハンズオンの主役ではないが、Stage 7 で並走可能)
 - on-chain 支払い (MetaMask) と off-chain 認可 (VC) の **役割分担**を
   完全な動線で理解する
 - audit log の **チェーン**を読み解く: ETH 鍵 → did:jwk → ServiceVC holder

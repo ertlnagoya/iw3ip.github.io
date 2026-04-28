@@ -187,7 +187,7 @@ registered for: 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC
 ## Step 4. publisher + bridge を起動
 
 ### 何を確認するか
-- publisher が PurchaseViewerVC を含む 4 種の VC を発行できる状態
+- publisher が PurchaseViewerVC を含む VC 種を発行できる状態 (Stage 7 まで通っていれば 5 種すべてが揃う)
 - bridge が Hardhat の Purchase event を購読し、Merchandise×5 を見ている
 
 ### 操作

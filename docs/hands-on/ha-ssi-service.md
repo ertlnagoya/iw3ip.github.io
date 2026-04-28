@@ -56,7 +56,8 @@ Bearer ヘッダで添えて `/platform/ingest` を叩く想定です。
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 PUB=$(docker ps -qf name=publisher)
 
-# ConsentVC + ViewerVC + ServiceVC の 3 種が登録されたか確認
+# ServiceVC が含まれていることを確認 (現在のリリースでは ConsentVC /
+# ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC の 5 種が並ぶ)
 curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ServiceVC
 ```
 

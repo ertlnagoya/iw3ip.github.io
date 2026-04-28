@@ -270,6 +270,18 @@ publisher log into curl is the quickest route.
 docker compose -f infra/docker-compose.yml --profile ssi-wallet logs -f publisher | grep policy_token
 ```
 
+## Next steps
+
+This hands-on (Stage 1) only covers **single-use write authorization**
+(ConsentVC + PolicyToken). Other authorization shapes live in the
+following stages:
+
+- [Stage 3: SSI Viewer](ha-ssi-viewer.md) — multi-use read (ViewerVC)
+- [Stage 4 prep: SSI Service](ha-ssi-service.md) — M2M continuous write (ServiceVC)
+- [Stage 5: Marketplace bridge](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
+- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
+- [Stage 7: SellerVC](marketplace-seller-vc.md) — marketplace seller identity
+
 ## Extension ideas
 
 - **Revocation**: expose Status List 2021 at `/verifier/status` and verify that

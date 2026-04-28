@@ -310,7 +310,7 @@ Stage 1〜5 の集大成。詳細は [ハンズオン](marketplace-vc-end-to-end
     - `/platform/ingest` が PolicyToken と ServiceToken の両方を受理
       (PolicyToken → 不一致なら ServiceToken の順)
     - 監査ログ `reason=service_token_used:<jti>:<write_count>`
-    - issuer metadata に ConsentVC + ViewerVC + ServiceVC の 3 種類
+    - issuer metadata がこの段階で ConsentVC / ViewerVC / ServiceVC の 3 種を露出 (Stage 5/7 でさらに 2 種追加され最終的に 5 種)
 - **学べること**
     - 「人の VC」と「サービスの VC」を分ける動機
     - 単回 / 多回 read / 多回 write の **3 つのトークン形態**

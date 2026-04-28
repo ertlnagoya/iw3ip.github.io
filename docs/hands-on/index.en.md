@@ -244,7 +244,7 @@ of the previous one.
     - Bearer-authenticated `GET /platform/data?dataset_id=...`
       (ViewerToken)
     - Audit log entries with `raw_topic=platform/data` for reads
-    - Issuer metadata exposes both ConsentVC and ViewerVC
+    - Issuer metadata at this stage exposes ConsentVC / ViewerVC / ServiceVC (Stage 5 and 7 add two more for a total of 5)
 - **What you learn**
     - The symmetric design of VC-gated write and read authorization
     - The semantic difference between single-use (write) and
