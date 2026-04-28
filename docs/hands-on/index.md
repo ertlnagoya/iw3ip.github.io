@@ -182,6 +182,7 @@ Phase 2 は 4 つのハンズオンで構成され、**同じ認可ロジック 
 | [SSI サービスサンプル (Stage 4 prep)](ha-ssi-service.md) | サービス holder | OID4VP 提示 | 書き込み (連続) | ServiceToken (1 時間・多回) |
 | [マーケット連携 end-to-end (Stage 6)](marketplace-vc-end-to-end.md) | 両側 (seller / buyer) | OID4VP 提示 + MetaMask | 書き + 読み | ServiceToken & PurchaseViewerToken |
 | [マーケット Seller VC (Stage 7)](marketplace-seller-vc.md) | seller (出品身元) | OID4VP 提示 + `/marketplace/register` | 出品ガバナンス | SellerToken (24 時間・多回) |
+| [マーケット モバイルアプリ (Stage A)](marketplace-mobile-app.md) | (UI 統合) | iot-market-ui を PWA 化 | 素人向け体験 | 既存トークンを再利用 |
 
 #### 段階ごとに追加される機能と学べること
 

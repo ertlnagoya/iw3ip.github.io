@@ -189,6 +189,7 @@ authorization logic (dataset × purpose) over two transports
 | [SSI Service sample (Stage 4 prep)](ha-ssi-service.md) | service holder | OID4VP presentation | continuous write | ServiceToken (1 h, multi-use) |
 | [Marketplace end-to-end (Stage 6)](marketplace-vc-end-to-end.md) | both seller / buyer | OID4VP + MetaMask | write + read | ServiceToken & PurchaseViewerToken |
 | [Marketplace Seller VC (Stage 7)](marketplace-seller-vc.md) | seller (listing identity) | OID4VP + `/marketplace/register` | listing governance | SellerToken (24 h, multi-use) |
+| [Marketplace Mobile App (Stage A)](marketplace-mobile-app.md) | (UI integration) | iot-market-ui as PWA | layperson UX | existing tokens reused |
 
 #### What each stage adds and what you can learn
 
