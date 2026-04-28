@@ -122,6 +122,7 @@ nav:
           - LLM Planner Hands-on: hands-on/llm-planner.md
           - LLM Planner Replacement Spec: hands-on/llm-planner-spec.md
   - Design:
+      - VC Architecture Overview (Phase 2): design/vc-architecture-overview.md
       - Marketplace VC Bridge (v1/v2 spec): design/marketplace-vc-bridge-spec.md
       - SellerVC (Stage 7 prep spec): design/seller-vc-spec.md
   - Operations:
