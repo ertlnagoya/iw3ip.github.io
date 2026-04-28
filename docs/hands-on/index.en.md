@@ -182,6 +182,7 @@ authorization logic (dataset × purpose) over two transports
 | [Mobile SSI wallet sample (Stage 1)](ha-ssi-wallet.md) | mobile wallet | OID4VP presentation | write | PolicyToken (5 min, single-use) |
 | [SSI Viewer sample (Stage 3)](ha-ssi-viewer.md) | mobile wallet | OID4VP presentation | read (`GET /platform/data`) | ViewerToken (60 s, multi-use) |
 | [SSI Service sample (Stage 4 prep)](ha-ssi-service.md) | service holder | OID4VP presentation | continuous write | ServiceToken (1 h, multi-use) |
+| [Marketplace end-to-end (Stage 6)](marketplace-vc-end-to-end.md) | both seller / buyer | OID4VP + MetaMask | write + read | ServiceToken & PurchaseViewerToken |
 
 #### What each stage adds and what you can learn
 
@@ -250,6 +251,23 @@ of the previous one.
     - Role separation between ConsentVC and ViewerVC, and the
       independence of the PolicyToken / ViewerToken namespaces
       (cross-use is rejected)
+
+##### Stage 6: 4-VC end-to-end (`marketplace-vc-end-to-end`)
+
+Capstone of Stages 1–5. See the [hands-on page](marketplace-vc-end-to-end.md).
+
+- **Added on top of Stage 4 prep + Stage 5** (Stage 6 case B)
+    - Merchandise advertises `dataset_id` via `additionalInfo` (on-chain)
+    - bridge listener resolves dataset_id from `getAllAdditionalInfo()`
+      (per-merchandise cache, with fallback)
+    - iot-market-ui reads `additionalInfo` for the dataset on redirect
+    - 5 merchandises now span 3 datasets (temp / humidity / flood_risk_high)
+- **What you learn**
+    - The full chain: **Seller's ServiceVC writes → Buyer's
+      PurchaseViewerVC reads** all tied to one dataset
+    - Why having `dataset_id` on-chain matters (no hand-typed query strings)
+    - How the audit log forms a multi-row chain
+      (write × N → claim → issued → oid4vp → data) per purchase
 
 ##### Stage 5: marketplace VC bridge — v2 (`marketplace-vc-bridge`)
 

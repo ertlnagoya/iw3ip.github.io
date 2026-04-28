@@ -176,6 +176,7 @@ Phase 2 は 4 つのハンズオンで構成され、**同じ認可ロジック 
 | [スマホSSIウォレットサンプル (Stage 1)](ha-ssi-wallet.md) | スマホウォレット | OID4VP 提示 | 書き込み | PolicyToken (5 分・単回) |
 | [SSI ビューワサンプル (Stage 3)](ha-ssi-viewer.md) | スマホウォレット | OID4VP 提示 | 読み出し (`GET /platform/data`) | ViewerToken (60 秒・多回) |
 | [SSI サービスサンプル (Stage 4 prep)](ha-ssi-service.md) | サービス holder | OID4VP 提示 | 書き込み (連続) | ServiceToken (1 時間・多回) |
+| [マーケット連携 end-to-end (Stage 6)](marketplace-vc-end-to-end.md) | 両側 (seller / buyer) | OID4VP 提示 + MetaMask | 書き + 読み | ServiceToken & PurchaseViewerToken |
 
 #### 段階ごとに追加される機能と学べること
 
@@ -234,6 +235,23 @@ Phase 2 は 4 つのハンズオンで構成され、**同じ認可ロジック 
     - 単回消費 (write) vs TTL 内多回利用 (read) のセマンティクスの差
     - VC の役割分離 (ConsentVC vs ViewerVC) と PolicyToken / ViewerToken
       の token 空間の独立性 (流用拒否)
+
+##### 段階 6: 4 種 VC を 1 動線で繋ぐ end-to-end (`marketplace-vc-end-to-end`)
+
+Stage 1〜5 の集大成。詳細は [ハンズオン](marketplace-vc-end-to-end.md)。
+
+- **段階 4 prep + 段階 5 から追加される機能** (Stage 6 case B)
+    - Merchandise の `additionalInfo` に `dataset_id` を含めて on-chain 公開
+    - bridge listener が `getAllAdditionalInfo()` で dataset_id を解決
+      (per-merchandise キャッシュ、fallback あり)
+    - iot-market-ui が `additionalInfo` から dataset を抽出して redirect
+    - 5 つの Merchandise を 3 dataset に分散して deploy
+- **学べること**
+    - **Seller の ServiceVC 書き込み → Buyer の PurchaseViewerVC 読み出し**が
+      同一 dataset を介して連鎖する全体像
+    - dataset_id がハードコードでなく **on-chain 由来**であることの利点
+    - 1 dataset を巡る audit ログの **多層チェーン** (write x N → claim →
+      issued → oid4vp → data) の読み解き
 
 ##### 段階 5: マーケット連携によるデータ受け渡し v2 (`marketplace-vc-bridge`)
 
