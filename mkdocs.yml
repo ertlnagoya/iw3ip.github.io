@@ -114,6 +114,7 @@ nav:
           - HA SSI Wallet Sample: hands-on/ha-ssi-wallet.md
           - HA SSI Viewer Sample: hands-on/ha-ssi-viewer.md
           - HA SSI Service Sample: hands-on/ha-ssi-service.md
+          - Marketplace VC Bridge: hands-on/marketplace-vc-bridge.md
       - Phase 3 Intelligence Integration:
           - Regional Safety Assistant Sample: hands-on/regional-safety-assistant.md
           - LLM Planner Hands-on: hands-on/llm-planner.md

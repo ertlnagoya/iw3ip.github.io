@@ -1,4 +1,9 @@
-# Mobile Viewer
+# Mobile Viewer (v1)
+
+!!! note "v1 viewing flow"
+    This page covers the **v1 (current marketplace + MetaMask)** path
+    for inspecting shared results. For the v2 wallet-VC flow, see
+    [Marketplace × Wallet bridge](marketplace-vc-bridge.md).
 
 ## Goal
 

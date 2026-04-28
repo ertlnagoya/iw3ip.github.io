@@ -251,26 +251,28 @@ of the previous one.
       independence of the PolicyToken / ViewerToken namespaces
       (cross-use is rejected)
 
-##### Stage 5 (in progress): marketplace VC bridge — v2
+##### Stage 5: marketplace VC bridge — v2 (`marketplace-vc-bridge`)
 
-Project in progress. See the
-[Marketplace VC Bridge design spec](../design/marketplace-vc-bridge-spec.md)
-for details.
+See the [Marketplace VC Bridge design spec](../design/marketplace-vc-bridge-spec.md)
+and the [hands-on](marketplace-vc-bridge.md) for details.
 
-- **Capabilities being added**
+- **Added on top of Stages 1/3**
     - **bridge service**: subscribes to `Merchandise.Purchase` events on Hardhat
-    - **PurchaseViewerVC**: purchase-bound read credential carrying
-      `merchandise_address`, `tx_hash`, `buyer_eth_addr` as claims
-    - `POST /marketplace/claim`: bridge → publisher hook
-    - `GET /platform/data?merchandise=<addr>`: purchase-scoped data API
-    - `/purchased/[txHash]` page in iot-market-ui for VC delivery
-    - Audit log records `eth_addr ↔ did:jwk` link and `tx_hash`
-- **What you'll learn (target)**
+    - **PurchaseViewerVC**: 4th VC kind, purchase-bound read credential
+      with claims `merchandise_address`, `tx_hash`, `buyer_eth_addr`
+    - `POST /marketplace/claim`: bridge → publisher hook (idempotent on `tx_hash`)
+    - `GET /platform/data?merchandise=<addr>`: reverse-lookup data API
+    - `/purchased/[txHash]` page in iot-market-ui for VC delivery (QR + deeplink)
+    - Audit log records `eth_addr ↔ did:jwk` binding via
+      `raw_topic=marketplace/issued`, `reason=eth_did_bound:...`
+- **What you learn**
     - Comparison between **v1** (current marketplace + MetaMask + encrypted IPFS)
       and **v2** (VC-mediated)
-    - What it means for one person to hold **two identities** (ETH key + did:jwk)
-    - Role separation between ETH payment and VC-based authorization
-    - How the bridge service ties on-chain events to off-chain authz
+    - One person holding **two identities** (ETH key + did:jwk)
+    - Role separation between ETH payment and VC authorization
+    - How bridge listener and iot-market-ui can both call
+      `/marketplace/claim` while staying consistent via idempotency
+    - The four audit log rows produced by one purchase
 
 ##### Stage 4 prep: M2M continuous write authz (`ha-ssi-service`)
 
