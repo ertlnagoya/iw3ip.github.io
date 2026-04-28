@@ -1,14 +1,14 @@
 # Marketplace × Wallet bridge (v2 / Stage 5)
 
 !!! abstract "Hands-on for the v2 lane"
-    Walks the end-to-end path from a marketplace purchase to a
-    wallet-held PurchaseViewerVC and finally to gated data retrieval.
+    End-to-end path from a marketplace purchase to a wallet-held
+    PurchaseViewerVC and finally to gated data retrieval.
     See the [Marketplace VC Bridge design spec](../design/marketplace-vc-bridge-spec.md)
     for architecture details.
 
 > The Japanese page ([marketplace-vc-bridge.md](marketplace-vc-bridge.md))
-> is the canonical step-by-step. This page summarizes the structural
-> points only.
+> is the canonical step-by-step with full expected outputs and
+> troubleshooting. This page lists the structural points only.
 
 ## What you'll learn
 
@@ -21,37 +21,29 @@
   `reason=eth_did_bound:claim=...:eth=...:tx=...`)
 - `/platform/data?merchandise=<addr>` reverse-resolves the dataset
 
-## Common pitfalls
+## Step overview
 
-- The bridge in compose talks to a **host-side Hardhat** via
-  `host.docker.internal:8545` (Hardhat is not co-located in compose)
-- iot-market-ui POSTs to `/marketplace/claim` directly; this races the
-  bridge listener but idempotency makes it safe
-- PurchaseViewerVC, ConsentVC, ViewerVC, and ServiceVC are **distinct**
-  in the wallet — four different cards
-- The deeplink only works after the wallet is paired
+| Step | What it verifies |
+| --- | --- |
+| 1 | Hardhat node up, 20 test accounts available |
+| 2 | PubKey + IoTMarket + Merchandise×5 deployed |
+| 3 | Buyer registers a key in the PubKey contract (purchase precondition) |
+| 4 | publisher exposes PurchaseViewerVC; bridge subscribes to 5 merchandises |
+| 5 | MetaMask connected to Hardhat, Account #2 imported |
+| 6 | Purchase event captured by bridge → `/marketplace/claim` audit row |
+| 7 | iPhone wallet receives PurchaseViewerVC; eth↔did binding audited |
+| 8 | Presentation yields a ViewerToken |
+| 9 | `GET /platform/data?merchandise=<addr>` reverse-lookup returns 200 |
+| 10 | Four-row audit chain visible (claim → issued → oid4vp → data) |
 
-## Architecture sketch
-
-```
-buyer's MetaMask  --purchase()-->  Merchandise contract
-                                       │  Purchase event
-                                       ├──> bridge listener
-                                       │      POST /marketplace/claim
-                                       └──> iot-market-ui /purchased/[tx]
-                                              POST /marketplace/claim
-                                              (idempotent)
-                                                ↓
-                                         publisher
-                                                ↓ deeplink
-                                          iw3ip-wallet
-                                            (OID4VCI)
-                                          PurchaseViewerVC
-                                                ↓ OID4VP
-                                          ViewerToken
-                                                ↓
-                            GET /platform/data?merchandise=<addr>
-```
+See the JA page for the exact commands, expected outputs, and the
+trouble-shooting notes from the e2e validation we ran:
+- MetaMask `chainId` errors → reset account, or fall back to Hardhat console
+- `0x295f0a57` revert → forgot Step 3 (PubKey registration)
+- iPhone wallet crashes on deeplink → `BRIDGE_PUBLIC_PUBLISHER_URL` not set,
+  or Metro bundler not running, or wallet metadata cache stale
+- bridge silent → old filter-based listener; pull main and rebuild
+- iPhone can't reach publisher → LAN IP changed, update env
 
 ## Audit log shape (one purchase produces ≥4 rows)
 
@@ -61,6 +53,10 @@ buyer's MetaMask  --purchase()-->  Merchandise contract
 | `marketplace/issued` | `eth_did_bound:claim=<id>:eth=...:tx=...` |
 | `oid4vp/response` | `ok` |
 | `platform/data` | `viewer_token_used:<jti>:<read_count>` |
+
+`marketplace/claim` (subject = ETH address) and `marketplace/issued`
+(subject = did:jwk) link via the same `claim_id`. That linkage is
+the heart of Stage 5.
 
 ## Limits
 
