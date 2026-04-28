@@ -235,6 +235,26 @@ Phase 2 は 4 つのハンズオンで構成され、**同じ認可ロジック 
     - VC の役割分離 (ConsentVC vs ViewerVC) と PolicyToken / ViewerToken
       の token 空間の独立性 (流用拒否)
 
+##### 段階 5 (進行中): マーケット連携によるデータ受け渡し v2
+
+進行中のプロジェクトです。詳細は
+[Marketplace VC Bridge 設計仕様](../design/marketplace-vc-bridge-spec.md)
+を参照。
+
+- **追加される機能 (予定)**
+    - **bridge service**: Hardhat 上の `Merchandise.Purchase` event を購読
+    - **PurchaseViewerVC**: 購入連動の閲覧用 VC (`merchandise_address`,
+      `tx_hash`, `buyer_eth_addr` を claim に持つ)
+    - `POST /marketplace/claim`: bridge → publisher 連携 endpoint
+    - `GET /platform/data?merchandise=<addr>`: 購入連動データ取得 API
+    - iot-market-ui に「購入後 VC 受領」画面 (`/purchased/[txHash]`)
+    - audit log に `eth_addr ↔ did:jwk` の紐付け、`tx_hash` を記録
+- **学べること (予定)**
+    - **v1 (現行マーケット + MetaMask + 暗号化 IPFS)** と **v2 (VC 連携)** の対比
+    - 同一人物が ETH 鍵と did:jwk 鍵の **2 つの身元**を持つことの意味
+    - ETH 支払いと VC 認可の **役割分離** (支払いと閲覧権限が別レイヤー)
+    - bridge service による on-chain event ↔ off-chain 認可の橋渡し
+
 ##### 段階 4 prep: M2M 連続書き込み認可 (`ha-ssi-service`)
 
 - **段階 1/3 から追加される機能**
