@@ -25,30 +25,7 @@
 - audit log に `eth_addr ↔ did:jwk` 紐付けが記録される
 - `/platform/data?merchandise=<addr>` が ViewerToken で gate される
 
-## つまずきやすい点
-
-- bridge は **host で動く Hardhat** に `host.docker.internal:8545` で繋ぐ
-  (compose 内に Hardhat は同居していない)
-- iot-market-ui はフロントから直接 `/marketplace/claim` を叩く実装で、
-  bridge とフロントの両方が叩いても **冪等性で安全**
-- PurchaseViewerVC は ConsentVC / ViewerVC / ServiceVC とは別 VC。
-  ウォレット側で 4 種類が別カードとして見える
-- 購入後にウォレット未設定だと VC 受領が完了しない (deeplink で wallet が起動する状態が前提)
-
-## 公式リンク
-
-- [Marketplace VC Bridge 設計仕様 (v1/v2)](../design/marketplace-vc-bridge-spec.md)
-- [Stage 1: ウォレットサンプル](ha-ssi-wallet.md)
-- [Stage 3: ビューワサンプル](ha-ssi-viewer.md)
-
-## 前提
-
-- [Stage 1](ha-ssi-wallet.md) と [Stage 3](ha-ssi-viewer.md) の動作確認が済んでいる
-- iot-market-ui (Svelte) と Hardhat ローカルチェーンが起動できる
-- iw3ip-wallet が iPhone 実機で動く
-- `home/env/temperature` 用の Merchandise が IoTMarket に登録済 (任意の dataset で可)
-
-## 1. 全体像
+## 全体像
 
 ```
 [buyer]
@@ -83,149 +60,486 @@
        [JSON データ取得]
 ```
 
-## 2. 起動
+## 前提
 
-### 2-A. Hardhat と Merchandise
+- [Stage 1](ha-ssi-wallet.md) と [Stage 3](ha-ssi-viewer.md) の動作確認が済んでいる
+- iot-market-ui (Svelte) と Hardhat ローカルチェーンが起動できる
+- iw3ip-wallet が iPhone 実機で動く (Metro bundler 接続済み)
+- LAN IP を確認 (`ipconfig getifaddr en0`)。本ページでは `192.168.68.53` で示すので、
+  あなたの環境の IP に読み替えてください
+
+---
+
+## Step 1. Hardhat ノード起動
+
+### 何を確認するか
+- Hardhat ローカルチェーンが起動し、20 個のテストアカウントが利用可能になる
+- buyer 用に Account #2 の秘密鍵をメモする (後で MetaMask に取り込む)
+
+### 操作
+
+ターミナル A (起動したまま):
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
-
-# Hardhat ノードを起動 (別ターミナル維持)
-npx hardhat node
-
-# (別ターミナル) IoTMarket を deploy + Merchandise を登録
-npx hardhat run scripts/deployIoTMarket.ts --network localhost
-npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
-
-# IoTMarket のアドレスをメモする (compose 用)
+npx hardhat node --hostname 0.0.0.0
 ```
 
-### 2-B. publisher + bridge を起動
+### 期待出力 (一部抜粋)
+
+```
+Started HTTP and WebSocket JSON-RPC server at http://0.0.0.0:8545/
+
+Accounts
+========
+Account #0: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 (10000 ETH)
+Private Key: 0xac0974bec...
+
+Account #2: 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC (10000 ETH)
+Private Key: 0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
+...
+```
+
+**メモ**: Account #2 の秘密鍵 (`0x5de4...`)、Account #2 のアドレス (`0x3C44...`)。
+
+---
+
+## Step 2. コントラクトデプロイ
+
+### 何を確認するか
+- PubKey + IoTMarket + Merchandise×5 が一括デプロイされる
+- IoTMarket と最初の Merchandise のアドレスをメモする (毎回固定値が出る)
+
+### 操作
+
+ターミナル B:
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace/iot-market
+npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
+```
+
+### 期待出力
+
+```
+Contract "PubKey" with 0x5FbDB2315678afecb367f032d93F642f64180aa3 deployed
+Contract "IoTMarket" with 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 deployed
+Contract "Merchandise" with 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0 deployed
+Merchandise 0 registered
+Contract "Merchandise" with 0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9 deployed
+Merchandise 1 registered
+Contract "Merchandise" with 0x0165878A594ca255338adfa4d48449f69242Eb8F deployed
+Merchandise 2 registered
+Contract "Merchandise" with 0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6 deployed
+Merchandise 3 registered
+Contract "Merchandise" with 0x610178dA211FEF7D417bC0e6FeD39F05609AD788 deployed
+Merchandise 4 registered
+```
+
+**メモ**: IoTMarket = `0xe7f1725...` (これはハンズオン中で **何度も使う**)。
+Merchandise アドレス 5 つ (購入時に 1 つずつ消費する)。
+
+---
+
+## Step 3. PubKey 登録 (buyer の事前準備)
+
+### 何を確認するか
+- `Merchandise.purchase()` 内部で `i_pubKey.getPubKey(tx.origin)` が呼ばれるため、
+  購入する account (Account #2) は事前に **PubKey** コントラクトへの公開鍵登録が必要
+- 登録漏れだと購入時に `PubKey__NotRegistered` で revert する
+
+### 操作
+
+ターミナル B (Hardhat console):
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace/iot-market
+npx hardhat console --network localhost
+```
+
+console プロンプトで:
+
+```javascript
+const [marketOwner, iotOwner, buyer] = await ethers.getSigners();
+const pubKey = await ethers.getContractAt(
+  "PubKey",
+  "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  buyer
+);
+const tx = await pubKey.registerKey("[dummy-pubkey-for-handson]");
+await tx.wait();
+console.log("registered for:", await buyer.getAddress());
+.exit
+```
+
+### 期待出力
+
+```
+registered for: 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC
+```
+
+**形式**: `[` で始まり `]` で終わる文字列なら何でも可 (`isPubKey()` が形式チェックのみ)。
+本来は RSA 公開鍵 (v1 lane で seller が暗号化に使う) ですが、ハンズオンでは v2 lane が
+本筋なので dummy で十分です。
+
+---
+
+## Step 4. publisher + bridge を起動
+
+### 何を確認するか
+- publisher が PurchaseViewerVC を含む 4 種の VC を発行できる状態
+- bridge が Hardhat の Purchase event を購読し、Merchandise×5 を見ている
+
+### 操作
+
+ターミナル C:
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
+git checkout main && git pull --ff-only
 
-# IoTMarket のアドレスを env に書く
-echo "BRIDGE_IOT_MARKET_ADDRESS=0x..." >> infra/.env
+# bridge 用 env (LAN IP は ipconfig getifaddr en0 で確認した値)
+cat > infra/.env <<EOF
+BRIDGE_HARDHAT_RPC=http://host.docker.internal:8545
+BRIDGE_IOT_MARKET_ADDRESS=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+BRIDGE_PUBLIC_PUBLISHER_URL=http://192.168.68.53:8080
+EOF
 
 docker compose -f infra/docker-compose.yml \
   --profile ssi-wallet --profile mv-bridge \
   up --build -d
-
-# ヘルスチェック
-curl -s http://192.168.68.53:8080/health
-
-# PurchaseViewerVC が登録されているか
-curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer \
-  | python3 -m json.tool | grep -A2 PurchaseViewerVC
 ```
 
-### 2-C. iot-market-ui を LAN 公開で起動
+### 期待出力 (確認 3 件)
+
+#### 4-A. publisher ヘルスチェック
+
+```bash
+sleep 5
+curl -s http://192.168.68.53:8080/health
+```
+→ `{"status":"ok","service":"publisher"}`
+
+#### 4-B. PurchaseViewerVC が登録済か
+
+```bash
+curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A1 PurchaseViewerVC
+```
+→
+```
+"PurchaseViewerVC": {
+  "format": "dc+sd-jwt",
+  ...
+"vct": "https://iw3ip.example/credentials/PurchaseViewerVC/v1",
+```
+
+#### 4-C. bridge が Hardhat に接続して Merchandise を発見しているか
+
+```bash
+docker logs iw3ip-mv-bridge 2>&1 | tail -5
+```
+→
+```
+bridge: listening to 5 merchandise(s)
+bridge: starting poll from block 14
+bridge: started rpc=http://host.docker.internal:8545 market=0xe7f1725... publisher=http://publisher:8080
+```
+
+!!! warning "BRIDGE_PUBLIC_PUBLISHER_URL の設定は必須"
+    これがないと、後の Step 6 で発行される deeplink 内の
+    `credential_issuer` が Docker 内部ホスト名 `http://publisher:8080` になり、
+    iPhone wallet が deeplink を開いた瞬間にメタデータ fetch で詰まります。
+
+---
+
+## Step 5. MetaMask 設定
+
+### 何を確認するか
+- MetaMask が Hardhat localhost (chain ID 31337) に接続できる
+- buyer (Account #2) の秘密鍵がインポートされ 10000 ETH が見える
+
+### 操作
+
+ブラウザは **Chrome / Firefox / Brave 等の MetaMask 拡張対応**を使用 (Safari 不可)。
+
+1. MetaMask 拡張アイコン → 上部のネットワーク名 → **「ネットワークを追加」**
+2. 入力:
+   - Network Name: `Hardhat localhost`
+   - RPC URL: `http://192.168.68.53:8545`
+   - Chain ID: `31337`
+   - Currency: `ETH`
+3. 保存後、`Hardhat localhost` に切替
+4. アカウントメニュー → **「秘密鍵をインポート」** → Step 1 でメモした Account #2 の秘密鍵
+
+### 期待表示
+
+- ネットワーク: `Hardhat localhost`
+- アドレス: `0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC`
+- 残高: `10000 ETH`
+
+---
+
+## Step 6. 購入 → bridge が Purchase event を捕捉
+
+### 何を確認するか
+- MetaMask 経由で `Merchandise.purchase()` が成功する
+- bridge が **Purchase event を polling で検知**して `/marketplace/claim` を叩く
+- publisher の audit log に `marketplace/claim` 行が新規で残る
+
+### 操作 A: ブラウザ経由 (本筋)
+
+iot-market-ui を起動 (ターミナル D):
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
-
-# publisher の URL を env に
-echo "VITE_PUBLISHER_URL=http://192.168.68.53:8080" > .env.local
-
+cat > .env.local <<EOF
+VITE_RPC_URL=http://192.168.68.53:8545
+VITE_PUBLISHER_URL=http://192.168.68.53:8080
+EOF
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
-## 3. 購入してみる
-
-### 3-A. PC で
-
-ブラウザで `http://192.168.68.53:5173/` を開き、商品リストから
-`home/env/temperature` 系の Merchandise を 1 つ選ぶ。
-
-詳細ページで「Purchase」ボタンを押す。MetaMask が立ち上がるので
-ETH 残高がある account で署名・送信。
-
-### 3-B. tx 確定後の自動遷移
-
-tx が confirm されると自動で `/purchased/<txHash>` に遷移します。
-ページ上で:
-
-- 「publisher にクレームを登録中…」 → 数秒で「ウォレットで開く」ボタンと
-  QR が表示される
-- QR の下に `claim_id` / `tx_hash` / `merchandise` / `dataset_id` /
-  `buyer_eth_addr` が並ぶ
-
-publisher のログに次のような行が出ているはず:
-
+PC ブラウザ (Chrome 等) で次にアクセス:
 ```
-audit: raw_topic=marketplace/claim reason=claim_received:<id>:tx=0x...
+http://192.168.68.53:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 ```
 
-## 4. iw3ip-wallet で VC を受け取る
+(Merchandise #1。`#0` は使わなくても良いが state が IN_PROGRESS のまま残るので注意)
 
-スマホ (iPhone) で `/purchased/<txHash>` ページの **QR を読み取る**
-か、PC ブラウザで「ウォレットで開く」ボタンを押すと AirDrop で
-deeplink を送る。
+「Purchase」→ MetaMask で確認 → tx 送信。確定後、自動で
+`/purchased/<txHash>?merchandise=...&dataset=...&buyer=...` に遷移し、QR と deeplink が出る。
 
-iw3ip-wallet が deeplink を受け取り「IW3IP Purchase Viewer Credential」
-として保存する確認画面が出る。承認すると VC が wallet に保存される。
+### 操作 B: MetaMask が動かない場合の fallback
 
-claim:
-- `dataset_id`
+ターミナル B (Hardhat console):
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace/iot-market
+npx hardhat console --network localhost
+```
+
+```javascript
+const [marketOwner, iotOwner, buyer] = await ethers.getSigners();
+const merch = await ethers.getContractAt(
+  "Merchandise",
+  "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+  buyer
+);
+const tx = await merch.purchase({ value: await merch.getPrice() });
+const r = await tx.wait();
+console.log("tx hash:", r.hash, "status:", r.status);
+```
+
+→ `tx hash: 0x4e7c...` `status: 1`
+
+### 期待出力 (5 秒待ってから確認)
+
+#### 6-A. bridge ログで Purchase event を捕捉
+
+```bash
+docker logs iw3ip-mv-bridge 2>&1 | tail -5
+```
+→
+```
+bridge: Purchase event from 0xDc64a140... buyer=0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC tx=0x4e7c3e0a...
+bridge: claim ok jti=2b417b32e6566830 deeplink=openid-credential-offer://?credential_offer=...
+```
+
+ここの `jti=...` の値はあとで使うのでメモ。
+
+#### 6-B. audit log に marketplace/claim 行
+
+```bash
+curl -s 'http://192.168.68.53:8080/audit/logs?limit=2' | python3 -m json.tool
+```
+→
+```json
+{
+  "raw_topic": "marketplace/claim",
+  "subject_did": "eth:0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+  "purpose": "purchase",
+  "reason": "claim_received:2b417b32e6566830:tx=0x4e7c3e0a...",
+  ...
+}
+```
+
+**ここまでで「on-chain 購入 → off-chain 認可コンテキスト確保」が成立**。
+
+---
+
+## Step 7. iPhone wallet で PurchaseViewerVC を受領
+
+### 何を確認するか
+- bridge の deeplink を iPhone wallet (iw3ip-wallet) で開いて VC 発行を受ける
+- VC の claims に `merchandise_address` / `tx_hash` / `buyer_eth_addr` が乗っている
+- publisher が **eth_addr ↔ did:jwk の紐付けを audit log に記録する**
+
+### 事前準備: Metro bundler 起動
+
+iPhone の wallet が `No script URL provided` エラーで開けない場合、Metro が起動していない。
+ターミナル E:
+
+```bash
+cd ~/program/iw3ip-wallet
+npx react-native start
+```
+
+`Metro waiting on...` を確認。wallet で「Reload JS」を押せば普通の画面に戻る。
+
+### 操作: deeplink を QR で iPhone に渡す
+
+```bash
+DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok jti=2b417b32e6566830" | tail -1 | sed -E 's/.*deeplink=//')
+echo "$DEEPLINK"
+
+# QR を Mac ブラウザで開く
+ENCODED=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$DEEPLINK")
+open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
+```
+
+iPhone カメラで QR を読み取り → wallet が起動 → 「IW3IP Purchase Viewer Credential」承認画面 → 承認。
+
+### 期待結果
+
+#### 7-A. wallet の VC 一覧で claims を展開すると次が見える
+
+- `dataset_id`: `home/env/temperature`
+- `merchandise_address`: `0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9`
+- `buyer_eth_addr`: `0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC`
+- `tx_hash`: `0x4e7c3e0a...`
 - `allowed_actions`: `["read"]`
-- `merchandise_address`
-- `buyer_eth_addr`
-- `tx_hash`
 
-publisher ログで eth↔did 紐付けを確認:
+#### 7-B. audit log で eth↔did 紐付けが記録される
 
+```bash
+curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool
 ```
-audit: raw_topic=marketplace/issued reason=eth_did_bound:claim=<id>:eth=0x...:tx=0x...
-holder_did=did:jwk:...
+→
+```json
+{
+  "raw_topic": "marketplace/issued",
+  "subject_did": "did:jwk:eyJhbG...",
+  "purpose": "purchase_link",
+  "reason": "eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c3e0a...",
+  "holder_did": "did:jwk:eyJhbG..."
+}
 ```
 
-これで購入者の Ethereum address と did:jwk が **publisher の audit log
-で紐付いた**ことが分かります。
+**この `eth_did_bound` 行が Stage 5 のキーマイルストーン**。
+MetaMask の鍵と wallet の鍵が「同じ人物」として publisher 上で結びつきました。
 
-## 5. ViewerToken を取り出す
+---
+
+## Step 8. ViewerToken を取り出す
+
+### 何を確認するか
+- wallet で **PurchaseViewerVC を提示**すると ViewerToken (60 秒・多回利用) が払い出される
+- PolicyToken (Stage 1) でも ViewerVC (Stage 3) でもなく、購入連動の VC を選ぶ動線
+
+### 操作
 
 PC ブラウザで:
-
 ```
 http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=PurchaseViewerVC
 ```
 
-QR / AirDrop deeplink → wallet で **PurchaseViewerVC** を選んで提示。
+`vc_kind=PurchaseViewerVC` が必須 (これが無いと ConsentVC 用 PD が選ばれる)。
 
-publisher ログに ViewerToken が出力されます:
+QR / deeplink → iPhone wallet で **PurchaseViewerVC を選択して提示**。
+
+publisher ログから token 抽出:
 
 ```bash
-docker logs $(docker ps -qf name=publisher) 2>&1 \
-  | grep viewer_token_issued | tail -1
-# → viewer_token_issued vc_kind=PurchaseViewerVC jti=... token=... ttl=60s
+PUB=$(docker ps -qf name=publisher)
+TOKEN=$(docker logs $PUB 2>&1 \
+  | grep "viewer_token_issued vc_kind=PurchaseViewerVC" | tail -1 \
+  | sed -E 's/.*token=([^ ]+).*/\1/')
+echo "TOKEN=$TOKEN"
 ```
 
-## 6. データ取得 (`/platform/data?merchandise=<addr>`)
+### 期待出力
+
+```
+TOKEN=oJVsNtb5Un1NginSyyCcJavThu9WkTxRT6b8uhmWjRc
+```
+
+(JSON 形式のログ全文も出ます: `viewer_token_issued vc_kind=PurchaseViewerVC jti=cc38f06e... token=... dataset=home/env/temperature ttl=60s`)
+
+---
+
+## Step 9. データ取得 (`merchandise=<addr>` 逆引き)
+
+### 何を確認するか
+- ViewerToken で `/platform/data` が叩ける
+- `merchandise=<contract address>` を query に渡すと、publisher が **dataset_id を逆引き**して同じ結果を返す
+- 期限切れ (60 秒経過) で 401 になる
+
+### 操作 (60 秒以内)
 
 ```bash
-TOKEN=<viewer_token>
-MERCHANDISE=<merchandise_address>
+MERCHANDISE=0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 
 curl -s -H "Authorization: Bearer $TOKEN" \
-  "http://192.168.68.53:8080/platform/data?merchandise=$MERCHANDISE" \
-  | python3 -m json.tool
+  "http://192.168.68.53:8080/platform/data?merchandise=$MERCHANDISE" | python3 -m json.tool
 ```
 
-期待:
+### 期待出力
+
 ```json
 {
   "dataset_id": "home/env/temperature",
-  "count": N,
+  "count": 0,
   "read_count": 1,
-  "rows": [...]
+  "rows": []
 }
 ```
 
-dataset_id は **merchandise_address から逆引き**で解決されます。
-buyer は dataset 名を覚えていなくても、買った商品の住所だけで取得できます。
+`count: 0` でも認可は通っているので OK。実データ投入は別途 `POST /platform/ingest`
+(Stage 1) で行えますが、本ハンズオンでは認可ロジックの検証が目的。
 
-## 7. v1 lane との対比
+### 期限切れの確認 (60 秒経過後)
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" \
+  "http://192.168.68.53:8080/platform/data?dataset_id=home/env/temperature" | python3 -m json.tool
+```
+→
+```json
+{
+  "detail": "viewer_token_expired"
+}
+```
+
+これも Stage 5 / Stage 3 仕様通りの正常動作です。
+
+---
+
+## Step 10. 監査ログの全体像
+
+### 何を確認するか
+- 1 購入から **少なくとも 4 行**の audit log が連鎖して残る
+- on-chain (ETH 鍵) と off-chain (did:jwk) の対応関係が読み取れる
+
+### 操作
+
+```bash
+curl -s 'http://192.168.68.53:8080/audit/logs?limit=10' | python3 -m json.tool
+```
+
+### 期待出力 (新しい順)
+
+| id | raw_topic | reason | subject |
+| --- | --- | --- | --- |
+| (最新) | `platform/data` | `viewer_token_used:cc38f06e...:1` | `did:jwk:...` |
+| -1 | `oid4vp/response` | `ok` | `did:jwk:...` |
+| -2 | `marketplace/issued` | **`eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c...`** | `did:jwk:...` |
+| -3 | `marketplace/claim` | `claim_received:2b417b32...:tx=0x4e7c...` | `eth:0x3C44...` |
+
+`marketplace/claim` (eth_addr 主体) と `marketplace/issued` (did:jwk 主体) が **同じ claim_id でリンク**しているのが Stage 5 の核心です。
+
+---
+
+## v1 lane との対比
 
 同じ購入で v1 lane (encryptURI 配信) も並走しています。
 seller 側で `Merchandise.emitUpload(encryptURI)` を呼んでいれば、
@@ -239,30 +553,108 @@ buyer の MetaMask 側でも従来通りの暗号化 URI が見えます。
 | 監査ログ | on-chain Upload event のみ | publisher audit log (eth_did_bound 込み) |
 | 撤回 | 鍵の漏洩で再暗号化 | wallet で VC 破棄 |
 
-## 8. 監査ログの全体像 (1 購入で 4 行)
+---
 
-```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=10' | python3 -m json.tool
+## 完了判定マトリクス
+
+下表が全部 ✅ になれば Stage 5 完了です。
+
+| 工程 | 確認項目 | 出力例 / 場所 |
+| --- | --- | --- |
+| Step 1 | Hardhat ノード起動 | `Started HTTP and WebSocket JSON-RPC server at http://0.0.0.0:8545/` |
+| Step 2 | コントラクトデプロイ | `Contract "IoTMarket" with 0xe7f1725...` |
+| Step 3 | PubKey 登録 | `registered for: 0x3C44...` |
+| Step 4-A | publisher 起動 | `{"status":"ok","service":"publisher"}` |
+| Step 4-B | PurchaseViewerVC が露出 | issuer metadata に `"vct": ".../PurchaseViewerVC/v1"` |
+| Step 4-C | bridge が Hardhat に接続 | `bridge: listening to 5 merchandise(s)` |
+| Step 5 | MetaMask 残高 | `10000 ETH` (Account #2) |
+| Step 6-A | bridge が Purchase 検知 | `bridge: claim ok jti=...` |
+| Step 6-B | audit に marketplace/claim | `subject=eth:0x3C44...`, `reason=claim_received:...` |
+| Step 7-A | wallet で VC 受領 | claims に `merchandise_address` / `tx_hash` / `buyer_eth_addr` |
+| Step 7-B | audit に eth_did_bound | `raw_topic=marketplace/issued`, `holder_did=did:jwk:...` |
+| Step 8 | ViewerToken 発行 | publisher ログ `viewer_token_issued vc_kind=PurchaseViewerVC` |
+| Step 9 | merchandise 逆引き取得 | `{"dataset_id": "home/env/temperature", "read_count": 1}` |
+| Step 9 (続) | 60 秒後 401 | `{"detail": "viewer_token_expired"}` |
+| Step 10 | audit log 4 行連鎖 | `marketplace/claim` → `marketplace/issued` → `oid4vp/response` → `platform/data` |
+
+---
+
+## トラブルシューティング
+
+実機検証で発生した詰まりポイントとその対処です。
+
+### A. MetaMask が `chainId エラー` で tx を送れない
+
+```
+MetaMask - RPC Error: Trying to send a raw transaction with an invalid chainId.
 ```
 
-期待される最小 4 行 (新しい順):
+**原因**: Hardhat ノードを再起動した後、MetaMask 側に古い nonce / chainId キャッシュが残っている。
 
-| raw_topic | reason | holder_did |
-| --- | --- | --- |
-| `platform/data` | `viewer_token_used:<jti>:<read_count>` | did:jwk:... |
-| `oid4vp/response` | `ok` | did:jwk:... |
-| `marketplace/issued` | `eth_did_bound:claim=<id>:eth=...:tx=...` | did:jwk:... |
-| `marketplace/claim` | `claim_received:<id>:tx=...` | (空; eth_addr のみ) |
+**対処**: MetaMask → Settings → Advanced → **「Clear activity tab data」** または **「Reset Account」**。
+それでも駄目なら **Step 6 操作 B (Hardhat console)** で購入を代替実行できます。bridge と publisher の動作確認には十分です。
 
-## 9. エラーケース
+### B. Purchase が `0x295f0a57` で revert
 
-| 状況 | エラー |
-| --- | --- |
-| 同じ tx_hash で 2 回 claim | 200, `created: false` (idempotent) |
-| 未登録の merchandise で `/platform/data` | 404 `unknown_merchandise:0x...` |
-| dataset 不一致のトークンで取得 | 403 `viewer_token_dataset_mismatch` |
-| ViewerToken 期限切れ | 401 `viewer_token_expired` (60 秒で切れる) |
-| ConsentVC を `/platform/data` に流用 | 401 (ViewerToken namespace に該当無し) |
+```
+Error: VM Exception while processing transaction: reverted with an unrecognized custom error
+```
+
+**原因**: `PubKey__NotRegistered`。Step 3 をスキップした、または Account #2 以外で PubKey を登録した。
+
+**対処**: Step 3 を再実行。Hardhat console で `pubKey.registerKey("[...]")` を **buyer (Account #2)** で呼ぶ。
+
+### C. iPhone wallet が deeplink を開いた瞬間に落ちる / 何も表示されない
+
+**原因 1**: bridge から発行された deeplink 内の `credential_issuer` が
+`http://publisher:8080` (Docker 内部ホスト名) になっており、iPhone から到達不能。
+
+**対処**: `infra/.env` に `BRIDGE_PUBLIC_PUBLISHER_URL=http://<LAN_IP>:8080` を設定して
+bridge を再起動 (Step 4)。deeplink を再取得して、内部にある `credential_issuer` が
+LAN IP になっていることを確認:
+
+```bash
+DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1 | sed -E 's/.*deeplink=//')
+echo "$DEEPLINK" | python3 -c "import sys,urllib.parse,json; d=urllib.parse.unquote(sys.stdin.read().split('credential_offer=',1)[1]); print(json.loads(d)['credential_issuer'])"
+# → http://192.168.68.53:8080  (publisher:8080 ではなく)
+```
+
+**原因 2**: wallet が `No script URL provided` エラー画面を出している = Metro bundler 未起動。
+
+**対処**: `cd ~/program/iw3ip-wallet && npx react-native start` を別ターミナルで起動し、
+wallet の「Reload JS」を押す。
+
+**原因 3**: wallet 側で issuer metadata が古いキャッシュのまま。
+
+**対処**: iPhone のアプリスイッチャーで wallet を **完全終了** → 再起動。
+
+### D. bridge ログに `Purchase event` が一度も出ない
+
+```
+bridge: listening to 5 merchandise(s)
+@TODO TypeError: results is not iterable
+```
+
+**原因**: 古いコード (filter 購読) が残っている。最新コードでは `getLogs` polling に変更済み。
+
+**対処**:
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+git checkout main && git pull --ff-only
+docker compose -f infra/docker-compose.yml --profile mv-bridge up --build -d bridge
+```
+
+### E. iPhone から `192.168.68.53:8080/health` に届かない
+
+**原因**: PC とスマホが別ネットワークか、Mac の LAN IP が変わっている。
+
+**対処**:
+```bash
+ipconfig getifaddr en0   # 現在の LAN IP
+```
+変わっていれば `infra/.env` の `BRIDGE_PUBLIC_PUBLISHER_URL` を更新して bridge 再起動。
+
+---
 
 ## このハンズオンの限界 (将来課題)
 
