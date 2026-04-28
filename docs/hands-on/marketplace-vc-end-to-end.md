@@ -359,6 +359,21 @@ holder_did は同一になります。実運用では別端末・別 did:jwk に
 最新の `deployMerchandiseWithIoTMarket.ts` で再デプロイ。MetaMask は
 chainId キャッシュリセット必要 (Step 5 トラブルシューティング A)。
 
+### A2. Step E1 開始時に `SERVICE` が空になる
+
+```
+SERVICE=
+```
+
+**原因**: Step 0-D で publisher を再起動した直後で、過去の
+`service_token_issued` ログが消えており、まだ E1-A (発行) と
+E1-B (提示) を完了していない。
+
+**対処**: 「ServiceVC を **発行** → wallet で受領 → ServiceVC を
+**提示**」の 2 ステップを実行してから token を grep する。発行と
+提示は別 URL (`/issuer/offer` と `/verifier/request`) なので両方
+踏むこと。
+
 ### B. Step E4 で `count: 0`
 
 **原因**: Step E1 の ServiceToken ingest が、提示と別 publisher セッションだった
