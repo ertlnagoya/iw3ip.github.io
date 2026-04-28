@@ -194,6 +194,16 @@ ViewerVC 経由の read は次のように記録されます:
 | audit `raw_topic` | `platform/ingest` | `platform/data` |
 | VC claim | `allowed_purposes` | `allowed_actions` |
 
+## 次のステップ
+
+ViewerVC は **任意の dataset を直接指定して読む** 形でしたが、シリーズの
+他のステージでは異なる認可形態を扱います:
+
+- [Stage 4 prep: SSI サービスサンプル](ha-ssi-service.md) — M2M 連続書き込み (ServiceVC)
+- [Stage 5: マーケット連携 v2](marketplace-vc-bridge.md) — 購入連動 read (PurchaseViewerVC)
+- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — Stage 1〜5 の集大成
+- [Stage 7: SellerVC](marketplace-seller-vc.md) — 出品身元のガバナンス
+
 ## 拡張ヒント
 
 - **ViewerVC の有効期限**: VC 自体に短い `exp` を入れて期限管理 (revoke 機能と組み合わせる)

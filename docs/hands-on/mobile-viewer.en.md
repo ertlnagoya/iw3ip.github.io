@@ -12,8 +12,14 @@ Confirm that a smartphone can browse the event feed and proceed to purchase acti
 ## What this page helps you understand
 
 - what is required to open the viewer from a smartphone
-- what the URL `http://<LAN_IP>:5173/mobile` actually means
+- which routes `iot-market-ui` exposes (`/`, `/merchandise/[address]`,
+  `/purchased/[txHash]`, `/seller`)
 - which screens confirm viewing and purchase behavior
+
+!!! info "`/mobile` is not implemented"
+    The legacy exercise program (`examples/hands_on/mobile_viewer/`)
+    assumes a `/mobile` route, but the current `iot-market-ui` does
+    not have one. Use the actual entry points listed below.
 
 ## Common stumbling points
 
@@ -38,8 +44,9 @@ Confirm that a smartphone can browse the event feed and proceed to purchase acti
 - [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/mobile_viewer/answer_program.py)
 - [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/mobile_viewer/README.md)
 
-This exercise builds the smartphone access URL from the PC's LAN IP.  
-The problem program asks learners to complete the function that generates `http://<LAN_IP>:5173/mobile`, so they understand exactly what the phone should open.
+This exercise builds the smartphone access URL from the PC's LAN IP.
+The legacy problem program assumes `/mobile`; in the current code
+read it as the homepage `/` instead.
 
 ## Shortest path
 
@@ -47,13 +54,17 @@ For a first pass, these four steps are enough.
 
 1. start `iot-market-ui` on `0.0.0.0:5173`
 2. check the PC LAN IP
-3. open `http://<LAN_IP>:5173/mobile` from the smartphone
-4. confirm that the event list is visible
+3. open `http://<LAN_IP>:5173/` from the smartphone (homepage)
+4. confirm that the search UI is visible
 
 Branches after that:
 
-- If you only want to confirm viewing: opening `/mobile` and seeing the list is enough
-- If you also want to test purchase actions: open the same URL in MetaMask Mobile
+- **Specific item**: open `http://<LAN_IP>:5173/merchandise/<address>` directly
+  (use a Merchandise address from the Hardhat deploy output)
+- **Purchase path**: open the same URL in MetaMask Mobile
+- **VC-mediated path (v2)**: jump to [Stage 5](marketplace-vc-bridge.md);
+  the iot-market-ui exposes `/purchased/[txHash]` and `/seller` for the
+  wallet-aware flows
 - If the connection fails early: jump to the troubleshooting section first
 
 ## Process table of contents
@@ -69,7 +80,7 @@ Branches after that:
 
 <details class="iw3ip-toc-details">
   <summary>Check 1: open the mobile viewer from the smartphone</summary>
-  <p>Next, open `/mobile` from the smartphone and confirm that the event list and filters are visible.</p>
+  <p>Next, open the homepage `/` (or a specific `/merchandise/[address]`) from the smartphone and confirm that the UI is visible.</p>
   <ol>
     <li><a href="#open-from-smartphone">Open from smartphone</a></li>
     <li><a href="#success-example">Success example</a></li>
@@ -87,7 +98,7 @@ Branches after that:
 
 ## How to read this page
 
-This page is a connection guide for checking Phase 1 results from a smartphone. If you only need a quick confirmation path, opening the `/mobile` page is enough. For workshop use, it is better to continue through the wallet/browser notes so learners understand what changes between simple viewing and purchase actions.
+This page is a connection guide for checking Phase 1 results from a smartphone. If you only need a quick confirmation path, opening the homepage `/` is enough. For workshop use, it is better to continue through the wallet/browser notes so learners understand what changes between simple viewing and purchase actions.
 
 ## Prepare the connection baseline
 
@@ -111,7 +122,14 @@ At this point, you have the URL that the smartphone should open. The next step i
 ## Open from smartphone
 
 ```txt
-http://<YOUR_PC_LAN_IP>:5173/mobile
+http://<YOUR_PC_LAN_IP>:5173/
+```
+
+For an individual item (Merchandise contract address from the
+Hardhat deploy):
+
+```txt
+http://<YOUR_PC_LAN_IP>:5173/merchandise/<merchandise_address>
 ```
 
 Use MetaMask mobile in-app browser for purchase actions.
@@ -119,12 +137,12 @@ Use MetaMask mobile in-app browser for purchase actions.
 Example:
 
 ```txt
-http://192.168.1.20:5173/mobile
+http://192.168.1.20:5173/
 ```
 
 ## Success example
 
-- `/mobile` opens from the smartphone
+- the iot-market-ui homepage opens from the smartphone
 - event feed and merchandise list are visible
 - purchase flow can proceed through MetaMask Mobile
 

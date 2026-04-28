@@ -191,6 +191,16 @@ token produces three rows.
 | Audit `raw_topic` | `platform/ingest` | `platform/data` |
 | VC claim | `allowed_purposes` | `allowed_actions` |
 
+## Next steps
+
+ViewerVC reads use a **freely-chosen dataset_id**. Other authorization
+shapes live in:
+
+- [Stage 4 prep: SSI Service](ha-ssi-service.md) — M2M continuous write (ServiceVC)
+- [Stage 5: Marketplace bridge](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
+- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — capstone
+- [Stage 7: SellerVC](marketplace-seller-vc.md) — marketplace seller identity
+
 ## Extension ideas
 
 - **VC expiry**: shorten the credential's `exp` and combine with revocation
