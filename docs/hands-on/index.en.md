@@ -183,6 +183,7 @@ authorization logic (dataset × purpose) over two transports
 | [SSI Viewer sample (Stage 3)](ha-ssi-viewer.md) | mobile wallet | OID4VP presentation | read (`GET /platform/data`) | ViewerToken (60 s, multi-use) |
 | [SSI Service sample (Stage 4 prep)](ha-ssi-service.md) | service holder | OID4VP presentation | continuous write | ServiceToken (1 h, multi-use) |
 | [Marketplace end-to-end (Stage 6)](marketplace-vc-end-to-end.md) | both seller / buyer | OID4VP + MetaMask | write + read | ServiceToken & PurchaseViewerToken |
+| [Marketplace Seller VC (Stage 7)](marketplace-seller-vc.md) | seller (listing identity) | OID4VP + `/marketplace/register` | listing governance | SellerToken (24 h, multi-use) |
 
 #### What each stage adds and what you can learn
 
@@ -251,6 +252,29 @@ of the previous one.
     - Role separation between ConsentVC and ViewerVC, and the
       independence of the PolicyToken / ViewerToken namespaces
       (cross-use is rejected)
+
+##### Stage 7: Seller-side VC (`marketplace-seller-vc`)
+
+See the [SellerVC design spec](../design/seller-vc-spec.md) and the
+[hands-on](marketplace-seller-vc.md).
+
+- **Added on top of Stage 6**
+    - **SellerVC** (5th kind): claims `seller_id`, `licensed_datasets`,
+      `subject_id`
+    - **SellerToken** (24 h, multi-use, scoped to `/marketplace/register`)
+    - **`POST /marketplace/register`**: binds Merchandise → seller_did,
+      enforces dataset_id ∈ licensed_datasets, optionally verifies
+      `Merchandise.getOwner()` on chain
+    - Audit row `raw_topic=marketplace/seller_registered` with
+      `owner_verify=verified|skipped|rpc_failed`
+    - `/platform/data?merchandise=` response now carries `seller_did`
+    - `/seller` page in iot-market-ui (form-only)
+- **What you learn**
+    - Encoding "the right to list a dataset" as a VC claim
+    - Off-chain seller identity, surfaced to buyers via the data API
+    - Optional on-chain owner verification as the minimum impersonation defense
+    - The full picture: 5 VC kinds (Consent / Viewer / Service /
+      PurchaseViewer / Seller) split by role
 
 ##### Stage 6: 4-VC end-to-end (`marketplace-vc-end-to-end`)
 

@@ -177,6 +177,7 @@ Phase 2 は 4 つのハンズオンで構成され、**同じ認可ロジック 
 | [SSI ビューワサンプル (Stage 3)](ha-ssi-viewer.md) | スマホウォレット | OID4VP 提示 | 読み出し (`GET /platform/data`) | ViewerToken (60 秒・多回) |
 | [SSI サービスサンプル (Stage 4 prep)](ha-ssi-service.md) | サービス holder | OID4VP 提示 | 書き込み (連続) | ServiceToken (1 時間・多回) |
 | [マーケット連携 end-to-end (Stage 6)](marketplace-vc-end-to-end.md) | 両側 (seller / buyer) | OID4VP 提示 + MetaMask | 書き + 読み | ServiceToken & PurchaseViewerToken |
+| [マーケット Seller VC (Stage 7)](marketplace-seller-vc.md) | seller (出品身元) | OID4VP 提示 + `/marketplace/register` | 出品ガバナンス | SellerToken (24 時間・多回) |
 
 #### 段階ごとに追加される機能と学べること
 
@@ -235,6 +236,29 @@ Phase 2 は 4 つのハンズオンで構成され、**同じ認可ロジック 
     - 単回消費 (write) vs TTL 内多回利用 (read) のセマンティクスの差
     - VC の役割分離 (ConsentVC vs ViewerVC) と PolicyToken / ViewerToken
       の token 空間の独立性 (流用拒否)
+
+##### 段階 7: 出品身元の SellerVC (`marketplace-seller-vc`)
+
+詳細は [SellerVC 設計仕様](../design/seller-vc-spec.md) と
+[ハンズオン](marketplace-seller-vc.md)。
+
+- **段階 6 から追加される機能**
+    - **SellerVC** (5 種目): claim `seller_id`, `licensed_datasets`, `subject_id`
+    - **SellerToken** (24 時間・多回利用、`/marketplace/register` 専用)
+    - **`POST /marketplace/register`**: Bearer SellerToken で
+      Merchandise ↔ seller_did binding。`licensed_datasets` で dataset gate。
+      (任意) on-chain `Merchandise.getOwner()` 検証
+    - 監査ログに **`raw_topic=marketplace/seller_registered`** + `owner_verify=verified|skipped|rpc_failed`
+    - `/platform/data?merchandise=<addr>` レスポンスに **`seller_did`** が同梱
+    - iot-market-ui に `/seller` ページ (フォーム 3 ステップ)
+- **学べること**
+    - 「出品する権利」を VC で表現する方法 (`licensed_datasets`)
+    - publisher が **off-chain** で seller 身元を裏付け、buyer 側に
+      seller_did を可視化する仕組み
+    - `MARKETPLACE_HARDHAT_RPC` 設定時の **on-chain `getOwner()` 検証** の
+      役割 (なりすまし防止の最低線)
+    - 5 つの VC kind (Consent / Viewer / Service / PurchaseViewer / Seller) が
+      役割分担で完成する全体像
 
 ##### 段階 6: 4 種 VC を 1 動線で繋ぐ end-to-end (`marketplace-vc-end-to-end`)
 

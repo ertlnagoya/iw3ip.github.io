@@ -116,6 +116,7 @@ nav:
           - HA SSI Service Sample: hands-on/ha-ssi-service.md
           - Marketplace VC Bridge: hands-on/marketplace-vc-bridge.md
           - Marketplace VC end-to-end (Stage 6): hands-on/marketplace-vc-end-to-end.md
+          - Marketplace Seller VC (Stage 7): hands-on/marketplace-seller-vc.md
       - Phase 3 Intelligence Integration:
           - Regional Safety Assistant Sample: hands-on/regional-safety-assistant.md
           - LLM Planner Hands-on: hands-on/llm-planner.md
