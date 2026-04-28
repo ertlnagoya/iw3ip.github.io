@@ -251,6 +251,27 @@ of the previous one.
       independence of the PolicyToken / ViewerToken namespaces
       (cross-use is rejected)
 
+##### Stage 5 (in progress): marketplace VC bridge — v2
+
+Project in progress. See the
+[Marketplace VC Bridge design spec](../design/marketplace-vc-bridge-spec.md)
+for details.
+
+- **Capabilities being added**
+    - **bridge service**: subscribes to `Merchandise.Purchase` events on Hardhat
+    - **PurchaseViewerVC**: purchase-bound read credential carrying
+      `merchandise_address`, `tx_hash`, `buyer_eth_addr` as claims
+    - `POST /marketplace/claim`: bridge → publisher hook
+    - `GET /platform/data?merchandise=<addr>`: purchase-scoped data API
+    - `/purchased/[txHash]` page in iot-market-ui for VC delivery
+    - Audit log records `eth_addr ↔ did:jwk` link and `tx_hash`
+- **What you'll learn (target)**
+    - Comparison between **v1** (current marketplace + MetaMask + encrypted IPFS)
+      and **v2** (VC-mediated)
+    - What it means for one person to hold **two identities** (ETH key + did:jwk)
+    - Role separation between ETH payment and VC-based authorization
+    - How the bridge service ties on-chain events to off-chain authz
+
 ##### Stage 4 prep: M2M continuous write authz (`ha-ssi-service`)
 
 - **Added on top of Stages 1/3**
