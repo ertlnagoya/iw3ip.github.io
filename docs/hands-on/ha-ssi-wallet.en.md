@@ -5,6 +5,13 @@
     Sphereon mobile-wallet at `ertlnagoya/iw3ip-wallet`.
     The companion wallet app and backend endpoints are in preparation.
 
+!!! tip "Dataset choice"
+    The worked example uses **`home/event/possible_littering`** —
+    the same webcam event Stage 0 [webcam-event-sharing](webcam-event-sharing.md)
+    introduces — so the data shape carries through. Substitute
+    `home/env/temperature` if you only want to exercise the wallet
+    flow with a scalar value.
+
 ## Purpose
 
 Experience the flow where a smartphone SSI wallet presents a Consent VC,
@@ -225,7 +232,14 @@ TOKEN=<policy_token>  # from the verifier response in §5
 curl -X POST http://<PC_LAN_IP>:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"dataset_id":"home/env/temperature","purpose":"research","value":21.4}'
+  -d '{
+    "dataset_id":"home/event/possible_littering",
+    "purpose":"community_cleaning",
+    "event_type":"possible_littering",
+    "data":{"camera_id":"webcam-401","location":"park-north","object_class":"bottle","confidence":0.87},
+    "ts":"2026-04-28T11:02:00Z",
+    "source":"edge_inference"
+  }'
 ```
 
 Expected result:

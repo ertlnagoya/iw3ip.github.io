@@ -339,25 +339,35 @@ Gating every MQTT event through the wallet doesn't fit PolicyToken's
 single-use semantics. Instead, send **one event** by hand to feel the
 flow:
 
-1. Issue and present a ConsentVC per [SSI Wallet hands-on §1〜§5](ha-ssi-wallet.md)
-   to obtain a PolicyToken
+1. Issue and present a ConsentVC for `dataset_id=home/event/possible_littering`
+   per [SSI Wallet hands-on §1〜§5](ha-ssi-wallet.md) (allowed purposes are
+   `community_cleaning`, `research`, or `planning`) and obtain a PolicyToken
 2. Pause MQTT if it's running
-3. POST one event with the PolicyToken in the Bearer header:
+3. POST a Stage-0-shaped event with the PolicyToken in the Bearer header:
    ```bash
    curl -X POST http://localhost:8080/platform/ingest \
      -H "Authorization: Bearer $POLICY" \
      -H "Content-Type: application/json" \
-     -d '{"dataset_id":"home/env/temperature","purpose":"research","value":21.4}'
+     -d '{
+       "dataset_id":"home/event/possible_littering",
+       "purpose":"community_cleaning",
+       "event_type":"possible_littering",
+       "data":{"camera_id":"webcam-401","location":"park-north","object_class":"bottle","confidence":0.87},
+       "ts":"2026-04-28T11:02:00Z",
+       "source":"edge_inference"
+     }'
    ```
 4. Confirm `/audit/logs` shows `reason=policy_token_consumed:<jti>`
 
 ### Limits of this appendix
 
-- The publisher currently registers Presentation Definitions for
-  `home/env/temperature` etc., not `home/event/possible_littering`.
-  Use the `home/env/temperature` flow as the easiest demonstrator.
+- A ConsentVC PD for `home/event/possible_littering`
+  ([consent-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-possible-littering.json))
+  is registered on the publisher, so the wallet flow ingests the
+  same event shape (camera_id / location / object_class) that the
+  main flow uses
 - Continuous MQTT under wallet mode requires a **multi-use M2M token
-  (ServiceVC)**, which is left to a future hands-on.
+  (ServiceVC)**, covered by [SSI Service hands-on](ha-ssi-service.md).
 
 ### Related
 

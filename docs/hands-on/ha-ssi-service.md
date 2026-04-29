@@ -5,6 +5,12 @@
     を体験済の前提で進めます。本ページは「**人ではないサービス**が
     VC を持って継続的に書き込む」M2M ケースを扱います。
 
+!!! tip "dataset の選択"
+    例は `home/env/temperature` ですが、Stage 0 と同じ
+    `home/event/possible_littering` でも同じ手順で通ります
+    ([service-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/service-possible-littering.json)
+    が登録済)。
+
 ## 目的
 
 ConsentVC の PolicyToken は **5 分・単回利用** で、人間が 1 件ずつ

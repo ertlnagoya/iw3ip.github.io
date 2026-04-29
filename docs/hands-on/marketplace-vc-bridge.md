@@ -7,6 +7,14 @@
     設計詳細は [Marketplace VC Bridge 設計仕様](../design/marketplace-vc-bridge-spec.md)
     を参照。
 
+!!! tip "dataset の選択"
+    例は `home/env/temperature` で書かれていますが、Stage 6 case B 以降の
+    deploy script では Merchandise #2 (`home/event/possible_littering`) と
+    Merchandise #4 (`home/event/flood_risk_high`) も登録されており、
+    Stage 0 と同じイベントで購入動線を試せます
+    ([purchase-viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/purchase-viewer-possible-littering.json)
+    の PD 登録済)。
+
 ## 目的
 
 このハンズオンでは、**v1 (現行マーケット + MetaMask + 暗号化 IPFS 配信)**

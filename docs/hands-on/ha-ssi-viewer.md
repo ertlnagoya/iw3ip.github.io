@@ -4,6 +4,13 @@
     Stage 1 (PolicyToken による書き込み認可) を体験済の前提で進めます。
     本ページでは **読み出し** を VC ゲートする Stage 3 を扱います。
 
+!!! tip "dataset の選択"
+    本ハンズオンの例は `home/env/temperature` で書かれていますが、Stage 0
+    [webcam-event-sharing](webcam-event-sharing.md) と同じ
+    `home/event/possible_littering` でも動作します
+    ([viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/viewer-possible-littering.json)
+    の PD 登録済み)。物語の連続性を保ちたい場合はそちらを使用。
+
 ## 目的
 
 ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し、
