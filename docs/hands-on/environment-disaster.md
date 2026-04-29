@@ -310,3 +310,73 @@ Phase 1 では、温度や電力のようなデータ共有を中心に見まし
 2. 水位そのものは非共有とし、イベントだけ共有するポリシーを作る
 3. 地図表示や通知アプリと連携する
 4. 複数の共有先ごとに Consent VC を分ける
+
+## 補論: ウォレットモードによる認可
+
+本編では `consent_flood_risk_high.json` を `/consents` に POST して
+ポリシー登録しました。これは「同意の記録を平文 JSON でサーバに置く」
+方式です。**同じ認可を、住民や観測者がスマホで保持する VC を提示する形**
+で扱う発展が、[スマホSSIウォレットサンプル](ha-ssi-wallet.md) です。
+publisher 側には `home/event/flood_risk_high` (本編と同じ) と
+`home/env/flood_risk_high` の両方の ConsentVC PD が登録されており、
+本編と同じ `dataset_id` で災害イベントを wallet 経由でゲートできます。
+
+### 何が等価で何が違うのか
+
+| 観点 | 本編 (`/consents` JSON 登録) | Wallet モード (Stage 1: ConsentVC) |
+| --- | --- | --- |
+| 認可の保持者 | publisher サーバ | スマホウォレット |
+| 認可の伝達 | JSON POST | OID4VP 提示 (QR/Deeplink) |
+| 期間 | `valid_to` の TTL | 提示ごとに短命 PolicyToken (5 分・単回) |
+| 撤回 | `/consents` から削除 | VC を revoke / wallet で破棄 |
+| 監査 | `purpose` / `dataset_id` を記録 | `holder_did` / `vc_hash` も記録 |
+
+**判定ロジックそのものは共通** で、`dataset_id` と `purpose` の
+組み合わせで `allow` / `deny` が決まります。差は「同意者の身元が VC で
+裏付けられるか」と「同意の伝達経路」です。災害対応の文脈では、住民の
+ウォレットが「私の地区のデータ共有を許可した」と署名する役割を担えます。
+
+### 試す手順 (概要)
+
+連続する MQTT イベントすべてを wallet 経由でゲートするのは
+PolicyToken の単回消費仕様と相性が悪いため、**1 件のイベントだけ
+curl で送る**体験を推奨します。
+
+1. ConsentVC を発行 (本編と同じ dataset を直接使う):
+   ```
+   http://localhost:8080/issuer/offer?type=ConsentVC&dataset_id=home/event/flood_risk_high&purpose=disaster_response
+   ```
+   (許可 purpose は `disaster_response` / `safety` / `emergency_planning`)
+2. ウォレットで受領 → 提示:
+   ```
+   http://localhost:8080/verifier/request?dataset_id=home/event/flood_risk_high&purpose=disaster_response
+   ```
+3. PolicyToken を取得し、本編と同じ形のイベントを 1 件 ingest:
+   ```bash
+   curl -X POST http://localhost:8080/platform/ingest \
+     -H "Authorization: Bearer $POLICY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "dataset_id":"home/event/flood_risk_high",
+       "purpose":"disaster_response",
+       "event_type":"flood_risk_high",
+       "data":{"sensor_id":"river-west-01","location":"west_river_area","water_level_m":1.82,"severity":"high"},
+       "ts":"2026-04-28T10:17:05Z",
+       "source":"edge_inference"
+     }'
+   ```
+4. `/audit/logs` で `reason=policy_token_consumed:<jti>` を確認
+
+### この補論の限界
+
+- 本編の `dataset_id=home/event/flood_risk_high` 用 ConsentVC PD
+  ([consent-event-flood-risk-high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-event-flood-risk-high.json))
+  が publisher に登録されており、本編とまったく同じイベント形式
+  (sensor_id / water_level_m / severity) を wallet 経由で
+  ingest できます。
+- MQTT 連続フローを wallet で回すには **多回利用可の M2M トークン
+  (ServiceVC)** が必要で、これは将来のハンズオンで扱います。
+
+### 関連
+
+- 読み出し側を VC でゲートする対称的なフロー: [SSI ビューワサンプル](ha-ssi-viewer.md)

@@ -1,4 +1,10 @@
-# スマホ閲覧アプリ
+# スマホ閲覧アプリ (v1)
+
+!!! note "v1 の閲覧手順"
+    このページは **v1 (現行マーケットプレイス + MetaMask)** での
+    閲覧確認手順です。VC 連携 (v2) のスマホ動線は
+    [マーケットプレイス × ウォレット連携](marketplace-vc-bridge.md) を
+    参照してください。
 
 ## 目的
 
@@ -7,8 +13,14 @@
 ## このページで分かること
 
 - スマホから閲覧用 UI に接続するために何が必要か
-- `http://<LAN_IP>:5173/mobile` の URL が何を意味しているか
+- iot-market-ui が公開するルート (`/`, `/merchandise/[address]`,
+  `/purchased/[txHash]`, `/seller` 等) の役割
 - 閲覧確認と購入確認で見るべき画面
+
+!!! info "`/mobile` は実装されていません"
+    過去の演習用プログラム (`examples/hands_on/mobile_viewer/`) は
+    架空の `/mobile` ルートを前提にしていますが、現在の `iot-market-ui`
+    にこのルートはありません。実際の入口は次の節で示します。
 
 ## つまずきやすい点
 
@@ -33,8 +45,9 @@
 - [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/mobile_viewer/answer_program.py)
 - [演習説明](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/mobile_viewer/README.md)
 
-この演習では、PC の LAN IP からスマホ用 URL を組み立てます。  
-問題用プログラムでは `http://<LAN_IP>:5173/mobile` を組み立てる関数を完成させ、接続先 URL の意味を確認します。
+この演習では、PC の LAN IP からスマホ用 URL を組み立てます。
+問題用プログラムは架空の `/mobile` 前提なので、現在の UI で動かす場合は
+homepage `/` をスマホで開く形に読み替えてください。
 
 ## 最短ルート
 
@@ -42,13 +55,16 @@
 
 1. `iot-market-ui` を `0.0.0.0:5173` で起動する
 2. PC の LAN IP を確認する
-3. スマホで `http://<LAN_IP>:5173/mobile` を開く
-4. イベント一覧が見えることを確認する
+3. スマホで `http://<LAN_IP>:5173/` を開く (homepage)
+4. 検索 UI が見えることを確認する
 
 その後の分岐:
 
-- 閲覧だけ確認したい場合: `/mobile` が開いて一覧が見えれば十分です
-- 購入まで確認したい場合: MetaMask モバイルのブラウザで開きます
+- **個別の商品を見る場合**: `http://<LAN_IP>:5173/merchandise/<address>` を直接開く
+  (Hardhat デプロイ後の Merchandise アドレスを指定)
+- **購入まで確認したい場合**: MetaMask モバイルのブラウザで開きます
+- **VC 連携 (v2) を試したい場合**: [Stage 5 ハンズオン](marketplace-vc-bridge.md)
+  に進み、`/purchased/[txHash]` および `/seller` ページを使います
 - 接続で止まる場合: 最後のトラブル項目を先に確認した方が早いです
 
 ## 工程別の目次
@@ -64,7 +80,7 @@
 
 <details class="iw3ip-toc-details">
   <summary>確認 1: スマホから閲覧画面を開く</summary>
-  <p>次に、スマホから `/mobile` を開き、一覧画面とフィルタが見えることを確認します。</p>
+  <p>次に、スマホから iot-market-ui ホーム (`/`) または個別 Merchandise ページを開き、UI が表示されることを確認します。</p>
   <ol>
     <li><a href="#3-スマホでアクセス">スマホでアクセス</a></li>
     <li><a href="#5-確認ポイント">確認ポイント</a></li>
@@ -107,13 +123,19 @@ ipconfig getifaddr en0
 ## 3. スマホでアクセス
 
 ```txt
-http://<PCのLAN_IP>:5173/mobile
+http://<PCのLAN_IP>:5173/
 ```
 
-例:
+例 (homepage):
 
 ```txt
-http://192.168.1.20:5173/mobile
+http://192.168.1.20:5173/
+```
+
+個別の商品を直接開く場合 (Hardhat にデプロイされた Merchandise アドレスを指定):
+
+```txt
+http://<PCのLAN_IP>:5173/merchandise/<merchandise_address>
 ```
 
 ## 4. 購入時の注意
@@ -122,14 +144,14 @@ http://192.168.1.20:5173/mobile
 
 ## 5. 確認ポイント
 
-- イベントフィードが表示される
-- フィルタが使える
-- 購入後、履歴タブに記録される
+- iot-market-ui の検索 UI または商品ページがスマホで開ける
+- 個別 Merchandise ページで購入操作が走る
+- 購入後 `/purchased/[txHash]` に遷移し VC 受領 QR が表示される (v2)
 
 ## 成功例
 
-- スマホから `/mobile` 画面が開く
-- 商品一覧やイベント一覧が表示される
+- スマホから iot-market-ui ホームが開く
+- 商品ページから購入動線まで進める
 - MetaMask モバイル経由で購入確認画面に進める
 
 閲覧用 UI への接続確認は完了です。必要なら購入操作を試し、接続できない場合は以下のトラブル項目を確認してください。

@@ -111,19 +111,61 @@ Matching page:
 
 ### Matching hands-on pages
 
-- [Home Assistant Demo Simulator sample](ha-demo-simulator.md): shortest entry without physical devices
-- [HUSKYLENS2 sample](huskylens2.md): Phase 1 device page with HUSKYLENS2 and a PC
-- [USB webcam sample](webcam.md): Phase 1 device page with a common webcam
-- [HA x SSI Publisher sample](ha-ssi-publisher.md): Home Assistant / MQTT / Consent VC / audit logging basics
-- [Mobile Viewer](mobile-viewer.md): inspection of shared results
+Phase 1 walks through **one full round-trip from sensor input to
+downstream sharing**. The pages stack in dependency order — earlier
+stages are thin, later ones add structure on top.
+
+#### What each stage adds and what you can learn
+
+##### Stage 1A: bring up one input source (`huskylens2` / `webcam` / `ha-demo-simulator`)
+
+- **Capabilities introduced**
+    - input device → JSON payload generation
+    - inspection of event files / simulator output
+    - (ha-demo-simulator only) Home Assistant container + Mosquitto
+      running without physical devices
+- **What you learn**
+    - Where data is born from sensors or images
+    - JSON payload schema (timestamp, payload, source)
+    - The fallback entry point when you don't have hardware (simulator)
+
+##### Stage 1B: hook into the pipeline (`ha-ssi-publisher`)
+
+- **Added on top of Stage 1A**
+    - MQTT subscriber → publisher → `/platform/ingest` flow
+    - Permission filtering through `/consents` JSON registration
+    - Audit log persistence (`/audit/logs`) with purpose / allow-deny
+    - Consent VC validity window (`valid_from` / `valid_to`) checks
+- **What you learn**
+    - The minimal pipeline: input → decision → delivery → audit
+    - The role of Consent VC and how `purpose` × `dataset_id` decides
+    - The relationship between the publisher container and the
+      external API (`PLATFORM_API_URL`)
+
+##### Stage 1C: viewing the result (`mobile-viewer`)
+
+- **Added on top of Stage 1B**
+    - Procedure for opening the `iot-market-ui` from a phone browser
+    - LAN IP / `0.0.0.0` exposure setup
+- **What you learn**
+    - The user-side perspective: where shared results become visible
+    - Minimum cross-device network requirements (PC ↔ phone)
+    - (Note) viewing here is unauthenticated; VC-gated read is
+      introduced later in Phase 2 Stage 3 (`ha-ssi-viewer`)
 
 ### Phase 1 success criteria
 
 - data or event files are generated
 - shared results can be checked through APIs or UI
 - learners can explain where data is generated and where it is shared
+- learners can explain `/consents` registration and its audit log effect
 
 ## Phase 2: Event Sharing
+
+!!! tip "Whole picture on one page"
+    7 stages, 5 VC kinds, 4 token kinds, v1/v2 marketplace coexistence,
+    and the audit-log chain are summarized in
+    [VC Architecture Overview](../design/vc-architecture-overview.md).
 
 ### Goal of this phase
 
@@ -133,14 +175,210 @@ Matching page:
 
 ### Matching hands-on pages
 
-- [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md): share `possible_littering` as an event
-- [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md): share `flood_risk_high` as an event
+Phase 2 ships four hands-on pages. Together they exercise the **same
+authorization logic (dataset × purpose) over two transports
+(JSON registration vs wallet presentation) and two directions
+(write vs read)**.
+
+| Hands-on | Consent storage | Transport | Gated operation | Token |
+| --- | --- | --- | --- | --- |
+| [USB webcam event sharing](webcam-event-sharing.md) | publisher server | `/consents` JSON | write (`POST /platform/ingest`) | none (registration-based) |
+| [Environment and disaster event sharing](environment-disaster.md) | publisher server | `/consents` JSON | write | none |
+| [Mobile SSI wallet sample (Stage 1)](ha-ssi-wallet.md) | mobile wallet | OID4VP presentation | write | PolicyToken (5 min, single-use) |
+| [SSI Viewer sample (Stage 3)](ha-ssi-viewer.md) | mobile wallet | OID4VP presentation | read (`GET /platform/data`) | ViewerToken (60 s, multi-use) |
+| [SSI Service sample (Stage 4 prep)](ha-ssi-service.md) | service holder | OID4VP presentation | continuous write | ServiceToken (1 h, multi-use) |
+| [Marketplace end-to-end (Stage 6)](marketplace-vc-end-to-end.md) | both seller / buyer | OID4VP + MetaMask | write + read | ServiceToken & PurchaseViewerToken |
+| [Marketplace Seller VC (Stage 7)](marketplace-seller-vc.md) | seller (listing identity) | OID4VP + `/marketplace/register` | listing governance | SellerToken (24 h, multi-use) |
+| [Marketplace Mobile App (Stage A)](marketplace-mobile-app.md) | (UI integration) | iot-market-ui as PWA | layperson UX | existing tokens reused |
+
+#### What each stage adds and what you can learn
+
+Following these in order lets you **deepen the authorization model
+incrementally**, with each stage adding a focused capability on top
+of the previous one.
+
+##### Stage 0: baseline (`webcam-event-sharing` / `environment-disaster`)
+
+- **Capabilities introduced**
+    - `/consents` JSON registration on the publisher
+    - MQTT topic → `dataset_id` normalization → `(dataset_id, purpose)`
+      → `allow` / `deny`
+    - persistent audit log via `/audit/logs`
+- **What you learn**
+    - The difference between "raw-data sharing" and "event sharing"
+    - The three axes: consent, purpose, dataset
+    - The structure and reading of audit log fields
+      (`raw_topic`, `purpose`, `reason`)
+
+##### Stage 1: wallet-side write authz (`ha-ssi-wallet`)
+
+- **Added on top of Stage 0**
+    - ConsentVC issuance via OID4VCI (`/issuer/offer` etc.)
+    - ConsentVC presentation via OID4VP
+      (`/verifier/request` / `/verifier/response`)
+    - Short-lived PolicyToken (5 min, single-use)
+    - Bearer-authenticated `POST /platform/ingest` (PolicyToken)
+    - Audit log gains `holder_did`, `vc_hash`, `presentation_verified`
+- **What you learn**
+    - What it means for the consenter's identity to be VC-backed
+      (a verifiable trail of "who consented")
+    - Overview of SD-JWT VC, `did:jwk`, and DCQL
+    - Why "single-use tokens" fit write authorization
+    - **Equivalence and differences** between JSON registration and
+      the wallet path (the side-by-side appendix table)
+
+##### Stage 2: cross-link from existing samples (docs only)
+
+- **Added on top of Stage 1** (no backend change)
+    - "Wallet-mode authorization" appendix appended to
+      `webcam-event-sharing.md` / `environment-disaster.md`
+    - One-event curl recipe routing through the wallet
+- **What you learn**
+    - What stays and what changes when an existing sample is
+      wallet-ified
+    - Why running continuous MQTT through the wallet needs a different
+      mechanism (M2M ServiceVC) — the limit imposed by PolicyToken's
+      single-use semantics
+
+##### Stage 3: wallet-side read authz (`ha-ssi-viewer`)
+
+- **Added on top of Stage 1**
+    - ViewerVC (read-side credential with claims `dataset_id` and
+      `allowed_actions=["read"]`)
+    - `vc_kind=ViewerVC` dispatch in `/verifier/request`
+    - ViewerToken (60 s TTL, multi-use within the TTL)
+    - Bearer-authenticated `GET /platform/data?dataset_id=...`
+      (ViewerToken)
+    - Audit log entries with `raw_topic=platform/data` for reads
+    - Issuer metadata at this stage exposes ConsentVC / ViewerVC / ServiceVC (Stage 5 and 7 add two more for a total of 5)
+- **What you learn**
+    - The symmetric design of VC-gated write and read authorization
+    - The semantic difference between single-use (write) and
+      TTL-multi-use (read)
+    - Role separation between ConsentVC and ViewerVC, and the
+      independence of the PolicyToken / ViewerToken namespaces
+      (cross-use is rejected)
+
+##### Stage A: PWA-style mobile experience (`marketplace-mobile-app`)
+
+The Stage 1–7 flow polished into a **CLI-free smartphone experience**.
+See the [hands-on](marketplace-mobile-app.md).
+
+- **Added on top of Stage 7** (no backend changes)
+    - iot-market-ui as a PWA (manifest, service worker, iOS meta tags)
+      installable via "Add to Home Screen"
+    - **`/welcome`** 3-step onboarding with layperson terminology
+    - **`/my-data`** purchase history (localStorage) + data-viewing form
+    - **`/purchased/[txHash]`** persists success entries to localStorage
+    - Mobile menu links to `/my-data`, `/seller`, `/welcome`
+- **What you learn**
+    - The existing Stage 5/6/7 backend is enough; one UI layer turns
+      it into a layperson app
+    - PWA limits (iOS push/notification restrictions, three-app
+      deeplink switching)
+    - Why a true single-app experience needs case B (Stage 9 / native RN)
+
+##### Stage 7: Seller-side VC (`marketplace-seller-vc`)
+
+See the [SellerVC design spec](../design/seller-vc-spec.md) and the
+[hands-on](marketplace-seller-vc.md).
+
+- **Added on top of Stage 6**
+    - **SellerVC** (5th kind): claims `seller_id`, `licensed_datasets`,
+      `subject_id`
+    - **SellerToken** (24 h, multi-use, scoped to `/marketplace/register`)
+    - **`POST /marketplace/register`**: binds Merchandise → seller_did,
+      enforces dataset_id ∈ licensed_datasets, optionally verifies
+      `Merchandise.getOwner()` on chain
+    - Audit row `raw_topic=marketplace/seller_registered` with
+      `owner_verify=verified|skipped|rpc_failed`
+    - `/platform/data?merchandise=` response now carries `seller_did`
+    - `/seller` page in iot-market-ui (form-only)
+- **What you learn**
+    - Encoding "the right to list a dataset" as a VC claim
+    - Off-chain seller identity, surfaced to buyers via the data API
+    - Optional on-chain owner verification as the minimum impersonation defense
+    - The full picture: 5 VC kinds (Consent / Viewer / Service /
+      PurchaseViewer / Seller) split by role
+
+##### Stage 6: 4-VC end-to-end (`marketplace-vc-end-to-end`)
+
+Capstone of Stages 1–5. See the [hands-on page](marketplace-vc-end-to-end.md).
+
+- **Added on top of Stage 4 prep + Stage 5** (Stage 6 case B)
+    - Merchandise advertises `dataset_id` via `additionalInfo` (on-chain)
+    - bridge listener resolves dataset_id from `getAllAdditionalInfo()`
+      (per-merchandise cache, with fallback)
+    - iot-market-ui reads `additionalInfo` for the dataset on redirect
+    - 5 merchandises now span 3 datasets (temp / humidity / flood_risk_high)
+- **What you learn**
+    - The full chain: **Seller's ServiceVC writes → Buyer's
+      PurchaseViewerVC reads** all tied to one dataset
+    - Why having `dataset_id` on-chain matters (no hand-typed query strings)
+    - How the audit log forms a multi-row chain
+      (write × N → claim → issued → oid4vp → data) per purchase
+
+##### Stage 5: marketplace VC bridge — v2 (`marketplace-vc-bridge`)
+
+See the [Marketplace VC Bridge design spec](../design/marketplace-vc-bridge-spec.md)
+and the [hands-on](marketplace-vc-bridge.md) for details.
+
+- **Added on top of Stages 1/3**
+    - **bridge service**: subscribes to `Merchandise.Purchase` events on Hardhat
+    - **PurchaseViewerVC**: 4th VC kind, purchase-bound read credential
+      with claims `merchandise_address`, `tx_hash`, `buyer_eth_addr`
+    - `POST /marketplace/claim`: bridge → publisher hook (idempotent on `tx_hash`)
+    - `GET /platform/data?merchandise=<addr>`: reverse-lookup data API
+    - `/purchased/[txHash]` page in iot-market-ui for VC delivery (QR + deeplink)
+    - Audit log records `eth_addr ↔ did:jwk` binding via
+      `raw_topic=marketplace/issued`, `reason=eth_did_bound:...`
+- **What you learn**
+    - Comparison between **v1** (current marketplace + MetaMask + encrypted IPFS)
+      and **v2** (VC-mediated)
+    - One person holding **two identities** (ETH key + did:jwk)
+    - Role separation between ETH payment and VC authorization
+    - How bridge listener and iot-market-ui can both call
+      `/marketplace/claim` while staying consistent via idempotency
+    - The four audit log rows produced by one purchase
+
+##### Stage 4 prep: M2M continuous write authz (`ha-ssi-service`)
+
+- **Added on top of Stages 1/3**
+    - ServiceVC (M2M credential with claims `dataset_id` and
+      `allowed_actions=["write_continuous"]`)
+    - `vc_kind=ServiceVC` dispatch in `/verifier/request`
+    - ServiceToken (1 h TTL, multi-use within TTL)
+    - `/platform/ingest` accepts both PolicyToken and ServiceToken
+      (PolicyToken first, fall through to ServiceToken on unknown)
+    - Audit log entries with `reason=service_token_used:<jti>:<write_count>`
+    - Issuer metadata exposes ConsentVC + ViewerVC + ServiceVC
+- **What you learn**
+    - Why a separate VC kind exists for non-human services
+    - The three token shapes: single-use, multi-use read, multi-use write
+    - How PolicyToken and ServiceToken share one ingest API while
+      occupying independent token namespaces
+    - The need for a publisher-embedded holder (future work)
+
+#### Design symmetry
+
+```
+              write (single)                write (continuous)            read
+              ───────────────────────────   ───────────────────────────   ───────────────────────────
+JSON-based   │ POST /consents              │ (no equivalent yet)         │ (no equivalent yet)
+Wallet-based │ ConsentVC → PolicyToken     │ ServiceVC → ServiceToken    │ ViewerVC → ViewerToken
+              ↓ POST /platform/ingest      ↓ POST /platform/ingest       ↓ GET /platform/data
+```
+
+`/platform/ingest` accepts both PolicyToken and ServiceToken: it
+tries PolicyToken first and falls through to ServiceToken on unknown.
 
 ### Phase 2 success criteria
 
 - both `allowed` and `denied` can be reproduced
 - learners can explain the difference between `purpose` and `dataset_id`
 - learners can explain the role of `/audit/logs` and `/platform/ingest`
+- learners can explain the **equivalence and differences** between
+  the wallet path (Stage 1 / 3) and the JSON-registration path
 
 ## Phase 3: Intelligence Integration
 
@@ -152,9 +390,56 @@ Matching page:
 
 ### Matching hands-on pages
 
-- [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md): learn the basic path from request to `plan` and `execute`
-- [LLM Planner hands-on](llm-planner.md): practical path for replacing the rule-based planner with an LLM planner
-- [LLM Planner replacement spec](llm-planner-spec.md): specification-oriented page for understanding the design in more depth
+Phase 3 builds the **request → plan → execute** loop incrementally.
+You first run a minimal rule-based loop, then swap the planner for
+an LLM, then read the spec page.
+
+#### What each stage adds and what you can learn
+
+##### Stage 3A: minimal request → plan → execute loop (`regional-safety-assistant`)
+
+- **Capabilities introduced**
+    - The `assistant` service (`/plan`, `/execute` APIs)
+    - **Rule-based** request → plan conversion
+    - Planner reads events accumulated in Phase 2
+      (`/audit/logs`, `/platform/ingest`)
+    - Frontend demo (`assistant` web UI) visualizing plan results
+- **What you learn**
+    - The loop: request → plan → execute → verify
+    - How the assistant consumes Phase 2 events as input
+      (the dependency direction)
+    - Where rule-based planners break down (branching, long context)
+
+##### Stage 3B: replace the planner with an LLM (`llm-planner`)
+
+- **Added on top of Stage 3A**
+    - LLM-backed planner with the same I/O contract
+    - Tool declarations the LLM can call (e.g. `/audit/logs` lookup)
+    - `planner_diagnostics` exposing the LLM's reasoning trace
+    - Coverage of natural-language variation and compound conditions
+- **What you learn**
+    - The benefit of "swap the planner under the same I/O contract"
+    - How LLM tool calls (function calling) map to plan steps
+    - How to read `planner_diagnostics` to follow the LLM's reasoning
+    - **Where each fits**: when rule-based vs LLM is the right choice
+
+##### Stage 3C: spec-level understanding (`llm-planner-spec`)
+
+- **Added on top of Stage 3B** (docs only)
+    - Documented I/O contract, error cases, and evaluation metrics
+- **What you learn**
+    - The specification surface you'd reproduce when building your
+      own planner
+    - The groundwork for hybrid or verified-LLM approaches beyond
+      rule-based / LLM
+
+##### (Future) Stage 3D: VC-gated plan execution (Stage 4, planned)
+
+A future hands-on will tie the PolicyToken / ViewerToken introduced
+in Phase 2 Stage 1/3 to plan execution: each tool call asserts the
+required dataset scope via VC, so the planner can only invoke
+operations the holder has been authorized for. Details will land in
+a future page.
 
 ### Phase 3 success criteria
 
@@ -162,6 +447,8 @@ Matching page:
 - `executed` can be confirmed when conditions are met
 - the fields in `planner_diagnostics` can be explained
 - results can be inspected from the frontend demo
+- learners can explain the rule-based vs LLM trade-off in terms of
+  I/O contract and fit
 
 ## Relation to Workshop
 

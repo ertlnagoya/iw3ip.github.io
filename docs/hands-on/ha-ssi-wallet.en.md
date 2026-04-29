@@ -5,6 +5,13 @@
     Sphereon mobile-wallet at `ertlnagoya/iw3ip-wallet`.
     The companion wallet app and backend endpoints are in preparation.
 
+!!! tip "Dataset choice"
+    The worked example uses **`home/event/possible_littering`** —
+    the same webcam event Stage 0 [webcam-event-sharing](webcam-event-sharing.md)
+    introduces — so the data shape carries through. Substitute
+    `home/env/temperature` if you only want to exercise the wallet
+    flow with a scalar value.
+
 ## Purpose
 
 Experience the flow where a smartphone SSI wallet presents a Consent VC,
@@ -166,8 +173,18 @@ Scan the QR with the wallet and select the matching VC to present.
 Expected result:
 
 ```json
-{"status":"allowed","dataset_id":"home/env/temperature"}
+{
+  "status": "allowed",
+  "dataset_id": "home/env/temperature",
+  "policy_token": "VHA9X1d...",
+  "policy_token_jti": "9b2fc3...",
+  "expires_in": 300
+}
 ```
+
+`policy_token` is the short-lived authorization token used in §8.
+It is valid for 5 minutes and single-use: one call to `/platform/ingest`
+consumes it.
 
 ## 6. Denial case
 
@@ -193,6 +210,91 @@ Points to verify:
 - `holder_did`, `vc_hash`, `purpose` are preserved
 - Compared with HA x SSI Publisher, the log additionally records
   "who presented which VC" rather than just the policy outcome
+
+## 8. Pull shared data
+
+Pass the `policy_token` from §5 as a `Authorization: Bearer` header to
+`/platform/ingest` to actually share data backed by the verified VC.
+The legacy `/consents` JSON registration path still works without a header.
+
+PolicyToken properties:
+
+- TTL: 5 minutes (returned as `expires_in`)
+- Single-use: one successful `/platform/ingest` call invalidates it
+- Scope: only accepts a body whose `dataset_id` matches the issuance time
+- Format: opaque string (server-side in-memory)
+
+Request:
+
+```bash
+TOKEN=<policy_token>  # from the verifier response in §5
+
+curl -X POST http://<PC_LAN_IP>:8080/platform/ingest \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataset_id":"home/event/possible_littering",
+    "purpose":"community_cleaning",
+    "event_type":"possible_littering",
+    "data":{"camera_id":"webcam-401","location":"park-north","object_class":"bottle","confidence":0.87},
+    "ts":"2026-04-28T11:02:00Z",
+    "source":"edge_inference"
+  }'
+```
+
+Expected result:
+
+```json
+{"status":"received","count":1}
+```
+
+The audit log gains a PolicyToken consumption entry:
+
+```bash
+curl 'http://<PC_LAN_IP>:8080/audit/logs?limit=5'
+```
+
+```json
+{
+  "action": "allow",
+  "raw_topic": "platform/ingest",
+  "reason": "policy_token_consumed:9b2fc3...",
+  "dataset_id": "home/env/temperature",
+  "purpose": "research",
+  "holder_did": "did:jwk:...",
+  "presentation_verified": "allow"
+}
+```
+
+Error cases:
+
+| Situation | HTTP | `detail` |
+| --- | --- | --- |
+| Reusing the same token | 403 | `policy_token_already_consumed` |
+| Expired | 401 | `policy_token_expired` |
+| Body `dataset_id` differs from token | 403 | `policy_token_dataset_mismatch` |
+| Unknown token | 401 | `policy_token_unknown` |
+
+To grab the token, either inspect the publisher container log when the wallet
+finishes the presentation (the `/verifier/response` body is logged), or read
+the completion screen on the phone. In a hands-on session, scraping the
+publisher log into curl is the quickest route.
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ssi-wallet logs -f publisher | grep policy_token
+```
+
+## Next steps
+
+This hands-on (Stage 1) only covers **single-use write authorization**
+(ConsentVC + PolicyToken). Other authorization shapes live in the
+following stages:
+
+- [Stage 3: SSI Viewer](ha-ssi-viewer.md) — multi-use read (ViewerVC)
+- [Stage 4 prep: SSI Service](ha-ssi-service.md) — M2M continuous write (ServiceVC)
+- [Stage 5: Marketplace bridge](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
+- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
+- [Stage 7: SellerVC](marketplace-seller-vc.md) — marketplace seller identity
 
 ## Extension ideas
 

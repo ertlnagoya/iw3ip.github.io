@@ -5,6 +5,13 @@
     `iw3ip-wallet` を用いた VC 検証デモの設計ドラフトです。
     対応するアプリ・バックエンド実装は準備中です。
 
+!!! tip "dataset の選択"
+    本ハンズオンの worked example は **`home/event/possible_littering`**
+    (Stage 0 [webcam-event-sharing](webcam-event-sharing.md) と同じ
+    カメライベント) を使います。`home/env/temperature` でも同じ動線が
+    通るので、簡単な値だけで動作確認したい場合は dataset と purpose を
+    読み替えてください。
+
 ## 目的
 
 スマホの SSI ウォレットで受け取った Consent VC を、IW3IP バックエンドが
@@ -166,8 +173,17 @@ http://<PCのLAN_IP>:8080/verifier/request?dataset_id=home/env/temperature&purpo
 期待結果:
 
 ```json
-{"status":"allowed","dataset_id":"home/env/temperature"}
+{
+  "status": "allowed",
+  "dataset_id": "home/env/temperature",
+  "policy_token": "VHA9X1d...",
+  "policy_token_jti": "9b2fc3...",
+  "expires_in": 300
+}
 ```
+
+`policy_token` は次節 §8 で使う短命の認可トークンです。
+有効期間は 5 分・単回消費で、`/platform/ingest` を 1 回呼び出すと無効化されます。
 
 ## 6. 拒否ケース
 
@@ -194,6 +210,90 @@ curl http://localhost:8080/audit/logs?limit=10
 - `holder_did`、`vc_hash`、`purpose` が残る
 - HA x SSI Publisher サンプルの監査ログと比べ、ポリシー判定ではなく
   「誰がどの VC を提示したか」が追加で残る
+
+## 8. 共有データを取得する
+
+§5 で得た `policy_token` を `Authorization: Bearer` ヘッダに付けて
+`/platform/ingest` を呼び出すと、検証済みの VC に対応するデータ共有が成立します。
+従来の `/consents` JSON 登録経路はヘッダ無しで従来通り動きます。
+
+PolicyToken の性質:
+
+- 有効期限: 5 分（`expires_in` で返却）
+- 単回消費: 1 回 `/platform/ingest` を通すと無効化される
+- スコープ: 発行時の `dataset_id` と一致する body のみ受け付ける
+- 形式: 不透明文字列（サーバ側 in-memory 管理）
+
+リクエスト例:
+
+```bash
+TOKEN=<policy_token>  # §5 の verifier レスポンスから取得
+
+curl -X POST http://<PCのLAN_IP>:8080/platform/ingest \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataset_id":"home/event/possible_littering",
+    "purpose":"community_cleaning",
+    "event_type":"possible_littering",
+    "data":{"camera_id":"webcam-401","location":"park-north","object_class":"bottle","confidence":0.87},
+    "ts":"2026-04-28T11:02:00Z",
+    "source":"edge_inference"
+  }'
+```
+
+期待結果:
+
+```json
+{"status":"received","count":1}
+```
+
+監査ログには PolicyToken 消費イベントが追加されます。
+
+```bash
+curl 'http://<PCのLAN_IP>:8080/audit/logs?limit=5'
+```
+
+```json
+{
+  "action": "allow",
+  "raw_topic": "platform/ingest",
+  "reason": "policy_token_consumed:9b2fc3...",
+  "dataset_id": "home/env/temperature",
+  "purpose": "research",
+  "holder_did": "did:jwk:...",
+  "presentation_verified": "allow"
+}
+```
+
+エラーケース:
+
+| 状況 | HTTP | `detail` |
+| --- | --- | --- |
+| 同じトークンで 2 回目を呼ぶ | 403 | `policy_token_already_consumed` |
+| 期限切れ | 401 | `policy_token_expired` |
+| body の `dataset_id` がトークンと一致しない | 403 | `policy_token_dataset_mismatch` |
+| 未知のトークン | 401 | `policy_token_unknown` |
+
+トークンを取り出すには、ウォレットからの提示完了時に
+publisher コンテナのログ（`/verifier/response` のレスポンスボディ）を確認するか、
+スマホ側で表示される完了画面を読み取ります。
+ハンズオンでは publisher ログから JSON を拾って curl に渡すのが手早いです。
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ssi-wallet logs -f publisher | grep policy_token
+```
+
+## 次のステップ
+
+このハンズオン (Stage 1) で扱ったのは **書き込み単回認可** (ConsentVC + PolicyToken)
+だけです。シリーズの他のステージで他の認可形態を扱います:
+
+- [Stage 3: SSI ビューワサンプル](ha-ssi-viewer.md) — 読み出し多回認可 (ViewerVC)
+- [Stage 4 prep: SSI サービスサンプル](ha-ssi-service.md) — M2M 連続書き込み (ServiceVC)
+- [Stage 5: マーケット連携 v2](marketplace-vc-bridge.md) — 購入連動 read (PurchaseViewerVC)
+- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — Stage 1〜5 の集大成
+- [Stage 7: SellerVC](marketplace-seller-vc.md) — 出品身元のガバナンス
 
 ## 拡張ヒント
 

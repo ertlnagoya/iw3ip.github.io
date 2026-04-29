@@ -114,12 +114,22 @@ nav:
           - USB Webcam Event Sharing Sample: hands-on/webcam-event-sharing.md
           - Environment Disaster Sample: hands-on/environment-disaster.md
           - HA SSI Wallet Sample: hands-on/ha-ssi-wallet.md
+          - HA SSI Viewer Sample: hands-on/ha-ssi-viewer.md
+          - HA SSI Service Sample: hands-on/ha-ssi-service.md
+          - Marketplace VC Bridge: hands-on/marketplace-vc-bridge.md
+          - Marketplace VC end-to-end (Stage 6): hands-on/marketplace-vc-end-to-end.md
+          - Marketplace Seller VC (Stage 7): hands-on/marketplace-seller-vc.md
+          - Marketplace Mobile App (Stage A): hands-on/marketplace-mobile-app.md
           - DataUserVC Tiered Access: hands-on/data-user-vc-tiered.md
           - DataUserVC Tiered Access Spec: hands-on/data-user-vc-tiered-spec.md
       - Phase 3 Intelligence Integration:
           - Regional Safety Assistant Sample: hands-on/regional-safety-assistant.md
           - LLM Planner Hands-on: hands-on/llm-planner.md
           - LLM Planner Replacement Spec: hands-on/llm-planner-spec.md
+  - Design:
+      - VC Architecture Overview (Phase 2): design/vc-architecture-overview.md
+      - Marketplace VC Bridge (v1/v2 spec): design/marketplace-vc-bridge-spec.md
+      - SellerVC (Stage 7 prep spec): design/seller-vc-spec.md
   - Operations:
       - Overview: operations/index.md
       - Troubleshooting: operations/troubleshooting.md
