@@ -44,6 +44,21 @@ Pipeline:
 - Docker / Docker Compose
 - `curl`, `jq`
 
+## 0b. Choosing how to carry the actual image / video bytes
+
+This walkthrough has three options for the data body itself. **Option B
+(publisher-hosted HTTP media gateway, recommended)** is the
+real-device-validated default; the iPhone walkthrough below covers it.
+
+| Option | Source of `image` / `video` | Receiver can fetch the blob? | Effort | Use case |
+|---|---|---|---|---|
+| A | placeholder CID strings only | no | none | tier-projection demo only |
+| **B** (recommended) | publisher serves `/media/<sha256>.<ext>` | yes — direct HTTP | shipped | demo / hands-on |
+| C | real IPFS / Web3.Storage | yes — distributed | needs setup | public demo / production |
+
+§2–§7 below cover the core DataUserVC + tier-projection loop. **Option
+B real-data integration is in §8.**
+
 ## 1. Bring up services
 
 ```bash
@@ -205,6 +220,59 @@ share the same VCT.
     - Always use the `deeplink` returned from `/marketplace/claim`
       directly. Driving the wallet from `/issuer/offer?claim_id=...` is
       now also OK after the fix, but the deeplink path is the simplest.
+
+## 8. Real-data integration (Option B — HTTP media gateway)
+
+Through §7 you verified the **keys** `image_cid` / `video_cid` /
+`video_duration_sec` appear or disappear per tier. To carry the actual
+image / video bytes end-to-end, the provider side uploads a JPEG / MP4
+fixture to the publisher's `/media/upload`, takes back the URL, and
+folds it into the event payload as `image_url` / `video_url`.
+
+### 8.1 One-shot provider script
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+  --base-url http://192.168.68.53:8080
+```
+
+The script:
+
+1. Generates a 1×1 JPEG / MP4 fixture under `fixtures/`.
+2. Uploads both via `POST /media/upload` (sha256 dedupe).
+3. Posts a `possible_littering` event carrying `image_url` /
+   `video_url` / `video_duration_sec` to `/simulate/publish`.
+
+### 8.2 Receiver (unchanged — same Tier 3 / 2 / 1 flow as §3–§7)
+
+After re-running §6 + §7 with the new event in flight you should see:
+
+- **Tier 3 (gov full)** → `event` + `image_url` + `video_url` + `video_duration_sec`
+- **Tier 2 (enterprise)** → `event` + `image_url` only
+- **Tier 1 (default)** → `event` only
+
+Tap `image_url` in iPhone Safari → the JPEG opens directly. To try a
+real photo / clip:
+
+```bash
+python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+  --base-url http://192.168.68.53:8080 \
+  --image /path/to/snapshot.jpg \
+  --video /path/to/clip.mp4 \
+  --video-duration-sec 12
+```
+
+### 8.3 Limitations of Option B
+
+- ✅ Coexists with `image_cid` / `video_cid` (Option A / coming-up Option C).
+- ❌ Not content-addressed — anyone with the URL can GET the blob.
+- ❌ Single replica, no pinning.
+
+When content-addressing + distributed storage matter, move on to
+**Option C (real IPFS / Web3.Storage)**. The `/media/upload` response
+shape (`{url, sha256, content_type, byte_size}`) stays the same so the
+provider script doesn't change — only the backend swaps.
 
 ## Where to go next
 
