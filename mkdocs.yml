@@ -61,6 +61,8 @@ plugins:
             Regional Safety Assistant Sample: 地域安全アシスタントサンプル
             LLM Planner Hands-on: LLM Plannerハンズオン
             LLM Planner Replacement Spec: LLM Planner置き換え仕様
+            DataUserVC Tiered Access: DataUserVC段階アクセス
+            DataUserVC Tiered Access Spec: DataUserVC段階アクセス仕様
             Mobile Viewer: スマホ閲覧アプリ
             Operations: 運用
             Troubleshooting: トラブルシュート
@@ -112,6 +114,8 @@ nav:
           - USB Webcam Event Sharing Sample: hands-on/webcam-event-sharing.md
           - Environment Disaster Sample: hands-on/environment-disaster.md
           - HA SSI Wallet Sample: hands-on/ha-ssi-wallet.md
+          - DataUserVC Tiered Access: hands-on/data-user-vc-tiered.md
+          - DataUserVC Tiered Access Spec: hands-on/data-user-vc-tiered-spec.md
       - Phase 3 Intelligence Integration:
           - Regional Safety Assistant Sample: hands-on/regional-safety-assistant.md
           - LLM Planner Hands-on: hands-on/llm-planner.md
