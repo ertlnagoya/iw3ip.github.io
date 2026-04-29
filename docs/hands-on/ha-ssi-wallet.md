@@ -5,6 +5,13 @@
     `iw3ip-wallet` を用いた VC 検証デモの設計ドラフトです。
     対応するアプリ・バックエンド実装は準備中です。
 
+!!! tip "dataset の選択"
+    本ハンズオンの worked example は **`home/event/possible_littering`**
+    (Stage 0 [webcam-event-sharing](webcam-event-sharing.md) と同じ
+    カメライベント) を使います。`home/env/temperature` でも同じ動線が
+    通るので、簡単な値だけで動作確認したい場合は dataset と purpose を
+    読み替えてください。
+
 ## 目的
 
 スマホの SSI ウォレットで受け取った Consent VC を、IW3IP バックエンドが
@@ -225,7 +232,14 @@ TOKEN=<policy_token>  # §5 の verifier レスポンスから取得
 curl -X POST http://<PCのLAN_IP>:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"dataset_id":"home/env/temperature","purpose":"research","value":21.4}'
+  -d '{
+    "dataset_id":"home/event/possible_littering",
+    "purpose":"community_cleaning",
+    "event_type":"possible_littering",
+    "data":{"camera_id":"webcam-401","location":"park-north","object_class":"bottle","confidence":0.87},
+    "ts":"2026-04-28T11:02:00Z",
+    "source":"edge_inference"
+  }'
 ```
 
 期待結果:

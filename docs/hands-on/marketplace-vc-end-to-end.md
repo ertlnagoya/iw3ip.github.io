@@ -6,6 +6,13 @@
     通します。バックエンドは Stage 1〜5 で実装済 + Stage 6 case B
     (dataset_id を Merchandise.additionalInfo から動的取得) のみ。
 
+!!! tip "dataset の選択"
+    例は `home/env/temperature` ですが、deploy script (Stage 6 case B) で
+    `home/event/possible_littering` と `home/event/flood_risk_high` の
+    Merchandise も同時に作られているため、Stage 0 と同じイベント形式で
+    Service ingest → Purchase → Viewer 取得を通すこともできます
+    (各 dataset 用の ServiceVC / PurchaseViewerVC PD が登録済)。
+
 ## 目的
 
 - データフローに関わる 4 種類の VC (ConsentVC / ViewerVC /

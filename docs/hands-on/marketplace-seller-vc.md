@@ -5,6 +5,12 @@
     裏付ける層を追加します。Stage 1〜6 と同じパターンで提示 → トークン
     取得 → API 呼出。設計詳細は [SellerVC 設計仕様](../design/seller-vc-spec.md)。
 
+!!! tip "licensed_datasets の選択"
+    例は `home/env/temperature,home/env/humidity` ですが、Stage 0 と
+    一貫性を持たせるなら `home/event/possible_littering,home/event/flood_risk_high`
+    でも構いません (publisher の `DEFAULT_ALLOWED_PURPOSES` に登録済)。
+    SellerVC の `licensed_datasets` は配列なので両方載せても OK。
+
 ## 目的
 
 - ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC に続く **5 つ目の VC**

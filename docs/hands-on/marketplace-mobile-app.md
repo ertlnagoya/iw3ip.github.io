@@ -7,6 +7,14 @@
     スマホ画面のタップで進めます。Stage 8 (信頼モデルの強化) と並行し、
     Stage 9 (案 B / RN 統合アプリ) への足掛かりです。
 
+!!! tip "Stage 0 と同じデータ"
+    Stage A の購入対象は Stage 6 case B 以降の deploy script で登録された
+    Merchandise リストから選びます。`home/event/possible_littering` や
+    `home/event/flood_risk_high` を選べば、Stage 0
+    [webcam-event-sharing](webcam-event-sharing.md) /
+    [environment-disaster](environment-disaster.md) と同じカメラ・センサー
+    イベントが、購入経由 (PurchaseViewerVC) で読めるところまで体験できます。
+
 ## 目的
 
 - iot-market-ui を **PWA (Progressive Web App)** として体験する
