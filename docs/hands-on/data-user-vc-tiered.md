@@ -49,7 +49,8 @@ docker compose -f infra/docker-compose.yml up -d publisher hardhat bridge mosqui
 
 ```bash
 curl -s localhost:8080/healthz | jq .
-curl -s localhost:8080/issuer/.well-known/openid-credential-issuer | jq '.credential_configurations_supported | keys'
+curl -s localhost:8080/.well-known/openid-credential-issuer \
+  | jq '.credential_configurations_supported | keys'
 # -> ["ConsentVC", "DataUserVC", "PurchaseViewerVC", "SellerVC", "ServiceVC", "ViewerVC"]
 ```
 
@@ -101,14 +102,14 @@ curl -s -X POST localhost:8080/marketplace/claim \
   }' | jq '.allowed_views, .access_level, .trust_score'
 # -> ["event","image","video"]
 #    "full"
-#    90
+#    80
 ```
 
 ### 3b. Tier 2 — 画像まで
 
 ```bash
 # data_user_attrs.entityType: "Enterprise", purpose: "Research"
-# allowed_views: ["event", "image"], access_level: "access", score: 60
+# allowed_views: ["event", "image"], access_level: "access", score: 75
 ```
 
 ### 3c. Tier 1 — `data_user_attrs` を省く既定値
@@ -155,12 +156,43 @@ curl -s localhost:8080/audit/logs | jq '.[-5:]'
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 uv run pytest tests/test_data_user_vc_tiered.py -v
-# 13 passed
 ```
 
 スマートコントラクト `DataUserVerifier.sol` の重みと、`trust_score.py` の
 重みが一致することは、テストの 4 ケース（GovernmentOrganization / Enterprise /
 低スコア / score>=80 でも entity が違うと full にならない）で確認します。
+
+## 7. 実機検証で観測した値
+
+iPhone（iw3ip-wallet）で end-to-end を流すと、3 ティアそれぞれで次の値が
+ViewerToken のミントログ（`viewer_token_issued ... views=...`）と
+`/platform/data` の応答に出ます。
+
+| Tier | DataUserVC profile | trust_score | views | image_cid | video_cid | video_duration_sec |
+|---|---|---|---|---|---|---|
+| **3** gov | gov + crime + ISO27001 | 80 | `event+image+video` | あり | あり | あり |
+| **2** ent | enterprise + research + ISO27001 | 75 | `event+image` | あり | **なし** | **なし** |
+| **1** low | `data_user_attrs` 省略 | n/a (default) | `event` | **なし** | **なし** | **なし** |
+
+ウォレットでは Tier 別に **3 種類の異なる表示名**で `PurchaseViewerVC` が
+並びます（`PurchaseViewerVC.full / .access / .event`）。同じ VCT でも
+display name が異なるため、ユーザはどのカードがどのティアか一目で
+区別できます。
+
+!!! tip "実機検証で詰まったところ"
+    実機で初回試行すると次の症状が出やすいです。直近の 2 PR
+    （`fix/stage-t-purchase-viewer-binding`、`feat/stage-t-tier-display-and-projection`）
+    にすべてフォロー済みなので、最新の `main` で進めれば回避できます。
+
+    - 「No Available Credential」が出る → PurchaseViewerVC の
+      plain claims に `subject_id` が必要（修正済み）
+    - 3 枚の VC の見分けが付かない → tier-aware
+      credential_configuration_id で `display.name` が分岐（修正済み）
+    - `/simulate/publish` で `image_cid` を渡しても `/platform/data` の
+      投影に出ない → pipeline で top-level に hoist（修正済み）
+    - `/marketplace/claim` の `deeplink` を直接ウォレットで開く
+      （`/issuer/offer?claim_id=...` ではなく）と claim とのバインドが
+      確実に保たれる
 
 ## 次に進む
 

@@ -55,7 +55,7 @@ Sanity check:
 
 ```bash
 curl -s localhost:8080/healthz | jq .
-curl -s localhost:8080/issuer/.well-known/openid-credential-issuer \
+curl -s localhost:8080/.well-known/openid-credential-issuer \
   | jq '.credential_configurations_supported | keys'
 # -> ["ConsentVC", "DataUserVC", "PurchaseViewerVC", "SellerVC", "ServiceVC", "ViewerVC"]
 ```
@@ -108,14 +108,14 @@ curl -s -X POST localhost:8080/marketplace/claim \
   }' | jq '.allowed_views, .access_level, .trust_score'
 # -> ["event","image","video"]
 #    "full"
-#    90
+#    80
 ```
 
 ### 3b. Tier 2 — image only
 
 ```bash
 # data_user_attrs.entityType: "Enterprise", purpose: "Research"
-# allowed_views: ["event", "image"], access_level: "access", score: 60
+# allowed_views: ["event", "image"], access_level: "access", score: 75
 ```
 
 ### 3c. Tier 1 — defaults when `data_user_attrs` is omitted
@@ -164,13 +164,47 @@ together by `holder_did` / `claim_id`.
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 uv run pytest tests/test_data_user_vc_tiered.py -v
-# 13 passed
 ```
 
 The four pure-function tests
 (GovernmentOrganization / Enterprise / low-score / `score>=80` but
 non-gov/police) lock the parity between `trust_score.py` and
 `DataUserVerifier.sol`.
+
+## 7. Values observed on real-device runs
+
+Walking through end-to-end on iPhone (iw3ip-wallet) produces these
+values per tier in both the ViewerToken mint log
+(`viewer_token_issued ... views=...`) and the `/platform/data` response.
+
+| Tier | DataUserVC profile | trust_score | views | image_cid | video_cid | video_duration_sec |
+|---|---|---|---|---|---|---|
+| **3** gov | gov + crime + ISO27001 | 80 | `event+image+video` | yes | yes | yes |
+| **2** ent | enterprise + research + ISO27001 | 75 | `event+image` | yes | **no** | **no** |
+| **1** low | `data_user_attrs` omitted | n/a (default) | `event` | **no** | **no** | **no** |
+
+The wallet shows three distinct PurchaseViewerVC cards (one per tier)
+because the issuer publishes
+`PurchaseViewerVC.full / .access / .event` as separate
+`credential_configuration_ids` with distinct `display.name`s. All three
+share the same VCT.
+
+!!! tip "Pitfalls observed during real-device validation"
+    A few first-run symptoms have been folded back into the codebase
+    via PRs `fix/stage-t-purchase-viewer-binding` and
+    `feat/stage-t-tier-display-and-projection`. On a current `main`
+    you should not hit them, but if you do:
+
+    - "No Available Credential" → the issuer must include `subject_id`
+      in PurchaseViewerVC plain claims (now done).
+    - Three identical cards → tier-aware
+      `credential_configuration_id` per Tier (now done).
+    - `image_cid` invisible at `/platform/data` even when supplied via
+      `/simulate/publish` → the pipeline now hoists the media CIDs to
+      the envelope's top level.
+    - Always use the `deeplink` returned from `/marketplace/claim`
+      directly. Driving the wallet from `/issuer/offer?claim_id=...` is
+      now also OK after the fix, but the deeplink path is the simplest.
 
 ## Where to go next
 
