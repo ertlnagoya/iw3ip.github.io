@@ -102,24 +102,42 @@ mirroring `DataUserVerifier.sol`. Tests pin the two together.
 
 ### Weights
 
-```
-entityType:
-  GovernmentOrganization | Police       -> 35
-  Enterprise                            -> 20
-  ResearchOrganization                  -> 15
-  other                                 -> 0
+Strings are matched **uppercase, exact** (spaces included). Unknown
+labels fall back to **5**.
 
-purpose:
-  CrimeSearch                           -> 25
-  TrafficManagement                     -> 20
-  Research                              -> 15
-  other                                 -> 0
+```
+entityType (uppercase exact match):
+  GOVERNMENTORGANIZATION | POLICE       -> 35
+  ENTERPRISE                            -> 20
+  RESEARCH ORGANIZATION                 -> 15  (note the space)
+  unknown                               -> 5
+
+purpose (uppercase exact match):
+  CRIME SEARCH                          -> 25  (note the space)
+  TRAFFIC MANAGEMENT                    -> 20
+  RESEARCH                              -> 15
+  unknown                               -> 5
 
 legalCompliance == true                 -> +15
 dataHandlingPolicy == "ISO27001"        -> +15
 misuseRecord == false                   -> +10
 misuseRecord == true                    -> -10
 ```
+
+### Sample scores observed on iPhone real-device runs
+
+| Profile | entityType | purpose | legal | policy | misuse | score |
+|---|---|---|---|---|---|---|
+| Tier 3 (full)   | `GovernmentOrganization` | `CrimeSearch` | true  | ISO27001 | false | **80** = 35+5+15+15+10 |
+| Tier 2 (access) | `Enterprise`             | `Research`    | true  | ISO27001 | false | **75** = 20+15+15+15+10 |
+| Tier 1 (denied) | `Enterprise`             | `Research`    | false | Other    | true  | **25** = 20+15+0+0-10  |
+
+The `CrimeSearch` label does not match the Solidity-side
+`"CRIME SEARCH"` (space-separated) string, so the current Python
+implementation falls back to **5** for purpose (which is why Tier 3
+hits 80, not 100). Hands-on output crosses the right tier boundaries
+either way; if/when ZK / on-chain parity is wired in, the UI's input
+labels should be normalized to the spaced form (follow-up TODO).
 
 ### Threshold → access level
 

@@ -98,24 +98,42 @@ Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/d
 
 ### 重み
 
-```
-entityType:
-  GovernmentOrganization | Police       -> 35
-  Enterprise                            -> 20
-  ResearchOrganization                  -> 15
-  その他                                -> 0
+文字列マッチは **大文字化したうえで完全一致**（スペース込み）。
+未知のラベルは default = **5** にフォールバックします。
 
-purpose:
-  CrimeSearch                           -> 25
-  TrafficManagement                     -> 20
-  Research                              -> 15
-  その他                                -> 0
+```
+entityType (uppercase exact match):
+  GOVERNMENTORGANIZATION | POLICE       -> 35
+  ENTERPRISE                            -> 20
+  RESEARCH ORGANIZATION                 -> 15  (← スペース込みで一致)
+  unknown                               -> 5
+
+purpose (uppercase exact match):
+  CRIME SEARCH                          -> 25  (← スペース込みで一致)
+  TRAFFIC MANAGEMENT                    -> 20
+  RESEARCH                              -> 15
+  unknown                               -> 5
 
 legalCompliance == true                 -> +15
 dataHandlingPolicy == "ISO27001"        -> +15
 misuseRecord == false                   -> +10
 misuseRecord == true                    -> -10
 ```
+
+### 実機で観測したスコア例
+
+| プロファイル | entityType | purpose | legal | policy | misuse | score |
+|---|---|---|---|---|---|---|
+| Tier 3 (full) | `GovernmentOrganization` | `CrimeSearch` | true | ISO27001 | false | **80** (35+5+15+15+10) |
+| Tier 2 (access) | `Enterprise` | `Research` | true | ISO27001 | false | **75** (20+15+15+15+10) |
+| Tier 1 (denied) | `Enterprise` | `Research` | false | Other | true | **25** (20+15+0+0-10) |
+
+`CrimeSearch` の purpose ラベルは Solidity 側の `"CRIME SEARCH"`
+（スペース込み）と一致しないため、現在の Python 実装ではフォールバック値
+**5** になります（だから 35 + 25 ではなく 35 + 5 で 80）。
+ハンズオンでは「ティア境界が再現できれば良い」のでこれで十分機能しますが、
+将来 ZK / オンチェーン同期を入れるときは UI の入力ラベルを正規化する
+小修正が要ります（フォロー TODO）。
 
 ### しきい値 → アクセスレベル
 
