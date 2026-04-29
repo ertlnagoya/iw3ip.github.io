@@ -3,3 +3,6 @@
 
 # MkDocs build output
 site/
+
+# Claude Code worktree config dir — local-only.
+.claude/
