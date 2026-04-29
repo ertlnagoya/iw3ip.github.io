@@ -61,6 +61,8 @@ plugins:
             Regional Safety Assistant Sample: 地域安全アシスタントサンプル
             LLM Planner Hands-on: LLM Plannerハンズオン
             LLM Planner Replacement Spec: LLM Planner置き換え仕様
+            DataUserVC Tiered Access: DataUserVC段階アクセス
+            DataUserVC Tiered Access Spec: DataUserVC段階アクセス仕様
             Mobile Viewer: スマホ閲覧アプリ
             Operations: 運用
             Troubleshooting: トラブルシュート
@@ -118,6 +120,8 @@ nav:
           - Marketplace VC end-to-end (Stage 6): hands-on/marketplace-vc-end-to-end.md
           - Marketplace Seller VC (Stage 7): hands-on/marketplace-seller-vc.md
           - Marketplace Mobile App (Stage A): hands-on/marketplace-mobile-app.md
+          - DataUserVC Tiered Access: hands-on/data-user-vc-tiered.md
+          - DataUserVC Tiered Access Spec: hands-on/data-user-vc-tiered-spec.md
       - Phase 3 Intelligence Integration:
           - Regional Safety Assistant Sample: hands-on/regional-safety-assistant.md
           - LLM Planner Hands-on: hands-on/llm-planner.md
