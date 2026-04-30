@@ -9,8 +9,8 @@
 - ルーティング: `mkdocs-static-i18n` の `suffix` 構成
 
 例:
-- `docs/workshop/quickstart.md`（日本語）
-- `docs/workshop/quickstart.en.md`（英語）
+- `docs/setup/quickstart.md`（日本語）
+- `docs/setup/quickstart.en.md`（英語）
 
 ## ローカル起動
 
