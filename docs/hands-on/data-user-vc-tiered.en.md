@@ -672,6 +672,16 @@ PurchaseViewerVC, and the image / video you just published renders in
 That makes the full **provide → auth → publish → receive → verify** loop
 a **two-tab** experience in the browser.
 
+!!! success "Verified end-to-end (2026-04-30)"
+    A `video/quicktime` clip recorded on iPhone Safari, published via
+    `/provider`, was rendered inline by the `<video>` tag in `/viewer`
+    on **macOS Safari** (see §11.8.A). The same wallet held both the
+    SellerVC (provider side) and the PurchaseViewerVC.full (receiver
+    side); each `/buyer/start` or `/provider/start` page picked the
+    right one automatically. Screenshot:
+    `images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.jpg`
+    (to be added by follow-up commit).
+
 ### 11.6 Symmetry with `/buyer/start`
 
 | Aspect | `/buyer/start` (§10) | `/provider/start` (§11) |
@@ -692,22 +702,198 @@ a **two-tab** experience in the browser.
 | 🔴 Browser recorder button does nothing | `getUserMedia` only works on HTTPS or `localhost`. Opening over a LAN IP (`http://192.168.x.x`) makes the browser deny camera/mic permission. Use `localhost:8080` or run behind HTTPS |
 | `/provider/publish` returns 403 `seller_token_dataset_not_licensed` | The dataset_id derived from `topic` isn't in your SellerVC's `licensed_datasets[]`. Example: `topic=homeassistant/event/possible_littering` → dataset_id is `home/event/possible_littering` |
 | Publish response has `status: send_error` | The publisher's `PLATFORM_API_URL` is unreachable. The SellerToken gate did pass and `register_count` did increment — auth was OK, downstream delivery failed |
+| `/provider/publish` returns 401 `seller_token_unknown` | `SSIStateStore` is in-memory; restarting the publisher container wipes every token. Re-present the SellerVC at `/provider/start` to mint a fresh one (the SellerVC itself stays in the wallet, no re-issuance needed). For hands-on sessions that bounce the container, plan one extra OID4VP loop after each restart |
+| Wallet shows "Retrieving access token failed: 400 / Error Screen" | OID4VCI offers are **single-use**. Sphereon-family wallets retry `/issuer/token` internally; the second call fails with `invalid_grant` (400). The **first call already issued the VC into the wallet** — the error screen is misleading. Dismiss it and check the wallet's credential list; the new card should be there |
 
-### 11.8 Real-device validation status
+### 11.8 Real-device validation log
 
-As of 2026-04-30 the following paths are **not yet validated on a real
-device** — screenshots and observed values will be appended once they
-are exercised:
+End-to-end runs of the three §11.3 input modes across four
+environments. Screenshots live under
+`docs/hands-on/images/data-user-vc-tiered/provider/`.
 
-- iPhone Safari `capture="environment"` → on-the-spot capture → upload → publish
-- PC Chrome MediaRecorder → auto-upload → publish
-- Firefox VP8 fallback
-- macOS Safari MP4 codec fallback
+| Scenario | Environment | Status | Observation |
+|---|---|---|---|
+| **A** iPhone camera capture (`capture="environment"`) | iPhone Safari (iOS 18.x) | ✅ verified (2026-04-30) | upload `video/quicktime` 273KB → Publish `status=allowed` → receiver `/viewer` plays the `.MOV` inline (macOS Safari) |
+| **B** PC browser recording (MediaRecorder) | macOS Chrome 147 | ⚠️ codec confirmed (2026-04-30) | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9**. Recording + Publish pending wallet rebuild |
+| **C** Firefox VP8 fallback | macOS Firefox 139 | ✅ **verified (2026-04-30)** | Supports 2: `vp8,opus` / `webm` (no VP9 — Firefox MediaRecorder lacks VP9 support) → **VP8 selected**. Recording → upload → Publish round-trip completed: `media_uploaded ext=.webm bytes=89909` (WebM/VP8, 89KB) + `POST /provider/publish 200 OK`. The `pickRecorderMime()` VP8 fallback path is exercised end-to-end |
+| **D** ~~macOS Safari MP4 fallback~~ macOS Safari WebM/VP9 | macOS Safari 17+ | ✅ **verified (2026-04-30)** | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9** (not MP4). Recording → upload → Publish round-trip completed: `seller_token_issued ertl-bcd-final` + `POST /provider/publish 200 OK`. **Safari 17+ has native WebM/VP9 support**; the original "Safari falls back to MP4" assumption applies only to Safari 16 and earlier |
 
-The implementation and OID4VP plumbing have been verified at the unit
-test level (78/78 + 71/71 pass) across the three PRs
-`feat/stage-t-provider-start-c1`, `feat/stage-t-provider-c2`, and
-`feat/stage-t-provider-camera`.
+#### Bugs surfaced during the first real-device run (scenario A)
+
+The first scenario-A pass exposed **2 implementation bugs and 2 operational
+behaviors** that unit tests cannot catch (real-device UA, iPhone-specific file
+formats, in-memory state, wallet retry behavior). The two implementation bugs
+are fixed in the latest `main`.
+
+| # | Symptom | Cause | Fix / Resolution |
+|---|---|---|---|
+| 1 | `/provider/start` returned `HTTP 404 no_presentation_definition_for_dataset` | The c1 page-side JS was passing `dataset_id=<hint>` to `/verifier/request`. The verifier only registers SellerVC presentation defs under the `*` sentinel, so the lookup missed | [Blockchain_IoT_Marketplace#41](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/41) — hard-codes `dataset_id="*"` |
+| 2 | Upload returned `HTTP 415 unsupported media type` | iPhone Safari `<input capture>` saves video as QuickTime `.MOV` (`video/quicktime`); `media_routes._ALLOWED_EXT` didn't include it | [Blockchain_IoT_Marketplace#42](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/42) — adds `.mov` to allowlist |
+| 3 | Publish returned `HTTP 401 seller_token_unknown` right before success | `SSIStateStore` is in-memory; container rebuilds wipe every token. Re-presenting the SellerVC via `/provider/start` mints a fresh one (the SellerVC itself stays in the wallet, no re-issuance needed) | Documented as operational behavior in §11.7 |
+| 4 | Wallet showed "Retrieving access token failed: 400 / Error Screen" | OID4VCI offers are **single-use**, but Sphereon-family wallets retry `/issuer/token` internally. The 2nd call fails with `invalid_grant` (400). The **1st call already issued the VC into the wallet** — the error screen is misleading. Dismiss it and the credential list shows the new card | Wallet behavior, documented in §11.7 |
+
+Reproduction steps and verification points for each scenario are
+below. Walk each subsection end-to-end, flip the `status` column to
+✅, and append the observed values + screenshots to this page (PR
+welcome).
+
+#### Common preconditions
+
+For all scenarios:
+
+1. `docker compose -f infra/docker-compose.yml up -d publisher hardhat bridge mosquitto` is up
+2. Wallet holds a SellerVC whose `licensed_datasets` contains `home/event/possible_littering`
+3. Publisher host is reachable from both PC and iPhone (same LAN recommended)
+
+The "browser recorder" mode (B/C/D) only works over **`localhost` or
+HTTPS** because of `getUserMedia`. Open the page on the same machine
+running the publisher, via `http://localhost:8080`. A LAN IP
+(`http://192.168.x.x:8080`) makes the browser deny camera/mic
+permission silently.
+
+#### A. iPhone camera capture (`capture="environment"`)
+
+**Goal**: confirm
+`<input type="file" accept="image/*,video/*" capture="environment">`
+opens the camera directly in iOS Safari.
+
+**Steps**:
+
+1. iPhone Safari → `http://<publisher-host>:8080/provider/start?ds=home/event/possible_littering`
+2. Present a SellerVC from the wallet → land on `/provider?pt=...&ds=...`
+3. Tap the **"📷 カメラで撮影"** input
+4. Confirm whether iOS shows "Take Video" as the **default**, or jumps straight to the camera
+5. Record 5–10 s → return → page auto-POSTs to `/media/upload`
+6. Press "Publish event" and confirm 200
+
+**Observed (2026-04-30, iPhone Safari, iOS 18.x)**:
+
+- [x] Tap "📷 カメラで撮影" → "ファイルを選択" → iOS sheet shows "Take Video / Photo Library / Choose File" → pick "Take Video" → camera opens ✅
+  - **Note**: the sheet does **not** open the camera directly. `accept="image/*,video/*"` + `capture` is a *hint*, not a hard switch.
+- [x] Upload result: `content_type: video/quicktime` / `byte_size: 273897` / `sha256=11367cf4cb1b...` ✅
+  - Expected `video/mp4`, but iPhone Safari saves recordings as **QuickTime (`.MOV`)**.
+- [x] Publish response: `status: allowed`, `dataset_id=home/event/possible_littering`, `seller_token_jti=49bf45c467a65ddc`, `register_count=1` ✅
+- [x] Receiver `/viewer` (macOS Safari, Tier 3 PurchaseViewerVC.full): green badge `tier: event+image+video` and the `<video>` tag plays the clip inline ✅
+  - **macOS Safari natively plays `video/quicktime`** — important data point: Stage T option B handles QuickTime end-to-end.
+
+**Screenshots (to be added by follow-up commit)**:
+
+```
+images/data-user-vc-tiered/provider/A-iphone-404-original.png       # pre-fix: 404 no_presentation_definition_for_dataset
+images/data-user-vc-tiered/provider/A-iphone-415-mov-rejected.png   # pre-fix: 415 .MOV unsupported
+images/data-user-vc-tiered/provider/A-iphone-401-token-unknown.png  # operational: container rebuild wiped token
+images/data-user-vc-tiered/provider/A-iphone-after-publish.png      # success: green Published banner + register_count=1
+images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.jpg    # receiver: /viewer plays the .MOV inline
+```
+
+**iOS-version note**: on iOS 18.x, `accept="image/*,video/*"` +
+`capture="environment"` does **not** open the camera directly — the
+"Take Video / Photo Library / Choose File" sheet appears first. To
+force camera-only behavior, narrow `accept` to `video/*` (at the cost
+of losing the existing-file path). The current implementation keeps
+both modes; the extra tap is acceptable.
+
+#### B. PC browser recording — Chrome (VP9)
+
+**Goal**: confirm MediaRecorder + `getUserMedia` records from the PC
+webcam, auto-uploads, publishes, and that Chromium-family browsers
+pick VP9.
+
+**Steps**:
+
+1. Same machine running publisher; Chrome → `http://localhost:8080/provider/start?ds=home/event/possible_littering`
+2. Present SellerVC from the iPhone wallet (scan QR; same LAN)
+3. Pick a dataset on the success panel → `/provider`
+4. In the **"🔴 ブラウザで録画"** section, click 録画開始
+5. Allow camera/mic in the browser permission dialog
+6. Confirm the live `<video>` preview shows the webcam
+7. Wait 5–10 s, click 停止 & アップロード
+8. `recStatus` transitions through "録画完了 (Ns) — アップロード中…" → "録画完了 (Ns)"
+9. Upload result shows `content_type: video/webm`
+10. `video_duration_sec` form is **auto-filled** with the measured length
+11. Publish succeeds
+
+**Codec check**:
+
+In DevTools console:
+
+```js
+['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4']
+  .filter(m => MediaRecorder.isTypeSupported(m))
+```
+
+Expected: `["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]`
+(first entry = the one actually picked).
+
+**Screenshots (TBD)**:
+
+```
+images/data-user-vc-tiered/provider/B-chrome-permission.png         # camera permission
+images/data-user-vc-tiered/provider/B-chrome-recording.png          # live preview + red banner
+images/data-user-vc-tiered/provider/B-chrome-uploaded.png           # upload result with URL/CID
+images/data-user-vc-tiered/provider/B-chrome-publish-ok.png         # publish success
+images/data-user-vc-tiered/provider/B-chrome-devtools-codec.png     # DevTools codec output
+```
+
+#### C. PC browser recording — Firefox (VP8 fallback)
+
+**Goal**: confirm Firefox completes the same flow and falls back to
+VP8 when VP9 is unavailable.
+
+**Steps**: same as B in Firefox.
+
+**Verification points**: run the same DevTools snippet and confirm
+`vp9,opus` returns `false` while `vp8,opus` (or bare `webm`) returns
+`true`. Upload should still produce `content_type: video/webm`.
+
+**Screenshots (TBD)**:
+
+```
+images/data-user-vc-tiered/provider/C-firefox-permission.png
+images/data-user-vc-tiered/provider/C-firefox-recording.png
+images/data-user-vc-tiered/provider/C-firefox-publish-ok.png
+images/data-user-vc-tiered/provider/C-firefox-devtools-codec.png    # vp9=false, vp8=true
+```
+
+#### D. macOS Safari (MP4 fallback)
+
+**Goal**: confirm MP4 fallback works on Safari, where WebM family is
+unsupported.
+
+**Steps**: same as B in macOS Safari (16+).
+
+**Verification points**:
+`MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')` →
+`false`; `MediaRecorder.isTypeSupported('video/mp4')` → `true`. Upload
+result should show `content_type: video/mp4`.
+
+**Safari-specific notes**:
+
+- Safari prior to 14.1 has no `MediaRecorder` at all; `recStatus`
+  surfaces "このブラウザは録画に対応していません". If you hit that, add
+  the version range to §11.7.
+- Camera/mic permission may need to be granted via the **address-bar
+  Safari settings icon** in some setups.
+
+**Screenshots (TBD)**:
+
+```
+images/data-user-vc-tiered/provider/D-safari-permission.png
+images/data-user-vc-tiered/provider/D-safari-recording.png
+images/data-user-vc-tiered/provider/D-safari-publish-ok.png
+images/data-user-vc-tiered/provider/D-safari-devtools-codec.png     # mp4=true
+```
+
+#### Post-validation checklist
+
+After all four scenarios:
+
+- [ ] Screenshots placed in
+      `docs/hands-on/images/data-user-vc-tiered/provider/` at the paths above
+- [ ] §11.8 status table updated ⏳ → ✅
+- [ ] Observed codec values, OS versions, and any unusual behavior
+      appended to the relevant subsection
+- [ ] §11.7 troubleshooting extended with any new symptoms found during validation
 
 ## 12. Semantic-level redaction (VLM + face blur)
 
