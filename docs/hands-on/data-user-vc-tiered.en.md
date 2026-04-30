@@ -926,23 +926,41 @@ receiver-side `/viewer` currently prefers raw keys (`image_url` /
 | `description_*` keys appear with profile OFF | Bug — the legacy projection should never emit derivative keys. The regression test `test_pipeline_no_injectors_keeps_legacy_envelope` covers this; if you see it, file an issue |
 | `processing_warnings: ["vlm_unavailable"]` keeps firing | Ollama not responding or `VLM_API_URL` wrong. From the publisher: `docker compose exec publisher curl http://vlm:11434/api/version` |
 
-### 12.10 Real-device validation log (VLM features, not yet run)
+### 12.10 Real-device validation log
 
-A §11.8-style log waits to be filled in after a real-device pass:
-
-| Scenario | Environment | Status | Verification point |
+| Scenario | Environment | Status | Observations |
 |---|---|---|---|
-| **V1** Tier 3 has every key | macOS Chrome + Ollama (llava) | ⏳ pending | `image_url` + `image_url_redacted` + `description_full` + `description_summary` all present |
-| **V2** Tier 2 has redacted + text, no raw image | macOS Chrome | ⏳ pending | `image_url` absent, `image_url_redacted` present, both descriptions present |
-| **V3** Tier 1 (summary) is text-only | macOS Chrome | ⏳ pending | only `description_summary`; no image keys at all |
-| **V4** Face blur visual confirmation | iPhone capture of a person → publish → Tier 2 receiver | ⏳ pending | `image_url_redacted` shows the same scene with faces Gaussian-blurred |
-| **V5** description_full vs summary quality | a sample image | ⏳ pending | full keeps name / brand / place; summary collapses to "adult / item / public location" |
-| **V6** VLM-down degrade | `docker stop vlm` | ⏳ pending | `processing_warnings: ["vlm_unavailable"]` set; `image_url_redacted` still generated |
-| **V7** Redaction-leak survey | 100 sample images | 🔬 research | per the spec post-check, what fraction of NER-extracted proper nouns survive into `description_summary` |
+| **V1** Tier 3 has every key | macOS Chrome + Ollama (llava) | ⚠️ partial (2026-04-30) | Pipeline logs confirm `vlm_describe_done full_len=280 summary_len=172` + `opencv_blur_faces detected=1`. **Per-tier `/platform/data` projection deferred — needs the iPhone OID4VP loop** |
+| **V2** Tier 2 has redacted + text, no raw image | macOS Chrome | ⏳ pending | OID4VP needed; deferred |
+| **V3** Tier 1 (summary) is text-only | macOS Chrome | ⏳ pending | OID4VP needed; deferred |
+| **V4** Face blur visual confirmation | StyleGAN2 synthetic face (no real PII) → publish → Tier 2 receiver | ✅ **verified (2026-04-30)** | OpenCV detected 1 face, applied Gaussian blur (51×51), re-uploaded as a separate file. Face is unrecognizable in the output.<br>📷 [original](images/data-user-vc-tiered/vlm/V4-original.jpg) → [redacted](images/data-user-vc-tiered/vlm/V4-redacted.jpg) |
+| **V5** description_full vs summary quality | StyleGAN2 sample | ⚠️ partial | VLM 2-stage prompting completed (`full_len=280`, `summary_len=172`). **Actual text diff requires ViewerToken-based fetch; deferred** |
+| **V6** VLM-down degrade | timeout 60s effectively triggered vlm_unavailable | ✅ verified (2026-04-30) | `vlm describe failed: ollama call failed: timed out` → `processing_warnings: ["vlm_unavailable"]` emitted; `image_url_redacted` still generated. Δ3 timeout fix bumps default to 180s; CPU environments need `VLM_TIMEOUT_SEC=600` |
+| **V7** Redaction-leak survey | large sample | 🔬 research | Spec's post-check implementation prerequisite; not started in this validation pass |
 
-The implementation has been verified at the unit-test level (155/155
-pass) in `feat/stage-t-vlm-tier-real-backends`
-([Blockchain_IoT_Marketplace#44](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/44)).
+#### Bugs / constraints surfaced during V1–V6
+
+Three operational findings emerged during this pass:
+
+| # | Symptom | Cause / Resolution |
+|---|---|---|
+| 1 | `/provider/publish` followed by `vlm describe failed: ollama call failed: timed out` | CPU LLaVA-7B inference takes **~186s per stage** (even on a 1×1 pixel image). describe() needs 2 stages → ~6 min total |
+| 2 | Δ3's default `VLM_TIMEOUT_SEC=60` couldn't complete | [Blockchain_IoT_Marketplace#45](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/45) bumps to 180s; CPU setups need `VLM_TIMEOUT_SEC=600` |
+| 3 | LLaVA-7B on CPU is impractical for hands-on workshops | Use a smaller model (`bakllava`, `moondream`) or GPU / external API. Add to docs |
+
+#### V4 visual comparison
+
+| Original (synthetic) | OpenCV Haar-cascade blurred |
+|---|---|
+| ![original](images/data-user-vc-tiered/vlm/V4-original.jpg){ width=300 } | ![redacted](images/data-user-vc-tiered/vlm/V4-redacted.jpg){ width=300 } |
+| Face details (eyes, nose, mouth) clearly visible | Central rectangular face region completely Gaussian-blurred; hair, ears, beard, and background unchanged |
+
+The image is a **StyleGAN2 synthetic face** — no real-world PII involved.
+
+The implementation is verified at unit-test level (155/155 pass) in
+[Blockchain_IoT_Marketplace#44](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/44),
+with the timeout fix in
+[#45](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/45).
 
 ## Where to go next
 
