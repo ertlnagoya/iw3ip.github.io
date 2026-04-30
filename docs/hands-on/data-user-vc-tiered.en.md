@@ -611,7 +611,7 @@ receiver side at `/viewer` cannot tell which one was used.
 |---|---|---|
 | 📁 File picker | OS file dialog, pick an existing file | PC + phone |
 | 📷 Camera capture | `<input capture="environment">` — iPhone Safari opens the rear camera directly; PC falls back to file picker | iPhone (capture-on-the-spot) |
-| 🔴 Browser recorder | `MediaRecorder` against `getUserMedia({video,audio})`. Click 録画開始, see live preview, click 停止 to auto-upload as WebM/VP9 (Safari falls back to MP4) | PC webcam |
+| 🔴 Browser recorder | `MediaRecorder` against `getUserMedia({video,audio})`. Click 録画開始, see live preview, click 停止 to auto-upload as WebM/VP9. Firefox falls back to VP8. Only Safari 16 and earlier fall back to MP4 — Safari 17+ has native WebM/VP9 support | PC webcam |
 
 All three call the same `uploadBlob()` pipeline: preview →
 `POST /media/upload` → result panel → enable the Publish button.
@@ -855,17 +855,27 @@ images/data-user-vc-tiered/provider/C-firefox-publish-ok.png
 images/data-user-vc-tiered/provider/C-firefox-devtools-codec.png    # vp9=false, vp8=true
 ```
 
-#### D. macOS Safari (MP4 fallback)
+#### D. macOS Safari (Safari 17+ uses WebM/VP9; Safari 16 and earlier fall back to MP4)
 
-**Goal**: confirm MP4 fallback works on Safari, where WebM family is
-unsupported.
+**Goal**: confirm codec selection branches between modern (17+) and legacy
+(≤16) Safari. **Real-device validation on 2026-04-30 found Safari 17+
+has native WebM/VP9 support**, so the long-standing MP4-fallback
+assumption only applies to legacy Safari.
 
-**Steps**: same as B in macOS Safari (16+).
+**Steps**: same as B in macOS Safari.
 
 **Verification points**:
-`MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')` →
-`false`; `MediaRecorder.isTypeSupported('video/mp4')` → `true`. Upload
-result should show `content_type: video/mp4`.
+
+| Safari version | Supported codecs | Picked codec | Upload `content_type` |
+|---|---|---|---|
+| **17+** (modern) | vp9, vp8, webm, mp4 | **VP9** | `video/webm` |
+| 16 and earlier | mp4 only | MP4 | `video/mp4` |
+
+`MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')`:
+- Safari 17+: `true` → VP9 selected (same behavior as Chrome)
+- Safari 16 and earlier: `false` → falls back to MP4
+
+Run the codec list in DevTools console to make the branch visible.
 
 **Safari-specific notes**:
 

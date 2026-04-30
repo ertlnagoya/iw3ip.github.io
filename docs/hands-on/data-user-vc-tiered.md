@@ -582,7 +582,7 @@ PC では QR が表示されます。iPhone のウォレットで読み取って
 |---|---|---|
 | 📁 ファイルから選ぶ | OS のファイルピッカー。既存のファイルをそのまま選択 | PC / スマホ両用 |
 | 📷 カメラで撮影 | `<input capture="environment">`。iPhone Safari ではカメラが直接起動。PC ではファイルピッカーにフォールバック | iPhone での即時撮影 |
-| 🔴 ブラウザで録画 | `MediaRecorder` + `getUserMedia({video,audio})`。「録画開始」→ ライブプレビュー → 「停止」で WebM/VP9（Safari は MP4 にフォールバック）として自動アップロード | PC のウェブカメラ |
+| 🔴 ブラウザで録画 | `MediaRecorder` + `getUserMedia({video,audio})`。「録画開始」→ ライブプレビュー → 「停止」で WebM/VP9 として自動アップロード。Firefox は VP8 にフォールバック。Safari 16 以下のみ MP4 にフォールバック（Safari 17+ は WebM/VP9 をネイティブ対応） | PC のウェブカメラ |
 
 3 モードはすべて同一の `uploadBlob()` パイプラインを通り、
 プレビュー → `POST /media/upload` → 結果パネル表示 → Publish 有効化、という流れは共通です。
@@ -825,18 +825,26 @@ images/data-user-vc-tiered/provider/C-firefox-publish-ok.png
 images/data-user-vc-tiered/provider/C-firefox-devtools-codec.png    # vp9=false, vp8=true
 ```
 
-#### D. macOS Safari（MP4 フォールバック）
+#### D. macOS Safari (Safari 17+ は WebM/VP9, Safari 16 以下は MP4 fallback)
 
-**目的**: WebM 系がサポートされない Safari で MP4 にフォールバックすること
-を確認する。
+**目的**: Safari の Modern (17+) と Legacy (≤16) で codec 選択が分岐することを
+確認する。**実機検証 (2026-04-30) で Safari 17+ は WebM/VP9 をネイティブ対応している
+ことが判明**したため、modern Safari の MP4 fallback 想定は古い。
 
-**手順**: B と同じ手順を macOS Safari (16+) で実施。
+**手順**: B と同じ手順を macOS Safari で実施。
 
 **確認ポイント**:
 
-`MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')` が `false`、
-`MediaRecorder.isTypeSupported('video/mp4')` が `true` になり、アップロード結果の
-`content_type` が `video/mp4` になることを確認。
+| Safari バージョン | サポート codec | 選ばれる codec | アップロード `content_type` |
+|---|---|---|---|
+| **17+** (modern) | vp9, vp8, webm, mp4 | **VP9** | `video/webm` |
+| 16 以下 | mp4 のみ | MP4 | `video/mp4` |
+
+`MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')` が:
+- Safari 17+ で `true` → VP9 が選ばれる（Chrome と同じ挙動）
+- Safari 16 以下で `false` → MP4 にフォールバック
+
+DevTools コンソールで実際の codec 一覧を出力すると分岐が一目で分かります。
 
 **Safari 固有の注意**:
 
