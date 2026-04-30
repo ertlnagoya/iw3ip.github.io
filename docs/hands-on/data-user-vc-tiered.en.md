@@ -709,6 +709,241 @@ test level (78/78 + 71/71 pass) across the three PRs
 `feat/stage-t-provider-start-c1`, `feat/stage-t-provider-c2`, and
 `feat/stage-t-provider-camera`.
 
+## 12. Semantic-level redaction (VLM + face blur)
+
+§1–§11 gate access by **dropping media keys** — Tier 2 hides video,
+Tier 1 hides image and video. §12 derives **new content from the same
+source via VLM inference + face/PII blurring** and projects those
+derivatives per tier. Tier 1 stops being "you get nothing useful" and
+ships a **PII-redacted summary** instead.
+
+Design rationale: see [DataUserVC × Tiered Access Spec § "Tier extension"](data-user-vc-tiered-spec.md#tier-extension-semantic-level-redaction-vlm).
+
+### 12.1 Updated tier definitions
+
+| Tier | access level | Example (score) | Derivatives shipped |
+|---|---|---|---|
+| **3** Full | `full` | gov + crime + ISO27001 (80) | raw image / video + redacted image + full text + summary text |
+| **2** Access | `access` | enterprise + research + ISO27001 (75) | **face/PII-blurred image** + **detailed text** (named entities) + summary |
+| **1** Summary | `summary` (new) | enterprise + research only (60–) | **summary text only** (PII-redacted, no image) |
+| 0 Denied | `denied` | unqualified (<60) | claim is rejected |
+
+A new `summary` value joins the `access_level` enum; `denied` is
+unchanged. The `/platform/data` row schema gains:
+
+| Key | Content | Visible at tier |
+|---|---|---|
+| `image_url_redacted` | URL of an image with faces / people / license plates blurred | 2 + 3 |
+| `image_cid_redacted` | IPFS CID of the redacted image (when option C is on) | 2 + 3 |
+| `description_full` | VLM-generated detailed description (named entities present) | 2 + 3 |
+| `description_summary` | VLM-generated summary (PII-redacted) | 1 + 2 + 3 |
+| `description_model` | VLM model id + version (audit) | every tier |
+| `description_generated_at` | Inference timestamp (ISO8601) | every tier |
+| `processing_warnings` | List of degraded steps (`vlm_unavailable`, `redaction_unavailable`) | every tier |
+
+### 12.2 Bring up with `--profile vlm`
+
+VLM and face blur are **opt-in**. With the profile off, §1–§11 keep
+working under the legacy 3-tier projection.
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile vlm up -d \
+  publisher hardhat bridge mosquitto vlm vlm-pull
+```
+
+Switch the publisher backends on:
+
+```bash
+export VLM_BACKEND=ollama
+export IMAGE_REDACTION_BACKEND=opencv
+docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
+```
+
+Wait for `vlm-pull` to finish pulling `llava` (first time only, multi-GB):
+
+```bash
+docker compose -f infra/docker-compose.yml logs -f vlm-pull
+# wait for "vlm model llava ready" then exit
+```
+
+Toggling profile off vs on against the same dataset shows that the
+`description_*` keys appear only when on.
+
+### 12.3 Four DataUserVC offers
+
+The §2 set extended with a **summary-tier** profile.
+
+#### 12.3.a Tier 3 (full) — same as §2a
+
+```bash
+curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=GovernmentOrganization&purpose=CrimeSearch&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+
+#### 12.3.b Tier 2 (access) — same as §2b
+
+```bash
+curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+
+#### 12.3.c Tier 1 (summary, new) — enterprise + unknown purpose + legal compliance only
+
+```bash
+curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=unknown&legal_compliance=true&data_handling_policy=other&misuse_record=false' | jq .
+# score = 20 + 5 + 15 + 0 + 10 = 50 -> summary (only when VLM profile is on)
+```
+
+#### 12.3.d Tier 0 (denied) — same as §2c
+
+```bash
+curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true' | jq .
+```
+
+### 12.4 Four `/marketplace/claim` calls + `/platform/data` comparison
+
+Same routine as §3: claim → PurchaseViewerVC → present → ViewerToken → fetch.
+With VLM profile on:
+
+| Profile | `event` | `image_url` | `video_url` | `image_url_redacted` | `description_full` | `description_summary` |
+|---|---|---|---|---|---|---|
+| 12.3.a Tier 3 (full) | yes | yes | yes | yes | yes | yes |
+| 12.3.b Tier 2 (access) | yes | **no** | **no** | yes | yes | yes |
+| 12.3.c Tier 1 (summary) | yes | **no** | **no** | **no** | **no** | yes |
+| 12.3.d Tier 0 (denied) | the claim itself returns `access_level: "denied"` |
+
+With profile **off** the legacy 3-tier projection runs (no derivative
+keys appear). Claim 12.3.c then resolves to `denied` since `summary`
+is profile-on only.
+
+### 12.5 Verifying face blur
+
+Open `image_url_redacted` from a Tier 2 response in a browser. You
+should see **the same scene as `image_url` (Tier 3 only) but with
+faces blurred**.
+
+| Original (`image_url`, Tier 3 only) | Blurred (`image_url_redacted`, Tier 2+) |
+|---|---|
+| ![pre-redaction (TBD)](images/data-user-vc-tiered/vlm/12-pre-blur.png){ width=300 } | ![post-redaction (TBD)](images/data-user-vc-tiered/vlm/12-post-blur.png){ width=300 } |
+
+Internally the publisher:
+
+1. fetches the source from `/media/<sha>.<ext>`
+2. runs OpenCV Haar-cascade face detection
+3. applies a 51×51 Gaussian blur to each face region
+4. re-encodes in the original format
+5. POSTs the result back to its own `/media/upload` (which dedups +
+   optionally pushes to IPFS)
+6. surfaces the resulting URL/CID as `image_url_redacted` /
+   `image_cid_redacted`
+
+Subsequent uploads of the same source skip the blur entirely — the
+sha256 dedup hits.
+
+!!! note "MVP limitations"
+    The Haar cascade catches **frontal faces only**. Side profiles,
+    occluded faces, and low-resolution faces pass through. License
+    plates / ID badges / sharp-rectangle screen detection are
+    [future work in the spec](data-user-vc-tiered-spec.md#tier-extension-semantic-level-redaction-vlm).
+
+### 12.6 Inspecting VLM output
+
+Compare `description_full` (Tier 2/3) against `description_summary`
+(Tier 1+) to confirm proper-noun stripping:
+
+```bash
+curl -s -H "authorization: Bearer $VIEWER_TOKEN_TIER3" \
+     localhost:8080/platform/data?dataset_id=home/event/possible_littering \
+  | jq '.rows[0] | {description_full, description_summary, description_model}'
+```
+
+Example output:
+
+```json
+{
+  "description_full": "John Smith dropped a Coca-Cola bottle near the Hibiya station entrance at around 14:32.",
+  "description_summary": "An adult dropped a piece of litter near a public location during the afternoon.",
+  "description_model": "ollama/llava"
+}
+```
+
+The `_full` line keeps the person's name, brand, and place. The
+`_summary` line collapses to "an adult / public location / afternoon".
+
+!!! warning "Possible redaction leaks"
+    LLaVA-class VLMs are probabilistic; **`description_summary` may
+    structurally still contain PII** (e.g. clothing details that
+    re-identify, building names that look generic). The spec
+    [records detection as a research TODO](data-user-vc-tiered-spec.md#tier-extension-semantic-level-redaction-vlm)
+    (NER diff + PII dictionary). For production, queue Tier 1 outputs
+    for human review.
+
+### 12.7 Degrade behavior
+
+If either VLM or blur fails, publishing keeps going and
+`processing_warnings[]` tells the receiver what was skipped.
+
+Stop the VLM only:
+
+```bash
+docker compose -f infra/docker-compose.yml stop vlm
+# /provider/publish still succeeds; /platform/data carries
+# processing_warnings: ["vlm_unavailable"]
+# image_url_redacted is still generated (face blur is VLM-free)
+# description_* keys are absent
+```
+
+Stop both:
+
+```bash
+docker compose -f infra/docker-compose.yml stop vlm
+# also clear IMAGE_REDACTION_BACKEND on the publisher and restart
+# /platform/data: processing_warnings: ["vlm_unavailable", "redaction_unavailable"]
+# Tier 2 / Tier 1 receivers get only the raw keys (= profile-OFF parity)
+```
+
+`image_url` / `video_url` always remain visible at Tier 3 even when
+derivatives are degraded — the receiver contract is "expected key
+missing → check `processing_warnings`".
+
+### 12.8 Relation to §11 (PWA Provider)
+
+Images uploaded through `/provider` (§11) automatically flow through
+the VLM pipeline when profile vlm is on. The **provider page itself
+needs no change**; derivative generation is server-side. The
+receiver-side `/viewer` currently prefers raw keys (`image_url` /
+`video_url`); a follow-up PR is needed to teach `/viewer` to display
+`image_url_redacted` when only the redacted variant is allowed
+([scenario tracked below](#12-9)).
+
+### 12.9 Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `vlm-pull` returns "pull model manifest: file does not exist" | The container can't reach the image registry. From inside: `curl https://registry.ollama.ai`. Or change `VLM_MODEL` to a different name (e.g. `llava:7b`) |
+| First `/provider/publish` times out | LLaVA cold start (loading into VRAM) takes 30–60s. Confirm `vlm-pull` reported "model ready"; subsequent calls are fast |
+| `description_full` and `description_summary` come back identical | LLaVA may have ignored the prompt difference. `docker compose logs vlm` should show two distinct `/api/generate` calls; if not, check the prompt strings in `vlm_client.py` |
+| `image_url_redacted` looks unblurred | Haar cascade catches only frontal faces. Side / occluded / small faces pass through — swap in a DNN detector if needed |
+| `description_*` keys appear with profile OFF | Bug — the legacy projection should never emit derivative keys. The regression test `test_pipeline_no_injectors_keeps_legacy_envelope` covers this; if you see it, file an issue |
+| `processing_warnings: ["vlm_unavailable"]` keeps firing | Ollama not responding or `VLM_API_URL` wrong. From the publisher: `docker compose exec publisher curl http://vlm:11434/api/version` |
+
+### 12.10 Real-device validation log (VLM features, not yet run)
+
+A §11.8-style log waits to be filled in after a real-device pass:
+
+| Scenario | Environment | Status | Verification point |
+|---|---|---|---|
+| **V1** Tier 3 has every key | macOS Chrome + Ollama (llava) | ⏳ pending | `image_url` + `image_url_redacted` + `description_full` + `description_summary` all present |
+| **V2** Tier 2 has redacted + text, no raw image | macOS Chrome | ⏳ pending | `image_url` absent, `image_url_redacted` present, both descriptions present |
+| **V3** Tier 1 (summary) is text-only | macOS Chrome | ⏳ pending | only `description_summary`; no image keys at all |
+| **V4** Face blur visual confirmation | iPhone capture of a person → publish → Tier 2 receiver | ⏳ pending | `image_url_redacted` shows the same scene with faces Gaussian-blurred |
+| **V5** description_full vs summary quality | a sample image | ⏳ pending | full keeps name / brand / place; summary collapses to "adult / item / public location" |
+| **V6** VLM-down degrade | `docker stop vlm` | ⏳ pending | `processing_warnings: ["vlm_unavailable"]` set; `image_url_redacted` still generated |
+| **V7** Redaction-leak survey | 100 sample images | 🔬 research | per the spec post-check, what fraction of NER-extracted proper nouns survive into `description_summary` |
+
+The implementation has been verified at the unit-test level (155/155
+pass) in `feat/stage-t-vlm-tier-real-backends`
+([Blockchain_IoT_Marketplace#44](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/44)).
+
 ## Where to go next
 
 - [Mobile SSI Wallet sample](ha-ssi-wallet.md) — bring up the Phase 2 wallet

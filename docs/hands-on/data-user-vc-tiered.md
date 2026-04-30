@@ -678,6 +678,251 @@ deny ケースの挙動:
 `feat/stage-t-provider-c2` / `feat/stage-t-provider-camera` の 3 PR で
 ユニットテストレベル (78/78 + 71/71 pass) は確認済みです。
 
+## 12. 意味レベルの段階化（VLM + 顔ブラー）
+
+§1〜§11 までは「**メディアの欠落**」によるアクセス制御 — Tier 2 で
+動画キーが消える、Tier 1 で画像も消える、というモデルでした。§12 では同じ素材から
+**情報処理（VLM 推論 + 顔/PII ブラー）を経由した派生データを生成し、tier 別に
+出し分ける**仕組みを動かします。Tier 1 は「素材を全く渡さない」のではなく
+「**プライバシー情報を抜いた要約テキスト**」を渡せるようになります。
+
+設計の根拠は [DataUserVC × 段階アクセス制御 仕様 §「tier 拡張: 意味レベルでの段階化」](data-user-vc-tiered-spec.md#tier-VLM)
+を参照してください。
+
+### 12.1 新しい tier 定義
+
+| Tier | アクセスレベル | 例 (score) | 出力する派生データ |
+|---|---|---|---|
+| **3** Full | `full` | 政府機関 + crime + ISO27001 (80) | 生 image / video + 顔ブラー画像 + 詳細文 + 概要文 |
+| **2** Access | `access` | 企業 + research + ISO27001 (75) | **顔ブラー済 image** + **詳細文**（人名・物体名あり）+ 概要文 |
+| **1** Summary | `summary`（新） | 企業 + research のみ (60〜) | **概要文のみ**（PII redact 済、image 無し） |
+| 0 Denied | `denied` | 不適格 (<60) | claim 自体を拒否 |
+
+新しい `summary` tier が追加されています（既存の `denied` は変更なし）。
+`/platform/data` のレスポンスに次のキーが増えます:
+
+| キー | 内容 | 露出する tier |
+|---|---|---|
+| `image_url_redacted` | 顔・人物・ナンバープレート等をブラーした image URL | 2 + 3 |
+| `image_cid_redacted` | 同 IPFS CID（案 C 有効時） | 2 + 3 |
+| `description_full` | VLM が生成した詳細記述（人名・固有名詞あり） | 2 + 3 |
+| `description_summary` | VLM が生成した概要（PII redact 済） | 1 + 2 + 3 |
+| `description_model` | 推論に使った VLM のモデル ID + バージョン（監査用） | 全 tier |
+| `description_generated_at` | 推論時刻（ISO8601） | 全 tier |
+| `processing_warnings` | 推論やブラーが失敗したステップを列挙（degrade 通知） | 全 tier |
+
+### 12.2 `--profile vlm` で起動
+
+VLM と顔ブラーは **opt-in**。デフォルト（profile 無効）では §1〜§11 と同じ
+3-tier 投影で動きます。
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+# profile vlm を ON にする。Ollama service と vlm-pull (llava の事前 pull)
+# が一緒に立ち上がる
+docker compose -f infra/docker-compose.yml --profile vlm up -d \
+  publisher hardhat bridge mosquitto vlm vlm-pull
+```
+
+publisher の env を VLM 用に切り替え（compose ファイルの env passthrough を
+shell から指定するか、`.env` に書く）:
+
+```bash
+export VLM_BACKEND=ollama
+export IMAGE_REDACTION_BACKEND=opencv
+docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
+```
+
+`vlm-pull` が `llava` モデルを pull し終わるまで待つ（初回のみ、数 GB）:
+
+```bash
+docker compose -f infra/docker-compose.yml logs -f vlm-pull
+# -> "vlm model llava ready" が出たら抜ける
+```
+
+publisher が新キーを生成しているかの確認:
+
+```bash
+curl -s http://localhost:8080/health | jq .
+# -> {"status": "ok", ...}
+```
+
+profile-OFF と profile-ON を切り替えながら同じデータセットで `/platform/data`
+を叩くと、後者にだけ `description_*` キーが乗ります。
+
+### 12.3 4 種類の DataUserVC オファー
+
+§2 の 3 種類に **summary tier 用**を追加します。
+
+#### 12.3.a Tier 3（full）— §2a と同じ
+
+```bash
+curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=GovernmentOrganization&purpose=CrimeSearch&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+
+#### 12.3.b Tier 2（access）— §2b と同じ
+
+```bash
+curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+
+#### 12.3.c Tier 1（summary, 新）— 企業 + 不明な purpose + legal compliance のみ
+
+```bash
+curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=unknown&legal_compliance=true&data_handling_policy=other&misuse_record=false' | jq .
+# score = 20 + 5 + 15 + 0 + 10 = 50 -> summary (VLM profile ON のときのみ)
+```
+
+#### 12.3.d Tier 0（denied）— §2c と同じ
+
+```bash
+curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true' | jq .
+```
+
+### 12.4 4 通りの `/marketplace/claim` と `/platform/data` 比較
+
+§3 と同じ要領で 4 通り claim → PurchaseViewerVC 提示 → ViewerToken 取得 →
+`/platform/data` を叩きます。VLM profile ON で得られるレスポンスのキー差分:
+
+| プロファイル | `event` | `image_url` | `video_url` | `image_url_redacted` | `description_full` | `description_summary` |
+|---|---|---|---|---|---|---|
+| 12.3.a Tier 3 (full) | あり | あり | あり | あり | あり | あり |
+| 12.3.b Tier 2 (access) | あり | **なし** | **なし** | あり | あり | あり |
+| 12.3.c Tier 1 (summary) | あり | **なし** | **なし** | **なし** | **なし** | あり |
+| 12.3.d Tier 0 (denied) | claim 自体が `access_level: "denied"` で拒否 |
+
+profile OFF なら従来通り（§4 と同じ）の 3-tier 投影なので、新キーは一切現れません
+— その状態で claim 12.3.c を投げると `denied` になります（summary tier は profile-on
+専用）。
+
+### 12.5 顔/PII ブラーの確認方法
+
+Tier 2 で受信した `image_url_redacted` の URL をブラウザで開くと、
+**元画像（`image_url`）と同じ構図で、人物の顔がぼかされた**バージョンが返ります。
+
+| 元 (`image_url`, Tier 3 のみ) | ブラー後 (`image_url_redacted`, Tier 2+) |
+|---|---|
+| ![pre-redaction (TBD)](images/data-user-vc-tiered/vlm/12-pre-blur.png){ width=300 } | ![post-redaction (TBD)](images/data-user-vc-tiered/vlm/12-post-blur.png){ width=300 } |
+
+publisher は内部で:
+
+1. 元画像を `/media/<sha>.<ext>` から fetch
+2. OpenCV Haar cascade で顔検出
+3. 検出された顔領域に Gaussian blur (kernel 51×51) を適用
+4. 同じ extension で再エンコード → publisher 自身の `/media/upload` に POST
+5. 戻ってきた URL/CID を `image_url_redacted` / `image_cid_redacted` に焼き込み
+
+という流れで処理します。同じ画像に対する 2 回目以降のリクエストは sha256 dedup で
+**ブラー済バージョンも生成スキップ**されます。
+
+!!! note "MVP の制限"
+    Haar cascade は **正面顔のみ**検出します。横顔・遮蔽された顔・低解像度の顔は
+    通り抜けます。ナンバープレート / IDバッジ / 画面 (鋭い矩形) などの追加検出器は
+    [仕様の future work](data-user-vc-tiered-spec.md#tier-VLM) に記録済みです。
+
+### 12.6 VLM 出力の確認
+
+Tier 2 / 3 で取得した `description_full` と Tier 1 の `description_summary` を
+並べると、**人名・固有名詞が抜けているか**を確認できます。
+
+```bash
+# Tier 3 でフルキー取得
+curl -s -H "authorization: Bearer $VIEWER_TOKEN_TIER3" \
+     localhost:8080/platform/data?dataset_id=home/event/possible_littering \
+  | jq '.rows[0] | {description_full, description_summary, description_model}'
+```
+
+期待される出力例:
+
+```json
+{
+  "description_full": "John Smith dropped a Coca-Cola bottle near the Hibiya station entrance at around 14:32.",
+  "description_summary": "An adult dropped a piece of litter near a public location during the afternoon.",
+  "description_model": "ollama/llava"
+}
+```
+
+`description_full` には人名（"John Smith"）・ブランド（"Coca-Cola"）・場所（"Hibiya
+station"）が残り、`description_summary` には「an adult / public location /
+afternoon」のような **一般化された語彙のみ**が出ているはずです。
+
+!!! warning "redact 失敗の可能性"
+    LLaVA 等の汎用 VLM は確率的なモデルなので、**`description_summary` から
+    PII を完全に抜き切れないケースが構造的に発生します**。
+    例: prompt の指示に反して人物の服の色や髪型を残してしまう、特定の建物名を
+    一般名詞と認識して残してしまう、など。
+    本仕様では検出責任を post-check ステージに分離して **研究 TODO** として
+    記録しています（[spec の "redact 失敗の検出"](data-user-vc-tiered-spec.md#tier-VLM)）。
+    実運用では Tier 1 出力を人手レビューに回す phase を 1 つ挟むのが安全です。
+
+### 12.7 degrade ケース（VLM / blur が落ちたとき）
+
+VLM か顔ブラーのどちらかが失敗しても publish は止まりません。
+`processing_warnings[]` で受信側に状況を通知します。
+
+VLM だけ落とす:
+
+```bash
+docker compose -f infra/docker-compose.yml stop vlm
+# /provider/publish を投げる → /platform/data で
+# processing_warnings: ["vlm_unavailable"] が出る
+# image_url_redacted は生成される (顔ブラーは VLM 不要のため)
+# description_* キーは欠落
+```
+
+両方落とす:
+
+```bash
+docker compose -f infra/docker-compose.yml stop vlm
+# 加えて publisher の IMAGE_REDACTION_BACKEND を空にして再起動
+# /platform/data で processing_warnings: ["vlm_unavailable", "redaction_unavailable"]
+# Tier 2 / Tier 1 受信者は派生キー無し、生キーのみ (= profile OFF と等価)
+```
+
+degrade 時は `image_url` / `video_url` が **そのまま生で残る**ので、
+受信側は Tier に応じた projection で生キー or 派生キーのどちらかを必ず受け取ります
+（受信者から見れば「予期したキーの一部が無いとき `processing_warnings` を見る」
+というシンプルなコントラクト）。
+
+### 12.8 既存 §11 (PWA Provider) との関係
+
+§11 の `/provider` ページから upload + publish した画像は、profile vlm が
+ON ならそのまま VLM パイプラインを通ります。**provider 側のページは変更不要**
+で、サーバー側で透過的に派生データが生成されます。受信側の `/viewer` は
+今のところ生キー (`image_url` / `video_url`) を優先表示しますが、Tier 2 で
+受信したときに `image_url_redacted` を表示するよう拡張する PR は別途
+（[こちらに記録](#12-9)）。
+
+### 12.9 トラブルシュート
+
+| 症状 | 対処 |
+|---|---|
+| `vlm-pull` が `Error: pull model manifest: file does not exist` | ネットワーク（image registry）に到達できていません。コンテナ内から `curl https://registry.ollama.ai` を確認。または `VLM_MODEL` を別の名前（`llava:7b` 等）に変更 |
+| 1 回目の `/provider/publish` がタイムアウト | LLaVA cold start（モデルを VRAM にロード）に 30〜60 秒かかります。`vlm-pull` のログで model ready が出ているか確認。出ていれば 2 回目以降は高速化します |
+| `description_full` / `description_summary` が同じ内容 | LLaVA が prompt を区別していない可能性。`docker compose logs vlm` で `/api/generate` 呼び出しが 2 回別々に来ているかを確認。同じ画像でも prompt が違うので戻り値は別々のはず |
+| `image_url_redacted` の画像で顔がぼけていない | Haar cascade は正面顔のみ。横顔・斜め顔は通り抜けます。実機検証ではこれを観察し、必要なら DNN 系検出器に差し替え |
+| Profile OFF でも `description_*` キーが出る | Bug — profile-off で legacy projection が動いていない可能性。`tests/test_data_user_vc_tiered_vlm.py::test_pipeline_no_injectors_keeps_legacy_envelope` が pass している前提。再現するなら issue を立ててください |
+| `processing_warnings: ["vlm_unavailable"]` が常時出る | Ollama が応答していない or `VLM_API_URL` が間違っている。`docker compose exec publisher curl http://vlm:11434/api/version` で疎通確認 |
+
+### 12.10 実機検証ログ（VLM 機能, 未実施）
+
+§11.8 と同じ形式で、VLM + 顔ブラーの実機検証ログを残す枠を用意しています。
+実施次第このページに追記します:
+
+| シナリオ | 環境 | 状態 | 検証ポイント |
+|---|---|---|---|
+| **V1** Tier 3 で生 + 派生キー揃う | macOS Chrome + Ollama (llava) | ⏳ 未検証 | `image_url` + `image_url_redacted` + `description_full` + `description_summary` の 4 つすべてが揃う |
+| **V2** Tier 2 で生キー欠落 / 派生キーあり | macOS Chrome | ⏳ 未検証 | `image_url` 無し、`image_url_redacted` あり、`description_*` 両方あり |
+| **V3** Tier 1 (summary) で text のみ | macOS Chrome | ⏳ 未検証 | `description_summary` のみ。redacted 画像も含めて画像系キー一切無し |
+| **V4** 顔ブラー視覚確認 | iPhone で人物撮影 → publish → Tier 2 で受信 | ⏳ 未検証 | `image_url_redacted` を開くと顔だけぼけた画像が返る |
+| **V5** description_full vs summary の品質 | (sample image) | ⏳ 未検証 | full に人名 / brand / 地名が残る、summary はそれらを「adult / item / public location」に置換 |
+| **V6** VLM 落とした状態の degrade | docker stop vlm | ⏳ 未検証 | `processing_warnings: ["vlm_unavailable"]` が出る、`image_url_redacted` は生成される |
+| **V7** redact 失敗事例の収集 | サンプル画像 100 枚 | 🔬 研究課題 | spec の "redact 失敗検出" で示した NER diff + PII 辞書の post-check で何 % が見落とされるかの統計 |
+
+実装と plug-in seam は `feat/stage-t-vlm-tier-real-backends`
+([Blockchain_IoT_Marketplace#44](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/44))
+でユニットテストレベル (155/155 pass) は確認済みです。
+
 ## 次に進む
 
 - [スマホSSIウォレットサンプル](ha-ssi-wallet.md) — Phase 2 wallet を立ち上げる
