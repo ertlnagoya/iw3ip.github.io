@@ -47,10 +47,13 @@
 | 案 | image / video の出処 | 実体取得 | 工数 | 用途 |
 |---|---|---|---|---|
 | A | プレースホルダ CID 文字列のみ | 不可 | 即時 | tier 投影の挙動だけ確認 |
-| **B**（推奨） | publisher 配下 `/media/<sha256>.<ext>` 経由で配信 | ブラウザ / iPhone Safari でそのまま表示 | 同梱済み | デモ / ハンズオン |
-| C | 本物の IPFS / Web3.Storage | 分散ストレージ | 別途設定 | 公開デモ / 本番予定 |
+| **B** | publisher 配下 `/media/<sha256>.<ext>` 経由で配信 | ブラウザ / iPhone Safari でそのまま表示 | 同梱済み | デモ / ハンズオン |
+| **C**（推奨） | ローカル kubo IPFS daemon で content-addressed 配信 | publisher の `/ipfs/<cid>` リバースプロキシ + 任意の公開 gateway | 同梱済み（`--profile ipfs` で起動） | 本番に近い分散デモ |
 
-このページの §2〜§7 は基本フロー（DataUserVC + tier 投影）です。**案 B の実データ統合は §8** で扱います。
+このページの §2〜§7 は基本フロー（DataUserVC + tier 投影）です。
+**案 B の実データ統合は §8**、**案 C の IPFS 統合は §9** で扱います。
+案 C は案 B の上位互換で、`/media/upload` のレスポンスに `cid` が増えるだけなので
+provider 側スクリプトの差分は最小です。
 
 ## 1. サービス起動
 
@@ -258,8 +261,109 @@ python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 - ❌ 単一インスタンス：レプリカ / pinning なし
 
 「コンテンツアドレシング + 分散保存」が要る場合は **案 C（IPFS / Web3.Storage）** に
-進みます。`/media/upload` のレスポンス shape は同じ（`{url, sha256, content_type, byte_size}`）
-なので、提供側スクリプトは変更不要のまま backend だけ差し替わる予定です。
+進みます。`/media/upload` のレスポンス shape は同じ（`{url, sha256, content_type, byte_size, cid, ipfs_gateway_url}`）
+なので、提供側スクリプトは変更不要のまま backend だけ差し替わります。
+
+## 9. 案 C：ローカル kubo IPFS daemon で分散配信
+
+案 B では publisher が単一インスタンスで blob を配信しました。案 C では
+**コンテンツアドレシング（CID）**で同じ blob を IPFS network 上に置きます。
+受信者は CID を **任意の IPFS gateway**（publisher 内蔵の `/ipfs/<cid>`、
+公開 `https://ipfs.io/ipfs/<cid>` など）で取得できるので、publisher が落ちても
+データは消えません。
+
+### 9.1 kubo を一緒に起動する
+
+`docker-compose.yml` の `ipfs` profile を有効化するだけです：
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+export IPFS_API_URL=http://ipfs:5001
+export IPFS_GATEWAY_URL=http://ipfs:8080
+
+docker compose -f infra/docker-compose.yml --profile ipfs up -d --force-recreate publisher ipfs
+docker compose -f infra/docker-compose.yml ps ipfs
+# iw3ip-ipfs container が Up になっていれば OK
+```
+
+publisher 側の起動ログに `IPFS_API_URL=http://ipfs:5001` が反映されたことを確認：
+
+```bash
+curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer >/dev/null
+docker compose -f infra/docker-compose.yml exec publisher \
+  python -c "from publisher.app.config import Settings; \
+             print('IPFS_API_URL=', Settings().ipfs_api_url); \
+             print('IPFS_GATEWAY_URL=', Settings().ipfs_gateway_url)"
+```
+
+### 9.2 アップロード時に CID が返ることを確認
+
+`provider_with_media.py` のレスポンスに `cid` と `ipfs_gateway_url` が増えます：
+
+```bash
+python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+  --base-url http://192.168.68.53:8080 \
+  --image /tmp/stage_t_demo.jpg \
+  --video /tmp/stage_t_demo.jpg
+```
+
+期待出力（`cid` フィールドが `bafy...` で始まる）：
+
+```json
+[upload] {
+  "image": {
+    "url": "http://192.168.68.53:8080/media/<sha256>.jpg",
+    "sha256": "...",
+    "content_type": "image/jpeg",
+    "byte_size": 7645,
+    "cid": "bafkreigb...",
+    "ipfs_gateway_url": "http://192.168.68.53:8080/ipfs/bafkreigb..."
+  },
+  ...
+}
+```
+
+provider が payload に `image_cid` / `video_cid` を自動的に乗せるので、
+受信側の §3〜§7 のフローはそのまま動きます。
+
+### 9.3 受信側：CID でも URL でも取れる
+
+Tier 3 / 2 の `/platform/data` 応答に `image_cid` と `image_url` の両方が出ます：
+
+```bash
+curl -s -H "authorization: Bearer $TOK_GOV" \
+  "http://192.168.68.53:8080/platform/data?dataset_id=home/event/possible_littering" \
+  | jq '.rows[0] | {image_cid, image_url, ipfs_gateway: ("http://192.168.68.53:8080/ipfs/"+.image_cid)}'
+```
+
+iPhone Safari でいずれかを開いてください：
+
+| 取得方法 | URL 例 |
+|---|---|
+| publisher の HTTP gateway | `http://192.168.68.53:8080/media/<sha256>.jpg`（案 B 互換） |
+| publisher の IPFS proxy | `http://192.168.68.53:8080/ipfs/<cid>` |
+| 公開 IPFS gateway | `https://ipfs.io/ipfs/<cid>` ※外部 NW があれば |
+
+最後の **公開 IPFS gateway** は publisher が落ちていても CID で取得できる
+（つまり真にコンテンツアドレシング済み）ことを示します。
+
+### 9.4 案 C の利点と注意
+
+- ✅ **コンテンツアドレシング済み**：CID = 中身のハッシュ。改竄不可、複数 gateway で重複取得可能
+- ✅ **publisher が落ちても資産が残る**：他の IPFS ピアにレプリカがあれば取得可能
+- ✅ **案 B 互換**：レスポンス shape は `cid`、`ipfs_gateway_url` が増えただけ
+- ⚠️ kubo daemon が落ちると `/media/upload` のレスポンスは `cid: null` で返る（案 B 動作にフォールバック）
+- ⚠️ 公開 gateway 経由の取得は IPFS network の伝播待ち（分単位）が発生することがある
+- 🔜 Web3.Storage / Pinata 等の pinning service と組み合わせると永続性が上がる（フォロー TODO）
+
+### 9.5 トラブルシュート
+
+| 症状 | 対処 |
+|---|---|
+| `cid: null` がレスポンスに返る | `docker compose ... ps ipfs` で kubo container が Up か確認。落ちていたら `docker compose ... --profile ipfs up -d ipfs` |
+| `/ipfs/<cid>` が 502 | publisher から `http://ipfs:8080` に到達できない。Docker network 共有を確認 |
+| `/ipfs/<cid>` が 404 | `IPFS_GATEWAY_URL` が空。`.env` か `export` 設定を確認 |
+| 公開 gateway で取得できない | NAT 配下の場合、kubo がピアに見えていない。`ipfs swarm peers` でピア接続を確認 |
 
 ## 次に進む
 

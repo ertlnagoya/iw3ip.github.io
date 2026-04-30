@@ -53,11 +53,13 @@ real-device-validated default; the iPhone walkthrough below covers it.
 | Option | Source of `image` / `video` | Receiver can fetch the blob? | Effort | Use case |
 |---|---|---|---|---|
 | A | placeholder CID strings only | no | none | tier-projection demo only |
-| **B** (recommended) | publisher serves `/media/<sha256>.<ext>` | yes — direct HTTP | shipped | demo / hands-on |
-| C | real IPFS / Web3.Storage | yes — distributed | needs setup | public demo / production |
+| **B** | publisher serves `/media/<sha256>.<ext>` | yes — direct HTTP | shipped | demo / hands-on |
+| **C** (recommended) | local kubo IPFS daemon, content-addressed | yes — publisher's `/ipfs/<cid>` proxy + any public gateway | shipped (`--profile ipfs`) | production-flavoured distributed demo |
 
 §2–§7 below cover the core DataUserVC + tier-projection loop. **Option
-B real-data integration is in §8.**
+B real-data integration is in §8**, **Option C IPFS integration is in
+§9.** Option C is a strict superset of B — `/media/upload`'s response
+just gains a `cid` field, so the provider script needs no changes.
 
 ## 1. Bring up services
 
@@ -271,8 +273,115 @@ python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 
 When content-addressing + distributed storage matter, move on to
 **Option C (real IPFS / Web3.Storage)**. The `/media/upload` response
-shape (`{url, sha256, content_type, byte_size}`) stays the same so the
-provider script doesn't change — only the backend swaps.
+shape (`{url, sha256, content_type, byte_size, cid, ipfs_gateway_url}`)
+stays the same so the provider script doesn't change — only the
+backend swaps.
+
+## 9. Option C: local kubo IPFS daemon for distributed delivery
+
+Option B served the blob from a single publisher instance. Option C
+hashes the same blob into a **content-addressed CID** and stores it on
+an IPFS network. Receivers can dereference the CID through **any IPFS
+gateway** — the publisher's built-in `/ipfs/<cid>` proxy, the public
+`https://ipfs.io/ipfs/<cid>`, etc. — so the data survives a publisher
+outage.
+
+### 9.1 Bring kubo up alongside the publisher
+
+Activate the `ipfs` compose profile:
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+export IPFS_API_URL=http://ipfs:5001
+export IPFS_GATEWAY_URL=http://ipfs:8080
+
+docker compose -f infra/docker-compose.yml --profile ipfs up -d --force-recreate publisher ipfs
+docker compose -f infra/docker-compose.yml ps ipfs
+# iw3ip-ipfs container should be Up
+```
+
+Verify the publisher picked up the env vars:
+
+```bash
+curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer >/dev/null
+docker compose -f infra/docker-compose.yml exec publisher \
+  python -c "from publisher.app.config import Settings; \
+             s=Settings(); \
+             print('IPFS_API_URL=', s.ipfs_api_url); \
+             print('IPFS_GATEWAY_URL=', s.ipfs_gateway_url)"
+```
+
+### 9.2 Confirm CIDs come back from upload
+
+`provider_with_media.py` is unchanged but now sees `cid` and
+`ipfs_gateway_url` in the response:
+
+```bash
+python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+  --base-url http://192.168.68.53:8080 \
+  --image /tmp/stage_t_demo.jpg \
+  --video /tmp/stage_t_demo.jpg
+```
+
+Expected output (`cid` starts with `bafy...`):
+
+```json
+[upload] {
+  "image": {
+    "url": "http://192.168.68.53:8080/media/<sha256>.jpg",
+    "sha256": "...",
+    "content_type": "image/jpeg",
+    "byte_size": 7645,
+    "cid": "bafkreigb...",
+    "ipfs_gateway_url": "http://192.168.68.53:8080/ipfs/bafkreigb..."
+  },
+  ...
+}
+```
+
+The provider script automatically folds the CID into the event payload
+as `image_cid` / `video_cid`, so the receiver §3–§7 flow keeps
+working.
+
+### 9.3 Receiver: CID or URL — pick one
+
+`/platform/data` now hands back **both** `image_cid` and `image_url`
+for Tier 2 / Tier 3:
+
+```bash
+curl -s -H "authorization: Bearer $TOK_GOV" \
+  "http://192.168.68.53:8080/platform/data?dataset_id=home/event/possible_littering" \
+  | jq '.rows[0] | {image_cid, image_url, ipfs_gateway: ("http://192.168.68.53:8080/ipfs/"+.image_cid)}'
+```
+
+Open any of these on the buyer's iPhone Safari:
+
+| Method | Example URL |
+|---|---|
+| Publisher HTTP gateway | `http://192.168.68.53:8080/media/<sha256>.jpg` (Option B compatible) |
+| Publisher IPFS proxy | `http://192.168.68.53:8080/ipfs/<cid>` |
+| Public IPFS gateway | `https://ipfs.io/ipfs/<cid>` (needs internet) |
+
+The last entry is the punchline: even with the publisher offline, the
+CID is enough to fetch the asset from any cooperating peer.
+
+### 9.4 Pros, caveats, and follow-ups
+
+- ✅ **Content-addressed**: CID is a hash of the bytes — tamper-evident, multi-gateway.
+- ✅ **Publisher outage tolerant**: any peer with a replica can serve.
+- ✅ **Option-B compatible**: response gains `cid` + `ipfs_gateway_url`; existing fields are unchanged.
+- ⚠️ If the kubo daemon is unreachable, `/media/upload` still returns 200 but with `cid: null` — graceful fallback to Option B.
+- ⚠️ Public-gateway resolution depends on IPFS network propagation (can take minutes).
+- 🔜 Pair with a pinning service (Web3.Storage / Pinata) for cross-network durability — follow-up TODO.
+
+### 9.5 Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `cid: null` in upload response | `docker compose ... ps ipfs` — bring kubo back up if down |
+| `/ipfs/<cid>` returns 502 | Publisher can't reach `http://ipfs:8080`. Check Docker network membership |
+| `/ipfs/<cid>` returns 404 | `IPFS_GATEWAY_URL` is empty. Set `.env` or export and recreate |
+| Public gateway can't fetch | Behind NAT, kubo not visible to peers. `ipfs swarm peers` to verify |
 
 ## Where to go next
 
