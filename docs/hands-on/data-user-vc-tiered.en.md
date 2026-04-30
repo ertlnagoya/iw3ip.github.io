@@ -913,7 +913,7 @@ source via VLM inference + face/PII blurring** and projects those
 derivatives per tier. Tier 1 stops being "you get nothing useful" and
 ships a **PII-redacted summary** instead.
 
-Design rationale: see [DataUserVC × Tiered Access Spec § "Tier extension"](data-user-vc-tiered-spec.md#tier-extension-semantic-level-redaction-vlm).
+Design rationale: see [DataUserVC × Tiered Access Spec § "Tier extension"](data-user-vc-tiered-spec.md#tier-vlm).
 
 ### 12.1 Updated tier definitions
 
@@ -1019,7 +1019,7 @@ faces blurred**.
 
 | Original (`image_url`, Tier 3 only) | Blurred (`image_url_redacted`, Tier 2+) |
 |---|---|
-| ![pre-redaction (TBD)](images/data-user-vc-tiered/vlm/12-pre-blur.png){ width=300 } | ![post-redaction (TBD)](images/data-user-vc-tiered/vlm/12-post-blur.png){ width=300 } |
+| ![pre-redaction](images/data-user-vc-tiered/vlm/V4-original.jpg){ width=300 } | ![post-redaction](images/data-user-vc-tiered/vlm/V4-redacted.jpg){ width=300 } |
 
 Internally the publisher:
 
@@ -1039,7 +1039,7 @@ sha256 dedup hits.
     The Haar cascade catches **frontal faces only**. Side profiles,
     occluded faces, and low-resolution faces pass through. License
     plates / ID badges / sharp-rectangle screen detection are
-    [future work in the spec](data-user-vc-tiered-spec.md#tier-extension-semantic-level-redaction-vlm).
+    [future work in the spec](data-user-vc-tiered-spec.md#tier-vlm).
 
 ### 12.6 Inspecting VLM output
 
@@ -1069,7 +1069,7 @@ The `_full` line keeps the person's name, brand, and place. The
     LLaVA-class VLMs are probabilistic; **`description_summary` may
     structurally still contain PII** (e.g. clothing details that
     re-identify, building names that look generic). The spec
-    [records detection as a research TODO](data-user-vc-tiered-spec.md#tier-extension-semantic-level-redaction-vlm)
+    [records detection as a research TODO](data-user-vc-tiered-spec.md#tier-vlm)
     (NER diff + PII dictionary). For production, queue Tier 1 outputs
     for human review.
 
@@ -1106,10 +1106,12 @@ missing → check `processing_warnings`".
 Images uploaded through `/provider` (§11) automatically flow through
 the VLM pipeline when profile vlm is on. The **provider page itself
 needs no change**; derivative generation is server-side. The
-receiver-side `/viewer` currently prefers raw keys (`image_url` /
-`video_url`); a follow-up PR is needed to teach `/viewer` to display
-`image_url_redacted` when only the redacted variant is allowed
-([scenario tracked below](#12-9)).
+receiver-side `/viewer` shows **`image_url_redacted` with a 🔒 badge**
+when raw keys are dropped, renders `description_full` /
+`description_summary` as parallel green / orange panels, and shows an
+inline warning banner per row when `processing_warnings[]` is set
+(shipped in
+[Blockchain_IoT_Marketplace#48](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/48)).
 
 ### 12.9 Troubleshooting
 
