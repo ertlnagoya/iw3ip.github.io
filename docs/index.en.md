@@ -33,9 +33,9 @@ In short, **Hands-on is a part of Workshop**.
 
 ## Start here
 
-1. [Workshop / Prerequisites](workshop/prerequisites.md)
+1. [Workshop / Prerequisites](setup/prerequisites.md)
 2. [Learning Foundations / Learning Roadmap](foundations/roadmap.md)
-3. [Workshop / Quickstart](workshop/quickstart.md)
+3. [Workshop / Quickstart](setup/quickstart.md)
 4. [Hands-on](hands-on/index.md)
 5. [Operations / Troubleshooting](operations/troubleshooting.md)
 
@@ -91,7 +91,7 @@ Open:
 4. [Hardhat Basics](foundations/hardhat-basics.md)
 5. [SSI/DID/VC Basics](foundations/ssi-did-vc-basics.md)
 6. [Home Assistant Demo Simulator sample](hands-on/ha-demo-simulator.md)
-7. [Quickstart](workshop/quickstart.md)
+7. [Quickstart](setup/quickstart.md)
 8. [Hands-on](hands-on/index.md)
 9. [References](foundations/references.md)
 

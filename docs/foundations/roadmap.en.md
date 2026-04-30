@@ -21,7 +21,7 @@ It is arranged so that the same order works both for a short first pass and for 
 2. [Blockchain Basics](blockchain-basics.md)
 3. [Hardhat Basics](hardhat-basics.md)
 4. [SSI/DID/VC Basics](ssi-did-vc-basics.md)
-5. [Quickstart](../workshop/quickstart.md)
+5. [Quickstart](../setup/quickstart.md)
 6. [HA x SSI Publisher Sample](../hands-on/ha-ssi-publisher.md)
 
 These six pages provide a compact path through the basic concepts and the minimum hands-on flow.

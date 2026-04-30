@@ -17,7 +17,7 @@ Participants should complete:
 
 ### 2. Boot and checks (20 min)
 
-- run [Quickstart](quickstart.md) together
+- run [Quickstart](../setup/quickstart.md) together
 - prioritize support for setup blockers
 
 ### 3. Hands-on execution (40 min)

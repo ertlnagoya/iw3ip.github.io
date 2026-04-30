@@ -299,7 +299,7 @@ This is why they connect naturally to IW3IP features such as **Consent VC-based 
 ## What to read next
 
 1. To learn the technical foundations: [Blockchain Basics](foundations/blockchain-basics.md), [Hardhat Basics](foundations/hardhat-basics.md), [SSI/DID/VC Basics](foundations/ssi-did-vc-basics.md)
-2. To boot the environment first: [Quickstart](workshop/quickstart.md)
+2. To boot the environment first: [Quickstart](setup/quickstart.md)
 3. To observe actual behavior: [Hands-on](hands-on/index.md)
 4. To study the research in more depth: [Publications](publications.md), [References and Further Reading](foundations/references.md)
 
