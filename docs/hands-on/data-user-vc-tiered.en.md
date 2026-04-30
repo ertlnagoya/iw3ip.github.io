@@ -1330,8 +1330,8 @@ intact; it merely offers an opt-in alternative path.
 |---|---|---|---|
 | **S1** /provider §1.5 panel | iPhone Safari (real photo) | ⏳ pending | Upload → "分析を実行" → SIR + red bbox + 4-tier preview cards |
 | **S2** /viewer 🔬 toggle | macOS Chrome + Tier 3 PVC | ⏳ pending | Toggle on → `/semantic/render_url` path; toggle off → legacy restored |
-| **S3** OWNER audit log | DataUserVC owner profile | ⏳ pending | OWNER access → row appears in `/audit/logs` for `semantic/render` |
-| **S4** Vision analyzer face detection | iPhone real photo | ⏳ pending | `SEMANTIC_ANALYZER_BACKEND=vision` → bbox in SIR |
+| **S3** OWNER audit log | publisher only (curl) | ✅ **verified (2026-04-30)** | OWNER trust on `/semantic/render_url` returned image_b64 + every kind, and `/audit/logs` got a `semantic/render_url` row (`trust=owner;kinds=textSummary+redactedImage+eventList+originalFrame+maskedVideoFrame+lowResolutionImage;image=yes;audit_required=True`) |
+| **S4** Vision analyzer face detection | publisher (`SEMANTIC_ANALYZER_BACKEND=vision`) | ✅ **verified (2026-04-30)** | Synthetic face image → `/semantic/analyze` returns SIR with `face` (conf 0.85, bbox x=0.14, y=0.19, w=0.70, h=0.70) + `unknown_sensitive` (from MSER). privacy_risk_score=0.9 (face 0.4 + unknown 0.5) |
 | **S5** cv2-missing fail-closed | publisher only | ⏳ pending | Drop cv2 → `SemanticAnalyzerError` → empty SIR + text-only |
 
 Implementation:

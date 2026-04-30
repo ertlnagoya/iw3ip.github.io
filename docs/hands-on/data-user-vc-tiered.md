@@ -1362,8 +1362,8 @@ fetch。低信頼ユーザには image_b64 を一切付与しない。
 |---|---|---|---|
 | **S1** /provider §1.5 panel | iPhone Safari (実画像) | ⏳ 未検証 | アップロード → 「分析を実行」 → SIR 表示 + bbox 赤枠 + 4-tier preview cards |
 | **S2** /viewer 🔬 toggle | macOS Chrome + Tier 3 PVC | ⏳ 未検証 | toggle ON → `/semantic/render_url` 経由で trust-aware 表示。toggle OFF → legacy 復元 |
-| **S3** OWNER tier audit log | DataUserVC owner profile | ⏳ 未検証 | OWNER で原映像取得 → `/audit/logs` に `semantic/render` 行が残る |
-| **S4** Vision analyzer 顔検出 | iPhone 実写画像 | ⏳ 未検証 | `SEMANTIC_ANALYZER_BACKEND=vision` で顔ブラー bbox が SIR に含まれる |
+| **S3** OWNER tier audit log | publisher 単独 (curl) | ✅ **検証済 (2026-04-30)** | OWNER 信頼度で `/semantic/render_url` を呼ぶと image_b64 + 全 kinds が返り、`/audit/logs` に `semantic/render_url` 行が記録される (`trust=owner;kinds=textSummary+redactedImage+eventList+originalFrame+maskedVideoFrame+lowResolutionImage;image=yes;audit_required=True`) |
+| **S4** Vision analyzer 顔検出 | publisher (`SEMANTIC_ANALYZER_BACKEND=vision`) | ✅ **検証済 (2026-04-30)** | 合成顔画像で `/semantic/analyze` を叩くと SIR に `face` (confidence 0.85, bbox: x=0.14, y=0.19, w=0.70, h=0.70) + `unknown_sensitive` (MSER 由来) が含まれる。privacy_risk_score=0.9 (face 0.4 + unknown 0.5)|
 | **S5** Fail-closed: VisionAnalyzer cv2 不在 | publisher のみ | ⏳ 未検証 | cv2 削除した container で SemanticAnalyzerError → empty SIR + text-only |
 
 実装は
