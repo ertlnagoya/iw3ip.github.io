@@ -538,6 +538,177 @@ To reproduce on a real device, reuse the §10.5 setup but issue an extra
 wallet ends up holding a 4th card bound to a different dataset, then scan
 the QR with that card selected.
 
+## 11. PWA Provider (the data-provider side)
+
+§10 covered the **receiver** side reading data through the PWA Viewer.
+§11 covers the symmetric **provider** side: a PWA where a data provider
+authenticates with SSI and uploads + publishes data through the same
+publisher container — `/provider/start` + `/provider` + `/provider/publish`
+replace the curl steps in `provider_with_media.py` with a browser-only
+flow.
+
+```
+[PC browser] ── /provider/start                      [publisher]
+   │  ↓ QR + long-poll                                  │
+   │     scan QR with iPhone wallet → present SellerVC ►│ mint SellerToken
+   │  ↑ /verifier/status returns seller_token + licensed_datasets
+   │  PC page renders the licensed_datasets list
+   │  ↓ pick one and click "Continue to upload"          │
+   │  /provider?pt=<seller_token>&ds=<dataset_id>        │
+   │     file pick / camera capture / browser recorder ►│ /media/upload
+   │     ↑ URL + (CID)                                   │
+   │     "Publish" button                                │
+   │     POST /provider/publish (Bearer SellerToken) ───►│ use_seller_token
+   │                                                     │ → process_message
+   │  ↑ {"status":"allowed", ...}                         │
+```
+
+`/provider/start` is the SellerVC counterpart of `/buyer/start` — same
+OID4VP plumbing, just with `vc_kind=SellerVC` and a SellerToken minted
+on success.
+
+### 11.1 Open the page
+
+No special prep beyond having `docker compose ... up -d publisher`
+running. From a PC browser:
+
+```
+http://192.168.68.53:8080/provider/start?ds=home/event/possible_littering
+```
+
+`ds=` is a **hint** only (SellerVC verification isn't dataset-scoped),
+but it shows in the page header so the operator knows which dataset
+they're working on.
+
+### 11.2 Present a SellerVC (OID4VP)
+
+PC shows a QR. Scan it from the iPhone wallet and present a **SellerVC**
+(not a PurchaseViewerVC — they're different cards in the wallet).
+
+On success the page swaps to a result panel:
+
+- Green banner "SellerVC 提示が承認されました" / "Presentation accepted"
+- The full **licensed_datasets** list straight from the SellerVC claims
+- `seller_id` and the SellerToken expiry (default 24 h)
+- A "Continue to upload →" button next to a radio list
+
+Click through to land on `/provider?pt=<seller_token>&ds=<chosen ds>`.
+
+!!! note "Deny UX"
+    If the SellerVC is missing `seller_id` or `licensed_datasets`,
+    `/verifier/status` surfaces `human_message_ja` / `human_message_en`
+    via a red banner (reason codes: `missing_seller_id` /
+    `missing_licensed_datasets`), and offers a one-click reload to retry
+    with a different VC.
+
+### 11.3 Three ways to provide data
+
+The `/provider` page exposes **three peer-equivalent input modes**, all
+funneling through the same `/media/upload` URL/CID delivery — the
+receiver side at `/viewer` cannot tell which one was used.
+
+| Mode | Behaviour | Best on |
+|---|---|---|
+| 📁 File picker | OS file dialog, pick an existing file | PC + phone |
+| 📷 Camera capture | `<input capture="environment">` — iPhone Safari opens the rear camera directly; PC falls back to file picker | iPhone (capture-on-the-spot) |
+| 🔴 Browser recorder | `MediaRecorder` against `getUserMedia({video,audio})`. Click 録画開始, see live preview, click 停止 to auto-upload as WebM/VP9 (Safari falls back to MP4) | PC webcam |
+
+All three call the same `uploadBlob()` pipeline: preview →
+`POST /media/upload` → result panel → enable the Publish button.
+Storage stays bounded because uploads are deduplicated by SHA-256.
+
+!!! tip "Why browser recording matters for demos"
+    PC webcam → SSI auth → publish in **one browser tab** is a 30-second
+    demo of "data with provenance attached." It complements the
+    [USB Webcam Event Sharing sample](webcam-event-sharing.md): that
+    one streams continuously, this one captures discrete clips with
+    on-the-spot attribution.
+
+When you stop a recording, the `video_duration_sec` form field is
+**auto-filled** with the measured length.
+
+### 11.4 Publish + the licensed_datasets gate
+
+Once an upload completes, the Publish button enables. The form holds:
+
+- `topic` — defaults to `homeassistant/event/<last segment of ds>`
+- `purpose` — defaults to `community_cleaning`
+- `camera_id`, `video_duration_sec`
+- `extra payload keys` — optional JSON merge
+
+Click **Publish event**. The browser POSTs to `/provider/publish` with
+`Authorization: Bearer <seller_token>`. Server-side:
+
+1. `schemas.normalize(topic, payload)` derives `dataset_id` from the topic.
+2. `ssi_state.use_seller_token(token, dataset_id=<resolved>)` enforces
+   that `dataset_id ∈ licensed_datasets[]`.
+3. On success it calls `processor.process_message` (same path as
+   `/simulate/publish`).
+4. Response is augmented with `seller_token_jti` + `register_count`.
+
+`SellerToken` is **multi-use** (same semantics as `/marketplace/register`),
+so a single SellerVC presentation covers a whole upload session — you
+can watch `register_count` grow in the response details panel.
+
+Deny cases:
+
+| Failure | HTTP | reason |
+|---|---|---|
+| missing `Authorization` header | 401 | `missing_authorization_header` |
+| unknown SellerToken | 401 | `seller_token_unknown` |
+| expired SellerToken | 401 | `seller_token_expired` |
+| dataset (resolved from topic) not in `licensed_datasets[]` | 403 | `seller_token_dataset_not_licensed` |
+| topic not recognised by `normalize()` | 400 | `unsupported_topic:...` |
+
+All denials are recorded in `/audit/logs` with `action=deny`.
+
+### 11.5 Confirm from the receiver side
+
+The footer of `/provider` auto-generates a link to `/buyer/start` for
+the same dataset. Open it in a separate tab, present a Tier 3
+PurchaseViewerVC, and the image / video you just published renders in
+`/viewer` (the same screen as §10.5 screenshots).
+
+That makes the full **provide → auth → publish → receive → verify** loop
+a **two-tab** experience in the browser.
+
+### 11.6 Symmetry with `/buyer/start`
+
+| Aspect | `/buyer/start` (§10) | `/provider/start` (§11) |
+|---|---|---|
+| VC presented | PurchaseViewerVC | **SellerVC** |
+| Token minted on verify | ViewerToken (TTL 60 s) | **SellerToken** (TTL 24 h) |
+| Used as Bearer for | `/platform/data` | **`/provider/publish`** |
+| Single-use vs multi-use | multi-use (continuous read) | **multi-use** (one auth, many publishes) |
+| Dataset scoping | VC is bound to a dataset_id | SellerVC carries `licensed_datasets[]` set |
+| Deny message shape | §10.7 common format | same `human_message_ja/en` shape |
+
+### 11.7 Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `/provider/start` says no SellerVC offer received | Issue one first: `POST /issuer/offer?vc_kind=SellerVC&seller_id=...&licensed_datasets=...` and scan the offer URI from the wallet |
+| 📷 Camera capture opens the file picker on iPhone Safari | Some iOS versions don't honor the combination `accept="image/*,video/*" capture="environment"`. Switching `accept` to `video/*` only forces the camera reliably |
+| 🔴 Browser recorder button does nothing | `getUserMedia` only works on HTTPS or `localhost`. Opening over a LAN IP (`http://192.168.x.x`) makes the browser deny camera/mic permission. Use `localhost:8080` or run behind HTTPS |
+| `/provider/publish` returns 403 `seller_token_dataset_not_licensed` | The dataset_id derived from `topic` isn't in your SellerVC's `licensed_datasets[]`. Example: `topic=homeassistant/event/possible_littering` → dataset_id is `home/event/possible_littering` |
+| Publish response has `status: send_error` | The publisher's `PLATFORM_API_URL` is unreachable. The SellerToken gate did pass and `register_count` did increment — auth was OK, downstream delivery failed |
+
+### 11.8 Real-device validation status
+
+As of 2026-04-30 the following paths are **not yet validated on a real
+device** — screenshots and observed values will be appended once they
+are exercised:
+
+- iPhone Safari `capture="environment"` → on-the-spot capture → upload → publish
+- PC Chrome MediaRecorder → auto-upload → publish
+- Firefox VP8 fallback
+- macOS Safari MP4 codec fallback
+
+The implementation and OID4VP plumbing have been verified at the unit
+test level (78/78 + 71/71 pass) across the three PRs
+`feat/stage-t-provider-start-c1`, `feat/stage-t-provider-c2`, and
+`feat/stage-t-provider-camera`.
+
 ## Where to go next
 
 - [Mobile SSI Wallet sample](ha-ssi-wallet.md) — bring up the Phase 2 wallet

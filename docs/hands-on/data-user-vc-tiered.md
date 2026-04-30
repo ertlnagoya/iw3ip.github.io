@@ -512,6 +512,172 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 **dataset 引数だけ別データセットに差し替えた** `/issuer/offer?vc_kind=PurchaseViewerVC&claim_id=<別 claim>` を発行して
 ウォレットに 4 枚目のカードを入れた状態で QR を読むと再現します。
 
+## 11. PWA Provider（データ提供者向け PWA）
+
+§10 までは「**受信側** が PWA Viewer でデータを取得する」フローでした。
+§11 では対称となる「**提供側** が PWA で SSI 認証を済ませてデータを供出する」
+フローを扱います。同じ publisher コンテナの `/provider/start` + `/provider`
++ `/provider/publish` だけで完結し、`provider_with_media.py` の curl 操作を
+ブラウザ単体に置き換えます。
+
+```
+[PC ブラウザ] ─ /provider/start                       [publisher]
+   │  ↓ QR 表示 + ロングポーリング                         │
+   │      QR を iPhone で読む → ウォレット → SellerVC 提示 ─►│ mint SellerToken
+   │  ↑ /verifier/status で seller_token + licensed_datasets
+   │  PC ページが「許可データセット」一覧を出す
+   │  ↓ 1 つ選んで「アップロードへ進む」                     │
+   │  /provider?pt=<seller_token>&ds=<dataset_id>          │
+   │     ファイル選択 / カメラ撮影 / ブラウザ録画 ─────────►│ /media/upload
+   │     ↑ URL + (CID) を払い出し                          │
+   │     「Publish」ボタン                                  │
+   │     POST /provider/publish (Bearer SellerToken) ─────►│ use_seller_token
+   │                                                        │ → process_message
+   │  ↑ {"status":"allowed", ...} を表示                     │
+```
+
+`/provider/start` は SellerVC 用の **OID4VP ループ**で、§10 の `/buyer/start`
+と同じ実装パターンです。違いは `vc_kind=SellerVC` を要求する点と、成功時に
+`SellerToken` を発行する点です。
+
+### 11.1 起動
+
+特別な準備は不要です（`docker compose ... up -d publisher` が動いていれば OK）。
+PC ブラウザで:
+
+```
+http://192.168.68.53:8080/provider/start?ds=home/event/possible_littering
+```
+
+を開きます。`ds=` は **ヒント**で、SellerVC の検証は dataset スコープではないので
+省略しても動きますが、画面ヘッダに表示されるので付けておくと作業が分かりやすいです。
+
+### 11.2 SellerVC を提示する（OID4VP）
+
+PC では QR が表示されます。iPhone のウォレットで読み取って **SellerVC** を提示
+してください（PurchaseViewerVC ではなく SellerVC である点に注意）。
+
+提示が成功すると、PC ページが次の状態に切り替わります：
+
+- 「SellerVC 提示が承認されました」の緑バナー
+- **出品許可データセット一覧**（SellerVC の `licensed_datasets[]` がそのまま並ぶ）
+- `seller_id` と SellerToken の有効期限（既定 24 時間）
+- 1 つ選んで **「アップロードへ進む →」** ボタン
+
+ボタンを押すと `/provider?pt=<seller_token>&ds=<選んだデータセット>` に遷移します。
+
+!!! note "deny UX"
+    SellerVC に `seller_id` や `licensed_datasets` が欠けている場合、
+    `/verifier/status` から返る `human_message_ja` が画面の赤バナーに出ます
+    （reason コード: `missing_seller_id` / `missing_licensed_datasets`）。
+    その場で別の VC で再試行できるよう、リロードリンクが添えられています。
+
+### 11.3 データを提供する 3 つの方法
+
+`/provider` ページは **データ実体の提供方法を 3 つ用意**しています。
+どれを選んでも `/media/upload` 経由で同じ URL/CID 配信ロジックに乗るので、
+受信側の `/viewer` から見れば違いはありません。
+
+| モード | 動作 | 推奨 |
+|---|---|---|
+| 📁 ファイルから選ぶ | OS のファイルピッカー。既存のファイルをそのまま選択 | PC / スマホ両用 |
+| 📷 カメラで撮影 | `<input capture="environment">`。iPhone Safari ではカメラが直接起動。PC ではファイルピッカーにフォールバック | iPhone での即時撮影 |
+| 🔴 ブラウザで録画 | `MediaRecorder` + `getUserMedia({video,audio})`。「録画開始」→ ライブプレビュー → 「停止」で WebM/VP9（Safari は MP4 にフォールバック）として自動アップロード | PC のウェブカメラ |
+
+3 モードはすべて同一の `uploadBlob()` パイプラインを通り、
+プレビュー → `POST /media/upload` → 結果パネル表示 → Publish 有効化、という流れは共通です。
+SHA-256 で重複排除されるので、同じ動画を複数回撮ってもストレージは増えません。
+
+!!! tip "ブラウザ録画のメリット"
+    PC のウェブカメラから「**カメラ → SSI 認証 → Publish**」をブラウザ 1 画面で
+    完結できるので、デモやワークショップで「来歴付きデータの提供」を 30 秒で
+    見せられます。USB ウェブカメラ + MQTT のハンズオン（[USB ウェブカメラ
+    イベント共有サンプル](webcam-event-sharing.md)）が「常時ストリーミング」に
+    対し、こちらは「人が今この瞬間に撮って来歴を付ける」ユースケースです。
+
+録画で停止を押すと `video_duration_sec` フォームに **実測秒数が自動入力**される
+ので、手動で値を合わせる必要はありません。
+
+### 11.4 イベント発行と licensed_datasets ゲート
+
+アップロードが完了すると Publish ボタンが有効になります。フォームには:
+
+- `topic` — 既定で `homeassistant/event/<dataset の末尾セグメント>` が入る
+- `purpose` — 既定 `community_cleaning`
+- `camera_id`、`video_duration_sec`
+- `extra payload keys`（任意の JSON マージ）
+
+を入れて **Publish event** を押します。ブラウザは `Authorization: Bearer
+<seller_token>` を付けて `/provider/publish` に POST します。
+
+サーバー側では:
+
+1. `schemas.normalize(topic, payload)` で **dataset_id を topic から導出**
+2. `ssi_state.use_seller_token(token, dataset_id=<resolved>)` で
+   **`licensed_datasets[]` に `dataset_id` が含まれること**を検証
+3. パスしたら `processor.process_message` を呼ぶ（`/simulate/publish` と同じ経路）
+4. レスポンスに `seller_token_jti` と `register_count` を上乗せして返す
+
+`SellerToken` は **multi-use**（`/marketplace/register` と同じ仕様）なので、
+**1 回の SellerVC 提示で複数のイベントを連続発行できます**。`register_count` が
+増えていくのを画面下部の details パネルで確認できます。
+
+deny ケースの挙動:
+
+| 失敗パターン | HTTP | reason |
+|---|---|---|
+| `Authorization` ヘッダなし | 401 | `missing_authorization_header` |
+| 不明な SellerToken | 401 | `seller_token_unknown` |
+| TTL 切れ SellerToken | 401 | `seller_token_expired` |
+| `topic` から resolve した dataset が `licensed_datasets[]` に無い | 403 | `seller_token_dataset_not_licensed` |
+| `topic` が `normalize()` で受け付けられない | 400 | `unsupported_topic:...` |
+
+すべて `/audit/logs` に `action=deny` で記録されます。
+
+### 11.5 受信側で確認
+
+`/provider` ページの末尾には、対象データセットの `/buyer/start` への
+リンクが自動生成されています。別タブで開いて Tier 3 の PurchaseViewerVC を
+提示すると、たった今 Publish した画像 / 動画が `/viewer` に表示されます
+（§10.5 のスクリーンショットと同じ画面）。
+
+提供 → 認証 → 発行 → 受信 → 検証 のループを **ブラウザ 2 タブで完結**できます。
+
+### 11.6 `/provider/start` と `/buyer/start` の対応関係
+
+| 観点 | `/buyer/start`（§10） | `/provider/start`（§11） |
+|---|---|---|
+| 提示する VC | PurchaseViewerVC | **SellerVC** |
+| 検証成功で発行 | ViewerToken (TTL 60s) | **SellerToken** (TTL 24h) |
+| 用途 | `/platform/data` の Bearer | **`/provider/publish` の Bearer** |
+| 単発 / 複数 | multi-use（読み取りは継続的） | **multi-use**（1 回の認証で複数 publish） |
+| dataset スコープ | VC が dataset_id にバインド | SellerVC は `licensed_datasets[]` の集合 |
+| deny メッセージ | §10.7 共通形 | 同じ `human_message_ja/en` 形式 |
+
+### 11.7 トラブルシュート
+
+| 症状 | 対処 |
+|---|---|
+| `/provider/start` で「SellerVC のオファーを受け取っていない」 | 先に `POST /issuer/offer?vc_kind=SellerVC&seller_id=...&licensed_datasets=...` でウォレットに SellerVC を入れる必要があります |
+| iPhone Safari で「📷 カメラで撮影」がファイルピッカーになる | iOS のバージョンによっては `accept="image/*,video/*" capture="environment"` が組み合わせで効かないことがあります。`accept="video/*"` にすると確実にカメラが直起動。 |
+| 「🔴 ブラウザで録画」のボタンが反応しない | `getUserMedia` は HTTPS / `localhost` でしか動きません。LAN の IP（`http://192.168.x.x`）で開いた場合はブラウザがマイク/カメラ権限を拒否します。`localhost:8080` か HTTPS 経由でアクセスしてください |
+| `/provider/publish` が 403 `seller_token_dataset_not_licensed` | SellerVC の `licensed_datasets[]` に `topic` から導出される dataset_id が含まれていません。例: `topic=homeassistant/event/possible_littering` → dataset_id は `home/event/possible_littering` |
+| Publish レスポンスに `status: send_error` | publisher の `PLATFORM_API_URL` が到達不能。SellerToken のゲートは通っており、`register_count` も上がっているはずです（処理は許可、配信が失敗）|
+
+### 11.8 実機検証ステータス
+
+執筆時点（2026-04-30）で **未検証**の項目があります。実機で確認次第このページに
+スクリーンショットと観測値を追記します:
+
+- iPhone Safari の `capture="environment"` 経由でのその場撮影 → アップロード → Publish
+- PC Chrome の MediaRecorder 録画 → 自動アップロード → Publish
+- Firefox での VP8 フォールバック
+- Safari macOS での MP4 コーデックフォールバック
+
+実装と OID4VP プラミング自体は `feat/stage-t-provider-start-c1` /
+`feat/stage-t-provider-c2` / `feat/stage-t-provider-camera` の 3 PR で
+ユニットテストレベル (78/78 + 71/71 pass) は確認済みです。
+
 ## 次に進む
 
 - [スマホSSIウォレットサンプル](ha-ssi-wallet.md) — Phase 2 wallet を立ち上げる
