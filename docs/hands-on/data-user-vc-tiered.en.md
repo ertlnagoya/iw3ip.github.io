@@ -693,21 +693,175 @@ a **two-tab** experience in the browser.
 | `/provider/publish` returns 403 `seller_token_dataset_not_licensed` | The dataset_id derived from `topic` isn't in your SellerVC's `licensed_datasets[]`. Example: `topic=homeassistant/event/possible_littering` → dataset_id is `home/event/possible_littering` |
 | Publish response has `status: send_error` | The publisher's `PLATFORM_API_URL` is unreachable. The SellerToken gate did pass and `register_count` did increment — auth was OK, downstream delivery failed |
 
-### 11.8 Real-device validation status
+### 11.8 Real-device validation log
 
-As of 2026-04-30 the following paths are **not yet validated on a real
-device** — screenshots and observed values will be appended once they
-are exercised:
+End-to-end runs of the three §11.3 input modes across four
+environments. Screenshots live under
+`docs/hands-on/images/data-user-vc-tiered/provider/`.
 
-- iPhone Safari `capture="environment"` → on-the-spot capture → upload → publish
-- PC Chrome MediaRecorder → auto-upload → publish
-- Firefox VP8 fallback
-- macOS Safari MP4 codec fallback
+| Scenario | Environment | Status | Observation |
+|---|---|---|---|
+| **A** iPhone camera capture (`capture="environment"`) | iPhone Safari (iOS 18.x) | ⏳ pending | — |
+| **B** PC browser recording (MediaRecorder) | macOS Chrome (latest) | ⏳ pending | expected codec: `video/webm;codecs=vp9,opus` |
+| **C** Firefox VP8 fallback | macOS Firefox (latest) | ⏳ pending | expected codec: `video/webm;codecs=vp8,opus` or `video/webm` |
+| **D** macOS Safari MP4 fallback | macOS Safari (latest) | ⏳ pending | expected codec: `video/mp4` |
 
-The implementation and OID4VP plumbing have been verified at the unit
-test level (78/78 + 71/71 pass) across the three PRs
-`feat/stage-t-provider-start-c1`, `feat/stage-t-provider-c2`, and
-`feat/stage-t-provider-camera`.
+Reproduction steps and verification points for each scenario are
+below. Walk each subsection end-to-end, flip the `status` column to
+✅, and append the observed values + screenshots to this page (PR
+welcome).
+
+#### Common preconditions
+
+For all scenarios:
+
+1. `docker compose -f infra/docker-compose.yml up -d publisher hardhat bridge mosquitto` is up
+2. Wallet holds a SellerVC whose `licensed_datasets` contains `home/event/possible_littering`
+3. Publisher host is reachable from both PC and iPhone (same LAN recommended)
+
+The "browser recorder" mode (B/C/D) only works over **`localhost` or
+HTTPS** because of `getUserMedia`. Open the page on the same machine
+running the publisher, via `http://localhost:8080`. A LAN IP
+(`http://192.168.x.x:8080`) makes the browser deny camera/mic
+permission silently.
+
+#### A. iPhone camera capture (`capture="environment"`)
+
+**Goal**: confirm
+`<input type="file" accept="image/*,video/*" capture="environment">`
+opens the camera directly in iOS Safari.
+
+**Steps**:
+
+1. iPhone Safari → `http://<publisher-host>:8080/provider/start?ds=home/event/possible_littering`
+2. Present a SellerVC from the wallet → land on `/provider?pt=...&ds=...`
+3. Tap the **"📷 カメラで撮影"** input
+4. Confirm whether iOS shows "Take Video" as the **default**, or jumps straight to the camera
+5. Record 5–10 s → return → page auto-POSTs to `/media/upload`
+6. Press "Publish event" and confirm 200
+
+**Verification points**:
+
+- [ ] Camera opens directly (no file picker first), as §11.3 claims
+- [ ] Upload result shows `content_type: video/mp4`
+- [ ] Publish response: `status: allowed` + incrementing `register_count`
+- [ ] In a separate `/buyer/start` tab with a Tier 3 PVC, the just-recorded video plays in `/viewer`
+
+**Screenshots (TBD)**:
+
+```
+images/data-user-vc-tiered/provider/A-iphone-capture-sheet.png      # right after camera opens
+images/data-user-vc-tiered/provider/A-iphone-after-record.png       # post-record + upload result
+images/data-user-vc-tiered/provider/A-iphone-after-publish.png      # publish ok
+```
+
+**iOS-version note**: depending on iOS version, the combination
+`accept="image/*,video/*"` + `capture` may surface a sheet that *also*
+offers the photo library. To **force camera-only**, narrow `accept` to
+`video/*` and the camera takes over reliably. Feed back observed
+behavior into §11.7 if you hit this.
+
+#### B. PC browser recording — Chrome (VP9)
+
+**Goal**: confirm MediaRecorder + `getUserMedia` records from the PC
+webcam, auto-uploads, publishes, and that Chromium-family browsers
+pick VP9.
+
+**Steps**:
+
+1. Same machine running publisher; Chrome → `http://localhost:8080/provider/start?ds=home/event/possible_littering`
+2. Present SellerVC from the iPhone wallet (scan QR; same LAN)
+3. Pick a dataset on the success panel → `/provider`
+4. In the **"🔴 ブラウザで録画"** section, click 録画開始
+5. Allow camera/mic in the browser permission dialog
+6. Confirm the live `<video>` preview shows the webcam
+7. Wait 5–10 s, click 停止 & アップロード
+8. `recStatus` transitions through "録画完了 (Ns) — アップロード中…" → "録画完了 (Ns)"
+9. Upload result shows `content_type: video/webm`
+10. `video_duration_sec` form is **auto-filled** with the measured length
+11. Publish succeeds
+
+**Codec check**:
+
+In DevTools console:
+
+```js
+['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4']
+  .filter(m => MediaRecorder.isTypeSupported(m))
+```
+
+Expected: `["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]`
+(first entry = the one actually picked).
+
+**Screenshots (TBD)**:
+
+```
+images/data-user-vc-tiered/provider/B-chrome-permission.png         # camera permission
+images/data-user-vc-tiered/provider/B-chrome-recording.png          # live preview + red banner
+images/data-user-vc-tiered/provider/B-chrome-uploaded.png           # upload result with URL/CID
+images/data-user-vc-tiered/provider/B-chrome-publish-ok.png         # publish success
+images/data-user-vc-tiered/provider/B-chrome-devtools-codec.png     # DevTools codec output
+```
+
+#### C. PC browser recording — Firefox (VP8 fallback)
+
+**Goal**: confirm Firefox completes the same flow and falls back to
+VP8 when VP9 is unavailable.
+
+**Steps**: same as B in Firefox.
+
+**Verification points**: run the same DevTools snippet and confirm
+`vp9,opus` returns `false` while `vp8,opus` (or bare `webm`) returns
+`true`. Upload should still produce `content_type: video/webm`.
+
+**Screenshots (TBD)**:
+
+```
+images/data-user-vc-tiered/provider/C-firefox-permission.png
+images/data-user-vc-tiered/provider/C-firefox-recording.png
+images/data-user-vc-tiered/provider/C-firefox-publish-ok.png
+images/data-user-vc-tiered/provider/C-firefox-devtools-codec.png    # vp9=false, vp8=true
+```
+
+#### D. macOS Safari (MP4 fallback)
+
+**Goal**: confirm MP4 fallback works on Safari, where WebM family is
+unsupported.
+
+**Steps**: same as B in macOS Safari (16+).
+
+**Verification points**:
+`MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')` →
+`false`; `MediaRecorder.isTypeSupported('video/mp4')` → `true`. Upload
+result should show `content_type: video/mp4`.
+
+**Safari-specific notes**:
+
+- Safari prior to 14.1 has no `MediaRecorder` at all; `recStatus`
+  surfaces "このブラウザは録画に対応していません". If you hit that, add
+  the version range to §11.7.
+- Camera/mic permission may need to be granted via the **address-bar
+  Safari settings icon** in some setups.
+
+**Screenshots (TBD)**:
+
+```
+images/data-user-vc-tiered/provider/D-safari-permission.png
+images/data-user-vc-tiered/provider/D-safari-recording.png
+images/data-user-vc-tiered/provider/D-safari-publish-ok.png
+images/data-user-vc-tiered/provider/D-safari-devtools-codec.png     # mp4=true
+```
+
+#### Post-validation checklist
+
+After all four scenarios:
+
+- [ ] Screenshots placed in
+      `docs/hands-on/images/data-user-vc-tiered/provider/` at the paths above
+- [ ] §11.8 status table updated ⏳ → ✅
+- [ ] Observed codec values, OS versions, and any unusual behavior
+      appended to the relevant subsection
+- [ ] §11.7 troubleshooting extended with any new symptoms found during validation
 
 ## Where to go next
 

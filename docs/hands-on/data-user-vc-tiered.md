@@ -664,19 +664,175 @@ deny ケースの挙動:
 | `/provider/publish` が 403 `seller_token_dataset_not_licensed` | SellerVC の `licensed_datasets[]` に `topic` から導出される dataset_id が含まれていません。例: `topic=homeassistant/event/possible_littering` → dataset_id は `home/event/possible_littering` |
 | Publish レスポンスに `status: send_error` | publisher の `PLATFORM_API_URL` が到達不能。SellerToken のゲートは通っており、`register_count` も上がっているはずです（処理は許可、配信が失敗）|
 
-### 11.8 実機検証ステータス
+### 11.8 実機検証ログ
 
-執筆時点（2026-04-30）で **未検証**の項目があります。実機で確認次第このページに
-スクリーンショットと観測値を追記します:
+§11.3 の 3 入力モードについて、4 環境で end-to-end を回した結果をここに残します。
+スクリーンショットは `docs/hands-on/images/data-user-vc-tiered/provider/`
+配下に置いてあります。
 
-- iPhone Safari の `capture="environment"` 経由でのその場撮影 → アップロード → Publish
-- PC Chrome の MediaRecorder 録画 → 自動アップロード → Publish
-- Firefox での VP8 フォールバック
-- Safari macOS での MP4 コーデックフォールバック
+| シナリオ | 環境 | 状態 | 観測値 |
+|---|---|---|---|
+| **A** iPhone カメラ撮影（`capture="environment"`） | iPhone Safari (iOS 18.x) | ⏳ 未検証 | — |
+| **B** PC ブラウザ録画（MediaRecorder） | macOS Chrome (latest) | ⏳ 未検証 | codec: 期待値 `video/webm;codecs=vp9,opus` |
+| **C** Firefox VP8 フォールバック | macOS Firefox (latest) | ⏳ 未検証 | codec: 期待値 `video/webm;codecs=vp8,opus` または `video/webm` |
+| **D** macOS Safari MP4 フォールバック | macOS Safari (latest) | ⏳ 未検証 | codec: 期待値 `video/mp4` |
 
-実装と OID4VP プラミング自体は `feat/stage-t-provider-start-c1` /
-`feat/stage-t-provider-c2` / `feat/stage-t-provider-camera` の 3 PR で
-ユニットテストレベル (78/78 + 71/71 pass) は確認済みです。
+各シナリオの再現手順と確認ポイントは下記の通りです。検証する人は各サブセクションを
+通しで実施し、`status` 列を ✅ に更新したうえで観測値とスクリーンショットを
+このページに追記します（差分パッチ歓迎）。
+
+#### 共通の前提
+
+すべてのシナリオで:
+
+1. `docker compose -f infra/docker-compose.yml up -d publisher hardhat bridge mosquitto` が稼働
+2. publisher の `licensed_datasets` に `home/event/possible_littering` を含む SellerVC を一枚 wallet に持っている
+3. publisher のホストは PC からも iPhone からも到達可能（同じ LAN 推奨）
+
+「ブラウザで録画」モード (B/C/D) は `getUserMedia` の制約上 **`localhost`
+または HTTPS でしか動かない**点に注意。LAN IP (`http://192.168.x.x:8080`) で
+開いた場合はブラウザがマイク/カメラ権限を拒否するため、PC ブラウザは必ず
+**publisher と同じマシンで `http://localhost:8080`** で開いてください。
+
+#### A. iPhone カメラ撮影（`capture="environment"`）
+
+**目的**: `<input type="file" accept="image/*,video/*" capture="environment">`
+が iOS Safari でカメラを直接起動することを確認する。
+
+**手順**:
+
+1. iPhone Safari で `http://<publisher-host>:8080/provider/start?ds=home/event/possible_littering` を開く
+2. ウォレットで SellerVC を提示 → `/provider?pt=...&ds=...` に遷移
+3. **「📷 カメラで撮影」** の input をタップ
+4. iOS のシートで「ビデオを撮影」が **デフォルト**で出るか、もしくは Safari が
+   そのままカメラに遷移するかを確認
+5. 5〜10 秒の動画を撮影 → 戻る → 自動的に `/media/upload` に POST される
+6. 「Publish event」を押して 200 が返ることを確認
+
+**確認ポイント**:
+
+- [ ] §11.3 のテーブル通り「カメラ直起動」（ファイルピッカーが先に出ない）
+- [ ] アップロード結果に `content_type: video/mp4` が出る
+- [ ] Publish レスポンスで `status: allowed` + `register_count` が増える
+- [ ] `/buyer/start` 別タブで Tier 3 PVC を提示すると、撮ったばかりの動画が `/viewer` で再生される
+
+**スクリーンショット (TBD)**:
+
+```
+images/data-user-vc-tiered/provider/A-iphone-capture-sheet.png      # カメラ起動直後
+images/data-user-vc-tiered/provider/A-iphone-after-record.png       # 撮影完了 + アップロード結果パネル
+images/data-user-vc-tiered/provider/A-iphone-after-publish.png      # Publish 成功
+```
+
+**iOS バージョン依存の注意**: iOS のバージョンによっては
+`accept="image/*,video/*"` と `capture` の組み合わせで「カメラ・ライブラリ
+両方を選べるシート」が出ることがあります。**カメラ直起動を強制したい場合は
+`accept="video/*"` のみ**にする必要があります。観測した挙動を §11.7 の
+該当行にフィードバックしてください。
+
+#### B. PC ブラウザ録画 — Chrome（VP9）
+
+**目的**: MediaRecorder + `getUserMedia` 経路で PC ウェブカメラから直接録画
+→ アップロード → Publish が動くこと、Chromium 系では VP9 が選択されることを
+確認する。
+
+**手順**:
+
+1. 同じ PC で publisher を起動した状態で、Chrome で `http://localhost:8080/provider/start?ds=home/event/possible_littering` を開く
+2. iPhone wallet で SellerVC を提示（QR を読む / 同 LAN にいる前提）
+3. 成功パネルから dataset を選んで `/provider` に遷移
+4. **「🔴 ブラウザで録画」** セクションの「録画開始」を押す
+5. ブラウザのカメラ/マイク権限ダイアログで **許可**
+6. ライブプレビュー `<video>` にウェブカメラ映像が出ることを確認
+7. 5〜10 秒待って「停止 & アップロード」
+8. `recStatus` が「録画完了 (Ns) — アップロード中…」→「録画完了 (Ns)」と遷移
+9. アップロード結果に `content_type: video/webm` が出るのを確認
+10. `video_duration_sec` フォームに **実測秒数が自動入力**されているか確認
+11. Publish 成功
+
+**確認ポイント (codec 確認)**:
+
+DevTools コンソールで:
+
+```js
+['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4']
+  .filter(m => MediaRecorder.isTypeSupported(m))
+```
+
+→ 期待値: `["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]`
+（先頭 = 実際に使われるもの）
+
+**スクリーンショット (TBD)**:
+
+```
+images/data-user-vc-tiered/provider/B-chrome-permission.png         # カメラ権限ダイアログ
+images/data-user-vc-tiered/provider/B-chrome-recording.png          # 録画中（赤バナー + プレビュー）
+images/data-user-vc-tiered/provider/B-chrome-uploaded.png           # 録画完了 + URL/CID
+images/data-user-vc-tiered/provider/B-chrome-publish-ok.png         # Publish 成功
+images/data-user-vc-tiered/provider/B-chrome-devtools-codec.png     # DevTools の codec 判定
+```
+
+#### C. PC ブラウザ録画 — Firefox（VP8 フォールバック）
+
+**目的**: Firefox でも録画動線が成立すること、VP9 が無い場合に VP8 へ
+フォールバックすることを確認する。
+
+**手順**: B と同じ手順を Firefox で実施。
+
+**確認ポイント**:
+
+DevTools の同じスニペットで MediaRecorder.isTypeSupported を叩き、
+**`vp9,opus` が `false` なのに `vp8,opus` または `webm` が `true`** であることを
+確認。アップロードされたファイルの `content_type` も `video/webm` になっていれば成功。
+
+**スクリーンショット (TBD)**:
+
+```
+images/data-user-vc-tiered/provider/C-firefox-permission.png
+images/data-user-vc-tiered/provider/C-firefox-recording.png
+images/data-user-vc-tiered/provider/C-firefox-publish-ok.png
+images/data-user-vc-tiered/provider/C-firefox-devtools-codec.png    # vp9=false, vp8=true
+```
+
+#### D. macOS Safari（MP4 フォールバック）
+
+**目的**: WebM 系がサポートされない Safari で MP4 にフォールバックすること
+を確認する。
+
+**手順**: B と同じ手順を macOS Safari (16+) で実施。
+
+**確認ポイント**:
+
+`MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')` が `false`、
+`MediaRecorder.isTypeSupported('video/mp4')` が `true` になり、アップロード結果の
+`content_type` が `video/mp4` になることを確認。
+
+**Safari 固有の注意**:
+
+- Safari 14.1 未満では `MediaRecorder` 自体が無く、`recStatus` が「このブラウザは
+  録画に対応していません」になる。その場合は §11.7 のトラブルシュートに該当バージョン
+  情報を追記してください。
+- マイク/カメラ権限は **アドレスバー左の Safari 設定アイコン**から付与する必要が
+  あることがある。
+
+**スクリーンショット (TBD)**:
+
+```
+images/data-user-vc-tiered/provider/D-safari-permission.png
+images/data-user-vc-tiered/provider/D-safari-recording.png
+images/data-user-vc-tiered/provider/D-safari-publish-ok.png
+images/data-user-vc-tiered/provider/D-safari-devtools-codec.png     # mp4=true
+```
+
+#### 検証完了後のチェックリスト
+
+すべてのシナリオで:
+
+- [ ] スクリーンショットを `docs/hands-on/images/data-user-vc-tiered/provider/`
+      に上記のパスで配置
+- [ ] §11.8 冒頭のステータステーブルを ⏳ → ✅ に更新
+- [ ] 実機で観測した codec 値・OS バージョン・特異な挙動を該当サブセクションに追記
+- [ ] §11.7 トラブルシュートに、検証中に発見した新しい症状があれば追記
 
 ## 次に進む
 
