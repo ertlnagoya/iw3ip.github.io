@@ -258,7 +258,7 @@ Total: 88 = 75 existing + 13 new. No regressions.
   zkEVM) and demote `trust_score.py` to a fallback
 - Make `allowed_views` time-window aware (e.g. video only at night)
 
-## Tier extension: semantic-level redaction (VLM)
+## Tier extension: semantic-level redaction (VLM)  {#tier-vlm}
 
 §1–§9 above gate access by **dropping media keys** (Tier 2 hides video,
 Tier 1 hides image and video). The next step is to **derive new content
