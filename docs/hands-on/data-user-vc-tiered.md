@@ -686,7 +686,7 @@ deny ケースの挙動:
 | **A** iPhone カメラ撮影（`capture="environment"`） | iPhone Safari (iOS 18.x) | ✅ 検証済 (2026-04-30) | upload `video/quicktime` 273KB → Publish `status=allowed` → 受信側 `/viewer` で `video/quicktime` がインライン再生（macOS Safari） |
 | **B** PC ブラウザ録画（MediaRecorder） | macOS Chrome 147 | ⚠️ codec 確認済 (2026-04-30) | サポート 4 種類: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → 選好順で **VP9 を選択**。録画 + Publish は wallet IP 切替後に検証 |
 | **C** Firefox VP8 フォールバック | macOS Firefox 139 | ✅ codec 検証済 (2026-04-30) | サポート 2 種類: `vp8,opus` / `webm` (VP9 なし — Firefox の MediaRecorder は VP9 未対応) → **VP8 を選択**。spec 期待値どおり |
-| **D** ~~macOS Safari MP4 フォールバック~~ macOS Safari WebM/VP9 | macOS Safari 17+ | ⚠️ **想定と異なる** (2026-04-30) | サポート 4 種類: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → 選好順で **VP9 を選択**（MP4 ではない）。**Safari 17+ で WebM/VP9 がネイティブ対応**したため、当初 spec の "Safari は MP4 fallback" 想定は古い。MP4 fallback は Safari 16 以下のみ |
+| **D** ~~macOS Safari MP4 フォールバック~~ macOS Safari WebM/VP9 | macOS Safari 17+ | ✅ **検証済 (2026-04-30)** | サポート 4 種類: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → 選好順で **VP9 を選択**（MP4 ではない）。録画 → アップロード → Publish 完走、`seller_token_issued ertl-bcd-final` + `POST /provider/publish 200 OK`。**Safari 17+ で WebM/VP9 がネイティブ対応**したため、当初 spec の "Safari は MP4 fallback" 想定は古い（MP4 fallback は Safari 16 以下のみ） |
 
 #### 実機検証で見つかったバグ（A シナリオ初回試行）
 
