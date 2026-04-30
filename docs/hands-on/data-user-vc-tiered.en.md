@@ -714,9 +714,9 @@ environments. Screenshots live under
 | Scenario | Environment | Status | Observation |
 |---|---|---|---|
 | **A** iPhone camera capture (`capture="environment"`) | iPhone Safari (iOS 18.x) | ✅ verified (2026-04-30) | upload `video/quicktime` 273KB → Publish `status=allowed` → receiver `/viewer` plays the `.MOV` inline (macOS Safari) |
-| **B** PC browser recording (MediaRecorder) | macOS Chrome (latest) | ⏳ pending | expected codec: `video/webm;codecs=vp9,opus` |
-| **C** Firefox VP8 fallback | macOS Firefox (latest) | ⏳ pending | expected codec: `video/webm;codecs=vp8,opus` or `video/webm` |
-| **D** macOS Safari MP4 fallback | macOS Safari (latest) | ⏳ pending | expected codec: `video/mp4` |
+| **B** PC browser recording (MediaRecorder) | macOS Chrome 147 | ⚠️ codec confirmed (2026-04-30) | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9**. Recording + Publish pending wallet rebuild |
+| **C** Firefox VP8 fallback | macOS Firefox 139 | ✅ codec verified (2026-04-30) | Supports 2: `vp8,opus` / `webm` (no VP9 — Firefox MediaRecorder lacks VP9 support) → **VP8 selected**. Matches spec expectation |
+| **D** ~~macOS Safari MP4 fallback~~ macOS Safari WebM/VP9 | macOS Safari 17+ | ⚠️ **deviates from expectation** (2026-04-30) | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9** (not MP4). **Safari 17+ has native WebM/VP9 support**; the original spec's "Safari falls back to MP4" assumption is outdated. MP4 fallback only applies to Safari 16 and earlier |
 
 #### Bugs surfaced during the first real-device run (scenario A)
 
