@@ -679,7 +679,7 @@ a **two-tab** experience in the browser.
     SellerVC (provider side) and the PurchaseViewerVC.full (receiver
     side); each `/buyer/start` or `/provider/start` page picked the
     right one automatically. Screenshot:
-    `images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.png`
+    `images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.jpg`
     (to be added by follow-up commit).
 
 ### 11.6 Symmetry with `/buyer/start`
@@ -783,7 +783,7 @@ images/data-user-vc-tiered/provider/A-iphone-404-original.png       # pre-fix: 4
 images/data-user-vc-tiered/provider/A-iphone-415-mov-rejected.png   # pre-fix: 415 .MOV unsupported
 images/data-user-vc-tiered/provider/A-iphone-401-token-unknown.png  # operational: container rebuild wiped token
 images/data-user-vc-tiered/provider/A-iphone-after-publish.png      # success: green Published banner + register_count=1
-images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.png    # receiver: /viewer plays the .MOV inline
+images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.jpg    # receiver: /viewer plays the .MOV inline
 ```
 
 **iOS-version note**: on iOS 18.x, `accept="image/*,video/*"` +

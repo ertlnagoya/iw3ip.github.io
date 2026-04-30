@@ -649,7 +649,7 @@ deny ケースの挙動:
     確認しました（§11.8.A 参照）。同じ wallet が SellerVC（提供側）と
     PurchaseViewerVC.full（受信側）の両方を保持し、提示先のページで自動的に
     使い分けられます。スクリーンショット:
-    `images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.png`
+    `images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.jpg`
     （差分パッチで配置予定）。
 
 ### 11.6 `/provider/start` と `/buyer/start` の対応関係
@@ -751,7 +751,7 @@ images/data-user-vc-tiered/provider/A-iphone-404-original.png       # 修正前:
 images/data-user-vc-tiered/provider/A-iphone-415-mov-rejected.png   # 修正前: 415 .MOV unsupported
 images/data-user-vc-tiered/provider/A-iphone-401-token-unknown.png  # 運用上: container 再ビルドで token wipe
 images/data-user-vc-tiered/provider/A-iphone-after-publish.png      # 成功: Published 緑バナー + register_count=1
-images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.png    # 受信側: /viewer で .MOV インライン再生
+images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.jpg    # 受信側: /viewer で .MOV インライン再生
 ```
 
 **iOS バージョン依存の注意**: iOS 18.x では `accept="image/*,video/*"` +
