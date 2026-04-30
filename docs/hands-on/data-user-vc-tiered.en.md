@@ -383,6 +383,91 @@ CID is enough to fetch the asset from any cooperating peer.
 | `/ipfs/<cid>` returns 404 | `IPFS_GATEWAY_URL` is empty. Set `.env` or export and recreate |
 | Public gateway can't fetch | Behind NAT, kubo not visible to peers. `ipfs swarm peers` to verify |
 
+## 10. PWA viewer (one UX for phone *and* PC)
+
+§3–§9 walked through the dev-style flow ("call /verifier/request,
+collect the token, curl /platform/data"). The publisher now ships a
+**built-in PWA viewer** (`/buyer/start` + `/viewer`) so a buyer just
+opens **one URL** and the rest is automatic, on iPhone Safari **or**
+PC Chrome / Edge / Firefox.
+
+```
+[iPhone Safari] ─ /buyer/start                            [publisher]
+   │  ↓ auto-redirect to deeplink                              │
+   │  iw3ip-wallet opens → present Tier 3 ────────────────────►│ mint ViewerToken
+   │  ↑ redirect_uri = /viewer?vt=...                          │
+   │  Safari resumes → /viewer auto-renders image/video        │
+
+[PC Chrome] ─ /buyer/start                                [publisher]
+   │  ↓ shows QR + long-polls                                  │
+   │  Scan QR with iPhone → wallet → present ────────────────► │
+   │  ↑ /verifier/status returns viewer_url                    │
+   │  PC browser auto-navigates to /viewer → image renders     │
+```
+
+### 10.1 Bring it up
+
+No special setup. Open `/buyer/start?ds=<dataset_id>` from **the same
+URL** on either device — the page detects the user agent and switches
+mode:
+
+```
+iPhone Safari:  http://192.168.68.53:8080/buyer/start?ds=home/event/possible_littering
+PC Chrome:      http://192.168.68.53:8080/buyer/start?ds=home/event/possible_littering
+```
+
+### 10.2 Same-device (iPhone) flow
+
+1. Open the URL in Safari.
+2. The page calls `/verifier/request` to fetch a deeplink.
+3. `window.location = deeplink` launches **iw3ip-wallet** automatically.
+4. In the wallet, pick "Purchase Viewer (Tier 3 / Full)" and present.
+5. The wallet receives `redirect_uri = /viewer?vt=...&ds=...` and...
+6. ...Safari **resumes automatically and the image / video renders**.
+
+No more URL-copy-paste.
+
+### 10.3 Cross-device (PC + iPhone) flow
+
+1. Open the URL on a PC browser.
+2. The page renders a **large QR code** (the OID4VP deeplink).
+3. Scan it with the iPhone camera or directly inside the wallet → wallet → present.
+4. The PC page long-polls `/verifier/status?state=...` every 2 s.
+5. Once the wallet completes, the response includes `viewer_url`.
+6. The PC navigates to `/viewer` and **the same image / video renders**.
+
+### 10.4 What `/viewer` shows
+
+`/viewer?vt=<viewer_token>&ds=<dataset_id>` renders:
+
+- A **tier badge** (`event` / `event+image` / `event+image+video`) up top.
+- `image_url` as an inline `<img>`.
+- `video_url` as a playable `<video controls>`.
+- `image_cid` (if Option C is on) as a clickable link to the publisher's `/ipfs/<cid>` proxy.
+- Raw row JSON tucked under a `<details>` toggle.
+
+If the ViewerToken's 60-second TTL has expired you get a 401 plus a
+human-readable nudge to "reload from /buyer/start."
+
+### 10.5 Why both devices matter
+
+| | Manual curl flow (§§3–9) | PWA viewer |
+|---|---|---|
+| Easy on phone | ✗ — copy URLs | ✓ |
+| Works on PC | ✗ — no wallet on PC | ✓ — QR + long-poll |
+| App install on PC | iw3ip-wallet (phone) | none beyond a browser |
+| Re-fetch after TTL | redo curl | reload the page |
+| Public demo cost | long handout | hand over one URL |
+
+### 10.6 Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| iPhone deeplink doesn't open the wallet | Tap the visible "Open in wallet" link; check Safari's "Open in App" permission |
+| PC doesn't show a QR | The browser couldn't reach the CDN (`cdn.jsdelivr.net`). Plug in. |
+| PC poll never finishes | Confirm the wallet actually presented a valid VC: `docker compose logs publisher` should show a `200 /verifier/response` |
+| `/viewer` returns 401 | ViewerToken TTL (60 s) lapsed. Reload `/buyer/start` |
+
 ## Where to go next
 
 - [Mobile SSI Wallet sample](ha-ssi-wallet.md) — bring up the Phase 2 wallet
