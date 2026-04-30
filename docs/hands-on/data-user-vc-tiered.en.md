@@ -715,7 +715,7 @@ environments. Screenshots live under
 |---|---|---|---|
 | **A** iPhone camera capture (`capture="environment"`) | iPhone Safari (iOS 18.x) | ✅ verified (2026-04-30) | upload `video/quicktime` 273KB → Publish `status=allowed` → receiver `/viewer` plays the `.MOV` inline (macOS Safari) |
 | **B** PC browser recording (MediaRecorder) | macOS Chrome 147 | ⚠️ codec confirmed (2026-04-30) | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9**. Recording + Publish pending wallet rebuild |
-| **C** Firefox VP8 fallback | macOS Firefox 139 | ✅ codec verified (2026-04-30) | Supports 2: `vp8,opus` / `webm` (no VP9 — Firefox MediaRecorder lacks VP9 support) → **VP8 selected**. Matches spec expectation |
+| **C** Firefox VP8 fallback | macOS Firefox 139 | ✅ **verified (2026-04-30)** | Supports 2: `vp8,opus` / `webm` (no VP9 — Firefox MediaRecorder lacks VP9 support) → **VP8 selected**. Recording → upload → Publish round-trip completed: `media_uploaded ext=.webm bytes=89909` (WebM/VP8, 89KB) + `POST /provider/publish 200 OK`. The `pickRecorderMime()` VP8 fallback path is exercised end-to-end |
 | **D** ~~macOS Safari MP4 fallback~~ macOS Safari WebM/VP9 | macOS Safari 17+ | ✅ **verified (2026-04-30)** | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9** (not MP4). Recording → upload → Publish round-trip completed: `seller_token_issued ertl-bcd-final` + `POST /provider/publish 200 OK`. **Safari 17+ has native WebM/VP9 support**; the original "Safari falls back to MP4" assumption applies only to Safari 16 and earlier |
 
 #### Bugs surfaced during the first real-device run (scenario A)
