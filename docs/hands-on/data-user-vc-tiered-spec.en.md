@@ -257,3 +257,172 @@ Total: 88 = 75 existing + 13 new. No regressions.
 - Re-deploy `DataUserVerifier.sol` on a low-fee chain (e.g. Polygon
   zkEVM) and demote `trust_score.py` to a fallback
 - Make `allowed_views` time-window aware (e.g. video only at night)
+
+## Tier extension: semantic-level redaction (VLM)
+
+§1–§9 above gate access by **dropping media keys** (Tier 2 hides video,
+Tier 1 hides image and video). The next step is to **derive new content
+from the same source via VLM inference + face/PII blurring and project
+those derivatives per tier**. Tier 1 is no longer "you get nothing
+useful"; it now ships a **PII-redacted summary** so a low-trust
+recipient can know *what happened* without learning *who did it*.
+
+### Updated tier definitions
+
+| Tier | access level | Example (score) | Derivatives shipped |
+|---|---|---|---|
+| **3** Full | `full` | gov + crime + ISO27001 (80) | raw image / video + every text derivative |
+| **2** Access | `access` | enterprise + research + ISO27001 (75) | **face/PII-blurred image** + **detailed text** (named entities present) |
+| **1** Summary | `summary` (new) | enterprise + research only (60–) | **summary text only** (PII-redacted, no image) |
+| 0 Denied | `denied` | unqualified (<60) | claim is rejected |
+
+A new `summary` value is added to `access_level`. The `denied`
+semantics are unchanged — `score < 60` still rejects the claim.
+
+### Derivative schema
+
+`/platform/data` row objects gain these keys:
+
+| Key | Content | Visible at tier |
+|---|---|---|
+| `image_url_redacted` | URL of an image with faces / people / license plates blurred | 2 + 3 |
+| `image_cid_redacted` | IPFS CID of the redacted image (when option C is on) | 2 + 3 |
+| `description_full` | VLM-generated detailed description (named entities present) | 2 + 3 |
+| `description_summary` | VLM-generated summary (PII-redacted) | 1 + 2 + 3 |
+| `description_model` | VLM model id + version (audit) | every tier |
+| `description_generated_at` | Inference timestamp (ISO8601) | every tier |
+
+The existing `image_url` / `image_cid` / `video_url` / `video_cid` keys
+become **Tier 3 only**; the old "Tier 2 sees `image_url`" projection is
+replaced by `image_url_redacted`.
+
+### New allowed_views labels
+
+```
+allowed_views ⊆ {
+  "event",                # existing: metadata
+  "image",                # existing: raw image_url / image_cid (Tier 3 only)
+  "video",                # existing: raw video_url / video_cid (Tier 3 only)
+  "image_redacted",       # new: image_url_redacted / image_cid_redacted (Tier 2+)
+  "description_full",     # new: description_full (Tier 2+)
+  "description_summary",  # new: description_summary (Tier 1+)
+}
+```
+
+### Updated tier → allowed_views mapping
+
+```
+"full"    -> ["event", "image", "video",
+              "image_redacted",
+              "description_full", "description_summary"]
+"access"  -> ["event",
+              "image_redacted",
+              "description_full", "description_summary"]
+"summary" -> ["event",
+              "description_summary"]
+"denied"  -> []
+```
+
+`full` is a strict superset of `access`. `access` is the middle band:
+no raw media but a blurred image plus full text. `summary` is text
+only — no image at all, redacted or otherwise.
+
+### VLM pipeline contract
+
+When the publisher is started with `--profile vlm`, `/provider/publish`
+gains two new steps:
+
+```
+provider page
+  ├── /media/upload stores the source image (existing)
+  └── POST /provider/publish
+        └── pipeline.process_message
+              ├── (new) VLMClient.describe(image_url)
+              │     -> {description_full, description_summary, model, generated_at}
+              ├── (new) ImageRedactor.blur_pii(image_url)
+              │     -> {image_url_redacted, image_cid_redacted}
+              ├── existing: consent / policy evaluation
+              └── existing: platform_client.send(envelope)
+```
+
+Degrade policy when VLM is missing or fails:
+
+| Condition | Publisher behaviour |
+|---|---|
+| `--profile vlm` off | derivative keys are **not generated** (legacy behaviour — Tier 1/2 fall back to the old "key drop" model) |
+| profile on, VLM call failed | description keys omitted; `image_url_redacted` is still attempted (face blur doesn't need the VLM) |
+| profile on, blur failed | redacted-image keys omitted; descriptions still ship. Tier 2 receivers get text without a redacted image |
+| profile on, both succeed | all keys generated |
+
+Degraded responses carry **`processing_warnings: ["vlm_unavailable", ...]`**
+so the receiver can tell what was skipped.
+
+### VLM backends
+
+- **MVP**: local LLaVA via Ollama as a compose service (`ollama run llava`)
+- **Future**: swap for a larger multimodal LLM (Qwen2-VL, etc.) or an
+  external API, switched by `VLM_BACKEND=ollama|openai|anthropic`
+- **stub** (`VLM_BACKEND=stub`): test mode that returns deterministic
+  dummy strings
+
+### Face / PII blur
+
+- **MVP**: OpenCV Haar cascade face detection + Gaussian blur, dedup on
+  the resulting bytes' sha256 so re-runs are free
+- **Future**: license plates (OCR-based), screens (sharp-rectangle
+  detection), ID badges, etc., as plug-ins behind a `RedactionPipeline`
+  interface
+
+If the source content_type is video, the MVP **does not produce a
+redacted image** (frame extraction + per-frame blur is future work).
+Tier 3 sees the video as before; Tier 2 just gets the text derivatives.
+
+### Redaction-leak detection (research TODO)
+
+VLMs structurally cannot guarantee PII removal from `description_summary`.
+This spec **separates detection into a post-check stage** and records it
+as a research TODO; the MVP does not ship it.
+
+Sketch:
+
+1. NER-extract proper nouns (people / organisations / places) from `description_full`
+2. Diff against `description_summary` for any leftover matches
+3. If any survive, cross-check against a known-PII / per-country name
+   dictionary and raise `processing_warnings: ["redaction_leak_suspected"]`
+   when the confidence is high
+4. Flagged rows queue for human review via the audit path
+
+### Audit-log impact
+
+`audit/logs` now records `description_model` and `description_generated_at`
+so we can replay **which VLM output reached whom under which tier at
+which time**. If the VLM is upgraded, the same source image can produce
+different descriptions; `generated_at` separates them.
+
+### Test plan (deltas)
+
+A new file `tests/test_data_user_vc_tiered_vlm.py` covers:
+
+1. `--profile vlm` off: existing tier projection regresses to nothing (5)
+2. stub VLM backend produces the expected `description_*` shape (3)
+3. Per-tier `/platform/data` projection matrix (4)
+   - Tier 3: raw + derivative keys
+   - Tier 2: image_redacted + description_full + description_summary; no raw image/video
+   - Tier 1: description_summary only
+   - Tier 0 (denied): claim itself returns 403
+4. Degrade matrix when VLM call fails (2)
+5. `processing_warnings` propagation (2)
+
+Total +16 cases, kept independent from the existing 88 (the
+profile-off regression test is the most important).
+
+### Future work (recorded for the spec)
+
+- Video → frame extraction → VLM aggregate for Tier 2/1 video derivatives
+- VLM **reproducibility**: either restrict to backends that produce the
+  same description for the same `(image, prompt)` tuple, or accept
+  divergence with `generated_at` separation
+- The redaction-leak post-check above
+- A **VLM cache layer**: reuse descriptions across uploads keyed by
+  source image sha256 (mirrors the existing image dedup)
+- VLM **cost gating**: throttle calls per DataUserVC tier
