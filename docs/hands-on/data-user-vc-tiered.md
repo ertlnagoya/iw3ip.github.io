@@ -365,6 +365,88 @@ iPhone Safari でいずれかを開いてください：
 | `/ipfs/<cid>` が 404 | `IPFS_GATEWAY_URL` が空。`.env` か `export` 設定を確認 |
 | 公開 gateway で取得できない | NAT 配下の場合、kubo がピアに見えていない。`ipfs swarm peers` でピア接続を確認 |
 
+## 10. PWA Viewer（スマホ + PC 共通 UX）
+
+§3〜§9 までは「ターミナルで `/verifier/request` の URL を叩く → token を回収 →
+`/platform/data` に curl」という開発者目線のフローでした。
+publisher 内蔵の **PWA Viewer**（`/buyer/start` + `/viewer`）を使うと、
+スマホでも PC でも **「ブラウザでページを開けばあとは自動」** という体験になります。
+
+```
+[iPhone Safari] ─ /buyer/start                            [publisher]
+   │  ↓ 自動で deeplink                                       │
+   │  iw3ip-wallet 起動 → Tier 3 提示 ───────────────────────► │ mint ViewerToken
+   │  ↑ redirect_uri=/viewer?vt=...                            │
+   │  Safari 戻る → /viewer が image/video 自動表示             │
+
+[PC Chrome] ─ /buyer/start                                [publisher]
+   │  ↓ QR 表示 + ロングポーリング                              │
+   │      QR を iPhone で読む → ウォレット → Tier 3 提示 ──────► │
+   │  ↑ /verifier/status から viewer_url を取得                 │
+   │  PC ブラウザが /viewer に自動遷移 → 画像表示                │
+```
+
+### 10.1 起動
+
+特別な準備は不要です。`/buyer/start?ds=<dataset_id>` を **同じ URL でスマホでも PC でも** 開けば、
+ページが UA を見て挙動を切り替えます：
+
+```
+iPhone Safari:  http://192.168.68.53:8080/buyer/start?ds=home/event/possible_littering
+PC Chrome:      http://192.168.68.53:8080/buyer/start?ds=home/event/possible_littering
+```
+
+### 10.2 同一デバイス（iPhone）の挙動
+
+1. 上記 URL を Safari で開く
+2. ページが内部で `/verifier/request` を叩いて deeplink を取得
+3. `window.location = deeplink` で **iw3ip-wallet が自動起動**
+4. ウォレットで「購入閲覧（Tier 3 / 動画まで）」を選んで提示
+5. wallet が `redirect_uri=/viewer?vt=...&ds=...` を受け取る
+6. **Safari に自動で戻り、画像/動画が描画される**
+
+curl で URL をコピペする手順は **不要**になります。
+
+### 10.3 異デバイス（PC + iPhone）の挙動
+
+1. PC ブラウザで上記 URL を開く
+2. ページに **大きな QR コード**が表示される（中身は OID4VP deeplink）
+3. iPhone のカメラ or ウォレットで QR を読む → wallet が起動 → 提示
+4. PC のページは裏で `/verifier/status?state=...` を 2 秒ごとにロングポーリング
+5. wallet 提示が完了すると `viewer_url` がレスポンスに乗る → PC が自動遷移
+6. **PC ブラウザに同じ画像/動画が描画される**
+
+### 10.4 Viewer ページの中身
+
+`/viewer?vt=<viewer_token>&ds=<dataset_id>` は次を表示します：
+
+- 上部に **Tier バッジ**（`event` / `event+image` / `event+image+video`）
+- `image_url` を `<img>` でインライン表示
+- `video_url` を `<video controls>` で再生可能
+- `image_cid` がある場合（案 C ON）はクリッカブルリンクで `/ipfs/<cid>` 経由表示
+- 末尾の `details` で生レスポンス JSON を確認可能
+
+ViewerToken の TTL（60 秒）が切れた場合は 401 と共に「再提示してください」のメッセージが出ます。
+
+### 10.5 PC + スマホ両対応のメリット
+
+| 観点 | 案 A〜C（手動 curl） | PWA Viewer |
+|---|---|---|
+| スマホで簡単に確認 | ✗（URL コピペ）| ✓ |
+| PC で確認 | ✗（PC にウォレットなし）| ✓（QR + ロングポーリング） |
+| アプリ追加インストール | iw3ip-wallet（スマホのみ） | iw3ip-wallet のみ（PC は不要） |
+| 失効後の再取得 | curl やり直し | ページリロード |
+| 公開デモ | 手順説明が長い | URL を 1 つ渡すだけ |
+
+### 10.6 トラブルシュート
+
+| 症状 | 対処 |
+|---|---|
+| iPhone で deeplink が起動しない | Safari → ウォレットで開く リンクをタップ。Safari の「アプリ起動許可」を確認 |
+| PC で QR が表示されない | ブラウザが CDN（`cdn.jsdelivr.net`）に到達できるか確認。オフライン環境ではエラーになる |
+| PC のロングポーリングが終わらない | wallet 側で正しい VC を提示できているか `docker compose logs publisher` で `/verifier/response` の 200 を確認 |
+| `/viewer` が 401 | ViewerToken TTL 60 秒切れ。`/buyer/start` から再開 |
+
 ## 次に進む
 
 - [スマホSSIウォレットサンプル](ha-ssi-wallet.md) — Phase 2 wallet を立ち上げる
