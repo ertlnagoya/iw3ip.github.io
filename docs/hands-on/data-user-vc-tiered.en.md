@@ -449,7 +449,44 @@ No more URL-copy-paste.
 If the ViewerToken's 60-second TTL has expired you get a 401 plus a
 human-readable nudge to "reload from /buyer/start."
 
-### 10.5 Why both devices matter
+### 10.5 What each tier looks like (real-device screenshots)
+
+#### Wallet side: three distinct cards
+
+After receiving the three deeplinks, iw3ip-wallet (Sphereon mobile-wallet fork)
+shows the PurchaseViewerVCs as three independent cards — same VCT, different
+`credential_configuration_id`, different display name.
+
+<figure markdown>
+![iw3ip-wallet credential list with 3 PurchaseViewerVC tiers](images/data-user-vc-tiered/wallet-tier-cards.png){ width=320 }
+<figcaption>
+Wallet credential list (vertical scroll). All three share VCT
+<code>https://iw3ip.example/credentials/PurchaseViewerVC/v1</code>;
+the <code>credential_configuration_id</code> split (<code>.full</code> /
+<code>.access</code> / <code>.event</code>) is what gives them their distinct
+labels.
+</figcaption>
+</figure>
+
+#### Viewer side: response shape changes per presented tier
+
+Below are real-device `/viewer` screenshots from iPhone Safari (`◀ SphereonWallet`
+in the top-left = Safari was opened by the wallet via `redirect_uri`). The
+badge color and which media keys disappear tell the tier story at a glance.
+
+| Tier 3 (gov / Full) | Tier 2 (enterprise / Access) | Tier 1 (default / Event-only) |
+|---|---|---|
+| ![Tier 3 viewer](images/data-user-vc-tiered/viewer-tier-3-full.png) | ![Tier 2 viewer](images/data-user-vc-tiered/viewer-tier-2-access.png) | ![Tier 1 viewer](images/data-user-vc-tiered/viewer-tier-1-event.png) |
+| 🟢 `tier: event+image+video` | 🟠 `tier: event+image` | ⚪️ `tier: event` |
+| inline image + video player | image only, video player gone | timestamp + raw payload only |
+| `image_cid` / `image_url` / `video_url` / `video_duration_sec` all present | `image_cid` / `image_url` only | every media key dropped |
+
+The three screenshots come from the **same dataset** (`home/event/possible_littering`)
+fetched with three different PurchaseViewerVC tiers. The server-side data is
+identical — what changes is which keys ViewerToken's `allowed_views` lets
+through. That's Stage T's whole point.
+
+### 10.6 Why both devices matter
 
 | | Manual curl flow (§§3–9) | PWA viewer |
 |---|---|---|
@@ -459,7 +496,7 @@ human-readable nudge to "reload from /buyer/start."
 | Re-fetch after TTL | redo curl | reload the page |
 | Public demo cost | long handout | hand over one URL |
 
-### 10.6 Troubleshooting
+### 10.7 Troubleshooting
 
 | Symptom | Fix |
 |---|---|
