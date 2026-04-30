@@ -1360,8 +1360,8 @@ fetch。低信頼ユーザには image_b64 を一切付与しない。
 
 | シナリオ | 環境 | 状態 | 検証ポイント |
 |---|---|---|---|
-| **S1** /provider §1.5 panel | iPhone Safari (実画像) | ⏳ 未検証 | アップロード → 「分析を実行」 → SIR 表示 + bbox 赤枠 + 4-tier preview cards |
-| **S2** /viewer 🔬 toggle | macOS Chrome + Tier 3 PVC | ⏳ 未検証 | toggle ON → `/semantic/render_url` 経由で trust-aware 表示。toggle OFF → legacy 復元 |
+| **S1** /provider §1.5 panel | iPhone Safari (実画像) | ✅ **検証済 (2026-04-30)** | iPhone カメラ撮影画像をアップロード → §1.5 「分析を実行」 → analyzer=`vision-opencv`、`face` (conf 0.85) + `unknown_sensitive` (0.50) を検出、bbox 赤枠が画像上にオーバーレイ。`privacy_risk_score=0.90`、4-tier preview cards (anonymous / low / medium / high) もそれぞれ disclosure を表示。<br>📷 [S1 screenshot](images/data-user-vc-tiered/semantic/S1-provider-analyze.png) |
+| **S2** /viewer 🔬 toggle | iPhone Safari + Tier 3 PVC | ✅ **検証済 (2026-04-30)** | Tier 3 PVC (`PurchaseViewerVC.full`、tier=`event+image+video+image_redacted+description_full+...`) を発行し、iPhone Safari の /viewer で 1 行に対して 🔬 toggle を切替: **OFF** = legacy 表示で生写真 + `vlm_unavailable` 派生データ警告。**ON** = `/semantic/render_url` 経由で `derived trust level: high`、`[high] kinds: textSummary + eventList`、「1人の人物 + 2件のセンシティブ領域」「person_detected: 1人の人物が検出された」を表示し、生写真は出さない (trust-aware 切替成立)。<br>📷 [toggle OFF](images/data-user-vc-tiered/semantic/S2-viewer-toggle-off.png) / [toggle ON](images/data-user-vc-tiered/semantic/S2-viewer-toggle-on.png) |
 | **S3** OWNER tier audit log | publisher 単独 (curl) | ✅ **検証済 (2026-04-30)** | OWNER 信頼度で `/semantic/render_url` を呼ぶと image_b64 + 全 kinds が返り、`/audit/logs` に `semantic/render_url` 行が記録される (`trust=owner;kinds=textSummary+redactedImage+eventList+originalFrame+maskedVideoFrame+lowResolutionImage;image=yes;audit_required=True`) |
 | **S4** Vision analyzer 顔検出 | publisher (`SEMANTIC_ANALYZER_BACKEND=vision`) | ✅ **検証済 (2026-04-30)** | 合成顔画像で `/semantic/analyze` を叩くと SIR に `face` (confidence 0.85, bbox: x=0.14, y=0.19, w=0.70, h=0.70) + `unknown_sensitive` (MSER 由来) が含まれる。privacy_risk_score=0.9 (face 0.4 + unknown 0.5)|
 | **S5** Fail-closed: VisionAnalyzer cv2 不在 | publisher のみ | ⏳ 未検証 | cv2 削除した container で SemanticAnalyzerError → empty SIR + text-only |
