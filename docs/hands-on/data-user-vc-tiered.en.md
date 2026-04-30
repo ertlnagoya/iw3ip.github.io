@@ -948,6 +948,21 @@ Three operational findings emerged during this pass:
 | 2 | Δ3's default `VLM_TIMEOUT_SEC=60` couldn't complete | [Blockchain_IoT_Marketplace#45](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/45) bumps to 180s; CPU setups need `VLM_TIMEOUT_SEC=600` |
 | 3 | LLaVA-7B on CPU is impractical for hands-on workshops | Use a smaller model (`bakllava`, `moondream`) or GPU / external API. Add to docs |
 
+#### moondream re-test (2026-04-30 addendum)
+
+Pulled `moondream` (1.7 GB, ~1/3 of llava) and re-ran the same pipeline:
+
+| Metric | llava | moondream |
+|---|---|---|
+| Model size | 4.7 GB | **1.7 GB** |
+| describe() time on CPU | ~6 min | **~21 s – 5 min** (depends on prompt + cold/warm) |
+| Δ3 two-stage long prompts | Long output (`full_len=280, summary_len=172`) | **Fragments only** (`full_len=3, summary_len=10`) |
+| Simple prompt ("Describe this image.") | Works but verbose | **High quality**: "A man with a beard and glasses... blurred green landscape" |
+
+**Finding**: a small VLM (moondream) is dramatically faster but **does not respond well to the current long 2-stage prompts**. Either tune prompts per-backend (a `prompts: {model -> str}` dict in `vlm_client.py`) or unify all backends on shorter prompts.
+
+Short-prompt unification trades off redaction-strength expressiveness, so a per-backend prompt dict is the cleaner path. Tracked as a TODO for a follow-up PR.
+
 #### V4 visual comparison
 
 | Original (synthetic) | OpenCV Haar-cascade blurred |

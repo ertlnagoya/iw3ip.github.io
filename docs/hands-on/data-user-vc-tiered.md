@@ -928,6 +928,24 @@ V1-V6 を回す途中で **3 件の運用上の発見**がありました:
 | 2 | Δ3 のデフォルト VLM_TIMEOUT_SEC=60 では完走できない | [Blockchain_IoT_Marketplace#45](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/45) で 180s に bump。CPU 環境では更に `VLM_TIMEOUT_SEC=600` 必要 |
 | 3 | ハンズオン教育目的で LLaVA-7B CPU は実時間が長すぎる | 推奨: 軽量モデル（`bakllava`, `moondream`）または GPU 環境 / 外部 API。ハンズオン docs に注意書き要追記 |
 
+#### moondream で再検証した結果 (2026-04-30 追補)
+
+ollama に **`moondream`** (1.7 GB, llava の 1/3 サイズ) を入れて同じパイプラインを回した結果:
+
+| 指標 | llava | moondream |
+|---|---|---|
+| モデルサイズ | 4.7 GB | **1.7 GB** |
+| describe() 完走時間（CPU） | ~6 分 | **~21 秒〜5 分**（プロンプトと cold/warm 状態に依存） |
+| Δ3 の長い 2-stage プロンプト | 期待通りの長文 (`full_len=280, summary_len=172`) | **断片のみ** (`full_len=3, summary_len=10`) |
+| シンプルなプロンプト ("Describe this image.") | 動作するが冗長 | **高品質**: "A man with a beard and glasses... blurred green landscape" |
+
+**結論**: 軽量 VLM (moondream) は劇的に速いが、**現在の長い 2-stage プロンプトには反応しない**。
+プロンプトを model-specific にチューニング（モデルごとに最適な長さ・言い回しを別 dict で持つ）するか、
+全モデル向けに短いプロンプトに統一する必要があります。
+
+**短プロンプト統一**は redact 強度の表現力を犠牲にするため、現状は **モデルごとに最適化した
+プロンプト dict を `vlm_client.py` に持つ**のが筋。これは別 PR の TODO として記録します。
+
 #### V4 視覚比較
 
 | 元画像（合成） | OpenCV Haar cascade ブラー後 |
