@@ -1175,6 +1175,175 @@ The implementation is verified at unit-test level (155/155 pass) in
 with the timeout fix in
 [#45](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/45).
 
+## 13. Semantic intermediate representation + trust-aware rendering
+
+§12 stops at "drop or blur image keys per access_level". §13 takes
+the next step: replace the implicit *frame -> VLM -> output* path with
+an explicit four-layer pipeline:
+
+  **frame -> SIR -> trust policy -> trust-aware renderer -> output**
+
+Privacy-sensitive regions (faces, text, screens, whiteboards,
+documents, name tags, ID cards, license plates, plus
+`unknown_sensitive`) are structured as bounding boxes in the SIR.
+The trust policy maps a `ViewerTrustLevel` × SIR pair to allowed
+output kinds, and the renderer is the only place that ever combines
+the source bytes with the policy decision. Low-trust receivers
+cannot reach raw bytes by construction (fail-closed by design).
+
+### 13.1 Architecture
+
+```
+[iPhone Safari /provider]   uploads frames as in §1-§2
+       |  POST /media/upload
+       v
+[publisher SemanticAnalyzer]   /semantic/analyze
+       |  ├─ MockSemanticAnalyzer   (test / MVP)
+       |  ├─ VisionSemanticAnalyzer (OpenCV Haar + MSER)
+       |  └─ Apple Vision / Core ML / VLM   (future)
+       v
+[Semantic Intermediate Representation (SIR) JSON]
+       |  normalized bbox + sensitive_regions[] + events[] +
+       |  privacy_risk_score + analyzer_version
+       v
+[TrustPolicyEngine]            /semantic/render or /semantic/render_url
+       |  ViewerTrustLevel ∈ {anonymous,low,medium,high,owner,admin}
+       |  -> DisclosurePolicy (allowed_outputs + mask_regions + audit_required)
+       v
+[TrustAwareRenderer]
+       |  textSummary / eventList / redactedImage / lowResolutionImage /
+       |  maskedVideoFrame / originalFrame
+       v
+[Viewer Output]
+```
+
+### 13.2 Trust × output matrix
+
+| Level | textSummary | eventList | redactedImage | lowResolutionImage | maskedVideoFrame | originalFrame |
+|---|---|---|---|---|---|---|
+| `anonymous` | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ |
+| `low` | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ |
+| `medium` | ✓ | ✓ | **✓** | **✓** | ✗ | ✗ |
+| `high` | ✓ | ✓ | ✓ | ✓ | **✓** | ✗ |
+| `owner` | ✓ | ✓ | ✓ | ✓ | ✓ | **✓** (audit) |
+| `admin` | ✓ | ✓ | ✓ | ✓ | ✓ | **✓** (audit) |
+
+`unknown_sensitive` is **always masked at HIGH and below** unless
+`SEMANTIC_ALLOW_UNKNOWN_AT_HIGH=true` is explicitly set.
+
+### 13.3 Bring up
+
+Add `SEMANTIC_ANALYZER_BACKEND` to the existing VLM-tier compose run:
+
+```bash
+SEMANTIC_ANALYZER_BACKEND=vision \
+  VLM_BACKEND=ollama VLM_MODEL=moondream IMAGE_REDACTION_BACKEND=opencv \
+  docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
+```
+
+| Env var | Value | Effect |
+|---|---|---|
+| `SEMANTIC_ANALYZER_BACKEND` | empty / `stub` | MockSemanticAnalyzer (deterministic) |
+| `SEMANTIC_ANALYZER_BACKEND` | `vision` | OpenCV Haar cascade + MSER |
+| `SEMANTIC_ALLOW_UNKNOWN_AT_HIGH` | `true` | Let HIGH viewers see unknown_sensitive |
+
+### 13.4 /provider §1.5 "Run analysis" panel
+
+After upload completes, the §1.5 panel becomes available. Pressing
+"分析を実行":
+
+1. POSTs the source blob to `/semantic/analyze` to retrieve the SIR
+2. Overlays detected `sensitive_regions` as red bounding boxes on the uploaded image
+3. Calls `/semantic/render` four times (anonymous / low / medium / high) and shows a card per tier (`granted_kinds` + `text_summary` + masked image inline when permitted)
+
+This is an operator-facing **dry run**: see exactly what each tier
+will receive before pressing Publish. Catches Haar misses or
+unknown_sensitive over-reach early.
+
+### 13.5 /viewer 🔬 toggle
+
+The receiver-side `/viewer` gains an opt-in **🔬 「意味的レンダリングを使う (実験)」**
+checkbox. Off (default) preserves the legacy projection byte-for-byte.
+On switches to the semantic pipeline:
+
+- The page derives a trust level from the existing `allowed_views`:
+  `video → high`, `image|image_redacted → medium`,
+  `description_* → low`, `event` only / unknown → `anonymous`
+  (fail-closed)
+- Each row calls `POST /semantic/render_url` (one round trip to
+  fetch + analyze + render) and renders the result
+- Toggle state persists in `localStorage` so a refresh keeps the
+  selection
+
+### 13.6 Fail-closed sites
+
+- `_coerce_trust_level()`: unknown / None → ANONYMOUS
+- `TrustPolicyEngine.evaluate()`: `privacy_risk_score >= 0.9` strips image kinds
+- `TrustPolicyEngine.evaluate_safe()`: any internal exception → empty `allowed_outputs`
+- `_compute_mask_plan()`: face / text / screen / whiteboard / document / id_card / name_tag / `unknown_sensitive` always masked at HIGH and below
+- `TrustAwareRenderer.render()`: `ORIGINAL_FRAME` requires `trust_level in (OWNER, ADMIN)`
+- `_render_masked()`: cv2 / decode / encode failures → text fallback
+- `SemanticIntermediateRepresentation.empty()`: `privacy_risk_score=1.0` flags the analyzer-failure path
+- `/semantic/render_url`: URL fetch failure → empty SIR + text-only
+
+### 13.7 Server-side audit log
+
+`/semantic/render` and `/semantic/render_url` write an audit row when
+either condition fires:
+
+- The policy returned `audit_required=True` (OWNER / ADMIN tier)
+- The renderer actually produced image bytes (any tier)
+
+Fields recorded: `ts`, `action`, `subject_did` (sir.source_device_id),
+`purpose=semantic_render`, `reason=trust=...;kinds=...;image=yes|no;
+audit_required=...;rationale=...`, `message_hash` (sir.frame_id),
+`presentation_verified` (`owner_or_admin` or `policy_only`).
+
+We never log the source bytes, the base64-encoded rendered image,
+or any face encoding / extracted PII from the SIR.
+
+### 13.8 API reference
+
+| Endpoint | Input | Output | Notes |
+|---|---|---|---|
+| `POST /semantic/analyze` | multipart `file` + `source_device_id` | SIR JSON | Never echoes input bytes; analyzer error → `empty()` SIR |
+| `POST /semantic/render` | `{trust_level, sir, image_url?}` | `{trust_level, granted_kinds[], text_summary, event_list, image_b64?, ...}` | Unknown trust_level → ANONYMOUS |
+| `POST /semantic/render_url` | `{trust_level, image_url}` | same | One-shot fetch + analyze + render |
+
+### 13.9 Relation to §12 VLM tier
+
+| Aspect | §12 VLM tier | §13 semantic pipeline |
+|---|---|---|
+| Trust derivation | DataUserVC `allowed_views` baked at claim time | derived at runtime from `allowed_views`; legacy default kept |
+| Derivative shape | text + face-blurred image | structured SIR (bbox + sensitive_regions + events) |
+| Mask granularity | face only (`image_url_redacted`) | face + text + screen + whiteboard + document + id_card + name_tag + plate + unknown_sensitive |
+| Receiver toggle | fixed at claim mint | runtime via `/viewer` 🔬 toggle |
+| Failure mode | `processing_warnings: ["vlm_unavailable"]` | `empty()` SIR + text-only fallback |
+| Audit | per-component (image_redactor / vlm_client) | unified hook in `/semantic/render*` |
+
+The two coexist. The 🔬 toggle leaves the legacy Stage T projection
+intact; it merely offers an opt-in alternative path.
+
+### 13.10 Real-device validation log (placeholder)
+
+| Scenario | Environment | Status | Verification point |
+|---|---|---|---|
+| **S1** /provider §1.5 panel | iPhone Safari (real photo) | ⏳ pending | Upload → "分析を実行" → SIR + red bbox + 4-tier preview cards |
+| **S2** /viewer 🔬 toggle | macOS Chrome + Tier 3 PVC | ⏳ pending | Toggle on → `/semantic/render_url` path; toggle off → legacy restored |
+| **S3** OWNER audit log | DataUserVC owner profile | ⏳ pending | OWNER access → row appears in `/audit/logs` for `semantic/render` |
+| **S4** Vision analyzer face detection | iPhone real photo | ⏳ pending | `SEMANTIC_ANALYZER_BACKEND=vision` → bbox in SIR |
+| **S5** cv2-missing fail-closed | publisher only | ⏳ pending | Drop cv2 → `SemanticAnalyzerError` → empty SIR + text-only |
+
+Implementation:
+[Blockchain_IoT_Marketplace#49](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/49)
+(pipeline) +
+[#50](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/50)
+(/provider §1.5) +
+[#51](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/51)
+(/viewer 🔬) +
+[#52](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/52)
+(audit hook). Unit tests at 190/190 pass.
+
 ## Where to go next
 
 - [Mobile SSI Wallet sample](ha-ssi-wallet.md) — bring up the Phase 2 wallet
