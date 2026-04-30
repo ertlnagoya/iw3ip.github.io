@@ -1019,7 +1019,7 @@ faces blurred**.
 
 | Original (`image_url`, Tier 3 only) | Blurred (`image_url_redacted`, Tier 2+) |
 |---|---|
-| ![pre-redaction](images/data-user-vc-tiered/vlm/V4-original.jpg){ width=300 } | ![post-redaction](images/data-user-vc-tiered/vlm/V4-redacted.jpg){ width=300 } |
+| <img src="../images/data-user-vc-tiered/vlm/V4-original.jpg" alt="pre-redaction" width="300"> | <img src="../images/data-user-vc-tiered/vlm/V4-redacted.jpg" alt="post-redaction" width="300"> |
 
 Internally the publisher:
 
@@ -1165,7 +1165,7 @@ Short-prompt unification trades off redaction-strength expressiveness, so a per-
 
 | Original (synthetic) | OpenCV Haar-cascade blurred |
 |---|---|
-| ![original](images/data-user-vc-tiered/vlm/V4-original.jpg){ width=300 } | ![redacted](images/data-user-vc-tiered/vlm/V4-redacted.jpg){ width=300 } |
+| <img src="../images/data-user-vc-tiered/vlm/V4-original.jpg" alt="original" width="300"> | <img src="../images/data-user-vc-tiered/vlm/V4-redacted.jpg" alt="redacted" width="300"> |
 | Face details (eyes, nose, mouth) clearly visible | Central rectangular face region completely Gaussian-blurred; hair, ears, beard, and background unchanged |
 
 The image is a **StyleGAN2 synthetic face** — no real-world PII involved.
