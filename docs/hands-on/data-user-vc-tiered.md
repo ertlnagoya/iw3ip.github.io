@@ -480,6 +480,37 @@ iPhone（iw3ip-wallet）で end-to-end を流したときの `/viewer` 画面の
 | PC で QR が表示されない | ブラウザが CDN（`cdn.jsdelivr.net`）に到達できるか確認。オフライン環境ではエラーになる |
 | PC のロングポーリングが終わらない | wallet 側で正しい VC を提示できているか `docker compose logs publisher` で `/verifier/response` の 200 を確認 |
 | `/viewer` が 401 | ViewerToken TTL 60 秒切れ。`/buyer/start` から再開 |
+| `/buyer/start` に「データセットが一致しません」バナー | §10.8 の deny UX を参照 |
+
+### 10.8 deny UX（提示拒否時の振る舞い）
+
+verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに `reason` コードと
+`human_message_ja` / `human_message_en` の人間可読メッセージが乗ります。
+`/buyer/start` ページはロングポーリング中にこれを検出して、QR の代わりに赤バナーと
+「購入画面から再提示」リンクを表示します（実装: `publisher/app/ssi/verifier_routes.py`）。
+
+主要な reason コードと表示文（JA / EN）:
+
+| reason | JA バナー文言 | EN |
+|---|---|---|
+| `dataset_mismatch` | 提示された VC のデータセットが、要求されたデータセットと一致しません。 | The presented VC is bound to a different dataset. |
+| `action_not_allowed` | 提示された VC では、このデータの読み取り権限がありません。 | The presented VC does not include the required action (read). |
+| `purpose_mismatch` | 提示された VC の許可目的に、今回の用途が含まれていません。 | The presented VC's allowed_purposes does not cover this purpose. |
+| `missing_entityType` 等 | DataUserVC に *XXX* が含まれていません。 | DataUserVC is missing *XXX*. |
+| `verification_failed` | VC の署名検証に失敗しました。 | VC verification failed. |
+
+**期待される動作（実機未確認・Stage T 実装ベース）:**
+
+1. PC で `/buyer/start?ds=home/event/possible_littering` を開く → QR が出る
+2. iPhone のウォレットで、**異なる dataset にバインドされた** PurchaseViewerVC（例: `home/event/another_dataset`）をわざと選んで提示
+3. publisher は `/verifier/response` を受け取り、`{"verified": false, "reason": "dataset_mismatch"}` を記録
+4. PC の `/verifier/status` ロングポーリングが `status: "denied"` + `human_message_ja` を返す
+5. PC ページは QR を `<div class="deny-banner">提示された VC のデータセットが、要求されたデータセットと一致しません。</div>` に置き換え、`/buyer/start?ds=...` への再提示リンクを表示
+6. 同時に `docker compose logs publisher` 側で `_write_audit(action="presentation", reason="dataset_mismatch", verified="false")` の監査ログ行が出る
+
+実機で確認する場合は §10.5 のスクリーンショット手順を流用し、Tier 3 提示時に
+**dataset 引数だけ別データセットに差し替えた** `/issuer/offer?vc_kind=PurchaseViewerVC&claim_id=<別 claim>` を発行して
+ウォレットに 4 枚目のカードを入れた状態で QR を読むと再現します。
 
 ## 次に進む
 

@@ -504,6 +504,39 @@ through. That's Stage T's whole point.
 | PC doesn't show a QR | The browser couldn't reach the CDN (`cdn.jsdelivr.net`). Plug in. |
 | PC poll never finishes | Confirm the wallet actually presented a valid VC: `docker compose logs publisher` should show a `200 /verifier/response` |
 | `/viewer` returns 401 | ViewerToken TTL (60 s) lapsed. Reload `/buyer/start` |
+| `/buyer/start` shows a "dataset mismatch" red banner | See §10.8 below |
+
+### 10.8 Deny UX (when the verifier rejects a presentation)
+
+When the verifier rejects a presented VC, `/verifier/status` returns a
+`reason` code together with a human-readable `human_message_ja` /
+`human_message_en` pair. The `/buyer/start` page picks that up during
+its long-poll and replaces the QR with a red banner plus a "re-present
+from /buyer/start" link (see `publisher/app/ssi/verifier_routes.py`).
+
+Main reason codes and their banner copy:
+
+| reason | EN banner | JA |
+|---|---|---|
+| `dataset_mismatch` | The presented VC is bound to a different dataset. | 提示された VC のデータセットが、要求されたデータセットと一致しません。 |
+| `action_not_allowed` | The presented VC does not include the required action (read). | 提示された VC では、このデータの読み取り権限がありません。 |
+| `purpose_mismatch` | The presented VC's allowed_purposes does not cover this purpose. | 提示された VC の許可目的に、今回の用途が含まれていません。 |
+| `missing_entityType` etc. | DataUserVC is missing *XXX*. | DataUserVC に *XXX* が含まれていません。 |
+| `verification_failed` | VC verification failed. | VC の署名検証に失敗しました。 |
+
+**Expected flow (not yet validated on a real device — implementation in Stage T):**
+
+1. PC opens `/buyer/start?ds=home/event/possible_littering` → QR appears.
+2. From the wallet, intentionally pick a PurchaseViewerVC bound to a *different* dataset (e.g. `home/event/another_dataset`) and present it.
+3. publisher receives `/verifier/response` and records `{"verified": false, "reason": "dataset_mismatch"}`.
+4. The PC's `/verifier/status` long-poll returns `status: "denied"` with the `human_message_*` strings.
+5. The page replaces the QR with `<div class="deny-banner">The presented VC is bound to a different dataset.</div>` plus a re-present link to `/buyer/start?ds=...`.
+6. `docker compose logs publisher` shows the audit row `_write_audit(action="presentation", reason="dataset_mismatch", verified="false")`.
+
+To reproduce on a real device, reuse the §10.5 setup but issue an extra
+`POST /issuer/offer?vc_kind=PurchaseViewerVC&claim_id=<other-claim>` so the
+wallet ends up holding a 4th card bound to a different dataset, then scan
+the QR with that card selected.
 
 ## Where to go next
 
