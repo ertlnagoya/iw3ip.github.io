@@ -643,6 +643,15 @@ deny ケースの挙動:
 
 提供 → 認証 → 発行 → 受信 → 検証 のループを **ブラウザ 2 タブで完結**できます。
 
+!!! success "実機検証済み (2026-04-30)"
+    iPhone Safari で撮影 → 提供 → Publish した **`video/quicktime`** の動画を、
+    macOS Safari の `/viewer` で **`<video>` タグ経由でインライン再生**できることを
+    確認しました（§11.8.A 参照）。同じ wallet が SellerVC（提供側）と
+    PurchaseViewerVC.full（受信側）の両方を保持し、提示先のページで自動的に
+    使い分けられます。スクリーンショット:
+    `images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.png`
+    （差分パッチで配置予定）。
+
 ### 11.6 `/provider/start` と `/buyer/start` の対応関係
 
 | 観点 | `/buyer/start`（§10） | `/provider/start`（§11） |
@@ -663,6 +672,8 @@ deny ケースの挙動:
 | 「🔴 ブラウザで録画」のボタンが反応しない | `getUserMedia` は HTTPS / `localhost` でしか動きません。LAN の IP（`http://192.168.x.x`）で開いた場合はブラウザがマイク/カメラ権限を拒否します。`localhost:8080` か HTTPS 経由でアクセスしてください |
 | `/provider/publish` が 403 `seller_token_dataset_not_licensed` | SellerVC の `licensed_datasets[]` に `topic` から導出される dataset_id が含まれていません。例: `topic=homeassistant/event/possible_littering` → dataset_id は `home/event/possible_littering` |
 | Publish レスポンスに `status: send_error` | publisher の `PLATFORM_API_URL` が到達不能。SellerToken のゲートは通っており、`register_count` も上がっているはずです（処理は許可、配信が失敗）|
+| `/provider/publish` が 401 `seller_token_unknown` | `SSIStateStore` はインメモリのため publisher container を再起動すると全 token が wipe されます。`/provider/start` から再度 SellerVC を提示すれば新しい SellerToken で復旧します（SellerVC 自体は wallet に残っているので追加発行は不要）。ハンズオンで container を再起動する場合はこの再提示を 1 回挟みます |
+| ウォレットで「Retrieving access token failed: 400 / Error Screen」 | OID4VCI offer は **single-use**。Sphereon 系 wallet は内部で `/issuer/token` をリトライすることがあり、2 回目の呼び出しが `invalid_grant` で 400 を返します。**1 回目の呼び出しでは VC は wallet に既に発行済み**なので、エラー画面を Dismiss してウォレットの credential 一覧を確認してください。新しいカードが追加されているはずです |
 
 ### 11.8 実機検証ログ
 
@@ -672,10 +683,24 @@ deny ケースの挙動:
 
 | シナリオ | 環境 | 状態 | 観測値 |
 |---|---|---|---|
-| **A** iPhone カメラ撮影（`capture="environment"`） | iPhone Safari (iOS 18.x) | ⏳ 未検証 | — |
+| **A** iPhone カメラ撮影（`capture="environment"`） | iPhone Safari (iOS 18.x) | ✅ 検証済 (2026-04-30) | upload `video/quicktime` 273KB → Publish `status=allowed` → 受信側 `/viewer` で `video/quicktime` がインライン再生（macOS Safari） |
 | **B** PC ブラウザ録画（MediaRecorder） | macOS Chrome (latest) | ⏳ 未検証 | codec: 期待値 `video/webm;codecs=vp9,opus` |
 | **C** Firefox VP8 フォールバック | macOS Firefox (latest) | ⏳ 未検証 | codec: 期待値 `video/webm;codecs=vp8,opus` または `video/webm` |
 | **D** macOS Safari MP4 フォールバック | macOS Safari (latest) | ⏳ 未検証 | codec: 期待値 `video/mp4` |
+
+#### 実機検証で見つかったバグ（A シナリオ初回試行）
+
+A の検証 1 回目で **実装側のバグ 2 件 + 運用上の挙動 2 件**が顕在化しました。
+ユニットテストでは検出できないタイプ（実機 UA / iPhone 固有のファイル形式 /
+インメモリ state / wallet 側のリトライ挙動）で、実機検証の本来の価値を示す
+具体例です。修正済みの 2 件は最新 main で解消されています。
+
+| # | 症状 | 原因 | 修正 / 対応 |
+|---|---|---|---|
+| 1 | `/provider/start` で `HTTP 404 no_presentation_definition_for_dataset` | c1 の page-side JS が `dataset_id=<hint>` を `/verifier/request` に渡していた。verifier は SellerVC を `*` 配下にしか登録していないため lookup miss | [Blockchain_IoT_Marketplace#41](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/41) で `dataset_id="*"` 固定に修正済み |
+| 2 | アップロード時に `HTTP 415 unsupported media type` | iPhone Safari の `<input capture>` は QuickTime `.MOV`（`video/quicktime`）で保存するが、`media_routes._ALLOWED_EXT` に含まれていなかった | [Blockchain_IoT_Marketplace#42](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/42) で `.mov` 追加 |
+| 3 | Publish 直前に `HTTP 401 seller_token_unknown` | `SSIStateStore` がインメモリのため container 再ビルドで全 token wipe。`/provider/start` から OID4VP し直せば復旧 | 仕様（運用上の特性）。ハンズオンでは「container 起動後に SellerVC 提示」が前提だと §11.7 で案内 |
+| 4 | wallet 側に「Retrieving access token failed: 400」エラー画面 | OID4VCI offer は **single-use** だが Sphereon wallet が `/issuer/token` をリトライし、2 回目が `invalid_grant` で 400。実際には 1 回目で VC は wallet に入っている | wallet 側の挙動。dismiss して wallet の credential 一覧を見れば PurchaseViewerVC.full が入っている。§11.7 に案内追加候補 |
 
 各シナリオの再現手順と確認ポイントは下記の通りです。検証する人は各サブセクションを
 通しで実施し、`status` 列を ✅ に更新したうえで観測値とスクリーンショットを
@@ -709,26 +734,32 @@ deny ケースの挙動:
 5. 5〜10 秒の動画を撮影 → 戻る → 自動的に `/media/upload` に POST される
 6. 「Publish event」を押して 200 が返ることを確認
 
-**確認ポイント**:
+**実機での観測 (2026-04-30, iPhone Safari, iOS 18.x)**:
 
-- [ ] §11.3 のテーブル通り「カメラ直起動」（ファイルピッカーが先に出ない）
-- [ ] アップロード結果に `content_type: video/mp4` が出る
-- [ ] Publish レスポンスで `status: allowed` + `register_count` が増える
-- [ ] `/buyer/start` 別タブで Tier 3 PVC を提示すると、撮ったばかりの動画が `/viewer` で再生される
+- [x] 「📷 カメラで撮影」をタップ → 「ファイルを選択」 → iOS シートで「ビデオを撮影」を選択 → カメラ起動 ✅
+  - **注意**: シートに「写真を撮る / ビデオを撮影 / フォトライブラリ / ファイルを選択」の選択肢が並ぶ（カメラ直起動ではない）。`accept="image/*,video/*"` + `capture` は「カメラ優先」というヒントに留まる仕様
+- [x] アップロード結果: `content_type: video/quicktime` / `byte_size: 273897` / `sha256=11367cf4cb1b...` ✅
+  - 期待は `video/mp4` だったが、iPhone Safari が録画を **QuickTime (`.MOV`)** で保存することが判明
+- [x] Publish レスポンス: `status: allowed`、`dataset_id=home/event/possible_littering`、`seller_token_jti=49bf45c467a65ddc`、`register_count=1` ✅
+- [x] 受信側 `/viewer` (macOS Safari, Tier 3 PurchaseViewerVC.full): 緑バッジ `tier: event+image+video` + `<video>` タグでインライン再生成功 ✅
+  - **macOS Safari は `video/quicktime` をネイティブ再生できる**（重要なデータポイント — Stage T 案 B が QuickTime を扱える証明）
 
-**スクリーンショット (TBD)**:
+**スクリーンショット (差分パッチで配置予定)**:
 
 ```
-images/data-user-vc-tiered/provider/A-iphone-capture-sheet.png      # カメラ起動直後
-images/data-user-vc-tiered/provider/A-iphone-after-record.png       # 撮影完了 + アップロード結果パネル
-images/data-user-vc-tiered/provider/A-iphone-after-publish.png      # Publish 成功
+images/data-user-vc-tiered/provider/A-iphone-404-original.png       # 修正前: 404 no_presentation_definition_for_dataset
+images/data-user-vc-tiered/provider/A-iphone-415-mov-rejected.png   # 修正前: 415 .MOV unsupported
+images/data-user-vc-tiered/provider/A-iphone-401-token-unknown.png  # 運用上: container 再ビルドで token wipe
+images/data-user-vc-tiered/provider/A-iphone-after-publish.png      # 成功: Published 緑バナー + register_count=1
+images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.png    # 受信側: /viewer で .MOV インライン再生
 ```
 
-**iOS バージョン依存の注意**: iOS のバージョンによっては
-`accept="image/*,video/*"` と `capture` の組み合わせで「カメラ・ライブラリ
-両方を選べるシート」が出ることがあります。**カメラ直起動を強制したい場合は
-`accept="video/*"` のみ**にする必要があります。観測した挙動を §11.7 の
-該当行にフィードバックしてください。
+**iOS バージョン依存の注意**: iOS 18.x では `accept="image/*,video/*"` +
+`capture="environment"` の組み合わせで **カメラ直起動にはならず**、
+「ビデオを撮影 / 写真ライブラリ / ファイルを選択」の選択肢が並ぶシートが出ます。
+カメラ直起動を強制したい場合は `accept="video/*"` のみに narrow する必要があり、
+ファイル選択の柔軟性とのトレードオフです。今回は併存設計のまま採用（操作回数 +1
+の代わりに既存ファイル選択も可能）。
 
 #### B. PC ブラウザ録画 — Chrome（VP9）
 

@@ -672,6 +672,16 @@ PurchaseViewerVC, and the image / video you just published renders in
 That makes the full **provide → auth → publish → receive → verify** loop
 a **two-tab** experience in the browser.
 
+!!! success "Verified end-to-end (2026-04-30)"
+    A `video/quicktime` clip recorded on iPhone Safari, published via
+    `/provider`, was rendered inline by the `<video>` tag in `/viewer`
+    on **macOS Safari** (see §11.8.A). The same wallet held both the
+    SellerVC (provider side) and the PurchaseViewerVC.full (receiver
+    side); each `/buyer/start` or `/provider/start` page picked the
+    right one automatically. Screenshot:
+    `images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.png`
+    (to be added by follow-up commit).
+
 ### 11.6 Symmetry with `/buyer/start`
 
 | Aspect | `/buyer/start` (§10) | `/provider/start` (§11) |
@@ -692,6 +702,8 @@ a **two-tab** experience in the browser.
 | 🔴 Browser recorder button does nothing | `getUserMedia` only works on HTTPS or `localhost`. Opening over a LAN IP (`http://192.168.x.x`) makes the browser deny camera/mic permission. Use `localhost:8080` or run behind HTTPS |
 | `/provider/publish` returns 403 `seller_token_dataset_not_licensed` | The dataset_id derived from `topic` isn't in your SellerVC's `licensed_datasets[]`. Example: `topic=homeassistant/event/possible_littering` → dataset_id is `home/event/possible_littering` |
 | Publish response has `status: send_error` | The publisher's `PLATFORM_API_URL` is unreachable. The SellerToken gate did pass and `register_count` did increment — auth was OK, downstream delivery failed |
+| `/provider/publish` returns 401 `seller_token_unknown` | `SSIStateStore` is in-memory; restarting the publisher container wipes every token. Re-present the SellerVC at `/provider/start` to mint a fresh one (the SellerVC itself stays in the wallet, no re-issuance needed). For hands-on sessions that bounce the container, plan one extra OID4VP loop after each restart |
+| Wallet shows "Retrieving access token failed: 400 / Error Screen" | OID4VCI offers are **single-use**. Sphereon-family wallets retry `/issuer/token` internally; the second call fails with `invalid_grant` (400). The **first call already issued the VC into the wallet** — the error screen is misleading. Dismiss it and check the wallet's credential list; the new card should be there |
 
 ### 11.8 Real-device validation log
 
@@ -701,10 +713,24 @@ environments. Screenshots live under
 
 | Scenario | Environment | Status | Observation |
 |---|---|---|---|
-| **A** iPhone camera capture (`capture="environment"`) | iPhone Safari (iOS 18.x) | ⏳ pending | — |
+| **A** iPhone camera capture (`capture="environment"`) | iPhone Safari (iOS 18.x) | ✅ verified (2026-04-30) | upload `video/quicktime` 273KB → Publish `status=allowed` → receiver `/viewer` plays the `.MOV` inline (macOS Safari) |
 | **B** PC browser recording (MediaRecorder) | macOS Chrome (latest) | ⏳ pending | expected codec: `video/webm;codecs=vp9,opus` |
 | **C** Firefox VP8 fallback | macOS Firefox (latest) | ⏳ pending | expected codec: `video/webm;codecs=vp8,opus` or `video/webm` |
 | **D** macOS Safari MP4 fallback | macOS Safari (latest) | ⏳ pending | expected codec: `video/mp4` |
+
+#### Bugs surfaced during the first real-device run (scenario A)
+
+The first scenario-A pass exposed **2 implementation bugs and 2 operational
+behaviors** that unit tests cannot catch (real-device UA, iPhone-specific file
+formats, in-memory state, wallet retry behavior). The two implementation bugs
+are fixed in the latest `main`.
+
+| # | Symptom | Cause | Fix / Resolution |
+|---|---|---|---|
+| 1 | `/provider/start` returned `HTTP 404 no_presentation_definition_for_dataset` | The c1 page-side JS was passing `dataset_id=<hint>` to `/verifier/request`. The verifier only registers SellerVC presentation defs under the `*` sentinel, so the lookup missed | [Blockchain_IoT_Marketplace#41](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/41) — hard-codes `dataset_id="*"` |
+| 2 | Upload returned `HTTP 415 unsupported media type` | iPhone Safari `<input capture>` saves video as QuickTime `.MOV` (`video/quicktime`); `media_routes._ALLOWED_EXT` didn't include it | [Blockchain_IoT_Marketplace#42](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/42) — adds `.mov` to allowlist |
+| 3 | Publish returned `HTTP 401 seller_token_unknown` right before success | `SSIStateStore` is in-memory; container rebuilds wipe every token. Re-presenting the SellerVC via `/provider/start` mints a fresh one (the SellerVC itself stays in the wallet, no re-issuance needed) | Documented as operational behavior in §11.7 |
+| 4 | Wallet showed "Retrieving access token failed: 400 / Error Screen" | OID4VCI offers are **single-use**, but Sphereon-family wallets retry `/issuer/token` internally. The 2nd call fails with `invalid_grant` (400). The **1st call already issued the VC into the wallet** — the error screen is misleading. Dismiss it and the credential list shows the new card | Wallet behavior, documented in §11.7 |
 
 Reproduction steps and verification points for each scenario are
 below. Walk each subsection end-to-end, flip the `status` column to
@@ -740,26 +766,32 @@ opens the camera directly in iOS Safari.
 5. Record 5–10 s → return → page auto-POSTs to `/media/upload`
 6. Press "Publish event" and confirm 200
 
-**Verification points**:
+**Observed (2026-04-30, iPhone Safari, iOS 18.x)**:
 
-- [ ] Camera opens directly (no file picker first), as §11.3 claims
-- [ ] Upload result shows `content_type: video/mp4`
-- [ ] Publish response: `status: allowed` + incrementing `register_count`
-- [ ] In a separate `/buyer/start` tab with a Tier 3 PVC, the just-recorded video plays in `/viewer`
+- [x] Tap "📷 カメラで撮影" → "ファイルを選択" → iOS sheet shows "Take Video / Photo Library / Choose File" → pick "Take Video" → camera opens ✅
+  - **Note**: the sheet does **not** open the camera directly. `accept="image/*,video/*"` + `capture` is a *hint*, not a hard switch.
+- [x] Upload result: `content_type: video/quicktime` / `byte_size: 273897` / `sha256=11367cf4cb1b...` ✅
+  - Expected `video/mp4`, but iPhone Safari saves recordings as **QuickTime (`.MOV`)**.
+- [x] Publish response: `status: allowed`, `dataset_id=home/event/possible_littering`, `seller_token_jti=49bf45c467a65ddc`, `register_count=1` ✅
+- [x] Receiver `/viewer` (macOS Safari, Tier 3 PurchaseViewerVC.full): green badge `tier: event+image+video` and the `<video>` tag plays the clip inline ✅
+  - **macOS Safari natively plays `video/quicktime`** — important data point: Stage T option B handles QuickTime end-to-end.
 
-**Screenshots (TBD)**:
+**Screenshots (to be added by follow-up commit)**:
 
 ```
-images/data-user-vc-tiered/provider/A-iphone-capture-sheet.png      # right after camera opens
-images/data-user-vc-tiered/provider/A-iphone-after-record.png       # post-record + upload result
-images/data-user-vc-tiered/provider/A-iphone-after-publish.png      # publish ok
+images/data-user-vc-tiered/provider/A-iphone-404-original.png       # pre-fix: 404 no_presentation_definition_for_dataset
+images/data-user-vc-tiered/provider/A-iphone-415-mov-rejected.png   # pre-fix: 415 .MOV unsupported
+images/data-user-vc-tiered/provider/A-iphone-401-token-unknown.png  # operational: container rebuild wiped token
+images/data-user-vc-tiered/provider/A-iphone-after-publish.png      # success: green Published banner + register_count=1
+images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.png    # receiver: /viewer plays the .MOV inline
 ```
 
-**iOS-version note**: depending on iOS version, the combination
-`accept="image/*,video/*"` + `capture` may surface a sheet that *also*
-offers the photo library. To **force camera-only**, narrow `accept` to
-`video/*` and the camera takes over reliably. Feed back observed
-behavior into §11.7 if you hit this.
+**iOS-version note**: on iOS 18.x, `accept="image/*,video/*"` +
+`capture="environment"` does **not** open the camera directly — the
+"Take Video / Photo Library / Choose File" sheet appears first. To
+force camera-only behavior, narrow `accept` to `video/*` (at the cost
+of losing the existing-file path). The current implementation keeps
+both modes; the extra tap is acceptable.
 
 #### B. PC browser recording — Chrome (VP9)
 
