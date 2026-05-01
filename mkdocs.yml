@@ -50,21 +50,33 @@ plugins:
             Quickstart: 最短起動
             Facilitator Guide: 講師進行ガイド
             Hands-on: ハンズオン
-            "Part 1: Basic": Part 1 基本
-            "Part 2: Feature Extensions": Part 2 機能拡張
-            "Part 3: Intelligence Integration": Part 3 知能統合
-            HuskyLens2 Sample: HUSKYLENS2サンプル
-            USB Webcam Sample: USBウェブカメラサンプル
-            USB Webcam Event Sharing Sample: USBウェブカメライベント共有サンプル
-            HA SSI Publisher Sample: HA x SSI Publisherサンプル
-            HA SSI Wallet Sample: スマホSSIウォレットサンプル
-            Environment Disaster Sample: 環境・防災イベント共有サンプル
-            Regional Safety Assistant Sample: 地域安全アシスタントサンプル
-            LLM Planner Hands-on: LLM Plannerハンズオン
-            LLM Planner Replacement Spec: LLM Planner置き換え仕様
-            DataUserVC Tiered Access: DataUserVC段階アクセス
-            DataUserVC Tiered Access Spec: DataUserVC段階アクセス仕様
-            Mobile Viewer: スマホ閲覧アプリ
+            "Part 1: Basic — Share some data": Part 1 基本 — データを共有してみよう
+            "Capture data": データを取り込む
+            "Run the whole pipeline without hardware (HA Demo Simulator)": 実機なしで一連を動かす (HA Demo Simulator)
+            "Detect a person on an AI camera (HUSKYLENS2)": AI カメラで人物を検知する (HUSKYLENS2)
+            "Detect with a USB webcam (OpenCV)": USB カメラでポイ捨てを検知する (OpenCV)
+            "Pull from Home Assistant (HA SSI Publisher)": Home Assistant のデータを取り込む (HA SSI Publisher)
+            "Trade on the marketplace (MetaMask)": マーケットで売買する (MetaMask = ETH ウォレット)
+            "View purchases on a phone (v1)": スマホで購入データを見る (v1)
+            "Part 2: Feature Extensions — Add auth, marketplace integration, and processing": Part 2 機能拡張 — 認証・連携・データ処理を加える
+            "Add authentication (SSI wallet)": 認証してみよう (SSI ウォレット)
+            "Authenticate the data provider (Consent VC)": データ提供者の認証 (Consent VC で書き込み認可)
+            "Authenticate the viewer (Viewer VC)": データ閲覧者の認証 (Viewer VC で読み出し認可)
+            "Authenticate machines (Service VC)": 機器間での連携認証 (Service VC で M2M)
+            "Share detections, not raw frames": 検知イベントだけを共有する
+            "Share disaster events": 防災イベントを共有する
+            "Wire wallet to the marketplace (v2)": マーケットと連携してみよう (v2)
+            "Hand a credential to the buyer's wallet (Bridge)": 購入後に証明書をウォレットへ渡す (Bridge)
+            "Tie four credentials together end-to-end (Stage 6)": 4 種類の証明書を 1 動線でつなぐ (Stage 6)
+            "Back the seller's identity (Seller VC, Stage 7)": 出品者の身元を裏付ける (Seller VC / Stage 7)
+            "Marketplace as a phone app (Stage A)": スマホアプリで購入から閲覧まで (Stage A)
+            "Process data before sharing": データ処理を入れてみよう (段階アクセス + 画像処理 + VLM)
+            "Tier the response by trust (DataUserVC tiered + VLM)": 信頼度に応じて見せる中身を変える (DataUserVC 段階アクセス)
+            "Tiered access design spec": 段階アクセスの設計仕様
+            "Part 3: Intelligence Integration — Let an AI act on requests": Part 3 知能統合 — AI に要求を解釈させてみよう
+            "Run the regional safety assistant": 地域安全アシスタントを動かす
+            "Let an AI plan the steps (LLM Planner)": AI に手順を考えさせる (LLM Planner)
+            "LLM Planner replacement spec": LLM Planner 置き換え仕様
             Operations: 運用
             Troubleshooting: トラブルシュート
             FAQ: FAQ
@@ -104,28 +116,33 @@ nav:
       - Quickstart: setup/quickstart.md
   - Hands-on:
       - Overview: hands-on/index.md
-      - "Part 1: Basic":
-          - Home Assistant Demo Simulator Sample: hands-on/ha-demo-simulator.md
-          - HuskyLens2 Sample: hands-on/huskylens2.md
-          - USB Webcam Sample: hands-on/webcam.md
-          - HA SSI Publisher Sample: hands-on/ha-ssi-publisher.md
-          - Mobile Viewer: hands-on/mobile-viewer.md
-      - "Part 2: Feature Extensions":
-          - HA SSI Wallet Sample: hands-on/ha-ssi-wallet.md
-          - USB Webcam Event Sharing Sample: hands-on/webcam-event-sharing.md
-          - Environment Disaster Sample: hands-on/environment-disaster.md
-          - HA SSI Viewer Sample: hands-on/ha-ssi-viewer.md
-          - HA SSI Service Sample: hands-on/ha-ssi-service.md
-          - Marketplace VC Bridge: hands-on/marketplace-vc-bridge.md
-          - Marketplace VC end-to-end (Stage 6): hands-on/marketplace-vc-end-to-end.md
-          - Marketplace Seller VC (Stage 7): hands-on/marketplace-seller-vc.md
-          - Marketplace Mobile App (Stage A): hands-on/marketplace-mobile-app.md
-          - DataUserVC Tiered Access: hands-on/data-user-vc-tiered.md
-          - DataUserVC Tiered Access Spec: hands-on/data-user-vc-tiered-spec.md
-      - "Part 3: Intelligence Integration":
-          - Regional Safety Assistant Sample: hands-on/regional-safety-assistant.md
-          - LLM Planner Hands-on: hands-on/llm-planner.md
-          - LLM Planner Replacement Spec: hands-on/llm-planner-spec.md
+      - "Part 1: Basic — Share some data":
+          - "Capture data":
+              - "Run the whole pipeline without hardware (HA Demo Simulator)": hands-on/ha-demo-simulator.md
+              - "Detect a person on an AI camera (HUSKYLENS2)": hands-on/huskylens2.md
+              - "Detect with a USB webcam (OpenCV)": hands-on/webcam.md
+              - "Pull from Home Assistant (HA SSI Publisher)": hands-on/ha-ssi-publisher.md
+          - "Trade on the marketplace (MetaMask)":
+              - "View purchases on a phone (v1)": hands-on/mobile-viewer.md
+      - "Part 2: Feature Extensions — Add auth, marketplace integration, and processing":
+          - "Add authentication (SSI wallet)":
+              - "Authenticate the data provider (Consent VC)": hands-on/ha-ssi-wallet.md
+              - "Authenticate the viewer (Viewer VC)": hands-on/ha-ssi-viewer.md
+              - "Authenticate machines (Service VC)": hands-on/ha-ssi-service.md
+              - "Share detections, not raw frames": hands-on/webcam-event-sharing.md
+              - "Share disaster events": hands-on/environment-disaster.md
+          - "Wire wallet to the marketplace (v2)":
+              - "Hand a credential to the buyer's wallet (Bridge)": hands-on/marketplace-vc-bridge.md
+              - "Tie four credentials together end-to-end (Stage 6)": hands-on/marketplace-vc-end-to-end.md
+              - "Back the seller's identity (Seller VC, Stage 7)": hands-on/marketplace-seller-vc.md
+              - "Marketplace as a phone app (Stage A)": hands-on/marketplace-mobile-app.md
+          - "Process data before sharing":
+              - "Tier the response by trust (DataUserVC tiered + VLM)": hands-on/data-user-vc-tiered.md
+              - "Tiered access design spec": hands-on/data-user-vc-tiered-spec.md
+      - "Part 3: Intelligence Integration — Let an AI act on requests":
+          - "Run the regional safety assistant": hands-on/regional-safety-assistant.md
+          - "Let an AI plan the steps (LLM Planner)": hands-on/llm-planner.md
+          - "LLM Planner replacement spec": hands-on/llm-planner-spec.md
   - Design:
       - VC Architecture Overview (Phase 2): design/vc-architecture-overview.md
       - Marketplace VC Bridge (v1/v2 spec): design/marketplace-vc-bridge-spec.md
