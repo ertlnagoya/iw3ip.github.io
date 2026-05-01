@@ -1,5 +1,15 @@
 # Regional Safety Assistant Sample (Phase 3)
 
+Step into Part 3: feed the events you gathered in Part 2 (`possible_littering` etc.) to an AI, let it break a free-form request into a plan, and run it.
+
+> **What you'll do**: Free-form request → plan → execute
+>
+> **Prerequisites**: [Webcam event sharing](webcam-event-sharing.en.md)
+>
+> **What you need**: PC only
+>
+> **Time**: ~60 min
+
 This hands-on extends the existing [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md) and demonstrates how **a human request can be interpreted, decomposed into tasks, evaluated against observed events, and connected to device actions**.
 
 In Phase 2, the focus was on sharing events such as `possible_littering`.  

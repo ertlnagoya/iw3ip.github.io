@@ -1,5 +1,15 @@
 # Marketplace × Wallet bridge (v2 / Stage 5)
 
+The core v2 hands-on. After a marketplace purchase, mint a PurchaseViewerVC into the buyer's phone wallet and use it to fetch data.
+
+> **What you'll do**: Purchase → bridge → PurchaseViewerVC → wallet → ViewerToken → fetch
+>
+> **Prerequisites**: [Quickstart](../setup/quickstart.en.md) and [HA SSI Wallet](ha-ssi-wallet.en.md)
+>
+> **What you need**: PC + MetaMask + smartphone (Sphereon Wallet)
+>
+> **Time**: ~60 min
+
 !!! abstract "Hands-on for the v2 lane"
     End-to-end path from a marketplace purchase to a wallet-held
     PurchaseViewerVC and finally to gated data retrieval.

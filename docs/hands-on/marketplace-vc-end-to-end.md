@@ -1,5 +1,15 @@
 # 4 種 VC を 1 動線で繋ぐ end-to-end (v2 / Stage 6)
 
+Stage 1〜5 の集大成。Seller が ServiceVC で書き込んだデータを Buyer が PurchaseViewerVC で読み出すシナリオを 1 セッションで通します。
+
+> **やること**: 4 種 VC (Consent / Service / Viewer / PurchaseViewer) を 1 動線でつなぐ
+>
+> **前提**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)
+>
+> **使うもの**: PC + MetaMask + スマホ (Sphereon Wallet)
+>
+> **所要時間**: 90 分くらい
+
 !!! abstract "Stage 1〜5 の集大成"
     Seller が **ServiceVC** で連続書き込みしたデータを、Buyer が
     **PurchaseViewerVC** で読み出す、というシナリオを 1 セッションで

@@ -1,5 +1,15 @@
 # Environment and Disaster Event Sharing Sample (Phase 2)
 
+Share edge-generated disaster events instead of raw camera frames.
+
+> **What you'll do**: Emit disaster events from mock data, share, observe
+>
+> **Prerequisites**: [HA SSI Publisher sample](ha-ssi-publisher.en.md)
+>
+> **What you need**: PC only
+>
+> **Time**: ~30 min
+
 This hands-on is designed as a minimal **Phase 2: Event / Intelligence Sharing** exercise.  
 Instead of sharing camera images or raw sensor streams, it shares disaster-related events generated at the edge.
 

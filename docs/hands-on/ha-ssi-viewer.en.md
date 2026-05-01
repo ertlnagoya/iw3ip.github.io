@@ -1,5 +1,15 @@
 # SSI Viewer Sample (Phase 2 / Stage 3)
 
+[HA SSI Wallet](ha-ssi-wallet.en.md) gated the write side. Here we gate the read side with a VC.
+
+> **What you'll do**: Present a ViewerVC to be granted read access
+>
+> **Prerequisites**: [HA SSI Wallet](ha-ssi-wallet.en.md) (Stage 1) finished
+>
+> **What you need**: PC + smartphone (Sphereon Wallet)
+>
+> **Time**: ~45 min
+
 !!! note "Sequel to the [SSI Wallet hands-on](ha-ssi-wallet.md)"
     Assumes you've completed Stage 1 (PolicyToken-gated write).
     This page covers Stage 3: gating **read** with VC presentation.

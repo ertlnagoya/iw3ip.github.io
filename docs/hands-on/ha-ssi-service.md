@@ -1,5 +1,15 @@
 # SSI サービスサンプル（Phase 2 / Stage 4 prep）
 
+人ではなく、サービス (プログラム) が VC を持って継続的に書き込む M2M (machine to machine) のケースを扱います。
+
+> **やること**: ServiceVC を持つサービスから連続書き込みを認可する
+>
+> **前提**: [HA SSI Wallet](ha-ssi-wallet.md) (Stage 1) と [HA SSI Viewer](ha-ssi-viewer.md) (Stage 3)
+>
+> **使うもの**: PC のみ
+>
+> **所要時間**: 45 分くらい
+
 !!! note "wallet ハンズオンの M2M 拡張です"
     Stage 1 (ConsentVC + PolicyToken) と Stage 3 (ViewerVC + ViewerToken)
     を体験済の前提で進めます。本ページは「**人ではないサービス**が

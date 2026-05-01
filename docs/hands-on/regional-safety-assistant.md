@@ -1,5 +1,15 @@
 # 地域安全アシスタントサンプル（Phase 3）
 
+Phase 2 で集めたイベント (`possible_littering` など) を材料に、人の自由文の要求を AI が plan に分解して応答する Phase 3 の入口です。
+
+> **やること**: 自由文の要求 → plan → execute の流れを通す
+>
+> **前提**: [USB ウェブカメライベント共有サンプル](webcam-event-sharing.md)
+>
+> **使うもの**: PC のみ
+>
+> **所要時間**: 60 分くらい
+
 [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md) の発展として、**人間の要求を AI が解釈し、イベント収集・条件判定・機器操作へ分解する** 流れを体験します。
 
 Phase 2 では `possible_littering` のようなイベントを共有しました。  

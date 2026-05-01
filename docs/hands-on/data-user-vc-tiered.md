@@ -1,5 +1,15 @@
 # DataUserVC × 段階アクセス（Phase 2 拡張）
 
+受信者の信頼度 (DataUserVC) に応じて、見せる中身を Tier 3 / Tier 2 / Tier 1 の 3 段階に切り替えます。意味的中間表現と trust-aware rendering まで踏み込む長めのハンズオンです。
+
+> **やること**: 信頼度ごとに動画 / 画像 / 要約だけ を出し分ける動きを観察
+>
+> **前提**: [HA SSI Wallet](ha-ssi-wallet.md) と [USB ウェブカメライベント共有](webcam-event-sharing.md)
+>
+> **使うもの**: PC + スマホ (Sphereon Wallet)
+>
+> **所要時間**: 90 分くらい
+
 このハンズオンは、[スマホSSIウォレットサンプル](ha-ssi-wallet.md) と
 [USBウェブカメライベント共有サンプル](webcam-event-sharing.md) を踏まえ、
 **データ受信者の信頼属性に応じてカメラ視野を 3 段階に絞る**流れを体験します。

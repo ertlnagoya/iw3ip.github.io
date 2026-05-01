@@ -1,5 +1,15 @@
 # データマーケット モバイルアプリ (Stage A: 案 A の最小版)
 
+Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホーム画面アプリ (PWA) として体験します。コマンドラインなしで購入から VC 受領、閲覧までタップで進められます。
+
+> **やること**: PWA として iot-market-ui をスマホで使い、購入と VC 取得を進める
+>
+> **前提**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)
+>
+> **使うもの**: PC + スマホ (Sphereon Wallet) + MetaMask モバイル
+>
+> **所要時間**: 30 分くらい
+
 !!! abstract "素人でも使える PWA 体験"
     Phase 2 で構築した backend をそのまま使い、`iot-market-ui` を
     iPhone/Android のホーム画面アプリとして体験するハンズオンです。

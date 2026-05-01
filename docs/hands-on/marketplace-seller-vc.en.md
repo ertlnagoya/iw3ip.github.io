@@ -1,5 +1,15 @@
 # Seller VC for marketplace identity (Stage 7)
 
+Add a layer that proves *who* is selling a dataset, using the fifth VC: SellerVC.
+
+> **What you'll do**: Issue and present a SellerVC to back the seller's identity
+>
+> **Prerequisites**: [Marketplace VC end-to-end](marketplace-vc-end-to-end.en.md) (Stage 6)
+>
+> **What you need**: PC + MetaMask + smartphone (Sphereon Wallet)
+>
+> **Time**: ~45 min
+
 !!! abstract "5th VC kind: SellerVC"
     Adds a layer that proves **who is selling** a dataset on the
     marketplace. Same pattern as Stages 1–6: present → token → API.

@@ -1,5 +1,15 @@
 # LLM Planner Hands-on
 
+Replace the rule-based planner in the [regional safety assistant](regional-safety-assistant.en.md) with an LLM-based one, in two steps.
+
+> **What you'll do**: Swap planner via stub provider first, then a real LLM
+>
+> **Prerequisites**: [Regional safety assistant](regional-safety-assistant.en.md)
+>
+> **What you need**: PC (real LLM step needs an API key or a local LLM)
+>
+> **Time**: ~60 min
+
 This hands-on extends the Phase 3 [Regional Safety Assistant sample](regional-safety-assistant.md) and demonstrates the minimum path for **replacing the rule-based planner with an LLM planner**.
 
 This page is organized in two steps:

@@ -1,5 +1,15 @@
 # LLM Plannerハンズオン
 
+[地域安全アシスタント](regional-safety-assistant.md) の rule-based planner を、LLM ベースの planner に差し替える最小構成を体験します。
+
+> **やること**: stub provider → 実 LLM の 2 段階で planner を差し替える
+>
+> **前提**: [地域安全アシスタント](regional-safety-assistant.md)
+>
+> **使うもの**: PC (実 LLM を使う場合は API キーまたはローカル LLM)
+>
+> **所要時間**: 60 分くらい
+
 Phase 3 の [地域安全アシスタントサンプル](regional-safety-assistant.md) を発展させ、**rule-based planner を LLM planner に差し替える最小構成** を体験します。
 
 このページでは 2 段階で進めます。

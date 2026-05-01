@@ -1,5 +1,15 @@
 # USB Webcam Sample (Littering)
 
+Without a HUSKYLENS2, a generic USB webcam plus OpenCV is enough to emit `person_detected` and `possible_littering` events.
+
+> **What you'll do**: Detect a person and littering candidates from a USB webcam, emit events
+>
+> **Prerequisites**: [Setup](../setup/index.en.md) + [Quickstart](../setup/quickstart.en.md)
+>
+> **What you need**: PC + USB webcam
+>
+> **Time**: ~30 min
+
 ## Goal
 
 Generate `person_detected` / `possible_littering` events with only a USB webcam, even without HUSKYLENS2.

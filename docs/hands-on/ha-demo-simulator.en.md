@@ -1,5 +1,15 @@
 # Home Assistant Demo Simulator Sample (Phase 1 / Phase 2 / Phase 3)
 
+Run the whole flow with no real device, using Home Assistant's `demo` mode. Ideal as your first hands-on.
+
+> **What you'll do**: Stream Home Assistant demo data into the publisher and watch it in the browser
+>
+> **Prerequisites**: [Environment setup](../setup/index.en.md) is done
+>
+> **What you need**: PC only (Docker is enough)
+>
+> **Time**: ~20 min
+
 ## Goal
 
 This hands-on is a **minimum simulation environment for connecting Home Assistant and IW3IP without physical sensors or cameras**.
