@@ -1,5 +1,15 @@
 # SSI Service Sample (Phase 2 / Stage 4 prep)
 
+Cover the M2M (machine-to-machine) case: a service, not a person, holds a VC and writes continuously.
+
+> **What you'll do**: Authorize continuous writes from a service that holds a ServiceVC
+>
+> **Prerequisites**: [HA SSI Wallet](ha-ssi-wallet.en.md) (Stage 1) and [HA SSI Viewer](ha-ssi-viewer.en.md) (Stage 3)
+>
+> **What you need**: PC only
+>
+> **Time**: ~45 min
+
 !!! note "M2M extension of the wallet hands-on"
     Assumes you've completed Stage 1 (ConsentVC + PolicyToken) and
     Stage 3 (ViewerVC + ViewerToken). This page covers the case where

@@ -1,5 +1,15 @@
 # USBウェブカメラサンプル（ポイ捨て検知）
 
+HUSKYLENS2 がなくても、USB ウェブカメラと OpenCV だけで `person_detected` / `possible_littering` イベントを作れます。
+
+> **やること**: USB カメラ画像から人物・ポイ捨て検知をしてイベントファイルを生成
+>
+> **前提**: [環境構築](../setup/index.md) と [最短起動](../setup/quickstart.md)
+>
+> **使うもの**: PC + USB ウェブカメラ
+>
+> **所要時間**: 30 分くらい
+
 ## 目的
 
 HUSKYLENS2がなくても、USBウェブカメラだけで

@@ -1,5 +1,15 @@
 # 4-VC end-to-end (v2 / Stage 6)
 
+The capstone of Stage 1–5: a Seller writes data with a ServiceVC, a Buyer reads it with a PurchaseViewerVC, all in one session.
+
+> **What you'll do**: Run all four VCs (Consent / Service / Viewer / PurchaseViewer) on one path
+>
+> **Prerequisites**: [Marketplace VC Bridge](marketplace-vc-bridge.en.md) (Stage 5)
+>
+> **What you need**: PC + MetaMask + smartphone (Sphereon Wallet)
+>
+> **Time**: ~90 min
+
 !!! abstract "Stage 1–5 capstone"
     Walks Seller-side **ServiceVC** continuous writes feeding into
     Buyer-side **PurchaseViewerVC** reads in a single session.

@@ -1,5 +1,15 @@
 # HUSKYLENS2 Sample
 
+Pull events off the HUSKYLENS2 AI camera and list them on the marketplace.
+
+> **What you'll do**: Detect a person on HUSKYLENS2, emit an event, and list it
+>
+> **Prerequisites**: [Setup](../setup/index.en.md) + [Quickstart](../setup/quickstart.en.md)
+>
+> **What you need**: PC + HUSKYLENS2 (no device → use [USB webcam sample](webcam.en.md) instead)
+>
+> **Time**: ~45 min
+
 ## Goal
 
 Use HUSKYLENS2 (or mock input) to generate events and confirm that they are productized in the pipeline.

@@ -1,5 +1,15 @@
 # Marketplace mobile app (Stage A — minimal PWA)
 
+Use the same backend from Part 2 but install `iot-market-ui` as a PWA on your phone's home screen. Purchase and VC receipt happen by tap, no command line.
+
+> **What you'll do**: Install iot-market-ui as a PWA and run purchase + VC receipt from the phone
+>
+> **Prerequisites**: [Marketplace VC Bridge](marketplace-vc-bridge.en.md) (Stage 5)
+>
+> **What you need**: PC + smartphone (Sphereon Wallet) + MetaMask mobile
+>
+> **Time**: ~30 min
+
 !!! abstract "PWA experience for laypeople"
     Wraps the existing `iot-market-ui` as a Progressive Web App so the
     Phase 2 backend can be exercised entirely through smartphone taps —

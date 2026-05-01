@@ -1,5 +1,15 @@
 # USBウェブカメライベント共有サンプル（Phase 2）
 
+[USB ウェブカメラサンプル](webcam.md) で作ったイベントを、Consent VC を介して共有可否を制御しながら送信します。
+
+> **やること**: 検知イベントを共有基盤に送る + purpose に応じた allow/deny を見る
+>
+> **前提**: [USB ウェブカメラサンプル](webcam.md) を済ませてあること
+>
+> **使うもの**: PC、できれば USB ウェブカメラ (なくても疑似データで可)
+>
+> **所要時間**: 45 分くらい
+
 この Hands-on は、既存の [USBウェブカメラサンプル](webcam.md) を発展させた **Phase 2: Event / Intelligence Sharing** の例です。  
 Phase 1 では、USBウェブカメラで `person_detected` や `possible_littering` を検知し、イベントファイルを生成して商品化まで確認しました。  
 このページでは、その次の段階として、**検知イベントをデータ共有基盤へ送って、Consent VC に基づいて共有可否を制御する**流れを体験します。

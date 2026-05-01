@@ -1,5 +1,15 @@
 # Seller VC で出品身元を裏付ける (Stage 7)
 
+出品者が「誰として」その dataset を売るのかを VC で裏付ける層を加えます。5 種目の VC、SellerVC のハンズオンです。
+
+> **やること**: SellerVC を発行・提示して出品身元を裏付ける
+>
+> **前提**: [Marketplace VC end-to-end](marketplace-vc-end-to-end.md) (Stage 6)
+>
+> **使うもの**: PC + MetaMask + スマホ (Sphereon Wallet)
+>
+> **所要時間**: 45 分くらい
+
 !!! abstract "5 種目の VC: SellerVC"
     マーケット出品時に **「誰が」この dataset を売るのか**を VC で
     裏付ける層を追加します。Stage 1〜6 と同じパターンで提示 → トークン

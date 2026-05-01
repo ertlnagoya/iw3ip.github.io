@@ -1,5 +1,15 @@
 # USB Webcam Event Sharing Sample (Phase 2)
 
+Take the events you built in the [USB webcam sample](webcam.en.md) and share them through a Consent VC gate.
+
+> **What you'll do**: Send detection events to the platform and observe allow/deny by purpose
+>
+> **Prerequisites**: [USB webcam sample](webcam.en.md) finished
+>
+> **What you need**: PC, ideally a USB webcam (mock data also works)
+>
+> **Time**: ~45 min
+
 This hands-on is a **Phase 2: Event / Intelligence Sharing** extension of the existing [USB Webcam sample](webcam.md).  
 In Phase 1, the USB webcam sample detected `person_detected` and `possible_littering`, generated event files, and connected them to productization.  
 This page moves to the next step: **sending detected events into the data-sharing platform and controlling sharing based on Consent VC**.

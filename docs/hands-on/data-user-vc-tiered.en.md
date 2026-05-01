@@ -1,5 +1,15 @@
 # DataUserVC × Tiered Access (Phase 2 extension)
 
+Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC). Goes all the way to semantic intermediate representation and trust-aware rendering — long but thorough.
+
+> **What you'll do**: Watch the response narrow from video → image → summary as the trust level drops
+>
+> **Prerequisites**: [HA SSI Wallet](ha-ssi-wallet.en.md) and [Webcam event sharing](webcam-event-sharing.en.md)
+>
+> **What you need**: PC + smartphone (Sphereon Wallet)
+>
+> **Time**: ~90 min
+
 This walk-through builds on the
 [Mobile SSI Wallet sample](ha-ssi-wallet.md) and the
 [USB Webcam Event Sharing sample](webcam-event-sharing.md) and exercises

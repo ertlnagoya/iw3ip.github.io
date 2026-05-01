@@ -1,5 +1,15 @@
 # Home Assistant Demo Simulator サンプル（Phase 1 / Phase 2 / Phase 3）
 
+実機なしで Home Assistant の `demo` モードを使い、データの発生から共有までを最短で動かしてみるページです。最初に触るのに向いています。
+
+> **やること**: Home Assistant の demo データを publisher へ流し、ブラウザから観察する
+>
+> **前提**: [環境構築](../setup/index.md) が済んでいること
+>
+> **使うもの**: PC のみ (Docker が動けば OK)
+>
+> **所要時間**: 20 分くらい
+
 ## 目的
 
 **実機なしで Home Assistant と IW3IP の連携を試せる最小シミュレーション環境**です。

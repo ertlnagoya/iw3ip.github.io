@@ -1,5 +1,15 @@
 # HA x SSI Publisherサンプル（Phase 1）
 
+Home Assistant の状態を MQTT で受け、Consent VC で共有可否を判定する最小構成を組みます。
+
+> **やること**: MQTT → publisher → Consent VC 判定 → 監査ログ までを一通り動かす
+>
+> **前提**: [最短起動](../setup/quickstart.md)、できれば [HA Demo Simulator](ha-demo-simulator.md)
+>
+> **使うもの**: PC (Home Assistant が動かせる構成)
+>
+> **所要時間**: 45 分くらい
+
 ## 目的
 
 Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意VC）で許可判定し、

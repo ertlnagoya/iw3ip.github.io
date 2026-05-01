@@ -1,5 +1,15 @@
 # HA x SSI Publisher Sample (Phase 1)
 
+Pull Home Assistant state over MQTT and gate it with a Consent VC.
+
+> **What you'll do**: MQTT → publisher → Consent VC check → audit log
+>
+> **Prerequisites**: [Quickstart](../setup/quickstart.en.md), ideally [HA Demo Simulator](ha-demo-simulator.en.md)
+>
+> **What you need**: PC able to run Home Assistant
+>
+> **Time**: ~45 min
+
 ## Goal
 
 This hands-on shows the minimum pipeline that receives Home Assistant data via MQTT,

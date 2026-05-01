@@ -1,5 +1,15 @@
 # マーケットプレイス × ウォレット連携 (v2 / Stage 5)
 
+v2 の中核ハンズオン。マーケットプレイスでの購入をきっかけに買い手のスマホへ PurchaseViewerVC を発行し、提示によってデータを取得する流れを通します。
+
+> **やること**: 購入 → bridge → PurchaseViewerVC → wallet → ViewerToken → 取得
+>
+> **前提**: [最短起動](../setup/quickstart.md) と [HA SSI Wallet](ha-ssi-wallet.md)
+>
+> **使うもの**: PC + MetaMask + スマホ (Sphereon Wallet)
+>
+> **所要時間**: 60 分くらい
+
 !!! abstract "v2 を体験するハンズオン"
     マーケットプレイスでの購入を起点に、買い手のウォレットへ
     PurchaseViewerVC を発行し、提示によってデータを取得する

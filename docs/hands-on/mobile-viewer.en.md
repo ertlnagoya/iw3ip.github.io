@@ -1,5 +1,15 @@
 # Mobile Viewer (v1)
 
+Browse v1-marketplace data (current + MetaMask + encrypted IPFS) from a phone browser. The v2 VC flow is a separate page.
+
+> **What you'll do**: Open purchased data on a phone browser
+>
+> **Prerequisites**: v1 stack running ([Quickstart](../setup/quickstart.en.md))
+>
+> **What you need**: PC + smartphone on the same network
+>
+> **Time**: ~20 min
+
 !!! note "v1 viewing flow"
     This page covers the **v1 (current marketplace + MetaMask)** path
     for inspecting shared results. For the v2 wallet-VC flow, see
