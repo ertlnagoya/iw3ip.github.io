@@ -210,4 +210,4 @@ The "request → plan → execute → UI" decomposition pattern.
 
 ## Lost on terminology?
 
-Jump back to the [setup mini-glossary](../setup/index.md#mini-glossary). It one-liners almost every term you'll see.
+Jump back to the [setup mini-glossary](../setup/index.en.md). It one-liners almost every term you'll see.

@@ -102,7 +102,6 @@ nav:
       - Overview: setup/index.md
       - Prerequisites: setup/prerequisites.md
       - Quickstart: setup/quickstart.md
-      - Facilitator Guide: workshop/facilitator-guide.md
   - Hands-on:
       - Overview: hands-on/index.md
       - Phase 1 Data Exchange:
@@ -135,3 +134,4 @@ nav:
       - Overview: operations/index.md
       - Troubleshooting: operations/troubleshooting.md
       - FAQ: operations/faq.md
+      - Facilitator Guide: operations/facilitator-guide.md
