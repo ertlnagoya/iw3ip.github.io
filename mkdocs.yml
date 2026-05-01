@@ -50,9 +50,9 @@ plugins:
             Quickstart: 最短起動
             Facilitator Guide: 講師進行ガイド
             Hands-on: ハンズオン
-            Phase 1 Data Exchange: Phase 1 データ交換
-            Phase 2 Event Sharing: Phase 2 イベント共有
-            Phase 3 Intelligence Integration: Phase 3 知能統合
+            "Part 1: Basic": Part 1 基本
+            "Part 2: Feature Extensions": Part 2 機能拡張
+            "Part 3: Intelligence Integration": Part 3 知能統合
             HuskyLens2 Sample: HUSKYLENS2サンプル
             USB Webcam Sample: USBウェブカメラサンプル
             USB Webcam Event Sharing Sample: USBウェブカメライベント共有サンプル
@@ -104,16 +104,16 @@ nav:
       - Quickstart: setup/quickstart.md
   - Hands-on:
       - Overview: hands-on/index.md
-      - Phase 1 Data Exchange:
+      - "Part 1: Basic":
+          - Home Assistant Demo Simulator Sample: hands-on/ha-demo-simulator.md
           - HuskyLens2 Sample: hands-on/huskylens2.md
           - USB Webcam Sample: hands-on/webcam.md
           - HA SSI Publisher Sample: hands-on/ha-ssi-publisher.md
-          - Home Assistant Demo Simulator Sample: hands-on/ha-demo-simulator.md
           - Mobile Viewer: hands-on/mobile-viewer.md
-      - Phase 2 Event Sharing:
+      - "Part 2: Feature Extensions":
+          - HA SSI Wallet Sample: hands-on/ha-ssi-wallet.md
           - USB Webcam Event Sharing Sample: hands-on/webcam-event-sharing.md
           - Environment Disaster Sample: hands-on/environment-disaster.md
-          - HA SSI Wallet Sample: hands-on/ha-ssi-wallet.md
           - HA SSI Viewer Sample: hands-on/ha-ssi-viewer.md
           - HA SSI Service Sample: hands-on/ha-ssi-service.md
           - Marketplace VC Bridge: hands-on/marketplace-vc-bridge.md
@@ -122,7 +122,7 @@ nav:
           - Marketplace Mobile App (Stage A): hands-on/marketplace-mobile-app.md
           - DataUserVC Tiered Access: hands-on/data-user-vc-tiered.md
           - DataUserVC Tiered Access Spec: hands-on/data-user-vc-tiered-spec.md
-      - Phase 3 Intelligence Integration:
+      - "Part 3: Intelligence Integration":
           - Regional Safety Assistant Sample: hands-on/regional-safety-assistant.md
           - LLM Planner Hands-on: hands-on/llm-planner.md
           - LLM Planner Replacement Spec: hands-on/llm-planner-spec.md
