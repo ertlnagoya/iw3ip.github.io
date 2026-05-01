@@ -83,6 +83,36 @@ Design detail: [Marketplace VC Bridge — v1 / v2 design spec](../design/marketp
 
 Each hands-on page opens with a "what you'll learn / prerequisites / what you need / time estimate" block. If something breaks, see [Troubleshooting](../operations/troubleshooting.md).
 
+## Tech stack at a glance
+
+What runs behind each sub-group. Part 2 is mixed — some sub-groups need the blockchain, others don't.
+
+| Sub-group | publisher (Docker) | Blockchain (Hardhat) | MetaMask | SSI wallet (phone) | IPFS (encrypted) | Image proc. / LLM |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|
+| **Part 1 / Capture data** | ✓ | – | – | – | – | – |
+| **Part 1 / Trade (v1)** | ✓ | ✓ | ✓ | – | ✓ | – |
+| **Part 2 / Add authentication** | ✓ | – | – | ✓ | – | – |
+| **Part 2 / Wire wallet to marketplace (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
+| **Part 2 / Process data before sharing** | ✓ | ✓ <small>(for Tier 3 e2e)</small> | ✓ <small>(same)</small> | ✓ | – | ✓ <small>(OpenCV / VLM optional)</small> |
+| **Part 3 / Intelligence integration** | ✓ | – | – | – | – | ✓ <small>(LLM)</small> |
+
+### VCs used
+
+| Sub-group | Consent | Viewer | Service | Purchase&shy;Viewer | Seller | DataUser |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|
+| Part 2 / Add authentication | ✓ | ✓ | ✓ | – | – | – |
+| Part 2 / Wire wallet to marketplace (v2) | – | – | ✓ | ✓ | ✓ | – |
+| Part 2 / Process data before sharing | – | – | – | ✓ | – | ✓ |
+
+### Reading the tables
+
+- **publisher**: the hands-on server. Every sub-group brings it up with `docker compose up`.
+- **Blockchain**: a local Hardhat chain plus deployed contracts. Required when the marketplace purchase is the entry point.
+- **MetaMask**: signs / sends transactions on the local chain.
+- **SSI wallet**: Sphereon Wallet on a phone — receives and presents VCs.
+- **IPFS (encrypted)**: the v1 post-purchase delivery lane. v2 replaces this role with VCs.
+- **Image proc. / LLM**: OpenCV (Tier 2 blur), Ollama (LLaVA / moondream for VLM), and the LLM planner in Part 3.
+
 ---
 
 ## Part 1: Basic — the core data path
