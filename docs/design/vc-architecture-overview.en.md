@@ -1,7 +1,7 @@
 # VC architecture overview (Phase 2 / Stages 1–7)
 
 !!! abstract
-    One-page synthesis of Phase 2: 5 VC kinds × 4 token kinds × 7 hands-on
+    An overview of Phase 2: 5 VC kinds × 4 token kinds × 7 hands-on
     stages. Individual specs and hands-on pages are linked at the bottom.
     Verified end-to-end on a real iPhone wallet across all 7 stages;
     publisher backs it with 75 passing tests.
@@ -10,7 +10,7 @@
 > is the canonical version with the full audit-chain table. This page lists
 > the structural points only.
 
-## TL;DR
+## Overview
 
 Authorize **write / read / listing identity** by presenting VCs from a wallet
 (or a service-side holder). Each VC encodes "who is allowed to do what" in

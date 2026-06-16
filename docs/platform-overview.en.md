@@ -228,15 +228,15 @@ flowchart LR
 The key point is that Phase 3 should not be treated as one black-box "AI" component.  
 Instead, it is better to separate **request interpretation, evaluation, control, and auditability** so that, for example, the planner can later be replaced by an LLM while the evaluator remains rule-based.
 
-## Put more simply
+## Summary
 
-IW3IP is a research project that tries to answer questions like these:
+The questions IW3IP sets out to answer are simple:
 
 - Can people decide more directly how their own data is used?
 - Can systems automatically enforce those conditions?
 - Can we later verify whether the rules were actually followed?
 
-To explore these questions, this site teaches blockchain, Hardhat, SSI, DID, and VC not as isolated technologies, but as **components of one data-sharing platform**.
+Blockchain, Hardhat, SSI, DID, and VC are each independent technologies, but IW3IP combines them as **components of a single data-sharing platform**.
 
 ## Background visible in public information
 

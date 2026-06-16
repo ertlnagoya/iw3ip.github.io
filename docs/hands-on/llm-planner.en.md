@@ -33,17 +33,17 @@ Branches after that:
 - If you also want the UI path: start `assistant-demo`
 - If you want to connect to a real API: continue to `assistant-llm` with `.env.local.example`
 
-## What this page helps you understand
+## What this page covers
 
-- what must stay fixed when replacing a rule-based planner with an LLM planner
+- what to keep fixed when replacing the rule-based planner with an LLM planner
 - the roles of `planner_factory`, `validator`, and `fallback`
-- how to read success and failure through `planner_diagnostics`
+- how to read results and failures using `planner_diagnostics`
 
-## Common stumbling points
+## Common issues
 
-- adding an LLM does not mean evaluator and actuator should change as well
-- the difference between `stub` and `openai_compatible` is mostly in environment settings
-- when something fails, `planner_diagnostics` is often more useful than the plan body itself
+- it is easy to assume that adding an LLM also requires changing the evaluator and actuator
+- the configuration difference between `stub` and `openai_compatible` is concentrated in environment variables
+- on failure, the cause is hard to find without looking at `planner_diagnostics`, not just the `plan` body
 
 ## Prerequisites
 
@@ -108,7 +108,7 @@ The exercise programs focus on the minimum request body for `/assistant/plan` an
 
 ## How to read this page
 
-This page is a detailed explanation of the planner part of Phase 3. It is easiest to start with the `stub` provider to understand the structure, then move to the frontend view, and only after that switch to a real API. That order makes it clear what changes and what stays fixed.
+This page focuses on the planner part of Phase 3. Proceeding in the order `stub` provider → UI → real API makes the differences easy to see.
 
 ## Architecture Diagram
 
@@ -122,8 +122,7 @@ flowchart LR
   F --> G["Evaluator / Actuator"]
 ```
 
-The important point is that the LLM is not embedded directly inside `main.py`.  
-The replacement is isolated behind `planner_factory`.
+Rather than embedding the LLM directly in `main.py`, the replacement is isolated within `planner_factory`.
 
 ## Stage 1: Understand the planner shape with the stub provider
 
@@ -496,7 +495,7 @@ Reference screenshot:
 
 ## 5.2 Try the HTTP path with the local mock server
 
-If you do not want to call a real API yet, you can exercise the OpenAI-compatible HTTP path with the local mock server.
+If you do not want to call a real API yet, you can check just the HTTP path with an OpenAI-compatible mock server.
 
 Start the mock server:
 
@@ -556,21 +555,20 @@ pytest -q tests/test_phase3_llm_hands_on_program.py
 
 ## 6. Check validator and fallback behavior
 
-This implementation does not trust raw LLM output directly.  
-It always checks:
+The LLM output is not adopted as-is; the following are always validated:
 
-- whether events are allowed
-- whether actions are allowed
+- whether the events are allowed
+- whether the actions are allowed
 - whether the area is allowed
 - whether the response can be parsed as JSON
 
-If validation fails, it falls back to the rule-based planner.
+If invalid, it falls back to the rule-based planner.
 
-What to watch:
+Points to check:
 
-- if `planner_name` is different from the expected LLM planner name, fallback may have happened
-- unsupported actions must not pass directly into execution
-- `/assistant/executions` now keeps `planner_diagnostics.error_type` and `planner_diagnostics.error_message`
+- if `planner_name` differs from the expected value, a fallback may have occurred
+- actions outside the allow list are not executed as-is
+- `/assistant/executions` retains `planner_diagnostics.error_type` and `planner_diagnostics.error_message`
 
 ## Success criteria
 

@@ -1,12 +1,12 @@
 # Operations
 
-This chapter collects operational guidance for common failures and recurring questions.  
-When something goes wrong during a hands-on session, start here, find the closest symptom, and then follow the checks and actions in order.
+Operational material covering in-session troubleshooting and common questions.  
+When a problem occurs, find the item closest to the symptom and work through the checks and actions in order.
 
 ## How to use this chapter
 
-- Use [Troubleshooting](troubleshooting.md) when you need to isolate a problem quickly
-- Use [FAQ](faq.md) when you want to confirm positioning, usage, or common decisions
+- For finding a cause quickly, see [Troubleshooting](troubleshooting.md)
+- For confirming how to proceed and how things are positioned, see [FAQ](faq.md)
 
 - [Troubleshooting](troubleshooting.md)
 - [FAQ](faq.md)

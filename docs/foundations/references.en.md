@@ -1,10 +1,10 @@
 # References and Further Learning Materials
 
-This page collects supplementary material that becomes useful after working through the main path in this site.  
-The foundation pages and introductory hands-on chapters are arranged so that readers can complete the basic flow before coming here.
+This page collects supplementary material to consult after finishing the learning in this site.  
+The basic understanding and hands-on can be completed with the explanations in this site alone.
 
-This is not a page that needs to be read all at once.  
-It works better as a reference shelf: first understand the main flow in this site, then return here when you want social background, standards, or deeper technical detail.
+There is no need to read everything at once.  
+Grasp the overall picture in this site first, then consult these materials when going deeper into social problems or technical specifications.
 
 ## Materials for Understanding Social Problems
 

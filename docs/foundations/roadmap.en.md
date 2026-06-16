@@ -2,8 +2,8 @@
 
 This roadmap helps learners move from "it runs" to "I can explain why it works".
 
-When it is unclear where to start, this page serves as the main guide.  
-It is arranged so that the same order works both for a short first pass and for a slower multi-week study plan.
+When you are unsure which page to read first, use this as the reference.  
+The order is the same whether you go through it quickly or over several weeks.
 
 ## Priority Order
 
@@ -24,7 +24,7 @@ It is arranged so that the same order works both for a short first pass and for 
 5. [Quickstart](../setup/quickstart.md)
 6. [HA x SSI Publisher Sample](../hands-on/ha-ssi-publisher.md)
 
-These six pages provide a compact path through the basic concepts and the minimum hands-on flow.
+These six pages complete the basic understanding and the minimum hands-on.
 
 ## 3-Week Plan (Example)
 
@@ -51,5 +51,5 @@ These six pages provide a compact path through the basic concepts and the minimu
 
 ## How to Use External Materials
 
-- Prefer this site first for the basic path.
-- Use external sources for standards, deeper technical detail, and follow-up study.
+- Read through the explanations in this site first.
+- Use external sources to check primary sources for terms, detailed specifications, and follow-up study.

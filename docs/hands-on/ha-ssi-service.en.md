@@ -1,6 +1,6 @@
 # SSI Service Sample (Phase 2 / Stage 4 prep)
 
-Cover the M2M (machine-to-machine) case: a service, not a person, holds a VC and writes continuously.
+Covers the M2M (machine-to-machine) case where a service (a program), not a person, holds a VC and writes continuously.
 
 > **What you'll do**: Authorize continuous writes from a service that holds a ServiceVC
 >
@@ -8,12 +8,18 @@ Cover the M2M (machine-to-machine) case: a service, not a person, holds a VC and
 >
 > **What you need**: PC only
 >
-> **Time**: ~45 min
+> **Time required**: approx. 45 min
 
 !!! note "M2M extension of the wallet hands-on"
     Assumes you've completed Stage 1 (ConsentVC + PolicyToken) and
     Stage 3 (ViewerVC + ViewerToken). This page covers the case where
     a **non-human service** holds a VC and writes continuously.
+
+!!! tip "Choosing a dataset"
+    The example uses `home/env/temperature`, but the same steps work
+    with `home/event/possible_littering` (the same as Stage 0;
+    [service-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/service-possible-littering.json)
+    is already registered).
 
 ## Goal
 
@@ -35,7 +41,7 @@ every `/platform/ingest` call.
                                                   authz via ServiceToken
 ```
 
-## What you'll learn
+## What this page covers
 
 - Why "human VC (ConsentVC)" and "service VC (ServiceVC)" are split
 - The three token shapes: single-use write, multi-use read,
@@ -44,7 +50,7 @@ every `/platform/ingest` call.
 - How `/platform/ingest` accepts both PolicyToken and ServiceToken
   (PolicyToken first, fall through to ServiceToken on "unknown")
 
-## Common pitfalls
+## Common issues
 
 - ConsentVC / ViewerVC / ServiceVC are **distinct**; cross-use is denied
 - ServiceToken differs from ViewerToken in TTL and target endpoint;

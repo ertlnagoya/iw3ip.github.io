@@ -8,12 +8,12 @@ Home Assistant の状態を MQTT で受け、Consent VC で共有可否を判定
 >
 > **使うもの**: PC (Home Assistant が動かせる構成)
 >
-> **所要時間**: 45 分くらい
+> **所要時間**: 約 45 分
 
 ## 目的
 
 Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意VC）で許可判定し、
-許可データのみを送信・監査ログ保存する最小構成を体験します。
+許可データのみを送信・監査ログ保存する最小構成を扱います。
 
 パイプライン:
 
@@ -40,9 +40,9 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 - `topic`、`payload`、`purpose` を 1 つの要求として組み立てる方法
 - `allowed` / `denied` / 監査ログの基本的な読み方
 
-## つまずきやすい点
+## よくある問題
 
-- `topic` と `dataset_id` の関係が最初は見えにくい
+- `topic` と `dataset_id` の関係が最初は把握しにくい
 - Consent VC を登録していても `purpose` が合わなければ拒否される
 - HTTP 疑似投入と MQTT 経路が別の確認ポイントを持つ
 
@@ -105,7 +105,7 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 
 ## 読み進め方
 
-Phase 1 の基本構成を確認するページです。短時間なら `最短ルート` だけで十分。共有制御の考え方まで理解したい場合は `allowed` と `denied` を両方見てから MQTT 経路へ進んでください。
+Phase 1 の基本構成を確認するページです。短時間で済ませる場合は `最短ルート` だけで十分です。共有制御の考え方まで理解したい場合は、`allowed` と `denied` を両方確認してから MQTT 経路へ進んでください。
 
 ## Phase 1: 最小構成を確認する
 

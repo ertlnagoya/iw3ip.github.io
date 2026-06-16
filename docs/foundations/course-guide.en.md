@@ -2,7 +2,7 @@
 
 This chapter explains how IW3IP material can be used in classes, workshops, and practical exercises.
 
-Each sample can be run on its own, but class use becomes smoother when the overall picture, the execution step, and the reflection step are separated clearly from the beginning.
+Running the samples in order already teaches the material, but a class runs more smoothly when you decide in advance where to present the overall picture, where to do hands-on work, and where to reflect.
 
 ## Target Learners
 
@@ -18,7 +18,7 @@ Each sample can be run on its own, but class use becomes smoother when the overa
 
 ## How to Use This Material
 
-The core concepts and introductory hands-on path are arranged so that readers can move through them within this documentation.
+The basic learning and hands-on can be followed within the flow of this site.
 
 - Main topics covered in this site:
   - fundamental terminology
@@ -31,7 +31,7 @@ The core concepts and introductory hands-on path are arranged so that readers ca
   - you need literature review for reports or research
   - you want to confirm standards or primary sources
 
-In class settings, it is usually better to align understanding with the site-internal material first and only then expand into external references.
+In class, it is more efficient to align the prerequisites using the explanations in this site before expanding into external references.
 
 ## Example Placement in a 15-Session Course
 

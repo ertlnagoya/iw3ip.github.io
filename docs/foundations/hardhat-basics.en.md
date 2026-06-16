@@ -1,7 +1,7 @@
 # Hardhat Basics (Blockchain Used in This Site)
 
-This chapter explains Hardhat as the blockchain environment used in this site.  
-It is best understood first as a local environment for observing contract execution and reproducible experiments, not as a production network.
+This chapter explains Hardhat, the blockchain development environment used in this site.  
+It is not for production; it is an environment for running and verifying smart contracts locally.
 
 ## General Explanation
 
@@ -19,8 +19,8 @@ In this site, it is used as a **local development blockchain** for safe and repr
 
 ### Why It Is Good for Learning
 
-For learning, the important point is that failures are easy to reset and the same steps can be repeated.  
-Hardhat works well in that role and makes it easier to experiment with blockchain behavior on one machine.
+A learning environment needs failures that are easy to redo and steps that can be reproduced any number of times.  
+Hardhat handles this well, so even those new to blockchain can experiment freely.
 
 - you can experiment locally on one machine
 - test accounts and balances are provided by default
@@ -43,12 +43,12 @@ sequenceDiagram
 
 ### Role in IW3IP
 
-- learning phase: understand contract execution and traceability
-- future phase: evaluate production network choices and operations
+- learning phase: use Hardhat to understand the flow of contract execution
+- production review: move on to selecting public/permissioned chains and designing their operation
 
 ### What You Actually Touch in This Site
 
-In this site, Hardhat is used less as a topic by itself and more as the execution environment behind the IW3IP samples.
+Rather than studying Hardhat itself in depth, this site uses it as the experiment platform for IW3IP.
 
 - `npx hardhat node`: starts local blockchain
 - deploy scripts: place contracts on the local network
@@ -62,7 +62,7 @@ In this site, Hardhat is used less as a topic by itself and more as the executio
 
 ### Difference from Production
 
-Keeping this difference clear helps avoid mixing up a local development chain with a real deployment target.
+Keep this difference in mind so you do not confuse a learning-oriented local chain with a production network.
 
 - Hardhat is mainly for development and education
 - production use requires separate consideration for network operations, gas costs, incident handling, and key management

@@ -17,25 +17,25 @@ Browse v1-marketplace data (current + MetaMask + encrypted IPFS) from a phone br
 
 ## Goal
 
-Confirm that a smartphone can browse the event feed and proceed to purchase actions when needed.
+Confirm from a smartphone that you can browse the event feed and purchase the data you need.
 
-## What this page helps you understand
+## What this page covers
 
-- what is required to open the viewer from a smartphone
-- which routes `iot-market-ui` exposes (`/`, `/merchandise/[address]`,
+- what is required to connect to the viewer UI from a smartphone
+- the roles of the routes that iot-market-ui exposes (`/`, `/merchandise/[address]`,
   `/purchased/[txHash]`, `/seller`)
-- which screens confirm viewing and purchase behavior
+- which screens to check for viewing and for purchase
 
 !!! info "`/mobile` is not implemented"
     The legacy exercise program (`examples/hands_on/mobile_viewer/`)
     assumes a `/mobile` route, but the current `iot-market-ui` does
     not have one. Use the actual entry points listed below.
 
-## Common stumbling points
+## Common issues
 
-- the frontend must be exposed on `0.0.0.0`, not only on localhost
-- devices can appear to share Wi-Fi while still being on different network segments
-- purchase actions are easiest to test through the MetaMask Mobile in-app browser
+- if the PC side is not exposed on `0.0.0.0`, the smartphone cannot reach it
+- even on what looks like the same Wi-Fi, a split network prevents the connection
+- purchase actions do not progress well unless done through the MetaMask Mobile browser
 
 ## Official links
 
@@ -108,7 +108,7 @@ Branches after that:
 
 ## How to read this page
 
-This page is a connection guide for checking Phase 1 results from a smartphone. If you only need a quick confirmation path, opening the homepage `/` is enough. For workshop use, it is better to continue through the wallet/browser notes so learners understand what changes between simple viewing and purchase actions.
+This page is a procedure for checking Phase 1 results from a smartphone. For a quick pass, opening the URL and viewing the list is enough. As a hands-on, it is better to confirm both "it runs on the same LAN" and "the wallet-based purchase entry point".
 
 ## Prepare the connection baseline
 
@@ -125,7 +125,7 @@ npm run dev -- --host 0.0.0.0 --port 5173
 ipconfig getifaddr en0
 ```
 
-At this point, you have the URL that the smartphone should open. The next step is to check that the mobile page actually renders from another device on the same LAN.
+You can now build the URL to open from the smartphone. Next, open the page on the smartphone to confirm it.
 
 ## Confirm the mobile viewer from the smartphone
 
@@ -156,7 +156,7 @@ http://192.168.1.20:5173/
 - event feed and merchandise list are visible
 - purchase flow can proceed through MetaMask Mobile
 
-At this point, the viewer path itself is working. The last step is to keep the wallet/browser requirement and common network failures clearly separated, because those are the two places where learners usually stop.
+The connection to the viewer UI is confirmed. If needed, try the purchase action; if you cannot connect, check the troubleshooting items below.
 
 ## Purchase path and troubleshooting
 

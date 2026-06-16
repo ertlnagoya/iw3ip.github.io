@@ -579,7 +579,7 @@ LLM の出力はそのまま採用せず、次を必ず検証します。
 - OpenAI 互換 API 用の環境変数を説明できる
 - validator と fallback の役割を説明できる
 
-## よくあるつまずき
+## よくある問題
 
 ### `source examples/phase3_llm.env.example` で値がそのまま残っている
 

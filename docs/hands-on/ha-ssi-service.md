@@ -8,7 +8,7 @@
 >
 > **使うもの**: PC のみ
 >
-> **所要時間**: 45 分くらい
+> **所要時間**: 約 45 分
 
 !!! note "wallet ハンズオンの M2M 拡張です"
     Stage 1 (ConsentVC + PolicyToken) と Stage 3 (ViewerVC + ViewerToken)
@@ -51,7 +51,7 @@ Bearer ヘッダで添えて `/platform/ingest` を叩く想定です。
 - `/platform/ingest` が PolicyToken と ServiceToken の両方を受け付ける
   仕組み (順序: PolicyToken → 不一致なら ServiceToken)
 
-## つまずきやすい点
+## よくある問題
 
 - ConsentVC / ViewerVC / ServiceVC は **別 VC**。流用できない
 - ServiceToken は ViewerToken と TTL も用途も違う。`/platform/ingest`

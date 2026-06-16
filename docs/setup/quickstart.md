@@ -1,10 +1,10 @@
 # 最短起動 (スタックを動かす)
 
-[事前準備](prerequisites.md) で入れたツールを使って、**ハンズオン用の街** を一気に起動します。
-所要時間の目安は **15〜30 分** (初回は docker pull / npm install の時間がかかります)。
+[事前準備](prerequisites.md) でインストールしたツールを使って、ハンズオン環境一式をまとめて起動します。
+所要時間の目安は **15〜30 分** です (初回は docker pull / npm install に時間がかかります)。
 
-> はじめての人へ: ここで起動するプロセスは 6 つあります。1 つずつ別ターミナルを開いて起動するイメージです。
-> 落ち着いて、手順どおりに進めてください。
+> ここで起動するプロセスは 6 つあります。それぞれ別のターミナルを開いて起動します。
+> 手順どおりに進めてください。
 
 ## ここで動かすもの — 全体像
 
@@ -41,8 +41,8 @@
 
 ## 起動順 — 上から順に
 
-> **ターミナルを 6 つ用意してください**。それぞれのプロセスはずっと立ち上がりっぱなしになります。
-> macOS Terminal なら ⌘+T、VS Code なら "Split Terminal" が便利。
+> **ターミナルを 6 つ用意してください**。各プロセスは起動したまま動作し続けます。
+> macOS Terminal なら ⌘+T、VS Code なら "Split Terminal" が利用できます。
 
 ### 0. 教材リポジトリに移動
 
@@ -107,7 +107,7 @@ npm run dev
   ➜  Local:   http://localhost:5173/
 ```
 
-ブラウザで <http://localhost:5173> を開いて、マーケットプレイスの画面が出れば OK。
+ブラウザで <http://localhost:5173> を開いて、マーケットプレイスの画面が表示されれば成功です。
 
 ### 4. データ保管庫を起動
 
@@ -130,8 +130,8 @@ cd ipfs
 docker compose up -d
 ```
 
-`-d` (detached) なのでバックグラウンドで起動します。
-状態を確認:
+`-d` (detached) を付けているため、バックグラウンドで起動します。
+状態を確認します。
 
 ```bash
 docker compose ps
@@ -155,7 +155,7 @@ cd mediator-buyer
 cargo run --bin mediator-b
 ```
 
-両方とも `Listening on ...` が出れば OK。
+両方とも `Listening on ...` が表示されれば成功です。
 
 ## 動作確認
 
@@ -195,10 +195,10 @@ MetaMask をローカル Hardhat に接続します。
 
 すべてチェック → [ハンズオン Part 1](../hands-on/index.md) に進めます。
 
-## 楽な代替: docker compose だけで動く最小スタック
+## 簡易な代替: docker compose だけで動く最小スタック
 
-「7 つもターミナル開くのは大変…」という人向けに、Docker Compose で publisher 周りだけ起動するパスもあります。
-データの取り込みと観察に特化した実機なし最短ルートは、こちら:
+ターミナルを 7 つ開くのが煩雑な場合は、Docker Compose で publisher 周りだけを起動する方法もあります。
+データの取り込みと観察に特化した、実機を使わない最短経路は次のページを参照してください。
 
 - [Home Assistant Demo Simulator サンプル](../hands-on/ha-demo-simulator.md)
 

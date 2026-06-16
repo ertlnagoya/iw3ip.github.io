@@ -1,6 +1,6 @@
 # 4 種 VC を 1 動線で繋ぐ end-to-end (v2 / Stage 6)
 
-Stage 1〜5 の集大成。Seller が ServiceVC で書き込んだデータを Buyer が PurchaseViewerVC で読み出すシナリオを 1 セッションで通します。
+Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデータを Buyer が PurchaseViewerVC で読み出すシナリオを 1 セッションで通します。
 
 > **やること**: 4 種 VC (Consent / Service / Viewer / PurchaseViewer) を 1 動線でつなぐ
 >
@@ -10,7 +10,7 @@ Stage 1〜5 の集大成。Seller が ServiceVC で書き込んだデータを B
 >
 > **所要時間**: 90 分くらい
 
-!!! abstract "Stage 1〜5 の集大成"
+!!! abstract "Stage 1〜5 の総合演習"
     Seller が **ServiceVC** で連続書き込みしたデータを、Buyer が
     **PurchaseViewerVC** で読み出す、というシナリオを 1 セッションで
     通します。バックエンドは Stage 1〜5 で実装済 + Stage 6 case B
@@ -28,7 +28,7 @@ Stage 1〜5 の集大成。Seller が ServiceVC で書き込んだデータを B
 - データフローに関わる 4 種類の VC (ConsentVC / ViewerVC /
   **ServiceVC** / **PurchaseViewerVC**) が **1 つの dataset を介して協調**
   することを体験 (5 種目の SellerVC は出品身元のガバナンス層なので
-  本ハンズオンの主役ではないが、Stage 7 で並走可能)
+  本ハンズオンの対象ではないが、Stage 7 で並走可能)
 - on-chain 支払い (MetaMask) と off-chain 認可 (VC) の **役割分担**を
   完全な動線で理解する
 - audit log の **チェーン**を読み解く: ETH 鍵 → did:jwk → ServiceVC holder
@@ -82,7 +82,7 @@ Stage 1〜5 の集大成。Seller が ServiceVC で書き込んだデータを B
   本ハンズオンを上に積み上げる想定
 - LAN IP は `192.168.68.53` で示すので、あなたの環境の IP に読み替え
 - このハンズオンでは **同一 iPhone wallet が 1 人で 2 役 (seller + buyer)**
-  を演じます (実運用の seller / buyer 分離は将来課題)
+  を兼ねます (実運用の seller / buyer 分離は将来課題)
 
 ---
 
@@ -166,7 +166,7 @@ iter 2 {'status': 'received', 'count': N+1}
 ... (N+4 まで連番増加)
 ```
 
-これで `home/env/temperature` に **値 31〜35** の 5 件が seller の "ふり" で蓄積されました。
+これで `home/env/temperature` に **値 31〜35** の 5 件が seller 役として蓄積されました。
 
 ---
 
@@ -264,7 +264,7 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool | 
 - PurchaseViewerVC を提示すると ViewerToken が出る (Stage 5)
 - `merchandise=<addr>` で取得すると、bridge が解決した dataset_id 経由で
   **Step E1 で seller が書いた値 31〜35 が読める**
-- これが Stage 6 のクライマックス
+- これが Stage 6 の中心となる確認点
 
 ### 操作
 
@@ -335,7 +335,7 @@ holder_did は同一になります。実運用では別端末・別 did:jwk に
 - (4) と (5) を結ぶのは **dataset_id**: 両方 `home/env/temperature`
 - (4) が ETH 主体 → (3) で did:jwk と紐付き → (1) で did:jwk のまま読み出し、
   という **3 形態の身元**が連鎖
-- ServiceVC の `service_token_used` が 5 連続 → **`viewer_token_used:1` で 1 回読まれて 5 件が一気に届く**
+- ServiceVC の `service_token_used` が 5 連続 → **`viewer_token_used:1` で 1 回読まれ、5 件がまとめて届く**
 
 ---
 

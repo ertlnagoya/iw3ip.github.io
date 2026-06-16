@@ -1,37 +1,34 @@
 # LLM Planner Replacement Spec
 
-This page is a design note for the next step after the Phase 3 [Regional Safety Assistant sample](regional-safety-assistant.md).  
-The goal is to replace the current rule-based planner with an **LLM-based planner** while keeping the rest of the pipeline stable.
+This is a specification for replacing the planner in the [Regional Safety Assistant sample](regional-safety-assistant.md) with an **LLM-based planner**.  
+It is not an implementation procedure but a design document that defines **what to fix and where to replace**.
 
-This is not yet an implementation guide. It is a specification that clarifies **what must stay fixed and what can be replaced**.
+## What this page covers
 
-## What this page helps you understand
+- the design boundary when replacing the planner with an LLM planner
+- the reason for keeping the existing evaluator / actuator / API as they are
+- the importance of deciding allow lists, validators, and fallback first
 
-- the design boundary for replacing the planner with an LLM-based component
-- why evaluator, actuator, and the existing APIs should remain unchanged
-- why allow lists, validation, and fallback must be defined before implementation
+## Common issues
 
-## Common stumbling points
-
-- \"adding an LLM\" can easily be mistaken for \"turn everything into AI\"
-- this page is about responsibility boundaries before it is about code steps
-- the reason for structured JSON output is easy to underestimate
+- treating \"adding an LLM\" as \"turning the whole system into AI\" breaks the design
+- at the specification stage, responsibility separation comes before implementation steps
+- the reason for constraining output to structured JSON instead of free text is easy to overlook
 
 ## Goal
 
 In the current Phase 3 sample, `planner.py` is rule-based.  
-That is easy to understand, but weak against natural-language variation.
+For learning purposes it is easy to follow, but it is weak against variation in natural-language phrasing.
 
-The next step is to use an LLM to:
+The next step uses an LLM to:
 
 - interpret user requests more flexibly
-- still map them into a fixed JSON structure
-- keep `evaluator` and `actuator` unchanged
+- map them into a fixed JSON structure rather than generating free text
+- reuse the existing `evaluator` and `actuator` for evaluation and control
 
 ## Assumption of This Spec
 
-Only the `planner` layer is replaced.  
-The following parts remain as they are:
+Only the `planner` layer is replaced. The following parts are reused as they are:
 
 - `assistant/app/evaluator.py`
 - `assistant/app/actuator.py`
@@ -39,7 +36,7 @@ The following parts remain as they are:
 - `POST /assistant/plan`
 - `POST /assistant/execute`
 
-In other words, the LLM is treated as **the component that interprets requests, not the component that directly decides or executes device control**.
+The design is that **the LLM handles planning but not the execution of control**.
 
 ## Design Principles
 
@@ -47,25 +44,24 @@ In other words, the LLM is treated as **the component that interprets requests, 
 
 The LLM is responsible only for:
 
-- reading the request intent
+- reading the intent of the request
 - estimating the target area
-- selecting relevant watch events
-- proposing threshold values
+- selecting watch events
+- proposing threshold candidates
 - selecting candidate actions
 
-The LLM must not be responsible for:
+The following are not left to the LLM:
 
-- counting actual observed events
-- making the final trigger decision
-- issuing device commands directly
+- evaluating the actual count of events
+- the final trigger decision
+- operating the actual devices
 - storing audit logs
 
 ### 2. Output must be structured JSON, not free text
 
-The LLM output should be constrained to a structure compatible with `ExecutionPlan`.  
-Free-form natural language would make the downstream pipeline unstable.
+The LLM output is constrained to a structure close to the existing `ExecutionPlan`, because leaving it as natural text makes the downstream pipeline unstable.
 
-Minimal example:
+Minimal output example:
 
 ```json
 {
@@ -107,18 +103,16 @@ Minimal example:
 
 ### On error
 
-If the LLM output is invalid, the system should not use it directly.  
-Use one of these fallback strategies:
+If the LLM output is invalid, it is not used directly; fall to one of the following:
 
 1. fall back to the rule-based planner
-2. return `plan_error` and request clarification
+2. return `plan_error` and prompt for re-entry
 
-For the first implementation, **falling back to the rule-based planner** is the safer option.
+For the initial implementation, **falling back to the rule-based planner** is the safer option.
 
 ## Allow Lists
 
-The LLM must not invent event names or action names.  
-It must select only from predefined allow lists.
+The LLM is not allowed to invent event names or action names. It must select only from the allow lists.
 
 ### Allowed events
 
@@ -138,7 +132,7 @@ It must select only from predefined allow lists.
 - `park-south`
 - `station-front`
 
-If the LLM returns anything outside these sets, the planner should reject it.
+If the LLM returns a value outside these sets, the planner rejects it.
 
 ## Recommended Architecture
 
@@ -152,8 +146,7 @@ flowchart LR
   C --> G["Fallback Rule-based Planner"]
 ```
 
-The important point here is to avoid embedding the LLM directly into the core flow.  
-Instead, use **adapter + validator + fallback**.
+Rather than embedding the LLM directly into the core, separate it into **adapter + validator + fallback**.
 
 ## Planned Additional Modules
 
@@ -169,7 +162,7 @@ Roles:
 - `llm_planner.py`
   - calls the LLM
 - `llm_prompt.py`
-  - manages prompts
+  - manages the system prompt / developer prompt
 - `plan_validator.py`
   - checks allow lists and pydantic validation
 - `planner_factory.py`
@@ -177,23 +170,23 @@ Roles:
 
 ## Prompt Requirements
 
-The LLM should at least be instructed that:
+At minimum, the LLM is given the following:
 
-- it is a planner for a public-safety assistant
-- it must output JSON only
-- it must not emit events or actions outside the allow lists
-- it should return `unknown-area` when the area is unclear
-- thresholds must be integers
+- you are the planner for a regional-safety assistant
+- output JSON only
+- do not output anything outside the allowed events and actions
+- return `unknown-area` when unclear
+- return thresholds as integers
 
-Bad outputs:
+Bad examples:
 
-- long prose explanations
-- invented event names
-- guessed execution results
+- returning a long explanation
+- inventing new event names
+- guessing and returning execution results
 
-Good outputs:
+Good example:
 
-- minimal JSON matching the existing schema
+- returning minimal JSON that matches the existing schema
 
 ## Validation Requirements
 
@@ -211,41 +204,41 @@ Good outputs:
 
 ### Practical validation
 
-- the same request should not produce wildly inconsistent plans
-- both Japanese and English requests should work at a minimum level
-- ambiguous requests must not cause unsafe actions to be added silently
+- the same request does not vary widely
+- both Japanese and English requests work at a minimum level
+- ambiguous requests do not cause unsafe actions to be added on their own
 
 ## Evaluation Points
 
-For student exercises, it is useful if learners can explain:
+Understanding deepens if learners can confirm the following in the exercise:
 
-1. the difference between the rule-based planner and the LLM planner
-2. both the flexibility and the risks of LLM-based planning
-3. why validator and fallback are necessary
-4. why the design should not "let the LLM do everything"
+1. explain the difference between the rule-based planner and the LLM planner
+2. explain both the flexibility and the danger of the LLM
+3. explain why a validator and fallback are necessary
+4. explain the design reason for "not leaving everything to the LLM"
 
 ## Non-Goals
 
-This stage does not yet include:
+This stage does not yet cover:
 
 - multi-turn dialogue
 - long-term memory
 - autonomous replanning
-- unrestricted device-control agents
+- agents that freely operate arbitrary devices
 
-The immediate scope is only **mapping natural language into the existing plan schema**.
+The scope for now is only **mapping natural language into the existing plan schema**.
 
 ## Recommended Minimal Implementation Steps
 
 1. fix the `Planner` interface
 2. add `LLMPlanner`
 3. add a JSON validator
-4. add fallback behavior
-5. switch using `PLANNER_MODE=rule_based|llm`
-6. add pytest coverage for validation and fallback
+4. add a fallback
+5. switch with the `PLANNER_MODE=rule_based|llm` environment variable
+6. confirm JSON validation and fallback with pytest
 
 ## Expected Learning Outcome
 
-- learners can treat an LLM as a constrained component rather than a magic box
-- learners can understand what should remain deterministic when AI is introduced
-- learners can extend Phase 3 carefully without jumping directly to an unconstrained agent model
+- learners can treat an LLM as a constrained component rather than an all-purpose generator
+- learners can understand what should stay deterministic when AI is introduced
+- learners learn the mindset of extending Phase 3 steadily, without rushing it into a future Phase 4-style agent

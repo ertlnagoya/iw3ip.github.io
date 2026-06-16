@@ -1,6 +1,6 @@
 # HA x SSI Publisher Sample (Phase 1)
 
-Pull Home Assistant state over MQTT and gate it with a Consent VC.
+Build a minimal setup that receives Home Assistant state over MQTT and decides whether to share it with a Consent VC.
 
 > **What you'll do**: MQTT → publisher → Consent VC check → audit log
 >
@@ -8,12 +8,12 @@ Pull Home Assistant state over MQTT and gate it with a Consent VC.
 >
 > **What you need**: PC able to run Home Assistant
 >
-> **Time**: ~45 min
+> **Time required**: approx. 45 min
 
 ## Goal
 
-This hands-on shows the minimum pipeline that receives Home Assistant data via MQTT,
-applies Consent VC policy checks, forwards only allowed data, and stores audit logs.
+This covers a minimal setup that receives Home Assistant data via MQTT,
+decides whether to allow it with a Consent VC, then forwards only allowed data and records audit logs.
 
 Pipeline:
 
@@ -34,15 +34,15 @@ Branches after that:
 - If you want to inspect MQTT ingestion as well: publish `person_detected` with `mosquitto_pub`
 - If you want to move into Phase 2: continue with the `flood_risk_high` or `possible_littering` hands-on pages
 
-## What this page helps you understand
+## What this page covers
 
-- the minimum Phase 1 flow: where data is received, checked, and recorded
-- how `topic`, `payload`, and `purpose` form one request
+- the minimal Phase 1 setup: where data is received, where it is decided, and where it is recorded
+- how to assemble `topic`, `payload`, and `purpose` into one request
 - how to read `allowed`, `denied`, and the audit log
 
-## Common stumbling points
+## Common issues
 
-- the relation between `topic` and `dataset_id` is easy to miss at first
+- the relation between `topic` and `dataset_id` is hard to grasp at first
 - a Consent VC can exist and still produce `denied` if `purpose` does not match
 - HTTP simulation and MQTT ingestion are two different checkpoints
 
@@ -105,9 +105,9 @@ The problem program focuses on how `topic`, `payload`, and `purpose` are combine
 
 ## How to read this page
 
-This page is meant to explain the Phase 1 baseline carefully. If you only need a short confirmation path, `Shortest path` is enough. If you want to understand consent-based sharing properly, it is better to compare both `allowed` and `denied` before moving on to the MQTT path.
+This page confirms the basic Phase 1 setup. If you want to finish quickly, `Shortest path` is enough. If you want to understand the idea of sharing control, compare both `allowed` and `denied` before moving on to the MQTT path.
 
-## Phase 1: Confirm the minimum baseline
+## Phase 1: Confirm the minimal setup
 
 ## 1. Start services
 
@@ -140,7 +140,7 @@ Additional files used by the Phase 2 hands-on pages:
 - `examples/consent_flood_risk_high.json`
 - `examples/consent_possible_littering.json`
 
-At this point the minimum policy setup is ready. The next step is to compare a request that is allowed and a request that is denied through the same API entry point.
+The setup needed for the checks is now complete. Next, compare a request that is allowed and a request that is denied.
 
 ## Phase 1: Compare allowed and denied
 

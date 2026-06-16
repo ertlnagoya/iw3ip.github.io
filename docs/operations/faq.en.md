@@ -1,17 +1,19 @@
 # FAQ
 
-This page answers short questions about how the material is organized and how to choose a path through it.  
-For execution failures, the Troubleshooting page is usually the better place to start.
+Questions about how to proceed and how the material is positioned. For isolating execution errors, see [Troubleshooting](troubleshooting.md).
 
-## Is Hands-on part of Workshop?
+## Q. What is the difference between Workshop and Hands-on?
 
-Yes. Workshop is the full facilitation frame, and Hands-on is the practical execution part.
+A. Workshop is the facilitation design; Hands-on is the practical procedure. Hands-on runs as part of Workshop.
 
-## Where should I start if I only want to run one thing?
+## Q. Can this be migrated to Docusaurus?
 
-Start with `assistant-demo` if you want the shortest path to a working system.  
-If you want to begin from Phase 1 without dedicated hardware, use the webcam path. If hardware is available, HUSKYLENS2 is a natural starting point.
+A. Yes. The content is Markdown-centric, so migration is straightforward.
 
-## Should docs be in a separate repository?
+## Q. Should the docs be split into a separate repository?
 
-Start in the same repo. Split later when operation ownership diverges.
+A. Use the same repository at first. Splitting is safer once update ownership has diverged.
+
+## Q. Which sample should I start with?
+
+A. To run just one, `assistant-demo` is the shortest path. To start from Phase 1 without a device, use the webcam-based samples; with real hardware, start from HUSKYLENS2.

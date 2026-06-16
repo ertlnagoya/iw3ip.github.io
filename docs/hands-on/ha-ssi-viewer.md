@@ -1,6 +1,6 @@
 # SSI ビューワサンプル（Phase 2 / Stage 3）
 
-[HA SSI Wallet](ha-ssi-wallet.md) では書き込み側を VC で守りました。ここでは読み出し側を VC で守ります。
+[HA SSI Wallet](ha-ssi-wallet.md) では書き込み側を VC で保護しました。ここでは読み出し側を VC で保護します。
 
 > **やること**: ViewerVC を提示して読み出しを許可してもらう
 >
@@ -8,7 +8,7 @@
 >
 > **使うもの**: PC + スマホ (Sphereon Wallet)
 >
-> **所要時間**: 45 分くらい
+> **所要時間**: 約 45 分
 
 !!! note "[SSI Wallet ハンズオン](ha-ssi-wallet.md) の続編です"
     Stage 1 (PolicyToken による書き込み認可) を体験済の前提で進めます。
@@ -19,7 +19,7 @@
     [webcam-event-sharing](webcam-event-sharing.md) と同じ
     `home/event/possible_littering` でも動作します
     ([viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/viewer-possible-littering.json)
-    の PD 登録済み)。物語の連続性を保ちたい場合はそちらを使用。
+    の PD 登録済み)。一連のハンズオンを通して同じ dataset を使いたい場合はそちらを選んでください。
 
 ## 目的
 
@@ -39,7 +39,7 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 - ViewerToken の TTL 60 秒 / 多回利用の扱い
 - `/platform/data` で取得した行が監査ログに残る様子
 
-## つまずきやすい点
+## よくある問題
 
 - ConsentVC と ViewerVC は **別 VC**。ConsentVC を提示しても `/platform/data` には入れない
 - `/platform/data` は ViewerToken のみ受け付ける（PolicyToken は通らない）

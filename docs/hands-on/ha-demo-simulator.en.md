@@ -1,6 +1,6 @@
 # Home Assistant Demo Simulator Sample (Phase 1 / Phase 2 / Phase 3)
 
-Run the whole flow with no real device, using Home Assistant's `demo` mode. Ideal as your first hands-on.
+A page that runs data generation through sharing in a minimal setup, using Home Assistant's `demo` mode with no real device. A good one to try first.
 
 > **What you'll do**: Stream Home Assistant demo data into the publisher and watch it in the browser
 >
@@ -8,11 +8,11 @@ Run the whole flow with no real device, using Home Assistant's `demo` mode. Idea
 >
 > **What you need**: PC only (Docker is enough)
 >
-> **Time**: ~20 min
+> **Time required**: approx. 20 min
 
 ## Goal
 
-This hands-on is a **minimum simulation environment for connecting Home Assistant and IW3IP without physical sensors or cameras**.
+This is a **minimal simulation environment for trying the Home Assistant and IW3IP integration without real devices**.
 
 It uses Home Assistant `demo` entities to reproduce the following local flow:
 
@@ -61,21 +61,21 @@ Branches:
 
 <details class="iw3ip-toc-details">
   <summary>Phase 3: confirm assistant planning and execution</summary>
-  <p>The last part bridges accumulated publisher events into the assistant and shows how `plan` and `execute` are separated.</p>
+  <p>The last part passes the events accumulated in the publisher to the assistant and shows how `plan` and `execute` are separated.</p>
   <ol>
     <li><a href="#8-try-phase-3">Try Phase 3</a></li>
   </ol>
 </details>
 
-## What this page helps you understand
+## What this page covers
 
 - how to reproduce `temperature`, `power`, `person_detected`, `flood_risk_high`, and `possible_littering` without real devices
 - how IW3IP publisher receives, normalizes, and records data coming from Home Assistant through MQTT
 - the difference between Phase 1 state sharing and Phase 2 event sharing
 - how Consent VC changes `allowed` and `denied`
-- how to bridge `/platform/ingest` records into the Phase 3 `assistant`
+- how to pass the events accumulated in `/platform/ingest` to the Phase 3 `assistant`
 
-## Common stumbling points
+## Common issues
 
 - starting Home Assistant alone is not enough; you must add the `MQTT` integration before the scripts can publish
 - if Consent VCs are not registered, the scripts may run but the expected sharing behavior will not appear
@@ -372,7 +372,7 @@ Example output:
 }
 ```
 
-Then bridge the publisher events into the assistant:
+Then pass the events accumulated in the publisher to the assistant and check `execute`:
 
 ```bash
 python3 examples/ha_demo/run_phase3_from_ingest.py \
@@ -435,7 +435,7 @@ CARLA is a simulator for urban spaces, vehicles, pedestrians, and virtual sensor
 
 ## 10. What is Phase 1, Phase 2, and Phase 3 here?
 
-One important point of this sample is that one environment can show both Phase 1 and Phase 2.
+This sample lets you go through Phase 1, Phase 2, and Phase 3 in a single environment.
 
 - Phase 1:
   - state sharing such as `temperature` and `power`
@@ -447,7 +447,7 @@ One important point of this sample is that one environment can show both Phase 1
   - pass publisher events to the assistant and execute the plan
   - inspect `triggered` and `actions_executed`
 
-This page also works as a bridge between these two hands-on pages:
+This page therefore also serves as a connection point to the following hands-on pages:
 
 - [HA x SSI Publisher sample (Phase 1)](ha-ssi-publisher.md)
 - [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)

@@ -10,7 +10,7 @@ Use the same backend from Part 2 but install `iot-market-ui` as a PWA on your ph
 >
 > **Time**: ~30 min
 
-!!! abstract "PWA experience for laypeople"
+!!! abstract "A PWA experience usable even by beginners"
     Wraps the existing `iot-market-ui` as a Progressive Web App so the
     Phase 2 backend can be exercised entirely through smartphone taps —
     no command line needed. Pairs with the Stage 8 trust-model work and

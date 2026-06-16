@@ -1,6 +1,6 @@
 # SSI Viewer Sample (Phase 2 / Stage 3)
 
-[HA SSI Wallet](ha-ssi-wallet.en.md) gated the write side. Here we gate the read side with a VC.
+[HA SSI Wallet](ha-ssi-wallet.en.md) protected the write side with a VC. This page protects the read side with a VC.
 
 > **What you'll do**: Present a ViewerVC to be granted read access
 >
@@ -8,11 +8,19 @@
 >
 > **What you need**: PC + smartphone (Sphereon Wallet)
 >
-> **Time**: ~45 min
+> **Time required**: approx. 45 min
 
 !!! note "Sequel to the [SSI Wallet hands-on](ha-ssi-wallet.md)"
     Assumes you've completed Stage 1 (PolicyToken-gated write).
     This page covers Stage 3: gating **read** with VC presentation.
+
+!!! tip "Choosing a dataset"
+    The example here is written for `home/env/temperature`, but it also
+    works with `home/event/possible_littering`, the same as Stage 0
+    [webcam-event-sharing](webcam-event-sharing.md) (the PD in
+    [viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/viewer-possible-littering.json)
+    is already registered). Choose that if you want to use the same
+    dataset throughout the hands-on series.
 
 ## Goal
 
@@ -25,14 +33,14 @@ Pipeline:
 
 `Mobile wallet (ViewerVC) -> OID4VP Verifier -> ViewerToken -> /platform/data`
 
-## What you'll learn
+## What this page covers
 
 - Why "write VC" and "read VC" are separated
 - Issuing ViewerVC via OID4VCI and presenting via OID4VP
 - ViewerToken's 60-second TTL with multi-use semantics
 - How `/platform/data` reads are recorded in the audit log
 
-## Common pitfalls
+## Common issues
 
 - ConsentVC and ViewerVC are **distinct**. Presenting a ConsentVC won't unlock `/platform/data`
 - `/platform/data` only accepts ViewerToken (PolicyToken is rejected)
@@ -207,7 +215,7 @@ ViewerVC reads use a **freely-chosen dataset_id**. Other authorization
 shapes live in:
 
 - [Stage 4 prep: SSI Service](ha-ssi-service.md) — M2M continuous write (ServiceVC)
-- [Stage 5: Marketplace bridge](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
+- [Stage 5: Marketplace integration v2](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
 - [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — capstone
 - [Stage 7: SellerVC](marketplace-seller-vc.md) — marketplace seller identity
 

@@ -1,12 +1,12 @@
 # Quickstart (run the stack)
 
-Using the tools you installed in [Prerequisites](prerequisites.md), bring up the **practice city** in one go.
+Using the tools you installed in [Prerequisites](prerequisites.md), start the full hands-on environment together.
 Estimated time: **15–30 min** (the first run pulls Docker images and runs `npm install`).
 
-> Heads up: this brings up **6 separate processes**, one per terminal.
-> Take it slow and follow the steps in order.
+> This starts **6 separate processes**, each in its own terminal.
+> Follow the steps in order.
 
-## What we're starting — the big picture
+## What you are starting — overview
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -107,7 +107,7 @@ Expected output:
   ➜  Local:   http://localhost:5173/
 ```
 
-Open <http://localhost:5173> in a browser. The marketplace UI should appear.
+Open <http://localhost:5173> in a browser. If the marketplace UI appears, the frontend is running.
 
 ### 4. Start the storage server
 
@@ -119,7 +119,7 @@ cargo run
 ```
 
 The first run takes a few minutes to compile Rust crates.
-Look for `Listening on ...`.
+When `Listening on ...` appears, it has started.
 
 ### 5. Start IPFS + PostgreSQL (Docker)
 
@@ -136,7 +136,7 @@ docker compose up -d
 docker compose ps
 ```
 
-Both `ipfs` and `postgres` should show **Up**.
+If the State of both `ipfs` and `postgres` is **Up**, they are running.
 
 ### 6. Start the mediators (owner + buyer)
 
@@ -154,13 +154,13 @@ cd mediator-buyer
 cargo run --bin mediator-b
 ```
 
-Both should show `Listening on ...`.
+When both show `Listening on ...`, they have started.
 
-## Sanity check
+## Verify operation
 
 1. Open <http://localhost:5173>
 2. Set up **MetaMask** (next section)
-3. If listings render, you're ready for hands-on Part 1
+3. When the marketplace listings appear, you are ready to move on to hands-on Part 1
 
 ## MetaMask local-chain setup
 
@@ -179,7 +179,7 @@ Import the **Account #0 Private Key** from step 1:
 
 1. MetaMask top-right icon → **Import account**
 2. Paste the private key (`0x` + 64 hex)
-3. The imported account should show **10000 ETH**
+3. If the imported account shows a balance of **10000 ETH**, the import succeeded
 
 Reference (network add screen):
 
@@ -194,13 +194,14 @@ Reference (network add screen):
 
 All checked → start [hands-on Part 1](../hands-on/index.en.md).
 
-## Lighter path: docker compose only
+## Simpler alternative: a minimal stack with docker compose only
 
-"Seven terminals?" If that feels overwhelming, the simplest no-real-device path is:
+If opening seven terminals is cumbersome, you can use Docker Compose to start just the publisher-related components.
+For the shortest path focused on ingesting and observing data without physical devices, see the following page.
 
-- [Home Assistant Demo Simulator](../hands-on/ha-demo-simulator.md)
+- [Home Assistant Demo Simulator sample](../hands-on/ha-demo-simulator.md)
 
-That alone is enough to do the first section of Part 1.
+This alone is enough to try the first section of Part 1.
 
 ## Common stumbles
 

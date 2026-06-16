@@ -95,7 +95,7 @@ Phase 3 では、その先として、次の流れを扱います。
   <ol>
     <li><a href="#5-phase-2-と-phase-3-の違いを整理">Phase 2 と Phase 3 の違いを整理</a></li>
     <li><a href="#6-成功判定">成功判定</a></li>
-    <li><a href="#7-よくあるつまずき">よくあるつまずき</a></li>
+    <li><a href="#7-よくある問題">よくある問題</a></li>
     <li><a href="#8-停止">停止</a></li>
   </ol>
 </details>
@@ -290,7 +290,7 @@ Phase 3 は **「イベント共有」から「要求に応じた判断・行動
 - `light_on` と `send_notification` が `executed` になる
 - `/assistant/executions` で履歴を確認できる
 
-## 7. よくあるつまずき
+## 7. よくある問題
 
 ### `examples/phase3_request_park_safety.json` が見つからない
 

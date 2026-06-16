@@ -12,7 +12,7 @@ This chapter first explains the general mechanism and then places it inside the 
 
 ### Minimum Concepts
 
-At the start, these four terms are enough.
+At minimum, these four terms cover the essentials.
 
 - Ledger: a record of transactions
 - Block: a unit that groups transactions
@@ -21,18 +21,17 @@ At the start, these four terms are enough.
 
 ### How Blockchain Builds Trust
 
-Instead of relying on a single server, blockchain shares transaction history across multiple participants and links blocks with hashes.  
-The main benefit is not \"magic immutability\", but that history becomes easier to verify, compare, and detect tampering against.
+Instead of keeping records on a single server, blockchain has multiple participants share the same history and links each block with hashes, which makes the record hard to rewrite after the fact.  
+The point is not that tampering is impossible, but that **tampering is easy to detect and history can be reconciled across participants.**
 
 ### What It Is Good At, and What It Is Not
 
-Blockchain is not a universal storage or processing layer.  
-The important point is to separate what belongs on-chain from what should remain in another system.
+Blockchain is not a universal tool. You need to decide what to put on it and what to leave to other systems.
 
 - Good at:
-  - traceable history
-  - shared verification across participants
-  - programmable rule execution via smart contracts
+  - tracing who recorded what and when
+  - sharing history without depending entirely on one central administrator
+  - automating rule execution through smart contracts
 - Not good at:
   - storing large raw data directly
   - ultra-low-latency high-throughput data streams
@@ -40,9 +39,9 @@ The important point is to separate what belongs on-chain from what should remain
 
 ### Common Misunderstandings
 
-- \"Blockchain is always fast\": no, it optimizes trust and verifiability, not raw throughput
-- \"Store all raw data on-chain\": usually no, keep large payloads off-chain and store references/digests
-- \"Smart contracts are legal contracts themselves\": it is more accurate to first think of them as deterministic programs enforcing rules
+- \"Blockchain is fast at everything\": no. Its strengths are verifiability and decentralization
+- \"Put all raw data on-chain\": no. Large data is usually stored off-chain, with digests or references recorded on-chain
+- \"Smart contracts are legal contracts themselves\": no. Here, treat them as programs that run according to defined conditions
 
 ## Position in This System
 
@@ -51,7 +50,7 @@ The important point is to separate what belongs on-chain from what should remain
 In centralized systems, access policy and usage history are often hidden in one operator database.  
 IW3IP increases transparency by keeping verifiable records for policy-related operations.
 
-### Intuition Diagram
+### Conceptual Diagram
 
 ```mermaid
 flowchart LR
@@ -63,15 +62,15 @@ C --> E[Auditable History]
 
 ### Connection to IW3IP
 
-In this site, the first step is to understand what should be recorded for verification and what should remain outside the chain.
+The samples in this site prioritize one idea first: what to record and what not to record.
 
-- This sample focuses on consent policy + audit pipeline first
-- Later phases can add stronger on-chain evidence and access governance
+- This sample implements consent decisions and audit logs first
+- It leaves room to later connect contract terms and verification data on-chain
 
 ### What Is On-Chain vs Off-Chain Here
 
-This distinction is central to the design.  
-IW3IP separates information that benefits from verifiable records from information that is too large or too frequent to place on-chain directly.
+If this is left vague, neither the reasons to use blockchain nor the reasons not to become clear.  
+IW3IP separates information suited to verification and audit trails from information that is large or updated frequently.
 
 - On-chain candidates:
   - contract summaries

@@ -1,26 +1,26 @@
 # Hands-on
 
-This section is the practical part of IW3IP where you run the system yourself.
-**Basic** gets the whole pipeline working, **Feature Extensions** dives into safe / conditional sharing and tiered access, and **Intelligence Integration** plugs an AI on top.
+This is the chapter where you run IW3IP yourself to understand it.
+**Basic** establishes the overall picture, **Feature Extensions** covers safe sharing and tiered access, and **Intelligence Integration** shows the AI integration.
 
-> Finish the [Environment Setup](../setup/index.md) before starting here.
+> Finish the [Environment Setup](../setup/index.md) before moving on to this page.
 
 ## Basic vs Feature Extensions
 
 The hands-on explains the marketplace stack in two layers: **Basic (v1)** and **Feature Extensions (v2)**.
 They are **additive lanes, not a replacement** — Basic alone is enough to buy and sell data.
 
-### Basic (v1) — get something running
+### Basic (v1) — minimal setup
 
 - List data on the marketplace, **purchase via MetaMask**, **download from encrypted IPFS** and decrypt
-- All you need is a PC plus MetaMask
-- Part 1 of the hands-on walks through this v1 path
+- All you need is a PC and MetaMask
+- Part 1 of the hands-on builds this v1 path
 
-### Feature Extensions (v2) — safer, conditional, tiered
+### Feature Extensions (v2) — safe, conditional, tiered access
 
 - After purchase a **smartphone SSI wallet** receives a **VC**
-- The receiver presents that VC to fetch data. The exact contents change based on `purpose` and trust level
-- Part 2 of the hands-on covers this v2 path plus consent and tiered access on top
+- The receiver presents that VC to fetch data. The contents shown vary by `purpose` and trust level
+- Part 2 of the hands-on covers this v2 path plus the consent and tiered access that sit on top of it
 
 ```
 Purchase (shared by v1 and v2)
@@ -32,7 +32,7 @@ Purchase (shared by v1 and v2)
 
 Design detail: [Marketplace VC Bridge — v1 / v2 design spec](../design/marketplace-vc-bridge-spec.md).
 
-## Big picture
+## Overall structure
 
 <div class="iw3ip-phase-grid">
   <div class="iw3ip-phase-card iw3ip-phase-1">
@@ -50,7 +50,7 @@ Design detail: [Marketplace VC Bridge — v1 / v2 design spec](../design/marketp
   <div class="iw3ip-phase-card iw3ip-phase-2">
     <div class="iw3ip-phase-kicker">Part 2 / Feature Extensions (v2)</div>
     <h3>🧭 Consent, conditional sharing, tiered access</h3>
-    <p>Use VCs and a wallet to share by purpose / trust level. You can stop partway.</p>
+    <p>Use VCs and a wallet to share according to purpose and trust level. You can stop partway.</p>
     <p class="iw3ip-phase-links">
       <a href="ha-ssi-wallet.md">HA SSI Wallet</a> /
       <a href="webcam-event-sharing.md">Webcam Event Sharing</a> /
@@ -70,18 +70,18 @@ Design detail: [Marketplace VC Bridge — v1 / v2 design spec](../design/marketp
   </div>
 </div>
 
-## Pick your track
+## Paths by goal
 
 | Goal | Path |
 |---|---|
-| Just see something running | [HA Demo Simulator](ha-demo-simulator.md) only (~15 min) |
-| All of Basic | All of Part 1 (60–90 min) |
+| See it run first | [HA Demo Simulator](ha-demo-simulator.md) only (approx. 15 min) |
+| Cover all of Basic | All of Part 1 (60–90 min) |
 | Reach safe / conditional sharing | Part 1 → Part 2 §2.1–§2.3 (+60 min) |
-| Marketplace × wallet (v2) | Part 1 → Part 2 §2.4 (+30 min) |
-| Tiered + semantic | All of Part 2 (+30 min) |
-| Full intelligence integration | All the way through Part 3 (+30 min) |
+| Reach v2 marketplace integration | Part 1 → Part 2 §2.4 (+30 min) |
+| Reach tiered access / semantic | Through Part 2 §2.5 (+30 min) |
+| Reach AI integration | Through Part 3 (+30 min) |
 
-Each hands-on page opens with a "what you'll learn / prerequisites / what you need / time estimate" block. If something breaks, see [Troubleshooting](../operations/troubleshooting.md).
+Each hands-on page opens with a "What you'll learn / Prerequisites / What you need / Time required" block. If you get stuck partway, see [Troubleshooting](../operations/troubleshooting.md).
 
 ## Tech stack at a glance
 
@@ -122,15 +122,15 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 - See **where data is generated and where it ends up**
 - Round-trip a **v1 marketplace purchase** (encrypted-IPFS delivery)
 
-### 1.1 Just run it — no real hardware
+### 1.1 Run it first — check the whole flow without hardware
 
-The Home Assistant simulator lets you run the entire walkthrough without any IoT device.
+The Home Assistant simulator lets you run the entire walkthrough without any IoT device. A good place to begin.
 
 - [HA Demo Simulator](ha-demo-simulator.md)
 
-### 1.2 Capture from a real device
+### 1.2 Capture data from a device
 
-Pick one based on what you have:
+Build a path that pulls data off a camera or sensor and sends it to the publisher. Choose one that matches your hardware:
 
 - [HUSKYLENS2](huskylens2.md) — purpose-built AI camera
 - [USB Webcam](webcam.md) — generic USB camera + OpenCV
@@ -138,15 +138,17 @@ Pick one based on what you have:
 
 ### 1.3 View on a phone
 
+View the collected data in a phone browser.
+
 - [Mobile Viewer](mobile-viewer.md)
 
 ### 1.4 Trade on the marketplace (v1 lane)
 
-Sell → buy → decrypt-from-IPFS round trip. End of Basic.
+List → buy → decrypt-from-IPFS round trip. This is the completion point of **Basic (v1)**.
 
 - List with iot-market-ui
 - Buy with MetaMask
-- Decrypt the IPFS payload
+- Decrypt the encrypted data stored on IPFS
 
 Detailed bring-up: [Quickstart](../setup/quickstart.md).
 
@@ -161,9 +163,9 @@ Detailed bring-up: [Quickstart](../setup/quickstart.md).
 
 ### Goals
 
-- Understand why **"share everything" is wrong** and "share conditionally" matters
+- Understand why **conditional sharing** is needed instead of "show everything"
 - Implement that conditional sharing with **VCs and a wallet**
-- Tier the response by trust level (**Tier 3 / 2 / 1**)
+- Vary what is shown by trust level with **tiered access (Tier 3 / 2 / 1)**
 
 ### 2.1 Add consent (Consent VC)
 
@@ -238,6 +240,6 @@ The "request → plan → execute → UI" decomposition pattern.
 
 ---
 
-## Lost on terminology?
+## When a term is unfamiliar
 
-Jump back to the [setup mini-glossary](../setup/index.en.md). It one-liners almost every term you'll see.
+See the [setup mini-glossary](../setup/index.en.md). It explains almost every term you'll encounter in one line.

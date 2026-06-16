@@ -10,7 +10,7 @@ Step into Part 3: feed the events you gathered in Part 2 (`possible_littering` e
 >
 > **Time**: ~60 min
 
-This hands-on extends the existing [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md) and demonstrates how **a human request can be interpreted, decomposed into tasks, evaluated against observed events, and connected to device actions**.
+As an extension of the [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md), this covers the flow where **an AI interprets a human request and breaks it down into event collection, condition evaluation, and device control**.
 
 In Phase 2, the focus was on sharing events such as `possible_littering`.  
 In Phase 3, the flow becomes:
@@ -32,17 +32,17 @@ Branches after that:
 - If you want the full execution path: continue through `execute` and `executions`
 - If you want to extend this into LLM-based planning: continue to the `LLM Planner` hands-on next
 
-## What this page helps you understand
+## What this page covers
 
-- how Phase 2 event sharing expands into Phase 3 decision and control
-- why `plan` and `execute` are separated
-- why planner, evaluator, and actuator are kept as separate modules
+- how Phase 2 event sharing expands into decision and control in Phase 3
+- the reason for separating `plan` and `execute`
+- the meaning of designing planner, evaluator, and actuator as separate modules
 
-## Common stumbling points
+## Common issues
 
-- generating a `plan` is different from satisfying the conditions for `execute`
-- event evaluation and device control are easy to collapse mentally into one step, but they are separate
-- this page points to the minimum implementation itself, so the module boundaries matter
+- being able to build a `plan` is different from having the conditions met at `execute`
+- treating event-count evaluation and device control as one process makes the flow hard to see
+- in Phase 3 you read the minimum implementation itself rather than a problem program, so the module boundaries deserve attention
 
 ## Prerequisites
 
@@ -102,7 +102,7 @@ That is intentional, because in Phase 3 the module boundaries between planner, e
 
 ## How to read this page
 
-This page is the main Phase 3 explanation page. If you only want a quick confirmation path, looking at `plan` and `execute` is enough. If you want to understand how Phase 3 differs from Phase 2 and why the module boundaries matter, it is worth reading the final comparison and the common issues section as well.
+This is the representative page for understanding the Phase 3 approach. For a quick pass, `plan` and `execute` are enough. To understand the difference from Phase 2 and the module boundaries, read through the final summary as well.
 
 ## Scenario
 
@@ -145,7 +145,7 @@ sequenceDiagram
   API-->>User: execution result
 ```
 
-This diagram makes two points explicit: `plan` and `execute` are intentionally separated, and the system evaluates relevant events before it issues any device action.
+Note that `plan` and `execute` are separated, and that the relevant events are gathered together before the decision.
 
 ## Phase 3: Inspect how the planner interprets the request
 
@@ -205,7 +205,7 @@ Checkpoints:
 - `watch_events` includes `possible_littering`
 - `actions` includes `light_on` and `send_notification`
 
-At this point, the request has been converted into a structured `plan`. The next step is to inspect how the system evaluates observed events and turns the result into actions.
+The request has been converted into a structured `plan`. Next, see how event evaluation and device control proceed based on that `plan`.
 
 ## Phase 3: Inspect evaluator and actuator behavior
 
@@ -237,9 +237,9 @@ Example expected output:
 }
 ```
 
-This is triggered because the sample event file contains three `possible_littering` events, which is enough to cross the built-in threshold.
+This result means the threshold is met, because the sample event file contains three `possible_littering` events.
 
-How to read this result:
+How to read the result:
 
 - the `possible_littering` count crosses the threshold
 - the target location matches `park-north`
@@ -261,7 +261,7 @@ Checkpoints:
 
 are all kept together as one execution record.
 
-At this point, it should be clearer that Phase 3 is not just event sharing. It is the stage where planning, evaluation, and execution are connected around a human request. The last section makes that contrast with Phase 2 explicit.
+Phase 3 goes beyond event sharing: it is the stage that handles planning, evaluation, and execution together in response to a request. The final section organizes the difference from Phase 2.
 
 ## Phase 3: Organize the difference from Phase 2
 
@@ -279,7 +279,7 @@ Phase 3 adds:
 - assembling evaluation conditions
 - issuing device actions when conditions are met
 
-In other words, Phase 3 moves from **"share events" to "interpret requests, decide, and act."**
+Phase 3 is the stage that moves from **"sharing events" to "deciding and acting in response to a request."**
 
 ## 6. Success criteria
 
@@ -304,7 +304,7 @@ This hands-on is successful if you can confirm the following:
 ### It is unclear where the AI part is
 
 In this minimum implementation, the planner is still rule-based.  
-However, the key architectural point is that **the system already has a clear boundary that converts natural language into a structured plan**, so it can later be replaced with an LLM-based or external planner.
+However, the **module boundary that converts a natural-language request into a structured plan** is built first, which makes it easy to later replace with an LLM or an external planner.
 
 ## 8. Stop services
 

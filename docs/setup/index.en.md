@@ -1,19 +1,19 @@
 # Environment Setup
 
-This section covers **everything you need before starting the hands-on**.
-We assume you are a high school or undergraduate student touching this for the first time, so terms and steps are explained gently.
+This section covers what you need before starting the hands-on.
+It assumes a high school or undergraduate student is encountering this for the first time, so terms and steps are explained in plain language.
 
-## What you are building locally
+## What you are building
 
-In the IW3IP hands-on you will run, on your own laptop, a small "city" where:
+In the IW3IP hands-on you will run the following on your own laptop:
 
-- IoT devices (cameras, sensors, phones) generate data
-- That data is shared **conditionally** with other people
-- Receivers either purchase the data or feed it to an AI agent
+- collect data from IoT devices (cameras, sensors, phones)
+- share that data with other people **conditionally**
+- purchase the shared data or have an AI evaluate it
 
-Think of it as **a practice city for safe, conditional data sharing**. No real cloud, no real money — everything runs locally.
+You build this on your own PC as a local development environment for sharing data safely and conditionally with others. No real cloud or money is involved — everything runs locally.
 
-## The big picture
+## Overall structure
 
 The hands-on is split into **Basic** and **Feature Extensions**.
 
@@ -50,7 +50,7 @@ The hands-on is split into **Basic** and **Feature Extensions**.
 | Reach safe / conditional sharing | Setup → Part 1 → Part 2 |
 | Full intelligence-integrated demo | Setup → Part 1 → Part 2 → Part 3 |
 
-It is fine to stop partway. Each Part builds on the previous one **a little at a time**.
+It is fine to stop partway. Each Part builds on the knowledge of the previous one step by step.
 
 ## Setup steps
 

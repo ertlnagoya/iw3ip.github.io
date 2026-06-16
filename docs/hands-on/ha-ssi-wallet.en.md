@@ -1,6 +1,6 @@
 # Mobile SSI Wallet Sample (Phase 2)
 
-Receive a VC into a smartphone SSI wallet (Sphereon Wallet), then present it to authorize a data action. This is the entry point to Part 2 (feature extensions).
+Receive a VC into a smartphone SSI wallet (Sphereon Wallet), then present it to authorize a data action. This is the first hands-on in Part 2 (Feature Extensions).
 
 > **What you'll do**: Receive a Consent VC on your phone and present it to allow a write
 >
@@ -8,7 +8,7 @@ Receive a VC into a smartphone SSI wallet (Sphereon Wallet), then present it to 
 >
 > **What you need**: PC + smartphone with Sphereon Wallet
 >
-> **Time**: ~60 min
+> **Time required**: approx. 60 min
 
 !!! note "This hands-on is under construction"
     This page drafts a VC verification demo based on a fork of
@@ -22,9 +22,9 @@ Receive a VC into a smartphone SSI wallet (Sphereon Wallet), then present it to 
     `home/env/temperature` if you only want to exercise the wallet
     flow with a scalar value.
 
-## Purpose
+## Goal
 
-Experience the flow where a smartphone SSI wallet presents a Consent VC,
+Try the flow where a smartphone SSI wallet presents a Consent VC,
 the IW3IP backend verifies it via OID4VP, and only verified requests
 receive shared event data.
 
@@ -37,14 +37,14 @@ Pipeline:
 
 `Mobile wallet (holds VC) -> QR/Deeplink -> OID4VP Verifier -> Platform API -> Event sharing`
 
-## What you learn
+## What this page covers
 
 - The basic flow of issuing a VC to the wallet (OID4VCI) and presenting it (OID4VP)
 - How the verifier's Presentation Definition (PEX) maps to the wallet's response
 - A lightweight stack using `did:jwk` / `did:key` and SD-JWT VC
 - How `allowed` / `denied` depends on VC content and `purpose`
 
-## Common pitfalls
+## Common issues
 
 - If the Presentation Definition `input_descriptors` disagree with the VC
   claims, the wallet reports "no matching credential"
@@ -302,7 +302,7 @@ following stages:
 
 - [Stage 3: SSI Viewer](ha-ssi-viewer.md) — multi-use read (ViewerVC)
 - [Stage 4 prep: SSI Service](ha-ssi-service.md) — M2M continuous write (ServiceVC)
-- [Stage 5: Marketplace bridge](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
+- [Stage 5: Marketplace integration v2](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
 - [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
 - [Stage 7: SellerVC](marketplace-seller-vc.md) — marketplace seller identity
 

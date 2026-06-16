@@ -1,17 +1,17 @@
 # IoTxWeb3 Intelligence Platform (IW3IP) Documentation
 
-This site is organized so that readers can move step by step through the IW3IP overview, implementation examples, and hands-on exercises.
+This documentation site brings together the IW3IP overview, implementation examples, and hands-on instructions.
 
 ## Main Use Cases
 
 - Undergraduate students studying computing or information systems
 - Instructors and TAs running practical sessions
 
-[Learning Foundations / Course Guide](foundations/course-guide.md) is the best starting point for understanding the overall structure.
+For the overall picture, we recommend starting from the [Learning Foundations / Course Guide](foundations/course-guide.md).
 
 ## What This Site Covers
 
-This site is organized so that readers can work through the core concepts and the introductory hands-on path within the documentation itself.
+You can work through the material in order, from foundational understanding to the basic hands-on.
 
 - Foundations:
   - blockchain
@@ -29,7 +29,11 @@ External websites and papers are positioned as follow-up material for standards,
 - **Workshop**: instructor/TA flow design (goals, timing, orchestration)
 - **Hands-on**: participant execution steps (commands, expected results)
 
-In short, **Hands-on is a part of Workshop**.
+The relationship is that **Hands-on is carried out within a Workshop**.
+
+## Overall flow
+
+![Overall image](assets/raspberryPi.jpg)
 
 ## Start here
 
@@ -61,9 +65,7 @@ Open:
 - `http://localhost:8123`
 - `http://localhost:8080/health`
 
-After that, `assistant-demo` is the shortest one-command path into Phase 3 and intelligence integration.
-
-As the shortest Phase 3 demo path, `assistant-demo` starts the following in one command:
+As the shortest Phase 3 demo, `assistant-demo` starts the following in one command:
 
 - `assistant-demo`
 - `llm-mock`

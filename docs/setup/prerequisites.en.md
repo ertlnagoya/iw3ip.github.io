@@ -1,16 +1,16 @@
 # Prerequisites (install tools)
 
-Before the hands-on, install a handful of tools on your PC and confirm they work.
-We add a one-line **"why this tool?"** to each item. Jargon is unpacked where it appears.
+Before the hands-on, install the required software on your PC and confirm it works.
+Each item includes a one-line note on why the tool is needed. Technical terms are explained where they appear.
 
-> Already have everything? Skip to the [verification checklist](#verification-checklist) and head straight to [Quickstart](quickstart.md).
+> If you already have these tools, you can just complete the [verification checklist](#verification-checklist) and proceed to [Quickstart](quickstart.md).
 
-## The big picture — why each tool
+## Overview — why each tool
 
-The hands-on builds a small **"practice city for safe data sharing"** on your laptop.
-The city is made of these buildings (= processes):
+The hands-on builds a local development environment for sharing data safely on your laptop.
+This environment consists of the following processes:
 
-| Building (process) | Role | Tool needed |
+| Process | Role | Tool needed |
 |---|---|---|
 | Local blockchain | Records sale/purchase transactions | **Node.js** (`npx hardhat node`) |
 | Marketplace UI | List / buy in the browser | **Node.js** + browser + **MetaMask** |
@@ -18,13 +18,13 @@ The city is made of these buildings (= processes):
 | Distributed file store | Replicates files | **Docker** (IPFS container) |
 | Publisher / mediators | Glue between everything | **Docker** |
 
-So you need: **Docker / Node.js / Rust / Git / browser + MetaMask**.
+So once you have **Docker / Node.js / Rust / Git / browser + MetaMask**, you can build the environment.
 
 ## Required
 
 ### 1. Docker
 
-Runs the whole city in one command.
+Used to start the whole environment together.
 
 - **macOS / Windows**: install [Docker Desktop](https://www.docker.com/products/docker-desktop/) — has a GUI for managing containers.
 - **Linux**: distro-provided `docker` package, or the official install script.
@@ -60,7 +60,7 @@ For buying data on the marketplace (used in Part 1).
 
 - Browser: any of Chrome / Edge / Firefox / Brave
 - [MetaMask](https://metamask.io/) — install as a browser extension
-- Think of it as "an Ethereum-style wallet that connects to a local chain"
+- An Ethereum-style wallet that connects to the local chain
 
 ## Optional (used in feature-extensions part)
 
@@ -118,13 +118,13 @@ git version 2.x.x
 
 If you see `command not found`, go back to the section above and reinstall.
 
-### Confirm Docker actually runs
+### Confirm Docker runs
 
 ```bash
 docker run --rm hello-world
 ```
 
-You should see "Hello from Docker!".
+If you see the "Hello from Docker!" message, it is working.
 
 ### Clone the lesson repo
 

@@ -181,8 +181,8 @@ Server-side checks:
 具体的には `/issuer/offer?type=SellerVC&seller_id=...&licensed_datasets=...`
 で seller_id と licensed_datasets を query で渡す素朴な API。
 
-教育用ハンズオンとしては、これで「seller がどの dataset を扱う権限を
-持つか」が VC で示せる体験ができる。
+教育用ハンズオンとしては、これにより「seller がどの dataset を扱う権限を
+持つか」を VC で示せる。
 
 **本番想定 (将来)**: SellerVC は別の "marketplace authority" サービスが
 発行し、publisher は検証のみ行う。本仕様には含めない (注のみ)。
