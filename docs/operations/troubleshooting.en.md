@@ -63,3 +63,36 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 - Symptom: purchase does not succeed
   - Check: MetaMask is connected with the expected account
   - Action: after restarting the local chain, clear stale MetaMask state and reconnect
+
+## Events are rejected with `no_matching_consent`
+
+- Symptom: in the HA Demo Simulator (or similar), some datasets never appear in `/platform/ingest`. In `audit/logs` they show `action: deny` / `reason: no_matching_consent` / `subject_did: "unknown"`
+  - Example log:
+
+    ```json
+    {"action":"deny","subject_did":"unknown","dataset_id":"home/event/possible_littering","purpose":"research","reason":"no_matching_consent", ...}
+    ```
+
+  - Most likely cause: **an expired consent VC**. If the `valid_to` of a consent file (`examples/ha_demo/consent_*.json`) is in the past, the consent no longer matches at the current time and the event is denied even after registration. The bundled sample files use fixed dates, so they expire as time passes.
+
+### Check
+
+- Read the audit log first (in zsh, quote the URL because `?` is treated as a glob):
+
+  ```bash
+  curl 'http://localhost:8080/audit/logs?limit=20'
+  ```
+
+- Open the consent file for the denied `dataset_id` and confirm that **today's date** falls within `valid_from`–`valid_to`. If `valid_to` is in the past, the consent has expired.
+
+### Fix
+
+- Extend `valid_to` to a sufficiently future date and re-register. Example to bump all expired entries at once (macOS `sed` needs `-i ''`):
+
+  ```bash
+  sed -i '' 's/"valid_to": "2026-05-01T00:00:00Z"/"valid_to": "2027-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
+  ```
+
+- After editing, re-register the consents (confirm each response contains `"status":"stored"`), re-send the events, then check `/platform/ingest` again.
+- Existing `deny` entries remain in the log as history. Always verify with **a new event sent after the consent was registered**.
+- Permanent fix: in the course repository, set the consent `valid_to` to a long-lived date (or generate it as "now + 1 year" at runtime).

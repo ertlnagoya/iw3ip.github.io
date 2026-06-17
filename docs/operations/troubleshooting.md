@@ -62,3 +62,36 @@
 - 症状: 購入できない
   - 確認: MetaMask の接続アカウントが正しいか
   - 対応: ローカルチェーン再起動後は MetaMask のキャッシュをクリア
+
+## 6. イベントが共有されず `no_matching_consent` で拒否される
+
+- 症状: HA Demo Simulator などで、一部のデータセットだけ `/platform/ingest` に出てこない。`audit/logs` を見ると `action: deny` / `reason: no_matching_consent` / `subject_did: "unknown"` になっている
+  - ログ例:
+
+    ```json
+    {"action":"deny","subject_did":"unknown","dataset_id":"home/event/possible_littering","purpose":"research","reason":"no_matching_consent", ...}
+    ```
+
+  - 原因の第一候補: **consent VC の有効期限切れ**。consent ファイル (`examples/ha_demo/consent_*.json`) の `valid_to` が過去日付だと、登録しても現在時刻が有効期間外となり、一致せず拒否されます。教材に含まれるサンプルは固定日付のため、時間が経つと期限切れになります。
+
+### 確認
+
+- まず audit ログを読みます (zsh では `?` がワイルドカード扱いになるため URL をクォートで囲みます)。
+
+  ```bash
+  curl 'http://localhost:8080/audit/logs?limit=20'
+  ```
+
+- 拒否されている `dataset_id` の consent ファイルを開き、`valid_from` 〜 `valid_to` の範囲に**今日の日付**が入っているか確認します。`valid_to` が過去なら期限切れです。
+
+### 対処
+
+- consent ファイルの `valid_to` を十分先の日付に延ばし、登録し直します。期限切れの行をまとめて延長する例 (macOS の `sed` は `-i ''` が必要):
+
+  ```bash
+  sed -i '' 's/"valid_to": "2026-05-01T00:00:00Z"/"valid_to": "2027-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
+  ```
+
+- 編集後、consent を登録し直し (各レスポンスが `"status":"stored"` になることを確認)、イベントを送り直してから `/platform/ingest` を再確認します。
+- 既存の `deny` ログは履歴として残ります。必ず **consent 登録後に送り直した新しいイベント** で結果を確認してください。
+- 恒久対応: 教材リポジトリ側で consent の `valid_to` を長期 (または生成時に「現在 + 1 年」など) に修正します。
