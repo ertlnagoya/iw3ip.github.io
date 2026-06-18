@@ -260,6 +260,61 @@ curl http://localhost:8080/audit/logs?limit=10
 - `/platform/ingest` に `home/event/possible_littering` と `home/event/suspicious_activity` が入っていること
 - `/audit/logs` で `action: allow` と `raw_topic` が対応していること
 
+ここで、一部のイベントだけ `/platform/ingest` に出てこないことがあります。その場合は次のワークで原因を特定して直してみましょう。
+
+## ワーク: 一部のイベントが拒否されるときは (consent の有効期限を直す)
+
+手順5を実行すると、`suspicious_activity` は `/platform/ingest` に出るのに、`possible_littering` など他のデータセットが出てこないことがあります。このとき `audit/logs` には `action: deny` / `reason: no_matching_consent` が残ります。原因の多くは consent VC の **有効期限切れ** です。VC の有効期間 (`valid_from` 〜 `valid_to`) を体験する良い題材なので、**自分で原因を特定して直してみましょう**。
+
+### Step 1. 監査ログで「拒否」を確認する
+
+まず audit ログを読みます。zsh では `?` がワイルドカード扱いになるため、URL をクォートで囲みます。
+
+```bash
+curl 'http://localhost:8080/audit/logs?limit=20'
+```
+
+`action` / `dataset_id` / `reason` / `subject_did` に注目してください。
+
+??? question "何が読み取れればよい?"
+    - 拒否されたイベントは `action: "deny"`、`reason: "no_matching_consent"`、`subject_did: "unknown"` になっています。
+    - 許可されたイベントは `action: "allow"`、`reason: "sent"` で、`subject_did` に発行者の DID が入っています。
+    - つまり「consent が無い」のではなく「一致する consent が見つからない」状態です。これが手がかりです。
+
+### Step 2. 原因を推測する
+
+許可されるデータセットと拒否されるデータセットで、対応する consent ファイル (`examples/ha_demo/consent_*.json`) の中身がどう違うかを見比べます。とくに `valid_from` と `valid_to` に注目してください。
+
+??? tip "ヒント"
+    `valid_from` 〜 `valid_to` が VC の有効期間です。**今日の日付がこの範囲の外**だと、その consent は一致しません。拒否されているデータセットの consent の `valid_to` が過去の日付になっていないか確認しましょう。
+
+### Step 3. 直して登録し直す
+
+期限切れの consent の `valid_to` を、今日より先の日付に書き換えます。エディタで該当ファイルを開いて直しても構いませんし、まとめて延ばすこともできます (macOS の `sed` は `-i ''` が必要)。
+
+```bash
+sed -i '' 's/"valid_to": "2026-05-01T00:00:00Z"/"valid_to": "2027-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
+```
+
+直したら、手順3と同じ要領で consent を登録し直し、各レスポンスに `"status":"stored"` が返ることを確認します。
+
+### Step 4. もう一度イベントを送って確認する
+
+手順4のスクリプト (または手順7の直接 publish) でイベントを送り直し、`/platform/ingest` に今度は入ることを確認します。
+
+```bash
+curl 'http://localhost:8080/platform/ingest'
+```
+
+??? note "うまくいかないとき"
+    - 既存の `deny` ログは履歴として残ります。必ず **consent を登録し直したあとに送った新しいイベント** で確認してください。
+    - それでも拒否される場合は、`purpose` が consent の `allowed_purposes` に含まれているかも確認します。
+    - 詳しくは [トラブルシュート](../operations/troubleshooting.md) の「`no_matching_consent`」の項目を参照してください。
+
+### 考えてみよう
+
+VC になぜ有効期限があるのでしょうか。期限の無い同意と比べて何が安全になるのか、また実運用で期限が切れたときにどう運用すべきかを考えてみてください。
+
 Home Assistant → publisher の基本共有経路が動いていることを確認できました。次は Consent VC による拒否ケースを確認します。
 
 ## Phase 2: イベント共有と拒否を確認する

@@ -260,6 +260,61 @@ Focus points:
 - `/platform/ingest` contains both `home/event/possible_littering` and `home/event/suspicious_activity`
 - `/audit/logs` shows `action: allow` with the expected `raw_topic`
 
+At this point, some events may not appear in `/platform/ingest`. If so, work through the exercise below to find and fix the cause.
+
+## Exercise: when some events are rejected (fix the consent expiry)
+
+When you run step 5, `suspicious_activity` may appear in `/platform/ingest` while other datasets such as `possible_littering` do not. In that case `audit/logs` shows `action: deny` / `reason: no_matching_consent`. The usual cause is an **expired consent VC**. This is a good way to learn about a VC's validity period (`valid_from`–`valid_to`), so **diagnose and fix it yourself**.
+
+### Step 1. Confirm the denial in the audit log
+
+Read the audit log first. In zsh, quote the URL because `?` is treated as a glob.
+
+```bash
+curl 'http://localhost:8080/audit/logs?limit=20'
+```
+
+Look at `action` / `dataset_id` / `reason` / `subject_did`.
+
+??? question "What should you be able to read off?"
+    - Rejected events have `action: "deny"`, `reason: "no_matching_consent"`, and `subject_did: "unknown"`.
+    - Allowed events have `action: "allow"`, `reason: "sent"`, and the issuer DID in `subject_did`.
+    - So the problem is not that a consent is missing, but that no *matching* consent is found. That is the clue.
+
+### Step 2. Form a hypothesis
+
+Compare the consent files (`examples/ha_demo/consent_*.json`) for an allowed dataset versus a denied one. Pay attention to `valid_from` and `valid_to`.
+
+??? tip "Hint"
+    `valid_from`–`valid_to` is the VC's validity period. If **today's date falls outside this range**, the consent does not match. Check whether the `valid_to` of a denied dataset's consent is in the past.
+
+### Step 3. Fix and re-register
+
+Change the expired consent's `valid_to` to a future date. You can edit the file in an editor, or extend them all at once (macOS `sed` needs `-i ''`).
+
+```bash
+sed -i '' 's/"valid_to": "2026-05-01T00:00:00Z"/"valid_to": "2027-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
+```
+
+Then re-register the consents as in step 3 and confirm each response contains `"status":"stored"`.
+
+### Step 4. Re-send the events and verify
+
+Re-run the step 4 scripts (or the direct publish from step 7), then confirm the events now appear in `/platform/ingest`.
+
+```bash
+curl 'http://localhost:8080/platform/ingest'
+```
+
+??? note "If it still fails"
+    - Existing `deny` entries remain in the log as history. Always verify with **a new event sent after the consent was re-registered**.
+    - If it is still denied, check that the event's `purpose` is included in the consent's `allowed_purposes`.
+    - See the "`no_matching_consent`" item in [Troubleshooting](../operations/troubleshooting.md) for details.
+
+### Something to think about
+
+Why do VCs have an expiry at all? Consider what becomes safer compared with consent that never expires, and how you would operate the system when a consent expires in production.
+
 Once this part works, the basic sharing path from Home Assistant to the publisher is in place. The next step is to confirm that the same path can also produce a rejection when Consent VC conditions do not match.
 
 ## Phase 2: Confirm event sharing and denial
