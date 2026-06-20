@@ -61,12 +61,13 @@ homepage `/` をスマホで開く形に読み替えてください。
 
 ## 最短ルート
 
-最初は次の 4 手順で十分です。
+最初は次の 5 手順で十分です。
 
-1. `iot-market-ui` を `0.0.0.0:5173` で起動する
-2. PC の LAN IP を確認する
-3. スマホで `http://<LAN_IP>:5173/` を開く (homepage)
-4. 検索 UI が見えることを確認する
+1. `iot-market-ui/.env.local` を用意し、接続先を自分の環境に合わせる (PC のみなら `127.0.0.1`、スマホからなら LAN IP)
+2. `iot-market-ui` を `0.0.0.0:5173` で起動する
+3. PC の LAN IP を確認する
+4. スマホで `http://<LAN_IP>:5173/` を開く (homepage)
+5. 検索 UI が見えることを確認する
 
 その後の分岐:
 
@@ -81,8 +82,9 @@ homepage `/` をスマホで開く形に読み替えてください。
 
 <details class="iw3ip-toc-details" open>
   <summary>準備: PC 側の公開設定と LAN IP を確認する</summary>
-  <p>最初に PC 側のフロントエンドを LAN 公開で起動し、スマホからアクセスするための IP アドレスを確認します。</p>
+  <p>最初にフロントの接続先 (.env.local) を設定し、PC 側のフロントエンドを LAN 公開で起動して、スマホからアクセスするための IP アドレスを確認します。</p>
   <ol>
+    <li><a href="#env-local">フロントの接続先を設定 (.env.local)</a></li>
     <li><a href="#1-pc側をlan公開で起動">PC側をLAN公開で起動</a></li>
     <li><a href="#2-pcのlan-ipを確認">PCのLAN IPを確認</a></li>
   </ol>
@@ -112,6 +114,39 @@ homepage `/` をスマホで開く形に読み替えてください。
 Phase 1 で共有された結果をスマホから確認する手順です。短時間なら URL を開いて一覧を見るだけでも OK。ハンズオンとしては「同じ LAN 上で動く」「ウォレット経由の購入入口」まで確認するのが望ましい。
 
 ## 接続の前提を整える
+
+## 0. フロントの接続先を設定 (.env.local) { #env-local }
+
+`iot-market-ui` は、ブロックチェーン (RPC) と publisher の接続先を `iot-market-ui/.env.local` から読み込みます。このファイルが無い、または接続先が間違っていると、商品ページが **HTTP 500** になります。まず雛形をコピーして自分の環境に合わせます。
+
+```bash
+cd iot-market-ui
+cp .env.example .env.local
+```
+
+`.env.local` を編集し、利用シーンに合わせて host を設定します。
+
+- **PC だけで確認する場合**: `127.0.0.1` のままで構いません。
+
+    ```
+    VITE_RPC_URL=http://127.0.0.1:8545
+    VITE_PUBLISHER_URL=http://127.0.0.1:8080
+    ```
+
+- **スマホから操作する場合**: PC の LAN IP (手順2で確認) に置き換えます。
+
+    ```
+    VITE_RPC_URL=http://<PCのLAN_IP>:8545
+    VITE_PUBLISHER_URL=http://<PCのLAN_IP>:8080
+    ```
+
+!!! warning "スマホから使うときは Hardhat ノードも LAN 公開する"
+    既定の `npx hardhat node` は `127.0.0.1` だけで待ち受けるため、スマホや
+    MetaMask モバイルから届きません。スマホで操作する場合は、ノードを
+    `npx hardhat node --hostname 0.0.0.0` で起動し直し、PC のファイアウォールで
+    `8545` を許可してください。
+
+`.env.local` を変更したら、フロント (`npm run dev`) を再起動して反映します。
 
 ## 1. PC側をLAN公開で起動
 
@@ -151,6 +186,10 @@ http://<PCのLAN_IP>:5173/merchandise/<merchandise_address>
 ## 4. 購入時の注意
 
 - スマホで購入する場合は MetaMaskモバイル内ブラウザを推奨
+- MetaMask モバイルにローカルチェーンのネットワークを追加しておく:
+    - RPC URL: `http://<PCのLAN_IP>:8545` (例: `http://192.168.1.20:8545`)
+    - チェーン ID: `31337` / 通貨記号: `ETH`
+- ネットワーク追加が拒否される場合は、ノードを `--hostname 0.0.0.0` で起動しているか、`.env.local` と MetaMask の RPC が **127.0.0.1 ではなく PC の LAN IP** になっているかを確認
 
 ## 5. 確認ポイント
 
@@ -174,6 +213,11 @@ http://<PCのLAN_IP>:5173/merchandise/<merchandise_address>
   - 確認: PC とスマホが同じネットワークか
   - 確認: PC 側のファイアウォールで遮断されていないか
   - 確認: PC の LAN IP が変わっていないか
-- 症状: 購入操作が進まない
+- 症状: 商品ページが HTTP 500 になる
+  - 確認: `iot-market-ui/.env.local` の `VITE_RPC_URL` が、起動中の Hardhat ノード (`8545`) を指しているか
+  - 確認: 接続先が他人の IP や `8546` など誤った値になっていないか
+  - 詳しくは [トラブルシュート](../operations/troubleshooting.md) の「商品ページが 500」項目を参照
+- 症状: 購入操作が進まない / MetaMask にネットワークを追加できない
   - 確認: MetaMask モバイルの in-app browser を使っているか
-  - 確認: ローカルチェーン設定が MetaMask に入っているか
+  - 確認: MetaMask の RPC とノードの公開設定が一致しているか (`--hostname 0.0.0.0` + LAN IP)
+  - 詳しくは [トラブルシュート](../operations/troubleshooting.md) の「MetaMask にネットワークを追加できない」項目を参照

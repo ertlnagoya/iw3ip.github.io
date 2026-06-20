@@ -96,3 +96,43 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 - After editing, re-register the consents (confirm each response contains `"status":"stored"`), re-send the events, then check `/platform/ingest` again.
 - Existing `deny` entries remain in the log as history. Always verify with **a new event sent after the consent was registered**.
 - Permanent fix: in the course repository, set the consent `valid_to` to a long-lived date (or generate it as "now + 1 year" at runtime).
+
+## Merchandise page returns 500 (iot-market-ui endpoint)
+
+- Symptom: the list page (`/`) opens, but an individual merchandise page `http://localhost:5173/merchandise/<address>` returns **HTTP 500**
+  - Cause: the frontend (`iot-market-ui`) reads its RPC and publisher endpoints from `iot-market-ui/.env.local`. If that endpoint **cannot reach the running Hardhat node** (someone else's IP, a wrong port such as `8546`, or a host that is not up), the merchandise page fails to fetch data and returns 500. The list page has a timeout and still renders, so the failure first surfaces on the detail page.
+
+### Check and fix
+
+- Open `iot-market-ui/.env.local` and confirm `VITE_RPC_URL` points at the running node (default `http://127.0.0.1:8545`). If the file is missing, copy the template.
+
+  ```bash
+  cd iot-market-ui
+  cp .env.example .env.local
+  ```
+
+  ```
+  VITE_RPC_URL=http://127.0.0.1:8545
+  VITE_PUBLISHER_URL=http://127.0.0.1:8080
+  ```
+
+- For phone access, replace `127.0.0.1` with the PC's LAN IP (e.g. `http://192.168.1.20:8545`).
+- Restart the frontend (`npm run dev`) after editing.
+- Note: if a contract-address mismatch is suspected, stop and restart the Hardhat node (`npx hardhat node`) and redeploy so the addresses align with the defaults. If they still differ, update `iot-market-ui/src/lib/contracts/IoTMarket.ts` and `PubKey.ts` to the deployed addresses.
+
+## Cannot add the network to MetaMask
+
+- Symptom: adding a `http://...:8545` network to MetaMask (on a phone or PC) is rejected no matter how many times you try
+  - Cause: MetaMask validates the network by connecting to the RPC when you add it. If the endpoint is unreachable, it is rejected. From a phone in particular, the default `npx hardhat node` only listens on `127.0.0.1`, so the phone cannot reach it.
+
+### Check and fix
+
+- Restart the node exposed on the LAN.
+
+  ```bash
+  npx hardhat node --hostname 0.0.0.0
+  ```
+
+- Use the **PC's LAN IP** for the RPC URL in MetaMask (e.g. `http://192.168.1.20:8545`), with chain ID `31337`.
+- Confirm the PC firewall allows `8545` and that the PC and phone are on the same Wi-Fi.
+- If you use the frontend from the phone, set `iot-market-ui/.env.local` to the same LAN IP (see the previous item).

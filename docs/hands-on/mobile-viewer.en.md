@@ -60,12 +60,13 @@ read it as the homepage `/` instead.
 
 ## Shortest path
 
-For a first pass, these four steps are enough.
+For a first pass, these five steps are enough.
 
-1. start `iot-market-ui` on `0.0.0.0:5173`
-2. check the PC LAN IP
-3. open `http://<LAN_IP>:5173/` from the smartphone (homepage)
-4. confirm that the search UI is visible
+1. prepare `iot-market-ui/.env.local` and set the endpoint for your setup (`127.0.0.1` for PC-only, the LAN IP for a phone)
+2. start `iot-market-ui` on `0.0.0.0:5173`
+3. check the PC LAN IP
+4. open `http://<LAN_IP>:5173/` from the smartphone (homepage)
+5. confirm that the search UI is visible
 
 Branches after that:
 
@@ -81,8 +82,9 @@ Branches after that:
 
 <details class="iw3ip-toc-details" open>
   <summary>Preparation: expose the frontend and confirm the LAN IP</summary>
-  <p>First expose the frontend on the LAN and confirm the PC IP address that the smartphone should use.</p>
+  <p>First configure the frontend endpoint (.env.local), expose the frontend on the LAN, and confirm the PC IP address that the smartphone should use.</p>
   <ol>
+    <li><a href="#env-local">Configure the frontend endpoint (.env.local)</a></li>
     <li><a href="#serve-frontend-on-lan">Serve frontend on LAN</a></li>
     <li><a href="#check-the-pc-lan-ip">Check the PC LAN IP</a></li>
   </ol>
@@ -111,6 +113,38 @@ Branches after that:
 This page is a procedure for checking Phase 1 results from a smartphone. For a quick pass, opening the URL and viewing the list is enough. As a hands-on, it is better to confirm both "it runs on the same LAN" and "the wallet-based purchase entry point".
 
 ## Prepare the connection baseline
+
+## 0. Configure the frontend endpoint (.env.local) { #env-local }
+
+`iot-market-ui` reads the blockchain (RPC) and publisher endpoints from `iot-market-ui/.env.local`. If that file is missing or points at the wrong host, the merchandise page returns **HTTP 500**. Copy the template first and match it to your setup.
+
+```bash
+cd iot-market-ui
+cp .env.example .env.local
+```
+
+Edit `.env.local` and set the host for your scenario.
+
+- **PC-only check**: keep `127.0.0.1`.
+
+    ```
+    VITE_RPC_URL=http://127.0.0.1:8545
+    VITE_PUBLISHER_URL=http://127.0.0.1:8080
+    ```
+
+- **From a phone**: replace it with the PC's LAN IP (see step 2).
+
+    ```
+    VITE_RPC_URL=http://<YOUR_PC_LAN_IP>:8545
+    VITE_PUBLISHER_URL=http://<YOUR_PC_LAN_IP>:8080
+    ```
+
+!!! warning "Expose the Hardhat node on the LAN for phone access"
+    The default `npx hardhat node` only listens on `127.0.0.1`, so a phone or
+    MetaMask Mobile cannot reach it. For phone access, restart the node with
+    `npx hardhat node --hostname 0.0.0.0` and allow `8545` through the PC firewall.
+
+Restart the frontend (`npm run dev`) after editing `.env.local`.
 
 ## Serve frontend on LAN
 
@@ -142,7 +176,15 @@ Hardhat deploy):
 http://<YOUR_PC_LAN_IP>:5173/merchandise/<merchandise_address>
 ```
 
-Use MetaMask mobile in-app browser for purchase actions.
+Use MetaMask mobile in-app browser for purchase actions. Add the local chain
+network to MetaMask Mobile beforehand:
+
+- RPC URL: `http://<YOUR_PC_LAN_IP>:8545` (e.g. `http://192.168.1.20:8545`)
+- Chain ID: `31337` / Currency symbol: `ETH`
+
+If MetaMask rejects the network, confirm the node was started with
+`--hostname 0.0.0.0` and that both `.env.local` and the MetaMask RPC use the
+**PC's LAN IP, not 127.0.0.1**.
 
 Example:
 
@@ -166,6 +208,11 @@ The connection to the viewer UI is confirmed. If needed, try the purchase action
   - Check: both devices are on the same network
   - Check: PC firewall settings allow access
   - Check: the PC LAN IP did not change
-- Symptom: the purchase action does not proceed
+- Symptom: the merchandise page returns HTTP 500
+  - Check: `VITE_RPC_URL` in `iot-market-ui/.env.local` points at the running Hardhat node (`8545`)
+  - Check: the endpoint is not someone else's IP or a wrong port such as `8546`
+  - See the "Merchandise page returns 500" item in [Troubleshooting](../operations/troubleshooting.md)
+- Symptom: the purchase action does not proceed / cannot add the network to MetaMask
   - Check: MetaMask Mobile in-app browser is being used
-  - Check: the local chain configuration exists inside MetaMask
+  - Check: the MetaMask RPC and the node's exposure match (`--hostname 0.0.0.0` + LAN IP)
+  - See the "Cannot add the network to MetaMask" item in [Troubleshooting](../operations/troubleshooting.md)
