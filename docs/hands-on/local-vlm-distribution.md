@@ -119,57 +119,100 @@ python capture_snapshot.py
     失敗する場合は [USB ウェブカメラサンプル](webcam.md) の `mock` モードや
     トラブル項目を参照してください。
 
-## 3. 画像を基盤に投入してローカル VLM に解析させる
+## 3. ローカルモデルに解析させて「意味」を得る
 
-撮影した画像を publisher のメディアゲートウェイに投入します。VLM プロファイルが有効なので、publisher が Ollama を呼び出して説明文を生成します。
-
-```bash
-python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
-  --base-url http://localhost:8080 \
-  --image snapshot.jpg
-```
-
-publisher は取り込んだ画像に対し、ローカル VLM で 2 種類の説明文を生成します（CPU だと 1 枚あたり数十秒〜数分かかります）。
-
-- `description_full` … 人名・物体名・文字なども含む詳細な記述
-- `description_summary` … 個人情報を除いた概要（PII redact 済み）
-
-## 4. 意味データが流通しているか確認する
-
-`/platform/data` を取得し、VLM が生成した意味データが乗っていることを確認します。
+撮影した画像を publisher の `/semantic/analyze` に送ると、ローカルモデルが画像を解析し、**生のピクセルを返さずに**構造化された意味データ（SIR: Semantic Intermediate Representation）だけを返します。ウォレットや VC は不要で、すぐに試せます。
 
 ```bash
-curl -s http://localhost:8080/platform/data | jq .
+curl -s -X POST http://localhost:8080/semantic/analyze \
+  -F "file=@snapshot.jpg" \
+  -F "source_device_id=laptop-webcam-01" | jq .
 ```
 
-見る点:
+返る SIR の例（値は画像とアナライザに依存します）:
 
-| キー | 内容 |
-|---|---|
-| `description_full` | 詳細記述（人名・固有名詞あり） |
-| `description_summary` | 概要（PII redact 済み） |
-| `description_model` | 推論に使った VLM のモデル ID（監査用） |
-| `description_generated_at` | 推論時刻（ISO8601、監査用） |
-| `processing_warnings` | 推論やブラーが失敗したステップ（例 `vlm_unavailable`） |
+```json
+{
+  "people": {"count": 1, "identities": []},
+  "objects": [ ... ],
+  "sensitive_regions": [ {"type": "face"} ],
+  "scene_summary": "...",
+  "privacy_risk_score": 0.4,
+  "analyzer_version": "..."
+}
+```
 
-生の画像を配らずに、**意味づけされたデータが基盤上で流通している**ことを確認できれば、このハンズオンのコアは完了です。信頼度に応じて `description_full` / `description_summary` を出し分ける tier 制御は [DataUserVC × 段階アクセス §12](data-user-vc-tiered.md) で扱います。
+!!! note "アナライザの選択"
+    既定は決定的なスタブです。実際の OpenCV 顔検出などを使うには、publisher 起動時に
+    `SEMANTIC_ANALYZER_BACKEND=vision` を設定します。`--profile vlm` を併用すると、
+    次の配信ステップで VLM による説明文（`description_*`）も付与されます。
+
+## 4. 意味データを基盤に流通させる
+
+画像を publisher に投入し、その画像を指すイベントを発行して、AI 由来の意味データを流通パイプラインに載せます。次節の演習プログラムが、consent 登録 → `/media/upload` → `/simulate/publish` を一括で行います。
+
+`--profile vlm` を有効にして起動していれば、publisher はこのとき VLM を呼び出し、行に `description_full` / `description_summary` / `description_model` / `processing_warnings` を付与します。
+
+!!! info "受信側での取得は tier ゲート"
+    付与された `description_*` を受信側で取り出すには、DataUserVC を提示して得た
+    ViewerToken が必要です（`/platform/data` は素の GET では 401 になります）。信頼度
+    ごとに `description_full` / `description_summary` を出し分ける流れは
+    [DataUserVC × 段階アクセス §12](data-user-vc-tiered.md) で扱います。本ページのコアは
+    「カメラ → ローカルモデルで意味づけ → 基盤へ流通」までです。
 
 ## 5. 確認ポイント
 
-- `description_summary` が、生画像を出さずに内容の意味を伝えている
-- `description_model` と `description_generated_at` に推論の出所と時刻が記録されている
-- クラウドに画像を送らず、ローカル VLM だけで意味データを生成・流通できている
+- `/semantic/analyze` が生画像を返さず、構造化された意味データ（SIR）だけを返している
+- クラウドに画像を送らず、ローカルモデルだけで意味づけできている
+- `--profile vlm` 使用時、配信した行に `description_*`（説明文とモデル ID）が付与される
 
 ## 考えてみよう
 
 - 生の画像そのものではなく「意味づけした派生データ」を流通させると、プライバシーとデータ主権の観点で何が変わるでしょうか。
 - ローカル実行（クラウド API を使わない）ことの利点と制約（速度・精度・運用）を整理してみてください。
 
-## 発展課題
+## 演習で手を動かす
+
+初めての人でも段階的に進められるよう、演習プログラムを用意しています。**まず全体構造を読み（Step A）→ 雛形の穴埋め（Step B）→ 自分でゼロから機能追加（Step C）**の順に進めてください。
+
+演習用プログラム:
+
+- [問題用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/local_vlm_distribution/problem_program.py)（TODO 付き）
+- [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/local_vlm_distribution/answer_program.py)
+- [演習の説明（全体構造の解説つき）](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/local_vlm_distribution/README.md)
+
+### Step A. 全体構造とプログラムを読む
+
+README の「Big picture」で、3 つの関数の役割を押さえます。`analyze_frame()`（`/semantic/analyze` に送って SIR を得る）、`summarize_sir()`（SIR を 1 行に要約）、`distribute_frame()`（consent 登録 → アップロード → 発行）。「画像は外に出さず、意味だけを出す」流れを理解するのが目的です。
+
+### Step B. 雛形を穴埋めする（課題）
+
+`problem_program.py` の 2 つの TODO を実装します。
+
+- **TODO 1 `summarize_sir()`**: SIR から人数・物体数・機微領域数・シーン要約を読み、1 行の要約を返す
+- **TODO 2 `build_event()`**: アップロードした画像（`image_url`）を運ぶイベントペイロードを組み立てる
+
+```bash
+python examples/hands_on/local_vlm_distribution/problem_program.py \
+  --base-url http://localhost:8080 --image snapshot.jpg
+```
+
+`answer_program.py` と見比べて確認します。`--distribute` を付けると流通まで実行します。
+
+### Step C. ゼロから機能を足す（発展課題）
+
+雛形なしで、次のいずれかを自分で実装します。
+
+- **要約の高度化**: `sensitive_regions[].type` を列挙し、`privacy_risk_score` が高いとき警告する
+- **フレーム選別**: 一定間隔で N 枚撮り、最も privacy_risk の高い 1 枚だけ流通させる
+- **新しい派生フィールド**: SIR から計算した値（例 `people_count`）をイベント `data` に足す
+- **独自アナライザ**: `publisher/app/semantic_analyzer.py` に新しい `SemanticAnalyzer` を実装し、`SEMANTIC_ANALYZER_BACKEND` で差し替える
+
+## さらに先へ（機能拡張の方向）
 
 - **自然言語での検索・加工**: 蓄積した意味データに対し、LLM で自然言語検索や要約を行う（[LLM Planner](llm-planner.md) / [地域安全アシスタント](regional-safety-assistant.md)）。
 - **機器の遠隔操作**: 解析結果を条件に、`plan` と `execute` を分けて機器を操作する（同上 Part 3）。
-- **ラズベリーパイ + ラズパイカメラ**: 撮影はラズパイ、VLM 推論は PC / ホスト側、という分担で実機化する（本ページはまずラップトップで完結させる構成です）。
+- **ラズベリーパイ + ラズパイカメラ**: 撮影はラズパイ、推論は PC / ホスト側、という分担で実機化する（本ページはまずラップトップで完結させる構成です）。
 
 ## よくある問題
 

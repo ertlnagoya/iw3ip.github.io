@@ -120,57 +120,102 @@ python capture_snapshot.py
     index or usage, see the `mock` mode and troubleshooting in the
     [USB webcam sample](webcam.md).
 
-## 3. Submit the image and let the local VLM analyze it
+## 3. Get the "meaning" from the local model
 
-Submit the captured image to the publisher's media gateway. With the VLM profile enabled, the publisher calls Ollama to generate the descriptions.
-
-```bash
-python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
-  --base-url http://localhost:8080 \
-  --image snapshot.jpg
-```
-
-The publisher generates two kinds of description from the ingested image with the local VLM (tens of seconds to a few minutes per image on CPU).
-
-- `description_full` … a detailed description including names, objects, and text
-- `description_summary` … a summary with personal information removed (PII-redacted)
-
-## 4. Confirm the semantic data is distributed
-
-Fetch `/platform/data` and confirm the VLM-generated semantic data is present.
+POST the captured image to the publisher's `/semantic/analyze`. The local model analyzes it and returns only a structured **Semantic Intermediate Representation (SIR)** — **never the raw pixels**. No wallet or VC is required, so you can try it immediately.
 
 ```bash
-curl -s http://localhost:8080/platform/data | jq .
+curl -s -X POST http://localhost:8080/semantic/analyze \
+  -F "file=@snapshot.jpg" \
+  -F "source_device_id=laptop-webcam-01" | jq .
 ```
 
-What to look at:
+An example SIR (values depend on the image and analyzer):
 
-| Key | Content |
-|---|---|
-| `description_full` | detailed description (with names/proper nouns) |
-| `description_summary` | summary (PII-redacted) |
-| `description_model` | the VLM model ID used (for audit) |
-| `description_generated_at` | inference time (ISO8601, for audit) |
-| `processing_warnings` | steps where inference/blur failed (e.g. `vlm_unavailable`) |
+```json
+{
+  "people": {"count": 1, "identities": []},
+  "objects": [ ... ],
+  "sensitive_regions": [ {"type": "face"} ],
+  "scene_summary": "...",
+  "privacy_risk_score": 0.4,
+  "analyzer_version": "..."
+}
+```
 
-If you can confirm that **semantic data is distributed over the platform without sharing the raw image**, the core of this hands-on is complete. Projecting `description_full` / `description_summary` per trust tier is covered in §12 of [DataUserVC × tiered access](data-user-vc-tiered.md).
+!!! note "Choosing the analyzer"
+    The default is a deterministic stub. For real OpenCV face detection, set
+    `SEMANTIC_ANALYZER_BACKEND=vision` when starting the publisher. Combined with
+    `--profile vlm`, the distribution step below also attaches VLM descriptions
+    (`description_*`).
+
+## 4. Distribute the semantic data over the platform
+
+Submit the image to the publisher and publish an event that points at it, so the AI-derived data enters the distribution pipeline. The exercise program in the next section runs consent registration → `/media/upload` → `/simulate/publish` in one go.
+
+If you started with `--profile vlm`, the publisher also calls the VLM here and attaches `description_full` / `description_summary` / `description_model` / `processing_warnings` to the row.
+
+!!! info "Consumer-side retrieval is tier-gated"
+    To read the attached `description_*` on the consumer side you need a
+    ViewerToken obtained by presenting a DataUserVC (`/platform/data` returns 401
+    for a plain GET). Projecting `description_full` / `description_summary` per
+    trust tier is covered in §12 of [DataUserVC × tiered access](data-user-vc-tiered.md).
+    The core of this page is "camera → local model semantic enrichment →
+    distribute over the platform".
 
 ## 5. Verification points
 
-- `description_summary` conveys the meaning of the scene without exposing the raw image
-- `description_model` and `description_generated_at` record the source and time of inference
-- semantic data is generated and distributed with the local VLM only, without sending images to a cloud
+- `/semantic/analyze` returns structured semantic data (SIR) only, never the raw image
+- the meaning is produced with the local model only, without sending images to a cloud
+- when `--profile vlm` is used, the distributed row carries `description_*` (descriptions and model ID)
 
 ## Something to think about
 
 - When you distribute "semantic derivatives" instead of the raw image, what changes from the standpoint of privacy and data sovereignty?
 - Organize the benefits and limits (speed, accuracy, operations) of running locally instead of using a cloud API.
 
-## Extensions
+## Work through the exercise
+
+Exercise programs are provided so first-time students can progress step by step: **read the overall structure (Step A) → fill in the template (Step B) → add a feature from scratch (Step C)**.
+
+Exercise programs:
+
+- [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/local_vlm_distribution/problem_program.py) (with TODOs)
+- [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/local_vlm_distribution/answer_program.py)
+- [Exercise guide (with a structure walkthrough)](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/local_vlm_distribution/README.md)
+
+### Step A. Read the structure and the program
+
+From the README "Big picture", grasp the three functions: `analyze_frame()` (POST to `/semantic/analyze` to get the SIR), `summarize_sir()` (one-line summary of the SIR), and `distribute_frame()` (register consent → upload → publish). The point is to understand the "keep the image in, let the meaning out" flow.
+
+### Step B. Fill in the two TODOs (task)
+
+Implement the two TODOs in `problem_program.py`.
+
+- **TODO 1 `summarize_sir()`**: read people count, object/sensitive-region counts, and the scene summary from the SIR and return a one-line summary
+- **TODO 2 `build_event()`**: build the event payload that carries the uploaded image (`image_url`) into the platform
+
+```bash
+python examples/hands_on/local_vlm_distribution/problem_program.py \
+  --base-url http://localhost:8080 --image snapshot.jpg
+```
+
+Compare with `answer_program.py`. Add `--distribute` to run the distribution too.
+
+### Step C. Add a feature from scratch (advanced)
+
+Without a template, implement one of these yourself:
+
+- **Richer summary**: list each `sensitive_regions[].type` and warn when `privacy_risk_score` is high
+- **Frame sampling**: capture N frames on a timer and distribute only the one with the highest privacy risk
+- **New derived field**: add a value computed from the SIR (e.g. `people_count`) to the event `data`
+- **Custom analyzer**: implement a new `SemanticAnalyzer` in `publisher/app/semantic_analyzer.py` and switch to it with `SEMANTIC_ANALYZER_BACKEND`
+
+## Going further (extension directions)
 
 - **Natural-language search and processing**: run natural-language search and summarization over the accumulated semantic data with an LLM ([LLM Planner](llm-planner.md) / [Regional safety assistant](regional-safety-assistant.md)).
 - **Remote device control**: based on the analysis result, separate `plan` and `execute` to operate a device (same Part 3).
-- **Raspberry Pi + Pi camera**: split the roles so the Pi captures and the PC/host runs the VLM (this page keeps everything on the laptop first).
+- **Raspberry Pi + Pi camera**: split the roles so the Pi captures and the PC/host runs inference (this page keeps everything on the laptop first).
 
 ## Common issues
 
