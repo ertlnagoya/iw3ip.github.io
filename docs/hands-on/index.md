@@ -64,6 +64,7 @@
     <h3>🧠 AI に要求を解釈させる</h3>
     <p>人の要求を AI が解釈し、Part 1/2 で集めたデータを材料に判断・処理する応用段階です。</p>
     <p class="iw3ip-phase-links">
+      <a href="local-vlm-distribution.md">ローカル VLM でカメラデータを意味づけ</a> /
       <a href="regional-safety-assistant.md">Regional Safety Assistant</a> /
       <a href="llm-planner.md">LLM Planner</a>
     </p>
@@ -219,17 +220,24 @@
 
 ### この Part のゴール
 
+- ローカルの AI モデルでカメラ映像を意味づけし、その派生データを基盤で流通させる
 - 人の自由文の要求 (例:「最近の異常を教えて」) を AI が **plan** に分解する
 - plan を **execute** で実行し、Part 1/2 で集めたデータをもとに応答を返す
 - frontend demo まで一連の流れを通して確認する
 
-### 3.1 地域安全アシスタント
+### 3.1 ローカル VLM でカメラデータを意味づけ
+
+ラップトップ + USB カメラの映像をローカルモデルで解析し、意味データを基盤で流通させます。構造の理解 → 雛形課題 → ゼロからの機能追加、と段階的に進められる演習です。
+
+- [ローカル VLM でカメラデータを意味づけして流通する](local-vlm-distribution.md)
+
+### 3.2 地域安全アシスタント
 
 Part 1/2 で蓄積された「いつ・どこで・何が起きた」イベントをもとに、自由文の要求に応答するデモです。
 
 - [Regional Safety Assistant サンプル](regional-safety-assistant.md)
 
-### 3.2 LLM Planner
+### 3.3 LLM Planner
 
 要求を **plan → execute → UI** に分解する設計の体験です。
 

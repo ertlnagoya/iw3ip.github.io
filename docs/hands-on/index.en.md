@@ -64,6 +64,7 @@ Design detail: [Marketplace VC Bridge — v1 / v2 design spec](../design/marketp
     <h3>🧠 Let an AI act on requests</h3>
     <p>An AI interprets free-form requests and uses Part 1/2 data as material to plan and act.</p>
     <p class="iw3ip-phase-links">
+      <a href="local-vlm-distribution.md">Enrich camera data with a local VLM</a> /
       <a href="regional-safety-assistant.md">Regional Safety Assistant</a> /
       <a href="llm-planner.md">LLM Planner</a>
     </p>
@@ -215,17 +216,24 @@ Switch the response between Tier 3 (video + everything), Tier 2 (image + derived
 
 ### Goals
 
+- Use a local AI model to enrich camera frames and distribute the derivatives over the platform
 - An AI breaks a free-form request ("show me recent anomalies") into a **plan**
 - That plan **executes** against Part 1/2 data and returns a response
 - A frontend demo ties it all together
 
-### 3.1 Regional Safety Assistant
+### 3.1 Enrich camera data with a local VLM
+
+Analyze laptop + USB-camera frames with a local model and distribute the semantic data over the platform. A step-by-step exercise: read the structure → fill in the template → add a feature from scratch.
+
+- [Enrich camera data with a local VLM and distribute it](local-vlm-distribution.md)
+
+### 3.2 Regional Safety Assistant
 
 Uses the "when / where / what happened" event stream from Part 1/2 to answer free-form requests.
 
 - [Regional Safety Assistant](regional-safety-assistant.md)
 
-### 3.2 LLM Planner
+### 3.3 LLM Planner
 
 The "request → plan → execute → UI" decomposition pattern.
 

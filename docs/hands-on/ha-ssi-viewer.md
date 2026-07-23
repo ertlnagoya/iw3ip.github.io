@@ -218,7 +218,7 @@ ViewerVC は **任意の dataset を直接指定して読む** 形でしたが�
 
 - [Stage 4 prep: SSI サービスサンプル](ha-ssi-service.md) — M2M 連続書き込み (ServiceVC)
 - [Stage 5: マーケット連携 v2](marketplace-vc-bridge.md) — 購入連動 read (PurchaseViewerVC)
-- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — Stage 1〜5 の集大成
+- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — Stage 1〜5 の総合演習
 - [Stage 7: SellerVC](marketplace-seller-vc.md) — 出品身元のガバナンス
 
 ## 拡張ヒント
