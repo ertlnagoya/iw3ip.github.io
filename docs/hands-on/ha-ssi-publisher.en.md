@@ -51,9 +51,6 @@ Branches after that:
 - Docker / Docker Compose
 - `curl`
 
-!!! warning "Check the expiry of the sample Consent VCs"
-    `valid_to` in `examples/consent_*.json` is a fixed date (`2026-05-01T00:00:00Z`). After that date, registered consents no longer match and requests are denied with `no_matching_consent`. Change `valid_to` to a future date before registering. See item 6 of [Troubleshooting](../operations/troubleshooting.md).
-
 Matching sample files:
 
 - `examples/consent_temperature.json`

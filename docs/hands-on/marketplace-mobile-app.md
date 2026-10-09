@@ -25,7 +25,6 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
     [webcam-event-sharing](webcam-event-sharing.md) /
     [environment-disaster](environment-disaster.md) と同じカメラ・センサー
     イベントが、購入経由 (PurchaseViewerVC) で読めるところまで確認できます。
-    ただし、`home/event/...` の dataset を使う構成は、教材リポジトリの `feat/event-namespace-consistency` ブランチの内容で、`main` には未反映です。`main` を使う場合は、例のとおり `home/env/temperature` で進めてください。
 
 ## 目的
 

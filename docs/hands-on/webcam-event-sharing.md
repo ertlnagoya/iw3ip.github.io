@@ -328,9 +328,6 @@ Phase 2 では、検知したイベントを条件付きで共有することが
 方式です。**同じ認可を、参加者がスマホで保持する VC を提示する形**
 で扱う発展が、[スマホSSIウォレットサンプル](ha-ssi-wallet.md) です。
 
-!!! warning "main には未反映の構成です"
-    この補論の手順は、`home/event/possible_littering` 用の ConsentVC の Presentation Definition を必要とします。これは教材リポジトリの `feat/event-namespace-consistency` ブランチにあり、`main` には未反映です。`main` を使う場合は、[スマホSSIウォレットサンプル](ha-ssi-wallet.md) の `home/env/temperature` の手順で確認してください。
-
 ### 何が等価で何が違うのか
 
 | 観点 | 本編 (`/consents` JSON 登録) | Wallet モード (Stage 1: ConsentVC) |
@@ -375,7 +372,7 @@ curl で送る**ことを勧めます。
 ### 補足
 
 - 本編の `dataset_id=home/event/possible_littering` 用 ConsentVC PD
-  ([consent-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/feat/event-namespace-consistency/examples/ssi_wallet/consent-possible-littering.json))
+  ([consent-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-possible-littering.json))
   が publisher に登録済で、本編と全く同じイベント形式 (camera_id /
   location / object_class) を wallet 経由で ingest できます
 - MQTT 連続フローを wallet で回すには **多回利用可の M2M トークン

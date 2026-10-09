@@ -49,8 +49,8 @@ across 3 datasets:
 | Merchandise | dataset_id |
 | --- | --- |
 | #0, #1, #3 | `home/env/temperature` |
-| #2 | `home/env/humidity` |
-| #4 | `home/env/flood_risk_high` |
+| #2 | `home/event/possible_littering` |
+| #4 | `home/event/flood_risk_high` |
 
 The bridge picks each merchandise's dataset from `additionalInfo`,
 falling back to `BRIDGE_DATASET_DEFAULT` for legacy (no-key)

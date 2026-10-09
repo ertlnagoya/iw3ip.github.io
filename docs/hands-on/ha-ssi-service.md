@@ -18,8 +18,8 @@
 !!! tip "dataset の選択"
     例は `home/env/temperature` ですが、Stage 0 と同じ
     `home/event/possible_littering` でも同じ手順で通ります
-    ([service-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/feat/event-namespace-consistency/examples/ssi_wallet/service-possible-littering.json)
-    が登録済)。ただし、`home/event/...` の dataset を使う構成は、教材リポジトリの `feat/event-namespace-consistency` ブランチの内容で、`main` には未反映です。`main` を使う場合は、例のとおり `home/env/temperature` で進めてください。
+    ([service-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/service-possible-littering.json)
+    が登録済)。
 
 ## 目的
 

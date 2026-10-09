@@ -18,7 +18,7 @@
     本ハンズオンの例は `home/env/temperature` で書かれています。Stage 0
     ([webcam-event-sharing](webcam-event-sharing.md)) と同じカメライベント
     `home/event/possible_littering` でも同じ手順で動作するので、その場合は
-    dataset と purpose を読み替えてください。ただし、`home/event/...` の dataset を使う構成は、教材リポジトリの `feat/event-namespace-consistency` ブランチの内容で、`main` には未反映です。`main` を使う場合は、例のとおり `home/env/temperature` で進めてください。Stage の番号は
+    dataset と purpose を読み替えてください。Stage の番号は
     [ハンズオン概要](index.md#part-phase-stage) で説明しています。
 
 ## 目的

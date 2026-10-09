@@ -18,7 +18,7 @@ Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to aut
     The examples on this page use `home/env/temperature`. The same steps
     work with `home/event/possible_littering`, the webcam event from Stage 0
     ([webcam-event-sharing](webcam-event-sharing.md)); substitute the dataset
-    and purpose in that case. The `home/event/...` datasets are provided on the `feat/event-namespace-consistency` branch of the source repository and are not yet merged into `main`. On `main`, follow the examples with `home/env/temperature`.
+    and purpose in that case.
 
 ## Goal
 

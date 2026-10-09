@@ -51,9 +51,6 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 - Docker / Docker Compose が使える
 - `curl` が使える
 
-!!! warning "サンプルの Consent VC は有効期限に注意"
-    `examples/consent_*.json` の `valid_to` は固定の日付 (`2026-05-01T00:00:00Z`) です。この日付を過ぎていると、登録しても `no_matching_consent` で拒否されます。登録の前に `valid_to` を今日より先の日付に書き換えてください。手順は [トラブルシュート](../operations/troubleshooting.md) の 6 を参照してください。
-
 対応するサンプルファイル:
 
 - `examples/consent_temperature.json`

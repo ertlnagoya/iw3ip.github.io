@@ -23,7 +23,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
     Merchandise #4 (`home/event/flood_risk_high`) も登録されており、
     Stage 0 と同じイベントで購入動線を試せます
     ([purchase-viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/purchase-viewer-possible-littering.json)
-    の Presentation Definition が登録済)。ただし、`home/event/...` の dataset を使う構成は、教材リポジトリの `feat/event-namespace-consistency` ブランチの内容で、`main` には未反映です。`main` を使う場合は、例のとおり `home/env/temperature` で進めてください。`main` の deploy script が作る Merchandise と dataset の対応は、[Stage 6 の一覧表](marketplace-vc-end-to-end.md) を参照してください。
+    の Presentation Definition が登録済)。
 
 ## 目的
 

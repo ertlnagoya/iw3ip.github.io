@@ -330,9 +330,6 @@ publisher 側には `home/event/flood_risk_high` (本編と同じ) と
 `home/env/flood_risk_high` の両方の ConsentVC PD が登録されており、
 本編と同じ `dataset_id` で災害イベントを wallet 経由で認可できます。
 
-!!! warning "main には未反映の構成です"
-    この補論の手順は、`home/event/flood_risk_high` 用の ConsentVC の Presentation Definition を必要とします。これは教材リポジトリの `feat/event-namespace-consistency` ブランチにあり、`main` には未反映です。`main` を使う場合は、[スマホSSIウォレットサンプル](ha-ssi-wallet.md) の `home/env/temperature` の手順で確認してください。`main` に登録されているのは `home/env/flood_risk_high` 用の Presentation Definition だけです。
-
 ### 何が等価で何が違うのか
 
 | 観点 | 本編 (`/consents` JSON 登録) | Wallet モード (Stage 1: ConsentVC) |
@@ -382,7 +379,7 @@ curl で送る**ことを勧めます。
 ### 補足
 
 - 本編の `dataset_id=home/event/flood_risk_high` 用 ConsentVC PD
-  ([consent-event-flood-risk-high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/feat/event-namespace-consistency/examples/ssi_wallet/consent-event-flood-risk-high.json))
+  ([consent-event-flood-risk-high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-event-flood-risk-high.json))
   が publisher に登録されており、本編とまったく同じイベント形式
   (sensor_id / water_level_m / severity) を wallet 経由で
   ingest できます。

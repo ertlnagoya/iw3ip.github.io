@@ -332,9 +332,6 @@ it via OID4VP. The publisher ships ConsentVC PDs for both
 `home/env/flood_risk_high`, so disaster events can be gated through
 the wallet using the same dataset as the main hands-on.
 
-!!! warning "Not yet available on main"
-    This appendix needs the ConsentVC Presentation Definition for `home/event/flood_risk_high`, which lives on the `feat/event-namespace-consistency` branch of the source repository and is not yet merged into `main`. On `main`, use the `home/env/temperature` flow in the [Mobile SSI wallet hands-on](ha-ssi-wallet.md). Only the Presentation Definition for `home/env/flood_risk_high` is registered on `main`.
-
 ### What's the same, what's different
 
 | Aspect | Main flow (`/consents` JSON) | Wallet mode (Stage 1: ConsentVC) |
@@ -385,7 +382,7 @@ flow:
 ### Limits of this appendix
 
 - A ConsentVC PD for `home/event/flood_risk_high`
-  ([consent-event-flood-risk-high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/feat/event-namespace-consistency/examples/ssi_wallet/consent-event-flood-risk-high.json))
+  ([consent-event-flood-risk-high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-event-flood-risk-high.json))
   is registered, so the wallet flow ingests the exact same event
   shape (sensor_id / water_level_m / severity) that the main flow uses.
 - Continuous MQTT under wallet mode requires a **multi-use M2M token

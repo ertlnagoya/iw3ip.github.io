@@ -21,7 +21,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
     `home/event/possible_littering` と `home/event/flood_risk_high` の
     Merchandise も同時に作られているため、Stage 0 と同じイベント形式で
     Service ingest → Purchase → Viewer 取得を通すこともできます
-    (各 dataset 用の ServiceVC / PurchaseViewerVC PD が登録済)。ただし、`home/event/...` の dataset を使う構成は、教材リポジトリの `feat/event-namespace-consistency` ブランチの内容で、`main` には未反映です。`main` を使う場合は、例のとおり `home/env/temperature` で進めてください。`main` の deploy script が作る Merchandise は Step E2 の表のとおりです。
+    (各 dataset 用の ServiceVC / PurchaseViewerVC PD が登録済)。
 
 ## 目的
 
@@ -176,7 +176,7 @@ iter 2 {'status': 'received', 'count': N+1}
 ### 何を確認するか
 - Stage 6 case B により、Merchandise の `additionalInfo` に書かれた
   `dataset_id` を bridge が **on-chain から自動取得**する
-- 5 つの Merchandise は dataset が異なる (温度 / 湿度 / 洪水) — このハンズオン
+- 5 つの Merchandise は dataset が異なる (温度 / ポイ捨て / 洪水) — このハンズオン
   では温度の Merchandise を選ぶ
 
 ### Merchandise 一覧の dataset
@@ -185,9 +185,9 @@ iter 2 {'status': 'received', 'count': N+1}
 |---|---|---|
 | #0 | `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0` | `home/env/temperature` |
 | #1 | `0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9` | `home/env/temperature` |
-| #2 | `0x0165878A594ca255338adfa4d48449f69242Eb8F` | `home/env/humidity` |
+| #2 | `0x0165878A594ca255338adfa4d48449f69242Eb8F` | `home/event/possible_littering` |
 | #3 | `0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6` | `home/env/temperature` |
-| #4 | `0x610178dA211FEF7D417bC0e6FeD39F05609AD788` | `home/env/flood_risk_high` |
+| #4 | `0x610178dA211FEF7D417bC0e6FeD39F05609AD788` | `home/event/flood_risk_high` |
 
 (値は決定的にデプロイされるので毎回固定)
 

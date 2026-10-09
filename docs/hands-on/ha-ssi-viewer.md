@@ -18,8 +18,8 @@
     本ハンズオンの例は `home/env/temperature` で書かれていますが、Stage 0
     [webcam-event-sharing](webcam-event-sharing.md) と同じ
     `home/event/possible_littering` でも動作します
-    ([viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/feat/event-namespace-consistency/examples/ssi_wallet/viewer-possible-littering.json)
-    の Presentation Definition (PD) が登録済み)。一連のハンズオンを通して同じ dataset を使いたい場合はそちらを選んでください。ただし、`home/event/...` の dataset を使う構成は、教材リポジトリの `feat/event-namespace-consistency` ブランチの内容で、`main` には未反映です。`main` を使う場合は、例のとおり `home/env/temperature` で進めてください。
+    ([viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/viewer-possible-littering.json)
+    の Presentation Definition (PD) が登録済み)。一連のハンズオンを通して同じ dataset を使いたい場合はそちらを選んでください。
 
 ## 目的
 
