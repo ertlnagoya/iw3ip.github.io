@@ -68,8 +68,8 @@ real-device-validated default; the iPhone walkthrough below covers it.
 | Option | Source of `image` / `video` | Receiver can fetch the blob? | Effort | Use case |
 |---|---|---|---|---|
 | A | placeholder CID strings only | no | none | tier-projection demo only |
-| **B** | publisher serves `/media/<sha256>.<ext>` | yes — direct HTTP | shipped | demo / hands-on |
-| **C** (recommended) | local kubo IPFS daemon, content-addressed | yes — publisher's `/ipfs/<cid>` proxy + any public gateway | shipped (`--profile ipfs`) | production-flavoured distributed demo |
+| **B** (recommended) | publisher serves `/media/<sha256>.<ext>` | yes — direct HTTP | shipped | demo / hands-on |
+| C | local kubo IPFS daemon, content-addressed | yes — publisher's `/ipfs/<cid>` proxy + any public gateway | shipped (`--profile ipfs`) | production-flavoured distributed demo |
 
 §2–§7 below cover the core DataUserVC + tier-projection loop. **Option
 B real-data integration is in §8**, **Option C IPFS integration is in
