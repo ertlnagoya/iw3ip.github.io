@@ -37,7 +37,7 @@ USB ウェブカメラの画像から人物とポイ捨ての可能性を検知�
 - `webcam-bridge` が利用できる
 - `mediator-owner` が起動済みで、`raw_data/output` を監視している
 - 実機モードでは、PCからカメラデバイスが認識されている
-- Python 3 と OpenCV が使える
+- Python 3 が使える（webcam モードでは `pip install ultralytics opencv-python` も必要）
 
 ## 演習用プログラム
 
