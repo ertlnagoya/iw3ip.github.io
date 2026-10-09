@@ -38,7 +38,7 @@
 
 ### 実装に近い読み物
 
-- OWASP API Security Top 10: <https://owasp.org/API-Security>
+- OWASP API Security Top 10: <https://api-security.owasp.org/>
 - NIST Zero Trust Architecture (SP 800-207): <https://csrc.nist.gov/publications/detail/sp/800-207/final>
 
 ## 論文（本サイト掲載）

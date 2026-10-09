@@ -40,7 +40,7 @@ Grasp the overall picture in this site first, then consult these materials when 
 
 ### Implementation-Oriented Reading
 
-- OWASP API Security Top 10: <https://owasp.org/API-Security>
+- OWASP API Security Top 10: <https://api-security.owasp.org/>
 - NIST Zero Trust Architecture (SP 800-207): <https://csrc.nist.gov/publications/detail/sp/800-207/final>
 
 ## Papers in This Site

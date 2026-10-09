@@ -233,7 +233,7 @@ Example:
 
 ## 9. Test strategy
 
-### 9.1 Publisher unit tests (`tests/test_marketplace_seller_vc.py`, 8–10 cases)
+### 9.1 Publisher unit tests (`tests/test_ssi_seller_token.py`, `tests/test_marketplace_register.py`)
 
 - SellerVC issuance (appears in the issuer metadata)
 - Presentation → SellerToken

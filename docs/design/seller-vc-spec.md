@@ -230,7 +230,7 @@ MVP では `/seller` は簡単なページに留める (Hardhat console を使�
 
 ## 9. テスト戦略
 
-### 9.1 publisher 単体 (`tests/test_marketplace_seller_vc.py`, 8〜10 件)
+### 9.1 publisher 単体 (`tests/test_ssi_seller_token.py`, `tests/test_marketplace_register.py`)
 
 - SellerVC 発行 (issuer metadata に出る)
 - 提示 → SellerToken

@@ -311,7 +311,7 @@ These are added to the existing audit_log table with `ALTER TABLE ... ADD COLUMN
 
 ### 10.1 Publisher unit tests
 
-- pytest: new `tests/test_marketplace_bridge.py` (8–10 cases)
+- pytest: `tests/test_marketplace_claim.py`, `tests/test_marketplace_purchase_vc.py`, `tests/test_marketplace_data_lookup.py`
     - claim → offer generation
     - Handling of duplicate claims
     - PurchaseViewerVC issuance and verification of the claim contents
@@ -323,7 +323,7 @@ These are added to the existing audit_log table with `ALTER TABLE ... ADD COLUMN
 
 ### 10.2 Bridge unit tests
 
-- Node test (vitest recommended): `bridge/test/listener.test.ts`
+- Node test: `bridge/test/publisher_client.test.ts`
     - mock Hardhat provider
     - Verify Purchase event → call to the publisher mock
 

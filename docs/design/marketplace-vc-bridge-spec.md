@@ -309,7 +309,7 @@ claim の進行状況を返す。
 
 ### 10.1 publisher 単体
 
-- pytest: `tests/test_marketplace_bridge.py` 新規 (8〜10 件)
+- pytest: `tests/test_marketplace_claim.py`, `tests/test_marketplace_purchase_vc.py`, `tests/test_marketplace_data_lookup.py`
     - claim → offer 生成
     - 二重 claim の扱い
     - PurchaseViewerVC 発行・claim 内容の検証
@@ -321,7 +321,7 @@ claim の進行状況を返す。
 
 ### 10.2 bridge 単体
 
-- Node test (vitest 推奨): `bridge/test/listener.test.ts`
+- Node test: `bridge/test/publisher_client.test.ts`
     - mock Hardhat provider
     - Purchase event → publisher mock 呼び出し検証
 
