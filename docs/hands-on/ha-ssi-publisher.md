@@ -51,6 +51,9 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 - Docker / Docker Compose が使える
 - `curl` が使える
 
+!!! warning "サンプルの Consent VC は有効期限に注意"
+    `examples/consent_*.json` の `valid_to` は固定の日付 (`2026-05-01T00:00:00Z`) です。この日付を過ぎていると、登録しても `no_matching_consent` で拒否されます。登録の前に `valid_to` を今日より先の日付に書き換えてください。手順は [トラブルシュート](../operations/troubleshooting.md) の 6 を参照してください。
+
 対応するサンプルファイル:
 
 - `examples/consent_temperature.json`
@@ -86,7 +89,7 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 
 <details class="iw3ip-toc-details">
   <summary>確認 1: HTTP 疑似投入で allowed と denied を比較する</summary>
-  <p>次に、同じ API 入口を使って、許可される場合と拒否される場合の違いを比較します。ここで `purpose` と `dataset_id` の関係を押さえるのが重要です。</p>
+  <p>次に、同じ API を使って、許可される場合と拒否される場合の違いを比較します。ここで `purpose` と `dataset_id` の関係を確認します。</p>
   <ol>
     <li><a href="#3-許可されるケース">許可されるケース</a></li>
     <li><a href="#4-拒否されるケース">拒否されるケース</a></li>
@@ -192,7 +195,7 @@ curl -X POST http://localhost:8080/simulate/publish \
 {"status":"denied","dataset_id":"home/energy/power","reason":"no_matching_consent"}
 ```
 
-入力形式が正しくても `purpose` が一致しなければ拒否される、というのがポイントです。同じ判定を MQTT 経路でも確認します。
+入力形式が正しくても、`purpose` が一致しなければ拒否されます。同じ判定を MQTT 経路でも確認します。
 
 ## Phase 1: MQTT 経路と監査ログを確認する
 
@@ -208,7 +211,7 @@ docker exec -i iw3ip-mosquitto mosquitto_pub \
 ## 6. 監査ログ確認
 
 ```bash
-curl http://localhost:8080/audit/logs?limit=10
+curl 'http://localhost:8080/audit/logs?limit=10'
 ```
 
 確認ポイント:
@@ -225,7 +228,7 @@ docker compose -f infra/docker-compose.yml down
 ## 拡張ヒント
 
 - Phase 2: `homeassistant/event/...` 系を中心にイベント共有へ拡張
-- Phase 3: 前段にSSI Gateway（PEP）を追加し、VC提示制御を実装
+- Phase 3: 前段に SSI Gateway（PEP: Policy Enforcement Point）を追加し、VC 提示による制御を実装
 
 Phase 2 をすぐ試したい場合は、次の Hands-on を参照してください。
 

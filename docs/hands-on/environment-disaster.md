@@ -10,10 +10,9 @@
 >
 > **所要時間**: 30 分くらい
 
-この Hands-on は、**Phase 2: Event / Intelligence Sharing** を最小構成で体験するためのものです。  
-カメラ画像そのものではなく、エッジ側で生成された防災イベントを共有対象にします。
+この Hands-on では、**Phase 2: Event / Intelligence Sharing** を最小構成で試します。
 
-このページでは、既存の `HA x SSI Publisher` サンプルを土台にして、疑似データで次の流れを再現します。
+既存の `HA x SSI Publisher` サンプルをもとに、疑似データで次の流れを再現します。
 
 `疑似センサ / エッジ推論 -> 防災イベント -> Consent VC 判定 -> 共有 / 拒否 -> 監査ログ`
 
@@ -29,7 +28,7 @@
 その後の分岐:
 
 - 許可だけ確認したい場合: `allowed` のケースまでで止めてよいです
-- Consent の意味まで確認したい場合: `advertising` を送って `denied` も見るべきです
+- Consent の意味まで確認したい場合: `advertising` を送って `denied` も確認します
 - MQTT 経路まで見たい場合: 最後に `mosquitto_pub` で同じイベントを送ります
 
 ## このページで分かること
@@ -42,7 +41,7 @@
 
 - `dataset_id` と `event_type` の対応が頭の中で混ざりやすい
 - Consent VC の `allowed_purposes` と送信時の `purpose` が一致しないと拒否される
-- `allowed` でも `/platform/ingest`、`denied` でも `/audit/logs` を別々に確認する必要がある
+- `allowed` の結果は `/platform/ingest`、`denied` の結果は `/audit/logs` と、確認先が分かれている
 
 ## 前提
 
@@ -164,7 +163,7 @@ curl -X POST http://localhost:8080/consents \
     "retention_days": 30,
     "reshare_allowed": false,
     "valid_from": "2026-02-01T00:00:00Z",
-    "valid_to": "2026-05-01T00:00:00Z",
+    "valid_to": "2027-12-31T23:59:59Z",
     "signature": "PLACEHOLDER"
   }'
 ```
@@ -263,7 +262,7 @@ curl -X POST http://localhost:8080/simulate/publish \
 ## 6. 監査ログを確認する
 
 ```bash
-curl http://localhost:8080/audit/logs?limit=10
+curl 'http://localhost:8080/audit/logs?limit=10'
 ```
 
 確認ポイント:
@@ -273,13 +272,13 @@ curl http://localhost:8080/audit/logs?limit=10
 - `purpose` が `disaster_response` または `advertising`
 - `message_hash` が記録される
 
-Phase 2 で重要なのは「イベントを作ること」ではなく「どの条件で共有されるか説明できること」です。最後に MQTT 経路でも確認します。
+Phase 2 では、イベントがどの条件で共有されるかを説明できることを目標にします。最後に MQTT 経路でも確認します。
 
 ## Phase 2: MQTT 経路でも同じ判定を確認する
 
 ## 7. MQTT 経路でも試す
 
-HTTP 疑似投入ではなく、MQTT 経由でも同じイベント共有を再現できます。
+MQTT 経由でも同じイベント共有を再現できます。
 
 ```bash
 docker exec -i iw3ip-mosquitto mosquitto_pub \
@@ -291,7 +290,7 @@ docker exec -i iw3ip-mosquitto mosquitto_pub \
 その後、もう一度監査ログを確認します。
 
 ```bash
-curl http://localhost:8080/audit/logs?limit=10
+curl 'http://localhost:8080/audit/logs?limit=10'
 ```
 
 ## 成功判定
@@ -307,7 +306,7 @@ curl http://localhost:8080/audit/logs?limit=10
 ## 何が Phase 2 なのか
 
 Phase 1 では、温度や電力のようなデータ共有を中心に見ました。  
-この Hands-on では、その次の段階として、**生データそのものではなく、エッジで解釈されたイベントを共有する**ことを体験します。
+この Hands-on では、その次の段階として、**生データそのものではなく、エッジで解釈されたイベントを共有する**ことを扱いました。
 
 重点は次のように変わっています。
 
@@ -348,9 +347,9 @@ publisher 側には `home/event/flood_risk_high` (本編と同じ) と
 
 ### 試す手順 (概要)
 
-連続する MQTT イベントすべてを wallet 経由でゲートするのは
-PolicyToken の単回消費仕様と相性が悪いため、**1 件のイベントだけ
-curl で送る**体験を推奨します。
+PolicyToken は 1 回使うと無効になるため、連続する MQTT イベントすべてを
+wallet 経由で認可する使い方には向きません。ここでは **1 件のイベントだけ
+curl で送る**ことを勧めます。
 
 1. ConsentVC を発行 (本編と同じ dataset を直接使う):
    ```
@@ -377,7 +376,7 @@ curl で送る**体験を推奨します。
    ```
 4. `/audit/logs` で `reason=policy_token_consumed:<jti>` を確認
 
-### この補論の限界
+### 補足
 
 - 本編の `dataset_id=home/event/flood_risk_high` 用 ConsentVC PD
   ([consent-event-flood-risk-high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-event-flood-risk-high.json))
@@ -385,8 +384,9 @@ curl で送る**体験を推奨します。
   (sensor_id / water_level_m / severity) を wallet 経由で
   ingest できます。
 - MQTT 連続フローを wallet で回すには **多回利用可の M2M トークン
-  (ServiceVC)** が必要で、これは将来のハンズオンで扱います。
+  (ServiceVC)** が必要で、これは [SSI Service ハンズオン](ha-ssi-service.md)
+  で扱います。
 
 ### 関連
 
-- 読み出し側を VC でゲートする対称的なフロー: [SSI ビューワサンプル](ha-ssi-viewer.md)
+- 読み出し側を VC で保護するフロー: [SSI ビューワサンプル](ha-ssi-viewer.md)

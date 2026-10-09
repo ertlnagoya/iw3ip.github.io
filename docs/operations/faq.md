@@ -16,4 +16,4 @@ A. 初期は同一リポジトリを推奨します。更新運用が分離さ�
 
 ## Q. どのサンプルから始めるべきですか？
 
-A. 1 つだけ動かすなら `assistant-demo` が最短です。デバイスなしで Phase 1 から始める場合は Webcam 系、実機を使う場合は HUSKYLENS2 から始めるのが適切です。
+A. 実機なしで Phase 1 から順に確認する場合は [HA Demo Simulator](../hands-on/ha-demo-simulator.md) から始めてください。Phase 3 のデモを 1 つだけ動かすなら、1 コマンドで起動できる `assistant-demo`（[LLM Planner ハンズオン](../hands-on/llm-planner.md)）が最短です。実機を使う場合は、手元の機材に合わせて [HUSKYLENS2](../hands-on/huskylens2.md) か [USB ウェブカメラ](../hands-on/webcam.md) から始めます。

@@ -1,6 +1,6 @@
 # Seller VC で出品身元を裏付ける (Stage 7)
 
-出品者が「誰として」その dataset を売るのかを VC で裏付ける層を加えます。5 種目の VC、SellerVC のハンズオンです。
+出品者が「誰として」その dataset を売るのかを VC で裏付ける層を加えます。5 種類目の VC である SellerVC を扱います。
 
 > **やること**: SellerVC を発行・提示して出品身元を裏付ける
 >
@@ -12,19 +12,19 @@
 
 !!! abstract "5 種目の VC: SellerVC"
     マーケット出品時に **「誰が」この dataset を売るのか**を VC で
-    裏付ける層を追加します。Stage 1〜6 と同じパターンで提示 → トークン
-    取得 → API 呼出。設計詳細は [SellerVC 設計仕様](../design/seller-vc-spec.md)。
+    裏付ける層を追加します。Stage 1〜6 と同じく、提示 → トークン
+    取得 → API 呼び出しの順に進めます。設計の詳細は [SellerVC 設計仕様](../design/seller-vc-spec.md) を参照してください。
 
 !!! tip "licensed_datasets の選択"
     例は `home/env/temperature,home/env/humidity` ですが、Stage 0 と
     一貫性を持たせるなら `home/event/possible_littering,home/event/flood_risk_high`
     でも構いません (publisher の `DEFAULT_ALLOWED_PURPOSES` に登録済)。
-    SellerVC の `licensed_datasets` は配列なので両方載せても OK。
+    SellerVC の `licensed_datasets` は配列なので、両方を載せても構いません。
 
 ## 目的
 
 - ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC に続く **5 つ目の VC**
-  (SellerVC) を体験する
+  (SellerVC) を扱う
 - Seller が `IoTMarket.registerMerchandise()` で出品した直後、
   publisher に対して **`/marketplace/register`** を呼び、
   「この Merchandise は私が売っている」を VC で証明する
@@ -34,12 +34,12 @@
 ## このページで分かること
 
 - SellerVC の `licensed_datasets` で「この seller はどの dataset を売って良いか」
-  を VC に焼き込む仕組み
+  を VC に記載する仕組み
 - SellerToken (24h 多回利用) が `/marketplace/register` 専用で動くこと
 - (任意) 環境変数 `MARKETPLACE_HARDHAT_RPC` 設定時、publisher が
   on-chain で `Merchandise.getOwner() == seller_eth_addr` を検証すること
 - 監査ログに **`marketplace/seller_registered`** 行が追加されること
-- buyer 側のレスポンスに **`seller_did` 同梱** で who-sold を可視化すること
+- buyer 側のレスポンスに **`seller_did`** が含まれ、誰が売ったかを確認できること
 
 ## 全体像
 
@@ -71,11 +71,11 @@
 ## 前提
 
 - Stage 5 / 6 のハンズオンを通せている
-- iot-market-ui (Stage 6 ブランチ以降の deploy script で
-  `dataset_id` を `additionalInfo` に持つ Merchandise が出る前提)
-- publisher が Stage 7 / C2+C3 のコードで起動している
+- deploy script が、`dataset_id` を `additionalInfo` に持つ Merchandise を作る版 (Stage 6 以降) である
+- publisher が Stage 7 に対応したコード (`main` の最新) で起動している
 - iw3ip-wallet (iPhone) が動く
-- LAN IP は `192.168.68.53` で示すので、あなたの環境で読み替え
+- LAN IP は `192.168.68.53` で示すので、あなたの環境の IP に読み替えてください
+- 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 
 ---
 
@@ -128,8 +128,8 @@ QR を iPhone wallet で読み取り → **「IW3IP セラークレデンシャ�
 ## Step S2. SellerVC を提示して SellerToken を取得
 
 ### 何を確認するか
-- 提示で **SellerToken** が払い出される (PolicyToken/ViewerToken/ServiceToken
-  でもなく、SellerToken)
+- 提示で **SellerToken** が払い出される (PolicyToken / ViewerToken / ServiceToken
+  とは別のトークン)
 - TTL は **24 時間 (86400 秒)**
 - レスポンスに `licensed_datasets` がそのまま入る
 
@@ -141,7 +141,7 @@ PC ブラウザで:
 http://192.168.68.53:8080/verifier/request?vc_kind=SellerVC
 ```
 
-`dataset_id` パラメータ不要 (SellerVC は dataset 非依存)。
+`dataset_id` パラメータは不要です (SellerVC は特定の dataset に依存しません)。
 QR → wallet で **SellerVC** を選択して提示。
 
 ### 期待出力
@@ -156,7 +156,7 @@ docker logs $PUB 2>&1 | grep "seller_token_issued" | tail -1
 seller_token_issued jti=... token=... seller_id=ertl-seller-001 licensed=['home/env/temperature', 'home/env/humidity'] ttl=86400s
 ```
 
-token を変数に:
+token を変数に入れます。
 
 ```bash
 SELLER=$(docker logs $PUB 2>&1 | grep "seller_token_issued" | tail -1 | sed -E 's/.*token=([^ ]+).*/\1/')
@@ -169,8 +169,8 @@ echo "SELLER=$SELLER"
 
 ### 何を確認するか
 - Hardhat console で Merchandise を deploy し、`IoTMarket.registerMerchandise()` を呼ぶ
-- deploy 時に `additionalInfo` に `dataset_id=home/env/temperature` を埋め込む
-  (Stage 6 case B 互換)
+- deploy 時に `additionalInfo` に `dataset_id=home/env/temperature` を入れる
+  (Stage 6 と同じ形式)
 
 ### 操作
 
@@ -214,7 +214,7 @@ console.log("register tx:", regReceipt.hash);
 
 ### メモ
 
-- `seller`, `merchandise`, `deploy tx`, `register tx` の 4 つ
+console に表示された `seller`、`merchandise`、`deploy tx`、`register tx` の 4 つをメモします。
 
 ---
 
@@ -285,7 +285,7 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool
 ## Step S5. Buyer から見える `seller_did`
 
 ### 何を確認するか
-- Buyer が PurchaseViewerVC 経由で `/platform/data?merchandise=<addr>` を叩くと、
+- Buyer が PurchaseViewerVC 経由で `/platform/data?merchandise=<addr>` を呼び出すと、
   レスポンスに **`seller_did`** が含まれる
 
 ### 操作
@@ -319,7 +319,7 @@ Merchandise (`/marketplace/register` を呼んでいない) は `"unknown"` が�
 ## Step S6. iot-market-ui の `/seller` ページから登録
 
 ### 何を確認するか
-- ターミナルでなく Web UI からも `/marketplace/register` が叩けること
+- Web UI からも `/marketplace/register` を呼び出せること
 - フォームの 3 ステップ構造 (発行 → 提示 → 登録) が seller 視点で完結すること
 
 ### 操作
@@ -356,9 +356,9 @@ UI の手順:
 | S5 | buyer side seller_did 表示 | `{ "dataset_id": "home/env/temperature", "seller_did": "did:jwk:...", ... }` |
 | S6 | UI 経由でも登録可 | `/seller` フォーム送信後にレスポンス JSON が画面下に表示 |
 
-**Stage 7 のキー判定**: `/platform/data?merchandise=<addr>` のレスポンス
-JSON に **`seller_did` フィールドが did:jwk: で出る**こと。これが「どの
-seller がそのデータを売ったか」が VC で裏付けられた証跡です。
+**Stage 7 の完了条件**: `/platform/data?merchandise=<addr>` のレスポンス
+JSON に **`seller_did` フィールドが did:jwk: で出る**こと。これにより、どの
+seller がそのデータを売ったかを VC で裏付けた記録を確認できます。
 
 ---
 
@@ -397,7 +397,7 @@ Uncaught SyntaxError: missing ) after argument list
 **原因**: Hardhat console (Node REPL) は文を 1 行ずつ評価するので、複数行
 にわたる `try`/`catch` を貼ると最初の行で構文エラーになる。
 
-**対処**: 1 行に潰す one-liner で書く。例:
+**対処**: 1 行にまとめて書く。例:
 
 ```javascript
 let r; try { r = await (await pubKey.registerKey("[buyer-key]")).wait(); console.log("ok:", r.status); } catch (e) { console.log("err:", e.message); }
@@ -473,20 +473,20 @@ docker logs iw3ip-mv-bridge 2>&1 | tail -5
 
 [Stage 5 のトラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング)
 (MetaMask chainId キャッシュ、`BRIDGE_PUBLIC_PUBLISHER_URL` 未設定 等)
-が引き続き有効。
+も参照してください。
 
 ---
 
 ## 限界 / 将来課題
 
 - **on-chain ガード**: 現状 `IoTMarket.registerMerchandise()` 自体は
-  publisher 検証なしでも通る。on-chain でのガードは Stage 8+ 以降
+  publisher 検証なしでも通る。on-chain でのガードは今後の課題 (Stage 8 以降)
 - **EIP-712 署名**: SellerVC 経由の seller_did と eth address の紐付けは
   publisher が信頼する方式 (Stage 5/6 の eth_did_bound と同じ MVP レベル)
 - **dataset_id をどこで宣言するか**: Stage 6 case B で `additionalInfo` の
   `dataset_id` 値を取れるようにしたが、`/marketplace/register` 側はクライアント
   POST に依存。将来は publisher 自身が `getAllAdditionalInfo()` を呼んで
-  突合する強化案あり
+  突合する案がある
 
 ## 関連
 

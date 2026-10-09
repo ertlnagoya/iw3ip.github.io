@@ -3,7 +3,7 @@
 [事前準備](prerequisites.md) でインストールしたツールを使って、ハンズオン環境一式をまとめて起動します。
 所要時間の目安は **15〜30 分** です (初回は docker pull / npm install に時間がかかります)。
 
-> ここで起動するプロセスは 6 つあります。それぞれ別のターミナルを開いて起動します。
+> ここでは 6 種類のプロセスを起動します。コントラクトのデプロイと、2 つある仲介プロセスにもそれぞれターミナルを使うため、ターミナルは全部で 7 つ開きます。
 > 手順どおりに進めてください。
 
 ## ここで動かすもの — 全体像
@@ -41,7 +41,7 @@
 
 ## 起動順 — 上から順に
 
-> **ターミナルを 6 つ用意してください**。各プロセスは起動したまま動作し続けます。
+> **ターミナルを 7 つ用意してください**。デプロイ (ターミナル 2) を除き、各プロセスは起動したまま動作し続けます。
 > macOS Terminal なら ⌘+T、VS Code なら "Split Terminal" が利用できます。
 
 ### 0. 教材リポジトリに移動
@@ -75,9 +75,10 @@ Private Key: 0xac09...
 ...
 ```
 
-> **このターミナルは閉じない**。ブロックチェーンが動き続けます。
+> **このターミナルは閉じないでください**。ブロックチェーンが動き続けます。
 >
 > 表示された **Account #0 と Private Key** は、後で MetaMask に取り込むので画面に残しておきます。
+> この Private Key は Hardhat が公開しているテスト用の鍵で、誰でも知ることができます。実際のネットワークでは使わないでください。
 
 ### 2. コントラクトをデプロイ
 
@@ -119,7 +120,7 @@ cargo run
 ```
 
 初回は Rust ライブラリのコンパイルで数分かかります。
-`Listening on ...` が出れば起動完了。
+`Listening on ...` が出れば起動完了です。
 
 ### 5. IPFS と PostgreSQL を起動 (Docker)
 
@@ -137,7 +138,7 @@ docker compose up -d
 docker compose ps
 ```
 
-`ipfs` と `postgres` の State が **Up** であれば成功。
+`ipfs` と `postgres` の State が **Up** であれば成功です。
 
 ### 6. 仲介プロセス (オーナー側 + 購入者側) を起動
 
@@ -161,7 +162,7 @@ cargo run --bin mediator-b
 
 1. ブラウザで <http://localhost:5173> を開く
 2. **MetaMask** をセットアップ (次節)
-3. マーケットプレイスで商品が表示されればハンズオン Part 1 へ進める状態
+3. マーケットプレイスで商品が表示されれば、ハンズオン Part 1 へ進めます
 
 ## MetaMask のローカルチェーン設定
 
@@ -202,7 +203,7 @@ MetaMask をローカル Hardhat に接続します。
 
 - [Home Assistant Demo Simulator サンプル](../hands-on/ha-demo-simulator.md)
 
-これだけでも Part 1 の最初の節は体験できます。
+これだけでも Part 1 の最初の節は試せます。
 
 ## よくあるつまずき
 
@@ -215,7 +216,7 @@ MetaMask をローカル Hardhat に接続します。
 | MetaMask に「Nonce too high」 | チェーン再起動でズレた | MetaMask Settings → Advanced → Reset Account |
 | MetaMask が `localhost:8545` を Reject | RPC URL の打ち間違い | `http://` を付け忘れていないか確認 |
 
-それ以外は [トラブルシュート](../operations/troubleshooting.md) と [FAQ](../operations/faq.md) を参照。
+それ以外は [トラブルシュート](../operations/troubleshooting.md) と [FAQ](../operations/faq.md) を参照してください。
 
 ## このページで覚える用語
 
@@ -227,4 +228,4 @@ MetaMask をローカル Hardhat に接続します。
 | **チェーン ID** | ネットワークを識別する番号 (Hardhat の既定は 31337) |
 | **Vite** | フロントエンド用の高速な開発サーバ |
 
-詳しくは [Hardhat 基礎](../foundations/hardhat-basics.md) と [SSI/DID/VC 基礎](../foundations/ssi-did-vc-basics.md)。
+詳しくは [Hardhat 基礎](../foundations/hardhat-basics.md) と [SSI/DID/VC 基礎](../foundations/ssi-did-vc-basics.md) を参照してください。

@@ -37,6 +37,7 @@ Generate `person_detected` / `possible_littering` events with only a USB webcam,
 - `webcam-bridge` available
 - `mediator-owner` already running and watching `raw_data/output`
 - in webcam mode, the camera device is recognized by the PC
+- Python 3 and OpenCV
 
 ## Exercise Programs
 

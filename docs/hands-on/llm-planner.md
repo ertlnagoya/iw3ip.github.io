@@ -1,8 +1,8 @@
 # LLM Plannerハンズオン
 
-[地域安全アシスタント](regional-safety-assistant.md) の rule-based planner を、LLM ベースの planner に差し替える最小構成を体験します。
+Phase 3 の [地域安全アシスタント](regional-safety-assistant.md) の rule-based planner を、LLM（Large Language Model、大規模言語モデル）ベースの planner に差し替える最小構成を試します。
 
-> **やること**: stub provider → 実 LLM の 2 段階で planner を差し替える
+> **やること**: stub provider → フロントデモ → 実 LLM の 3 段階で planner を差し替える
 >
 > **前提**: [地域安全アシスタント](regional-safety-assistant.md)
 >
@@ -10,12 +10,11 @@
 >
 > **所要時間**: 60 分くらい
 
-Phase 3 の [地域安全アシスタントサンプル](regional-safety-assistant.md) を発展させ、**rule-based planner を LLM planner に差し替える最小構成** を体験します。
-
-このページでは 2 段階で進めます。
+このページでは次の 3 段階で進めます。
 
 1. `stub` provider でローカルに再現する
-2. 必要なら OpenAI 互換 API に接続する
+2. フロントデモ (`assistant-demo`) で `planner_diagnostics` の表示を確認する
+3. 必要なら OpenAI 互換 API に接続する
 
 ## 最短ルート
 
@@ -43,7 +42,7 @@ Phase 3 の [地域安全アシスタントサンプル](regional-safety-assista
 
 - LLM を入れると evaluator や actuator まで変える必要があると誤解しやすい
 - `stub` と `openai_compatible` の設定差分が環境変数に集まっている
-- 失敗時は `plan` 本体だけでなく `planner_diagnostics` を見ないと原因が分かりにくい
+- 失敗時は `plan` 本体に加えて `planner_diagnostics` を見ないと原因が分かりにくい
 
 ## 前提
 
@@ -80,27 +79,27 @@ Phase 3 の [地域安全アシスタントサンプル](regional-safety-assista
 ## 工程別の目次
 
 <details class="iw3ip-toc-details" open>
-  <summary>段階 1: stub provider で planner の骨格を理解する</summary>
-  <p>まずは LLM の外部 API を使わず、`stub` provider で planner の入力と出力の形を確認します。ここでは `plan` と `planner_diagnostics` の基本が見えれば十分です。</p>
+  <summary>段階 1: stub provider で planner の入出力を確認する</summary>
+  <p>LLM の外部 API を使わず、<code>stub</code> provider で planner の入力と出力の形を確認します。ここでは <code>plan</code> と <code>planner_diagnostics</code> の基本を確認できれば十分です。</p>
   <ol>
-    <li><a href="#1-stub-provider-で起動">`stub` provider で起動</a></li>
-    <li><a href="#2-日本語要求で-plan-を確認">日本語要求で `plan` を確認</a></li>
-    <li><a href="#3-英語要求で-plan-を確認">英語要求で `plan` を確認</a></li>
+    <li><a href="#1-stub-provider-で起動"><code>stub</code> provider で起動</a></li>
+    <li><a href="#2-日本語要求で-plan-を確認">日本語要求で <code>plan</code> を確認</a></li>
   </ol>
 </details>
 
 <details class="iw3ip-toc-details">
-  <summary>段階 2: frontend demo と diagnostics の見方を確認する</summary>
-  <p>次に、同じ planner の結果をフロントからどう読むかを確認します。ここでは `assistant-demo`、`badge`、`alert`、`planner_diagnostics` の役割を押さえます。</p>
+  <summary>段階 2: frontend demo と diagnostics を確認する</summary>
+  <p>次に、同じ planner の結果をフロントからどう読むかを確認します。ここでは <code>assistant-demo</code>、<code>badge</code>、<code>alert</code>、<code>planner_diagnostics</code> の役割を確認します。</p>
   <ol>
     <li><a href="#25-react-フロントデモを起動">React フロントデモを起動</a></li>
+    <li><a href="#3-英語要求で-plan-を確認">英語要求で <code>plan</code> を確認</a></li>
     <li><a href="#4-実-api-用の環境変数を確認">実 API 用の環境変数を確認</a></li>
   </ol>
 </details>
 
 <details class="iw3ip-toc-details">
   <summary>段階 3: OpenAI 互換 API へ切り替える</summary>
-  <p>最後に、同じ構造を保ったまま `openai_compatible` provider へ切り替えます。ここでは `stub` と違って、外部 API の失敗が `planner_diagnostics` にどう表れるかも確認できます。</p>
+  <p>最後に、同じ構造を保ったまま <code>openai_compatible</code> provider へ切り替えます。<code>stub</code> と違って、外部 API の失敗が <code>planner_diagnostics</code> にどう表れるかも確認できます。</p>
   <ol>
     <li><a href="#5-openai-互換-api-に切り替える">OpenAI 互換 API に切り替える</a></li>
   </ol>
@@ -108,7 +107,7 @@ Phase 3 の [地域安全アシスタントサンプル](regional-safety-assista
 
 ## 読み進め方
 
-Phase 3 の planner 部分に絞ったページです。`stub` provider → UI → 実 API の順で進めると、差分が見えやすい。
+このページは Phase 3 の planner 部分だけを扱います。`stub` provider → UI → 実 API の順で進めると、差分が見えやすくなります。
 
 ## アーキテクチャ図
 
@@ -122,9 +121,9 @@ flowchart LR
   F --> G["Evaluator / Actuator"]
 ```
 
-LLM を直接 `main.py` に埋め込まず、差し替えを `planner_factory` に閉じ込めます。
+LLM の呼び出しは `main.py` に直接書かず、planner の差し替えは `planner_factory` だけで行います。
 
-## 段階 1: stub provider で planner の骨格を理解する
+## 段階 1: stub provider で planner の入出力を確認する
 
 ## 1. `stub` provider で起動
 
@@ -137,7 +136,7 @@ ASSISTANT_LLM_PROVIDER=stub \
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
-Docker Compose 例:
+Docker Compose を使う場合は次を実行します。
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
@@ -147,7 +146,7 @@ docker compose -f infra/docker-compose.yml --profile assistant up --build -d ass
 
 ![assistant-llm startup](../assets/llm-planner-compose.svg)
 
-別ターミナルで確認:
+別ターミナルで起動を確認します。
 
 ```bash
 curl http://localhost:8090/health
@@ -180,19 +179,19 @@ curl -X POST http://localhost:8090/assistant/plan \
 }
 ```
 
-確認ポイント:
+確認項目:
 
 - `planner_name` が `llm-planner-stub-v1`
 - `target_area` が `park-north`
 - `watch_events` が JSON 配列で返る
 
-自然言語要求 → `plan` の最小経路を確認できました。次にフロントエンドからの確認方法を見ます。
+ここまでで、自然言語の要求から `plan` を得る最小の経路を確認しました。次に、フロントエンドから確認する方法を見ます。
 
 ## 段階 2: frontend demo と diagnostics を確認する
 
 ## 2.5 React フロントデモを起動
 
-Phase 3 assistant の API をブラウザから触る最小 React 画面もあります。
+Phase 3 assistant の API をブラウザから操作する最小の React 画面もあります。
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
@@ -215,7 +214,7 @@ docker compose -f infra/docker-compose.yml --profile assistant-ui up --build -d 
 
 ![assistant-demo overview](../assets/assistant-demo-overview.svg)
 
-local mock LLM まで含めて 1 コマンドで起動する場合:
+ローカルの mock LLM まで含めて 1 コマンドで起動する場合は、次を実行します。
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
@@ -252,7 +251,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 }
 ```
 
-ここでは、英語要求でも `station-front` を読めることを確認します。
+英語の要求でも `station-front` を読み取れることを確認します。
 
 ## 4. 実 API 用の環境変数を確認
 
@@ -277,7 +276,7 @@ cat .env.local.example
 - `severity`
   - `info`, `warning`, `error`
 - `label`
-  - バッジにそのまま載せる短い表示名
+  - バッジにそのまま表示する短い表示名
 - `color_hint`
   - `green`, `amber`, `red` のような色分けヒント
 - `code`
@@ -503,7 +502,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 uvicorn examples.phase3_llm_mock_server:app --host 127.0.0.1 --port 18000
 ```
 
-Docker Compose 例:
+Docker Compose を使う場合は次を実行します。
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-mock
@@ -524,7 +523,7 @@ curl -X POST http://localhost:8090/assistant/plan \
   -d @examples/phase3_request_park_safety.json
 ```
 
-確認ポイント:
+確認項目:
 
 - `planner_name` が `llm-planner-mock-http-v1`
 - `planner_diagnostics.provider_name` が `openai_compatible`
@@ -538,15 +537,15 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 ## 5.5 演習用 pytest を使う
 
-この Hands-on には、problem / answer 共通で使える pytest もあります。
+このハンズオンには、問題用プログラムと解答用プログラムの両方に使える pytest もあります。
 
-まず解答用の確認:
+まず、解答用プログラムで確認します。
 
 ```bash
 pytest -q tests/test_phase3_llm_hands_on_program.py
 ```
 
-問題用プログラムの TODO を埋めた後は、次のように切り替えられます。
+問題用プログラムの TODO を実装した後は、次のように対象を切り替えます。
 
 ```bash
 PHASE3_LLM_HANDS_ON_MODULE=examples.hands_on.phase3_llm_planner.problem_program \
@@ -562,17 +561,17 @@ LLM の出力はそのまま採用せず、次を必ず検証します。
 - 許可エリアか
 - JSON として parse できるか
 
-不正なら rule-based planner にフォールバックします。
+いずれかを満たさない場合は rule-based planner にフォールバックします。
 
 確認の観点:
 
-- `planner_name` が期待値と違う場合、フォールバックの可能性がある
+- `planner_name` が期待値と違う場合は、フォールバックした可能性がある
 - 許可外の action がそのまま実行されない
 - `/assistant/executions` に `planner_diagnostics.error_type` と `planner_diagnostics.error_message` が残る
 
 ## 成功判定
 
-この Hands-on では、次を確認できれば成功です。
+このハンズオンでは、次を確認できれば成功です。
 
 - `stub` provider で `llm` モードが動く
 - 日本語要求と英語要求の両方で `plan` を返せる

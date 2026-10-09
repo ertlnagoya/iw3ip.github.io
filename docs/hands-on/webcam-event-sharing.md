@@ -12,7 +12,7 @@
 
 この Hands-on は、既存の [USBウェブカメラサンプル](webcam.md) を発展させた **Phase 2: Event / Intelligence Sharing** の例です。  
 Phase 1 では、USBウェブカメラで `person_detected` や `possible_littering` を検知し、イベントファイルを生成して商品化まで確認しました。  
-このページでは、その次の段階として、**検知イベントをデータ共有基盤へ送って、Consent VC に基づいて共有可否を制御する**流れを体験します。
+このページでは、その次の段階として、**検知イベントをデータ共有基盤へ送って、Consent VC に基づいて共有可否を制御する**流れを試します。
 
 パイプライン:
 
@@ -169,7 +169,7 @@ curl -X POST http://localhost:8080/consents \
     "retention_days": 14,
     "reshare_allowed": false,
     "valid_from": "2026-02-01T00:00:00Z",
-    "valid_to": "2026-05-01T00:00:00Z",
+    "valid_to": "2027-12-31T23:59:59Z",
     "signature": "PLACEHOLDER"
   }'
 ```
@@ -260,7 +260,7 @@ curl -X POST http://localhost:8080/simulate/publish \
 ## 6. 監査ログを確認する
 
 ```bash
-curl http://localhost:8080/audit/logs?limit=10
+curl 'http://localhost:8080/audit/logs?limit=10'
 ```
 
 確認ポイント:
@@ -270,7 +270,7 @@ curl http://localhost:8080/audit/logs?limit=10
 - `purpose` が `community_cleaning` または `advertising`
 - `message_hash` が記録される
 
-Phase 2 の主題が「検知」から「条件付き共有」に移っていることが見えてきます。最後に MQTT 経路でも同じ共有を試します。
+最後に MQTT 経路でも同じ共有を試します。
 
 ## Phase 2: MQTT 経路でも同じ判定を確認する
 
@@ -286,7 +286,7 @@ docker exec -i iw3ip-mosquitto mosquitto_pub \
 その後、監査ログを再確認します。
 
 ```bash
-curl http://localhost:8080/audit/logs?limit=10
+curl 'http://localhost:8080/audit/logs?limit=10'
 ```
 
 ## Phase 1 から何が発展したのか
@@ -304,7 +304,7 @@ Phase 1 の USBウェブカメラサンプルでは、主な関心は次の流�
 3. 許可されたものだけを共有する
 4. 共有履歴を監査ログに残す
 
-**「検知」から「条件付き共有」へ主題が移る** のがポイントです。
+Phase 2 では、検知したイベントを条件付きで共有することが主題です。
 
 ## 成功判定
 
@@ -344,9 +344,9 @@ Phase 1 の USBウェブカメラサンプルでは、主な関心は次の流�
 
 ### 試す手順 (概要)
 
-連続する MQTT イベントすべてを wallet 経由でゲートするのは
-PolicyToken の単回消費仕様と相性が悪いため、**1 件のイベントだけ
-curl で送る**体験を推奨します。
+PolicyToken は 1 回使うと無効になるため、連続する MQTT イベントすべてを
+wallet 経由で認可する使い方には向きません。ここでは **1 件のイベントだけ
+curl で送る**ことを勧めます。
 
 1. [スマホSSIウォレットサンプル §1〜§5](ha-ssi-wallet.md#1-起動) で
    `dataset_id=home/event/possible_littering` を指定して ConsentVC を
@@ -369,7 +369,7 @@ curl で送る**体験を推奨します。
    ```
 4. `/audit/logs` で `reason=policy_token_consumed:<jti>` を確認
 
-### この補論の限界
+### 補足
 
 - 本編の `dataset_id=home/event/possible_littering` 用 ConsentVC PD
   ([consent-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-possible-littering.json))
@@ -381,4 +381,4 @@ curl で送る**体験を推奨します。
 
 ### 関連
 
-- 読み出し側を VC でゲートする対称的なフロー: [SSI ビューワサンプル](ha-ssi-viewer.md)
+- 読み出し側を VC で保護するフロー: [SSI ビューワサンプル](ha-ssi-viewer.md)

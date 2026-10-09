@@ -54,6 +54,11 @@ Pipeline:
 - Docker / Docker Compose
 - `curl`, `jq`
 
+The command examples on this page assume that the PC's LAN IP is
+`192.168.68.53` and that the course repository is cloned to
+`~/program/Blockchain_IoT_Marketplace`. Substitute the values for your
+own environment.
+
 ## 0b. Choosing how to carry the actual image / video bytes
 
 This walkthrough has three options for the data body itself. **Option B
@@ -75,13 +80,13 @@ just gains a `cid` field, so the provider script needs no changes.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
-docker compose -f infra/docker-compose.yml up -d publisher hardhat bridge mosquitto
+docker compose -f infra/docker-compose.yml up -d publisher bridge mosquitto
 ```
 
 Sanity check:
 
 ```bash
-curl -s localhost:8080/healthz | jq .
+curl -s localhost:8080/health | jq .
 curl -s localhost:8080/.well-known/openid-credential-issuer \
   | jq '.credential_configurations_supported | keys'
 # -> ["ConsentVC", "DataUserVC", "PurchaseViewerVC", "SellerVC", "ServiceVC", "ViewerVC"]
@@ -115,7 +120,7 @@ DataUserVC.
 ## 3. Three `/marketplace/claim` calls
 
 Reuse a `merchandise_id` already listed via webcam-event-sharing (list
-one beforehand).
+one beforehand), and replace `M-0001` in the examples with it.
 
 ### 3a. Tier 3 — opens up to video
 
@@ -139,6 +144,9 @@ curl -s -X POST localhost:8080/marketplace/claim \
 ```
 
 ### 3b. Tier 2 — image only
+
+Run the 3a command with `entityType` set to `Enterprise` and `purpose`
+set to `Research` in `data_user_attrs`. Expected result:
 
 ```bash
 # data_user_attrs.entityType: "Enterprise", purpose: "Research"
@@ -168,9 +176,12 @@ Once the resulting ViewerToken is in hand, hit `/platform/data`:
 | 3b Tier 2 (enterprise) | yes | yes | **no** |
 | 3c Tier 1 (default) | yes | **no** | **no** |
 
+Put the ViewerToken you obtained into the shell variable `VIEWER_TOKEN`,
+then run:
+
 ```bash
 curl -s -H "authorization: Bearer $VIEWER_TOKEN" \
-     localhost:8080/platform/data?dataset_id=home/event/possible_littering | jq .
+     'localhost:8080/platform/data?dataset_id=home/event/possible_littering' | jq .
 ```
 
 Confirm the `image_cid` / `video_cid` keys are **missing** (the keys
@@ -282,7 +293,7 @@ python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 - ❌ Single replica, no pinning.
 
 When content-addressing + distributed storage matter, move on to
-**Option C (real IPFS / Web3.Storage)**. The `/media/upload` response
+**Option C (IPFS)**. The `/media/upload` response
 shape (`{url, sha256, content_type, byte_size, cid, ipfs_gateway_url}`)
 stays the same so the provider script doesn't change — only the
 backend swaps.
@@ -324,7 +335,8 @@ docker compose -f infra/docker-compose.yml exec publisher \
 ### 9.2 Confirm CIDs come back from upload
 
 `provider_with_media.py` is unchanged but now sees `cid` and
-`ipfs_gateway_url` in the response:
+`ipfs_gateway_url` in the response (`/tmp/stage_t_demo.jpg` is an
+example path; substitute a file of your own):
 
 ```bash
 python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
@@ -333,7 +345,7 @@ python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --video /tmp/stage_t_demo.jpg
 ```
 
-Expected output (`cid` starts with `bafy...`):
+Expected output (`cid` starts with `bafk...`):
 
 ```json
 [upload] {
@@ -685,12 +697,11 @@ a **two-tab** experience in the browser.
 !!! success "Verified end-to-end (2026-04-30)"
     A `video/quicktime` clip recorded on iPhone Safari, published via
     `/provider`, was rendered inline by the `<video>` tag in `/viewer`
-    on **macOS Safari** (see §11.8.A). The same wallet held both the
+    on **macOS Safari** (see scenario A in §11.8). The same wallet held both the
     SellerVC (provider side) and the PurchaseViewerVC.full (receiver
     side); each `/buyer/start` or `/provider/start` page picked the
     right one automatically. Screenshot:
-    `images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.jpg`
-    (to be added by follow-up commit).
+    `images/data-user-vc-tiered/provider/A-macsafari-viewer-tier3.jpg`.
 
 ### 11.6 Symmetry with `/buyer/start`
 
@@ -701,7 +712,7 @@ a **two-tab** experience in the browser.
 | Used as Bearer for | `/platform/data` | **`/provider/publish`** |
 | Single-use vs multi-use | multi-use (continuous read) | **multi-use** (one auth, many publishes) |
 | Dataset scoping | VC is bound to a dataset_id | SellerVC carries `licensed_datasets[]` set |
-| Deny message shape | §10.7 common format | same `human_message_ja/en` shape |
+| Deny message shape | §10.8 common format | same `human_message_ja/en` shape |
 
 ### 11.7 Troubleshooting
 
@@ -737,7 +748,7 @@ are fixed in the latest `main`.
 
 | # | Symptom | Cause | Fix / Resolution |
 |---|---|---|---|
-| 1 | `/provider/start` returned `HTTP 404 no_presentation_definition_for_dataset` | The c1 page-side JS was passing `dataset_id=<hint>` to `/verifier/request`. The verifier only registers SellerVC presentation defs under the `*` sentinel, so the lookup missed | [Blockchain_IoT_Marketplace#41](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/41) — hard-codes `dataset_id="*"` |
+| 1 | `/provider/start` returned `HTTP 404 no_presentation_definition_for_dataset` | The `/provider/start` page-side JS was passing `dataset_id=<hint>` to `/verifier/request`. The verifier only registers SellerVC presentation defs under the `*` sentinel, so the lookup missed | [Blockchain_IoT_Marketplace#41](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/41) — hard-codes `dataset_id="*"` |
 | 2 | Upload returned `HTTP 415 unsupported media type` | iPhone Safari `<input capture>` saves video as QuickTime `.MOV` (`video/quicktime`); `media_routes._ALLOWED_EXT` didn't include it | [Blockchain_IoT_Marketplace#42](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/42) — adds `.mov` to allowlist |
 | 3 | Publish returned `HTTP 401 seller_token_unknown` right before success | `SSIStateStore` is in-memory; container rebuilds wipe every token. Re-presenting the SellerVC via `/provider/start` mints a fresh one (the SellerVC itself stays in the wallet, no re-issuance needed) | Documented as operational behavior in §11.7 |
 | 4 | Wallet showed "Retrieving access token failed: 400 / Error Screen" | OID4VCI offers are **single-use**, but Sphereon-family wallets retry `/issuer/token` internally. The 2nd call fails with `invalid_grant` (400). The **1st call already issued the VC into the wallet** — the error screen is misleading. Dismiss it and the credential list shows the new card | Wallet behavior, documented in §11.7 |
@@ -751,7 +762,7 @@ welcome).
 
 For all scenarios:
 
-1. `docker compose -f infra/docker-compose.yml up -d publisher hardhat bridge mosquitto` is up
+1. `docker compose -f infra/docker-compose.yml up -d publisher bridge mosquitto` is up
 2. Wallet holds a SellerVC whose `licensed_datasets` contains `home/event/possible_littering`
 3. Publisher host is reachable from both PC and iPhone (same LAN recommended)
 
@@ -786,7 +797,7 @@ opens the camera directly in iOS Safari.
 - [x] Receiver `/viewer` (macOS Safari, Tier 3 PurchaseViewerVC.full): green badge `tier: event+image+video` and the `<video>` tag plays the clip inline ✅
   - **macOS Safari natively plays `video/quicktime`** — important data point: Stage T option B handles QuickTime end-to-end.
 
-**Screenshots (to be added by follow-up commit)**:
+**Screenshots**:
 
 ```
 images/data-user-vc-tiered/provider/A-iphone-404-original.png       # pre-fix: 404 no_presentation_definition_for_dataset
@@ -882,6 +893,7 @@ assumption only applies to legacy Safari.
 | 16 and earlier | mp4 only | MP4 | `video/mp4` |
 
 `MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')`:
+
 - Safari 17+: `true` → VP9 selected (same behavior as Chrome)
 - Safari 16 and earlier: `false` → falls back to MP4
 
@@ -931,11 +943,12 @@ Design rationale: see [DataUserVC × Tiered Access Spec § "Tier extension"](dat
 |---|---|---|---|
 | **3** Full | `full` | gov + crime + ISO27001 (80) | raw image / video + redacted image + full text + summary text |
 | **2** Access | `access` | enterprise + research + ISO27001 (75) | **face/PII-blurred image** + **detailed text** (named entities) + summary |
-| **1** Summary | `summary` (new) | enterprise + research only (60–) | **summary text only** (PII-redacted, no image) |
-| 0 Denied | `denied` | unqualified (<60) | claim is rejected |
+| **1** Summary | `summary` (new) | enterprise + unknown purpose + legalCompliance only (50–59) | **summary text only** (PII-redacted, no image) |
+| 0 Denied | `denied` | unqualified (<50) | claim is rejected |
 
-A new `summary` value joins the `access_level` enum; `denied` is
-unchanged. The `/platform/data` row schema gains:
+A new `summary` value joins the `access_level` enum: with the VLM
+profile on, scores 50–59 map to `summary` (with the profile off,
+scores below 60 are still `denied`). The `/platform/data` row schema gains:
 
 | Key | Content | Visible at tier |
 |---|---|---|
@@ -955,7 +968,7 @@ working under the legacy 3-tier projection.
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
-  publisher hardhat bridge mosquitto vlm vlm-pull
+  publisher bridge mosquitto vlm vlm-pull
 ```
 
 Switch the publisher backends on:
@@ -1058,7 +1071,7 @@ Compare `description_full` (Tier 2/3) against `description_summary`
 
 ```bash
 curl -s -H "authorization: Bearer $VIEWER_TOKEN_TIER3" \
-     localhost:8080/platform/data?dataset_id=home/event/possible_littering \
+     'localhost:8080/platform/data?dataset_id=home/event/possible_littering' \
   | jq '.rows[0] | {description_full, description_summary, description_model}'
 ```
 
@@ -1259,7 +1272,9 @@ SEMANTIC_ANALYZER_BACKEND=vision \
 
 ### 13.4 /provider §1.5 "Run analysis" panel
 
-After upload completes, the §1.5 panel becomes available. Pressing
+After upload completes, the §1.5 panel becomes available on the
+`/provider` page ("§1.5" is a section number inside that page, not a
+section of this document). Pressing
 "分析を実行":
 
 1. POSTs the source blob to `/semantic/analyze` to retrieve the SIR
@@ -1334,7 +1349,7 @@ or any face encoding / extracted PII from the SIR.
 The two coexist. The 🔬 toggle leaves the legacy Stage T projection
 intact; it merely offers an opt-in alternative path.
 
-### 13.10 Real-device validation log (placeholder)
+### 13.10 Real-device validation log
 
 | Scenario | Environment | Status | Verification point |
 |---|---|---|---|

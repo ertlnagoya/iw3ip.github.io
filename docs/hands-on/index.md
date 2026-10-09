@@ -8,37 +8,59 @@
 ## 基本 と 機能拡張 の関係
 
 このハンズオンは、マーケットプレイス周辺の機能を **基本 (v1)** と **機能拡張 (v2)** の 2 段階で説明します。
-両者は **置き換え関係ではなく追加レーン** です。基本だけでもデータの売買は完結します。
+v2 は v1 を置き換えるものではなく、v1 に追加する経路です。基本だけでもデータの売買は完結します。
 
 ### 基本 (v1) — 最小構成
 
 - データを **マーケットプレイスに出品** し、**MetaMask で購入**、**暗号化 IPFS から復号** して受け取る
 - 必要なのは PC と MetaMask のみ
-- ハンズオン Part 1 ではこの v1 経路を組み立てます
+- ハンズオン Part 1 ではこの v1 経路を扱います
 
 ### 機能拡張 (v2) — 安全・条件付き・段階アクセス
 
 - 購入したあと、**スマホ SSI ウォレット** が **VC** を受け取る
 - 受信側は VC を提示してデータを取得する。何のために使うか (purpose) や信頼度に応じて、見せる中身を段階的に変える
-- ハンズオン Part 2 ではこの v2 経路と、その上に乗る同意・段階アクセスを扱います
+- ハンズオン Part 2 ではこの v2 経路と、それを前提とする同意・段階アクセスを扱います
 
 ```
 購入 (v1 と v2 で共通)
     ↓
-    ├── v1 lane: 暗号化 IPFS URI → 復号 → データ        ← Part 1 で扱う
-    └── v2 lane: bridge → PurchaseViewerVC → wallet     ← Part 2 で扱う
+    ├── v1 経路: 暗号化 IPFS URI → 復号 → データ        ← Part 1 で扱う
+    └── v2 経路: bridge → PurchaseViewerVC → wallet     ← Part 2 で扱う
                   → ViewerToken → /platform/data
 ```
 
-詳しい設計は [Marketplace VC Bridge — v1 / v2 設計仕様](../design/marketplace-vc-bridge-spec.md)。
+詳しい設計は [Marketplace VC Bridge — v1 / v2 設計仕様](../design/marketplace-vc-bridge-spec.md) を参照してください。
+
+## Part / Phase / Stage の関係 { #part-phase-stage }
+
+このサイトでは、3 種類の番号を使っています。
+
+- **Part 1〜3**: このサイトでの学習順です。基本、機能拡張、知能統合の順に進みます。
+- **Phase 1〜3**: 基盤の発展段階です。Phase 1 はデータ共有、Phase 2 はイベント共有、Phase 3 は AI による判断と制御を指します（[プラットフォーム概要のフェーズ構成](../platform-overview.md#フェーズ構成)）。各ページの題名に付いています。
+- **Stage 0〜7、A、T**: Part 2 のうち、VC を使うハンズオンに付けた通し番号です。各ページは、前の Stage を済ませていることを前提にしています。Stage 2 は欠番です。
+
+| Stage | ハンズオン | 扱う VC |
+|---|---|---|
+| 0 | [USB ウェブカメライベント共有](webcam-event-sharing.md)、[環境・防災イベント共有](environment-disaster.md) | なし (`/consents` に JSON を登録) |
+| 1 | [スマホ SSI ウォレット](ha-ssi-wallet.md) | ConsentVC |
+| 3 | [SSI ビューワ](ha-ssi-viewer.md) | ViewerVC |
+| 4 prep | [SSI サービス](ha-ssi-service.md) | ServiceVC |
+| 5 | [マーケットプレイス × ウォレット連携](marketplace-vc-bridge.md) | PurchaseViewerVC |
+| 6 | [4 種 VC の end-to-end](marketplace-vc-end-to-end.md) | Consent / Viewer / Service / PurchaseViewer |
+| 7 | [Seller VC](marketplace-seller-vc.md) | SellerVC |
+| A | [モバイルアプリ](marketplace-mobile-app.md) | PurchaseViewerVC (スマホだけで操作) |
+| T | [DataUserVC × 段階アクセス](data-user-vc-tiered.md) | DataUserVC |
+
+VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-architecture-overview.md) にまとめています。
 
 ## 全体構成
 
 <div class="iw3ip-phase-grid">
   <div class="iw3ip-phase-card iw3ip-phase-1">
     <div class="iw3ip-phase-kicker">Part 1 / 基本 (v1)</div>
-    <h3>📡 IoT データを取って共有する</h3>
-    <p>カメラやセンサからデータを取り、見て、マーケットプレイスで売買する基本の経路を組み立てます。</p>
+    <h3>IoT データを取って共有する</h3>
+    <p>カメラやセンサからデータを取り、見て、マーケットプレイスで売買する基本の経路を扱います。</p>
     <p class="iw3ip-phase-links">
       <a href="ha-demo-simulator.md">HA Demo Simulator</a> /
       <a href="huskylens2.md">HUSKYLENS2</a> /
@@ -49,7 +71,7 @@
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-2">
     <div class="iw3ip-phase-kicker">Part 2 / 機能拡張 (v2)</div>
-    <h3>🧭 同意・条件付き共有・段階アクセス</h3>
+    <h3>同意・条件付き共有・段階アクセス</h3>
     <p>VC とウォレットを使って、目的や信頼度に応じた共有を扱います。途中で止めても問題ありません。</p>
     <p class="iw3ip-phase-links">
       <a href="ha-ssi-wallet.md">HA SSI Wallet</a> /
@@ -61,7 +83,7 @@
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-3">
     <div class="iw3ip-phase-kicker">Part 3 / 知能統合</div>
-    <h3>🧠 AI に要求を解釈させる</h3>
+    <h3>AI に要求を解釈させる</h3>
     <p>人の要求を AI が解釈し、Part 1/2 で集めたデータを材料に判断・処理する応用段階です。</p>
     <p class="iw3ip-phase-links">
       <a href="local-vlm-distribution.md">ローカル VLM でカメラデータを意味づけ</a> /
@@ -79,14 +101,14 @@
 | 基本を一通り | Part 1 全部 (60–90 分) |
 | 安全な共有まで | Part 1 → Part 2 の 2.1〜2.3 (+ 60 分) |
 | マーケット連携の v2 まで | Part 1 → Part 2 の 2.4 まで (+ 30 分) |
-| 段階アクセス・semantic まで | Part 2 の 2.5 まで (+ 30 分) |
+| 段階アクセスまで | Part 2 の 2.5 まで (+ 30 分) |
 | AI 統合まで | Part 3 まで (+ 30 分) |
 
-各ハンズオンページの先頭には **「このハンズオンで分かること」「前提」「使うもの」「所要時間」** を載せています。途中で詰まったら [トラブルシュート](../operations/troubleshooting.md) を参照。
+各ハンズオンページの先頭には **「このハンズオンで分かること」「前提」「使うもの」「所要時間」** を載せています。途中で詰まったら [トラブルシュート](../operations/troubleshooting.md) を参照してください。
 
 ## 使う技術要素の早見表
 
-サブグループごとに、何が裏で動いているかをまとめました。Part 2 はサブによってブロックチェーンを使う・使わないが分かれます。
+サブグループごとに、使う技術要素をまとめます。Part 2 には、ブロックチェーンを使うサブグループと使わないサブグループがあります。
 
 | サブグループ | publisher (Docker) | ブロックチェーン (Hardhat) | MetaMask | SSI ウォレット (スマホ) | IPFS (暗号化配信) | 画像処理 / LLM |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
@@ -107,12 +129,12 @@
 
 ### 表の見方
 
-- **publisher**: ハンズオン用のサーバ。基本どのサブでも `docker compose up` で立ち上げます。
-- **ブロックチェーン**: Hardhat ローカルチェーン + デプロイ済コントラクト。マーケットでの売買が起点になるサブで必要。
-- **MetaMask**: ブロックチェーンに対する署名・送金。ローカルチェーンに接続して使います。
-- **SSI ウォレット**: スマホに入れる Sphereon Wallet。VC の受け取りと提示に使います。
-- **IPFS (暗号化配信)**: v1 の購入後データ受け渡しレーン。v2 ではこの役割を VC に置き換えます。
-- **画像処理 / LLM**: OpenCV (Tier 2 ぼかし)、Ollama (LLaVA/moondream の VLM)、Phase 3 の LLM Planner。
+- **publisher**: ハンズオン用のサーバ。どのサブグループでも `docker compose up` で起動します。
+- **ブロックチェーン**: Hardhat ローカルチェーン + デプロイ済コントラクト。マーケットでの売買が起点になるサブグループで必要です。
+- **MetaMask**: ブロックチェーンに対する署名・送金に使います。ローカルチェーンに接続して使います。
+- **SSI ウォレット**: スマホに入れる Sphereon Wallet です。VC の受け取りと提示に使います。
+- **IPFS (暗号化配信)**: v1 で、購入後のデータ受け渡しに使います。v2 では VC を使う経路が加わります。
+- **画像処理 / LLM**: OpenCV (Tier 2 のぼかし処理)、Ollama で動かす VLM（視覚言語モデル。LLaVA / moondream）、Phase 3 の LLM Planner を指します。
 
 ---
 
@@ -145,9 +167,9 @@
 
 - [Mobile Viewer サンプル](mobile-viewer.md)
 
-### 1.4 マーケットプレイスで売買 (v1 lane)
+### 1.4 マーケットプレイスで売買 (v1 経路)
 
-出品 → 購入 → 暗号化 IPFS から復号して受け取り、までの一往復。
+出品 → 購入 → 暗号化 IPFS から復号して受け取り、までを一通り行います。
 ここまでが **基本 (v1)** の完了点です。
 
 - iot-market-ui で出品する
@@ -167,19 +189,19 @@
 
 ### この Part のゴール
 
-- **「全部見せる」ではなく「条件付きで見せる」** がなぜ必要か理解する
+- 条件付きで見せることがなぜ必要かを理解する
 - **VC とウォレット** でその条件付き共有を実装する
 - **段階アクセス (Tier 3 / 2 / 1)** で、信頼度に応じて見せる中身を変える
 
 ### 2.1 同意 (Consent VC) を入れる
 
-共有の前に「この目的なら共有していい」という同意 VC を発行・提示する流れを学びます。
+共有の前に「この目的なら共有してよい」という同意 VC を発行・提示する流れを学びます。
 
 - [HA × SSI Wallet サンプル](ha-ssi-wallet.md)
 
 ### 2.2 イベント共有 — 生データではなく結果だけ
 
-カメラの生映像ではなく「人物検出: あり」「ゴミ捨て: あり」のような **イベント** だけを送る方式を体験します。
+カメラの生映像の代わりに、「人物検出: あり」「ゴミ捨て: あり」のような **イベント** だけを送る方式を試します。
 
 - [USB ウェブカメライベント共有サンプル](webcam-event-sharing.md)
 - [環境・防災イベント共有サンプル](environment-disaster.md)
@@ -191,19 +213,19 @@
 - [HA × SSI Viewer サンプル](ha-ssi-viewer.md)
 - [HA × SSI Service サンプル](ha-ssi-service.md)
 
-### 2.4 マーケットプレイス × ウォレット (v2 lane)
+### 2.4 マーケットプレイス × ウォレット (v2 経路)
 
-購入後の受け渡しを暗号化 IPFS ではなく **PurchaseViewerVC + ViewerToken** で行う v2 経路を組み立てます。
+購入後の受け渡しを暗号化 IPFS ではなく **PurchaseViewerVC + ViewerToken** で行う v2 経路を扱います。
 
-- [Marketplace VC Bridge ハンズオン](marketplace-vc-bridge.md) — bridge を立てる
-- [Marketplace VC end-to-end (Stage 6)](marketplace-vc-end-to-end.md) — 購入から閲覧までフルパス
+- [Marketplace VC Bridge ハンズオン](marketplace-vc-bridge.md) — bridge を起動し、購入から VC 発行までをつなぐ
+- [Marketplace VC end-to-end (Stage 6)](marketplace-vc-end-to-end.md) — 書き込みから購入、閲覧までを通す
 - [Marketplace Seller VC (Stage 7)](marketplace-seller-vc.md) — 出品者側の VC
 - [Marketplace Mobile App (Stage A)](marketplace-mobile-app.md) — 専用モバイルアプリ
 
 ### 2.5 信頼度に応じた段階アクセス (Stage T)
 
 利用者の **DataUserVC** に基づき、Tier 3 (動画+全部) / Tier 2 (画像+派生) / Tier 1 (要約のみ) の 3 段階で見せ方を変えます。
-最後に **意味的中間表現** + **trust-aware rendering** まで深掘りします。
+後半では、画像の内容を構造化したデータ（意味的中間表現）を作り、信頼度に応じて見せ方を変える処理（trust-aware rendering）も扱います。
 
 - [DataUserVC Tiered Access ハンズオン](data-user-vc-tiered.md)
 - [DataUserVC Tiered Access 仕様](data-user-vc-tiered-spec.md)
@@ -239,7 +261,7 @@ Part 1/2 で蓄積された「いつ・どこで・何が起きた」イベン�
 
 ### 3.3 LLM Planner
 
-要求を **plan → execute → UI** に分解する設計の体験です。
+要求を **plan → execute → UI** に分解する設計を確認します。
 
 - [LLM Planner ハンズオン](llm-planner.md)
 - [LLM Planner 置き換え仕様](llm-planner-spec.md)

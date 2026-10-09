@@ -75,7 +75,8 @@ TTL: 24 h (subject to review)
 **MVP**: bridge passes `buyer_eth_addr` to publisher in the OID4VCI offer
 context; publisher records `eth_addr ↔ did:jwk` in the audit log when
 the wallet finishes credential receipt. Trusts the bridge — explicitly
-flagged as "hands-on use only, production needs §7.2."
+flagged as "hands-on use only, production needs the EIP-712 approach
+below" (§7.2 of the JA spec).
 
 **Production (future)**: EIP-712 signed assertion that the buyer owns
 the `tx_hash`. Not implemented in MVP; called out in spec only.
@@ -96,4 +97,5 @@ the `tx_hash`. Not implemented in MVP; called out in spec only.
 - [SSI Wallet hands-on (Stage 1)](../hands-on/ha-ssi-wallet.md)
 - [SSI Viewer hands-on (Stage 3)](../hands-on/ha-ssi-viewer.md)
 - [SSI Service hands-on (Stage 4 prep)](../hands-on/ha-ssi-service.md)
-- Future: `hands-on/marketplace-vc-bridge.md` (M6)
+- [Marketplace × Wallet bridge hands-on (Stage 5)](../hands-on/marketplace-vc-bridge.md)
+- [VC architecture overview](vc-architecture-overview.md) ("Seven hands-on stages" lists the Stage numbers)

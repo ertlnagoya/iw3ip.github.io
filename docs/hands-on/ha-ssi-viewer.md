@@ -4,29 +4,29 @@
 
 > **やること**: ViewerVC を提示して読み出しを許可してもらう
 >
-> **前提**: [HA SSI Wallet サンプル](ha-ssi-wallet.md) (Stage 1) を体験済み
+> **前提**: [HA SSI Wallet サンプル](ha-ssi-wallet.md) (Stage 1) を済ませていること
 >
 > **使うもの**: PC + スマホ (Sphereon Wallet)
 >
 > **所要時間**: 約 45 分
 
 !!! note "[SSI Wallet ハンズオン](ha-ssi-wallet.md) の続編です"
-    Stage 1 (PolicyToken による書き込み認可) を体験済の前提で進めます。
-    本ページでは **読み出し** を VC ゲートする Stage 3 を扱います。
+    Stage 1 (PolicyToken による書き込み認可) を済ませた前提で進めます。
+    本ページでは **読み出し** を VC で保護する Stage 3 を扱います。
 
 !!! tip "dataset の選択"
     本ハンズオンの例は `home/env/temperature` で書かれていますが、Stage 0
     [webcam-event-sharing](webcam-event-sharing.md) と同じ
     `home/event/possible_littering` でも動作します
     ([viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/viewer-possible-littering.json)
-    の PD 登録済み)。一連のハンズオンを通して同じ dataset を使いたい場合はそちらを選んでください。
+    の Presentation Definition (PD) が登録済み)。一連のハンズオンを通して同じ dataset を使いたい場合はそちらを選んでください。
 
 ## 目的
 
 ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し、
 **ViewerVC** は「読み出し (data 取得) を許可する VC」です。
 ウォレットで ViewerVC を提示 → 短命 ViewerToken を受領 →
-`/platform/data` API でセンサーデータを取得する流れを体験します。
+`/platform/data` API でセンサーデータを取得する流れを試します。
 
 パイプライン:
 
@@ -36,12 +36,12 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 
 - 「書き込み VC」と「読み出し VC」を分ける理由
 - ViewerVC を OID4VCI で発行し、OID4VP で提示する
-- ViewerToken の TTL 60 秒 / 多回利用の扱い
+- ViewerToken の TTL (有効期間) 60 秒 / 多回利用の扱い
 - `/platform/data` で取得した行が監査ログに残る様子
 
 ## よくある問題
 
-- ConsentVC と ViewerVC は **別 VC**。ConsentVC を提示しても `/platform/data` には入れない
+- ConsentVC と ViewerVC は別の VC で、ConsentVC を提示しても `/platform/data` は読めない
 - `/platform/data` は ViewerToken のみ受け付ける（PolicyToken は通らない）
 - ViewerToken は TTL 60 秒。連続閲覧で期限が切れたら再提示が必要
 
@@ -56,6 +56,7 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 - [SSI Wallet ハンズオン](ha-ssi-wallet.md) の §1〜§8 を一度通している
 - publisher が `feat/ssi-viewer-vc` 以降のコードで起動している
 - スマホで `iw3ip-wallet` が使える
+- 本ページでは PC の LAN IP を `192.168.68.53` として示します。自分の環境の IP (`ipconfig getifaddr en0` などで確認) に読み替えてください
 
 ## 関連リポジトリ
 
@@ -85,7 +86,7 @@ curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3
 
 ## 2. ConsentVC でデータを書き込む（おさらい）
 
-[SSI Wallet ハンズオン §5〜§8](ha-ssi-wallet.md#5-verifier-qrで提示) と同じ手順で
+[SSI Wallet ハンズオン §5〜§8](ha-ssi-wallet.md#5-verifier-qr-で提示) と同じ手順で
 ConsentVC を提示 → PolicyToken 取得 → `/platform/ingest` でデータを書き込みます。
 書き込んだデータが §5 で読み出しの対象になります。
 
@@ -97,7 +98,7 @@ PC ブラウザで:
 http://192.168.68.53:8080/issuer/offer?type=ViewerVC&dataset_id=home/env/temperature
 ```
 
-ConsentVC のときと同じフローですが、**`type=ViewerVC`** がポイントです。
+ConsentVC のときと同じ流れですが、`type=ViewerVC` を指定します。
 QR / AirDrop deeplink でスマホウォレットに送信し、ViewerVC を保存します。
 
 ウォレット内で別カードとして表示されることを確認してください。
@@ -116,7 +117,7 @@ http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_ki
 
 `vc_kind=ViewerVC` の query が ConsentVC 用 PD ではなく **viewer-temperature.json** を選ばせます。
 
-QR / deeplink でウォレットへ → ViewerVC を選んで提示。
+QR または deeplink でウォレットを開き、ViewerVC を選んで提示します。
 
 期待結果:
 
@@ -165,7 +166,7 @@ TTL (60 秒) 内であれば連続呼び出し可能で、各回 `read_count` �
 | 未知のトークン | 401 | `viewer_token_unknown` |
 | 期限切れ (60 秒経過) | 401 | `viewer_token_expired` |
 | query の `dataset_id` がトークンと不一致 | 403 | `viewer_token_dataset_mismatch` |
-| ConsentVC の PolicyToken を使った | 401 | `viewer_token_unknown` (別空間の token なので) |
+| ConsentVC の PolicyToken を使った | 401 | `viewer_token_unknown` (PolicyToken と ViewerToken は別々に管理されているため) |
 
 期限切れの確認:
 
@@ -196,7 +197,7 @@ ViewerVC 経由の read は次のように記録されます:
 }
 ```
 
-`reason` 末尾の数字は `read_count`。同じ token で 3 回 read すれば 3 つ並びます。
+`reason` 末尾の数字は `read_count` です。同じ token で 3 回 read すれば 3 つ並びます。
 
 ## ConsentVC との対称性
 

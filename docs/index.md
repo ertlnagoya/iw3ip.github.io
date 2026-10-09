@@ -2,7 +2,7 @@
 
 IW3IP の全体像、実装例、ハンズオン手順をまとめたドキュメントサイトです。
 
-## 主な利用場面
+## 想定読者
 
 - コンピュータや情報システムを学ぶ学部学生
 - 演習を担当する講師・TA
@@ -22,7 +22,7 @@ IW3IP の全体像、実装例、ハンズオン手順をまとめたドキュ�
   - 各 Hands-on サンプル
   - トラブルシュート
 
-外部サイトや論文は、標準仕様や研究背景を深掘りしたいときの参考資料です。
+外部サイトや論文は、標準仕様や研究背景を詳しく調べたいときの参考資料です。
 
 ## ドキュメント構成
 
@@ -45,7 +45,7 @@ IW3IP の全体像、実装例、ハンズオン手順をまとめたドキュ�
 
 ## まず 1 つ動かしたい場合
 
-実機なしで Phase 1 / Phase 2 の基本経路を確認したい場合は、`ha-demo-simulator` が最も着手しやすい入口です。
+実機なしで Phase 1 / Phase 2 の基本経路を確認したい場合は、`ha-demo-simulator` から始めてください。Phase 1〜3 は基盤の発展段階を表す区分で、[プロジェクト概要のフェーズ構成](platform-overview.md#フェーズ構成) で説明しています。
 
 - 対応ページ: [Home Assistant Demo Simulator サンプル](hands-on/ha-demo-simulator.md)
 - 確認できること:
@@ -100,7 +100,7 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 ## ローカルでDocsを起動
 
 ```bash
-pip install mkdocs-material mkdocs-static-i18n
+pip install -r docs/requirements.txt
 mkdocs serve
 ```
 

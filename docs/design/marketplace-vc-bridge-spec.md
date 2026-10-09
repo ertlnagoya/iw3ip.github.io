@@ -1,9 +1,11 @@
 # Marketplace VC Bridge — v1 / v2 設計仕様
 
 !!! abstract "このドキュメントの位置付け"
-    マーケットプレイスとスマホ SSI ウォレットを接続する **v2** の設計仕様。
+    マーケットプレイスと、スマホの SSI (Self-Sovereign Identity、自己主権型アイデンティティ) ウォレットを接続する **v2** の設計仕様である。
     既存システムを **v1**、本仕様で実装するシステムを **v2** と呼び、
-    共通部分と派生部分を明示する。**M1 (設計確定) のドラフト**。
+    共通部分と派生部分を明示する。本書は、§11 のマイルストーン M1 (設計確定) のドラフトである。
+    本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像](vc-architecture-overview.md) の §5)。
+    本仕様は Stage 5 のハンズオン [marketplace-vc-bridge](../hands-on/marketplace-vc-bridge.md) に対応する。
 
 ## 1. v1 と v2 の関係
 
@@ -12,16 +14,16 @@
 | 用語 | 指すもの |
 |---|---|
 | **v1** | 現行の「Marketplace + MetaMask + 暗号化 IPFS 配信」システム |
-| **v2** | v1 に **bridge service + PurchaseViewerVC + publisher データ API** を追加した、スマホ SSI ウォレット連携システム |
+| **v2** | v1 に **bridge service + PurchaseViewerVC + publisher データ API** を追加した、スマホ SSI ウォレット連携システム。VC は Verifiable Credential (検証可能な資格情報) の略 |
 | **bridge** | v2 で新設するイベントリスナー兼 publisher 連携サービス |
 | **buyer** | データ購入者 (人間)。MetaMask と iw3ip-wallet の両方を持つ前提 |
 | **seller** | データ提供者。Merchandise コントラクトと publisher の両方を運用 |
 
 ### 1.2 共存方針
 
-**v2 は v1 を置き換えない**。v1 の暗号化 IPFS 配信は維持し、v2 は購入完了後の
-**追加レーン**として並走する。buyer は購入後に「暗号化 URI で受け取る (v1)」
-か「VC 経由で受け取る (v2)」かを **選択可能**。
+v2 は v1 を置き換えない。v1 の暗号化 IPFS 配信は維持し、v2 は購入完了後に使える
+追加の経路 (下図の lane) として v1 と並行して動作する。buyer は購入後に、暗号化 URI で
+受け取る (v1) か、VC 経由で受け取る (v2) かを選択できる。
 
 ```
 購入 (共通)
@@ -92,6 +94,11 @@
                               └──────────────────┘
 ```
 
+図中の HH は Hardhat、RN は React Native を指す。OID4VCI (OpenID for Verifiable
+Credential Issuance) は VC の発行、OID4VP (OpenID for Verifiable Presentations) は
+VC の提示に使うプロトコルである。did:jwk は公開鍵 (JWK) から導出する DID (Decentralized
+Identifier、分散型識別子) の方式で、ここではウォレットの持ち主の識別に使う。
+
 ## 3. 共通部分と派生部分
 
 ### 3.1 そのまま流用する (v1 = v2)
@@ -121,16 +128,16 @@
 
 | コンポーネント | v2 での扱い |
 |---|---|
-| `Merchandise.emitUpload(encryptURI)` + Upload event | **残す**。v1 lane として動作。v2 lane と同じ Purchase イベントから両方走る |
-| `PubKey` コントラクト (買い手公開鍵レジストリ) | **残す**。v1 lane でのみ参照される |
-| 暗号化 → 復号フロー | **残す**。ハンズオン上は「v1 vs v2 比較」として教える |
+| `Merchandise.emitUpload(encryptURI)` + Upload event | **残す**。v1 の経路として動作する。同じ Purchase イベントから v1 と v2 の両方の経路が動作する |
+| `PubKey` コントラクト (買い手公開鍵レジストリ) | **残す**。v1 の経路でのみ参照される |
+| 暗号化 → 復号フロー | **残す**。ハンズオンでは v1 と v2 の比較として扱う |
 
 ### 3.4 v1 に **無く、v2 でも作らない**もの
 
 | 項目 | 理由 |
 |---|---|
-| KYC / 身元確認 VC | スコープ外。将来 Stage 5+ で検討 |
-| did:ethr 等の eth-did 統合プロトコル | MVP では eth_addr ↔ did:jwk を publisher が **off-chain で記録** |
+| KYC (Know Your Customer) / 身元確認 VC | スコープ外。将来 Stage 5+ で検討 |
+| did:ethr 等の eth-did 統合プロトコル | MVP (Minimum Viable Product、ハンズオンで動かす最小限の実装) では eth_addr ↔ did:jwk を publisher が **off-chain で記録** |
 | マルチチェーン対応 | Hardhat ローカル前提 |
 | 価格交渉・オークション | v1 仕様のまま |
 
@@ -208,8 +215,9 @@ sequenceDiagram
 ```
 
 ViewerVC との違い:
+
 - `merchandise_address`, `buyer_eth_addr`, `tx_hash` の 3 つが必須 (購入文脈)
-- TTL は wallet 受領後 24 時間 (購入即時アクセスを想定)
+- TTL (有効期間) はウォレットでの受領後 24 時間 (購入直後のアクセスを想定)
 - `allowed_actions=["read"]` は ViewerVC と同じ
 
 ## 7. eth_addr ↔ did:jwk 紐付け (MVP の選択肢)
@@ -217,20 +225,20 @@ ViewerVC との違い:
 ### 7.1 採用案 (MVP): query 経由の素朴な方式
 
 bridge が publisher を呼ぶときに `buyer_eth_addr` を渡し、publisher は
-OID4VCI offer の `pre_authorized_code` に紐付けて記録する。wallet が VC を
+OID4VCI offer の `pre_authorized_code` に紐付けて記録する。ウォレットが VC を
 受領するときに holder_did が確定するので、その時点で
-**audit log に `eth_addr ↔ did:jwk` のリンクを書く**。
+audit log に `eth_addr ↔ did:jwk` の対応を書く。
 
-**長所**: 実装が単純、ハンズオン即実行可能
-**短所**: bridge を信用するしかない (なりすまし可能)。本番不可。
-**ハンズオンでの扱い**: 「教育用、本番は §7.2 が必要」と明記
+- **長所**: 実装が単純で、ハンズオンですぐに実行できる。
+- **短所**: bridge を信用する前提であり、なりすましができる。本番環境では使えない。
+- **ハンズオンでの扱い**: 「教育用であり、本番では §7.2 の方式が必要」と明記する。
 
 ### 7.2 本番想定 (将来): EIP-712 署名検証
 
-buyer が wallet で「このトランザクション (`tx_hash`) は私のもの」を EIP-712
-形式で署名 → publisher が検証。
+buyer がウォレットで「このトランザクション (`tx_hash`) は私のもの」という内容に EIP-712
+形式で署名し、publisher がそれを検証する。
 
-**MVP では実装しない**。仕様上の note のみ。
+MVP では実装せず、本仕様では方式を記すだけとする。
 
 ## 8. API 仕様 (v2 で新規)
 
@@ -238,7 +246,7 @@ buyer が wallet で「このトランザクション (`tx_hash`) は私のも�
 
 #### `POST /marketplace/claim`
 
-bridge → publisher。
+bridge が publisher を呼び出す。
 
 Request:
 ```json
@@ -266,37 +274,41 @@ iot-market-ui がポーリングする。`status: pending|delivered|expired` を
 
 #### `GET /platform/data?merchandise=<addr>`
 
-既存 `?dataset_id=` と並列。Bearer に PurchaseViewerVC 由来の ViewerToken。
-内部的には Merchandise から `dataset_id` を逆引きして既存 `?dataset_id=` 経路に流す。
+既存の `?dataset_id=` と並ぶ取得方法である。Bearer には PurchaseViewerVC の提示で得た ViewerToken を指定する。
+内部では Merchandise から `dataset_id` を逆引きし、既存の `?dataset_id=` と同じ処理で取得する。
 
 ### 8.2 bridge 側 (新設)
 
 #### `POST /bridge/notify` (任意)
 
-iot-market-ui から bridge へ「私のフロントで Purchase tx が確定した、claim 状態を返して」
-の問い合わせ口。bridge は Purchase event 購読 + 内部マップで該当 claim を返す。
+iot-market-ui が bridge に、フロントで Purchase トランザクションが確定したことを伝え、
+claim の状態を問い合わせる endpoint である。bridge は、購読している Purchase event と
+内部のマップから該当する claim を返す。
 
 #### `GET /bridge/status?tx=<hash>`
 
-claim の進行状況。
+claim の進行状況を返す。
 
 ## 9. audit log の追加フィールド
 
 `raw_topic` の値:
+
 - `marketplace/claim`: bridge → publisher の連携時 (`reason=claim_received:<jti>`)
 - `marketplace/issued`: PurchaseViewerVC 発行時 (`reason=purchase_vc_issued:<jti>`, `vc_hash`)
 - `marketplace/data`: `/platform/data?merchandise=<addr>` 利用時 (`reason=viewer_token_used:<jti>:<read_count>`)
 
 新規記録項目:
+
 - `merchandise_address`
 - `tx_hash`
 - `buyer_eth_addr`
 
-(既存 audit_log テーブルに ALTER COLUMN で追加)
+これらは既存の audit_log テーブルに ALTER COLUMN で追加する。
 
 ## 10. テスト戦略
 
 ### 10.1 publisher 単体
+
 - pytest: `tests/test_marketplace_bridge.py` 新規 (8〜10 件)
     - claim → offer 生成
     - 二重 claim の扱い
@@ -308,22 +320,24 @@ claim の進行状況。
     - 未購入の merchandise への提示拒否
 
 ### 10.2 bridge 単体
+
 - Node test (vitest 推奨): `bridge/test/listener.test.ts`
     - mock Hardhat provider
     - Purchase event → publisher mock 呼び出し検証
 
 ### 10.3 e2e (手動 / iPhone 実機)
-- ハンズオン手順がそのまま e2e テスト
 
-## 11. マイルストーン (再掲)
+e2e (end-to-end) テストには、ハンズオンの手順をそのまま用いる。
+
+## 11. マイルストーン
 
 | ID | 内容 | 期間 | 完了条件 |
 |---|---|---|---|
-| **M1** | 設計仕様 (= 本ドキュメント) | 1 週間 | 本 PR が main マージ |
+| **M1** | 設計仕様 (= 本ドキュメント) | 1 週間 | 本仕様を追加する Pull Request が main ブランチにマージされる |
 | **M2** | bridge スケルトン + `/marketplace/claim` | 1 週間 | docker compose で event → API 連携が動く |
-| **M3** | PurchaseViewerVC + eth↔did 紐付け | 3-4 日 | 実機 wallet で受領、audit に紐付け記録 |
+| **M3** | PurchaseViewerVC + eth↔did 紐付け | 3-4 日 | 実機のウォレットで受領、audit に紐付け記録 |
 | **M4** | `/platform/data?merchandise=<addr>` + テスト | 3-4 日 | 全テスト pass、e2e で 200 OK |
-| **M5** | iot-market-ui 統合 (deeplink/QR 表示) | 3-4 日 | 購入後画面で wallet 起動 |
+| **M5** | iot-market-ui 統合 (deeplink/QR 表示) | 3-4 日 | 購入後画面でウォレット起動 |
 | **M6** | ハンズオン文書化 | 3-4 日 | site にハンズオン公開 |
 
 ## 12. オープンクエスチョン
@@ -331,11 +345,11 @@ claim の進行状況。
 1. iot-market-ui は SvelteKit + Svelte 5 への移行途中。新規 page 追加時の
    API バージョンを M5 着手前に確認する
 2. bridge を `ssi-wallet` profile に同居させるか、別 profile (`marketplace-vc`) を
-   切るか — M2 で決定
+   作るか。M2 で決定する
 3. PurchaseViewerVC の TTL は 24 時間で良いか (購入後数日して気付いて閲覧する
-   ケースを想定するなら 7 日?) — ハンズオン参加者と相談
-4. 既存の `mobile-viewer.md` は v1 ベース (= 動作未実装の `/mobile`) のまま放置
-   されている。本仕様で `/purchased/[txHash]` を新設するなら、`mobile-viewer.md`
+   ケースを想定するなら 7 日?)。ハンズオン参加者と相談して決める
+4. 既存の `mobile-viewer.md` は v1 ベース (= 動作未実装の `/mobile`) のまま更新
+   されていない。本仕様で `/purchased/[txHash]` を新設するなら、`mobile-viewer.md`
    の刷新を M6 に含める
 
 ## 13. 関連ドキュメント
@@ -343,4 +357,5 @@ claim の進行状況。
 - [SSI Wallet ハンズオン (Stage 1)](../hands-on/ha-ssi-wallet.md)
 - [SSI Viewer ハンズオン (Stage 3)](../hands-on/ha-ssi-viewer.md)
 - [SSI Service ハンズオン (Stage 4 prep)](../hands-on/ha-ssi-service.md)
-- 将来: `hands-on/marketplace-vc-bridge.md` (M6 で作成予定)
+- [Marketplace × Wallet bridge ハンズオン (Stage 5)](../hands-on/marketplace-vc-bridge.md)
+- [VC アーキテクチャ全体像](vc-architecture-overview.md) (Stage 番号の一覧は §5)

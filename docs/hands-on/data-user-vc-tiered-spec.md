@@ -4,26 +4,26 @@
 Publisher が公開するカメラ視野を **イベント／画像／動画** の 3 段階に
 動的に絞り込むための設計文書です。
 
-実装手順ではなく、**どこを固定し、どこを差し替えるか** を定義する設計文書です。
+このページでは、既存の実装のうち**どこを固定し、どこを差し替えるか**を定義します。
 ハンズオン手順は [DataUserVC × 段階アクセス](data-user-vc-tiered.md) を参照してください。
 
 ## このページで分かること
 
 - 既存 5 種類の VC（ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC）と、
   6 種類目として追加する **DataUserVC** の関係
-- Li 研の `DataUserVerifier.sol` に書かれた trustScore 算出ロジックを
+- Li 研のスマートコントラクト `DataUserVerifier.sol` に書かれた trustScore（信頼度スコア）算出ロジックを
   Phase 2 の Publisher にどのように取り込むか
 - 「VC 検証 → trustScore → allowed_views」という単方向データフロー
 - データ供給側（HA / RaspberryPi / USB Webcam）と Publisher の責務分離
 
 ## つまずきやすい点
 
-- 「DataUserVC でカメラ映像が見える／見えない」を **オンチェーン契約**で判定すると
-  オフラインで失敗する。今回の実装は **Publisher 側の Python で評価**する
-- trustScore は **属性の和**ではなく、`HIGH_TRUST かつ score>=80` のときだけ `full`
-  になる、という非線形条件を含む
-- ViewerVC / PurchaseViewerVC が持つ `allowed_views` は **Token を発行する瞬間**に
-  確定し、以後変えない（事後昇格させない）
+- 「DataUserVC でカメラ映像が見える／見えない」を**オンチェーンのスマートコントラクト**で判定すると、
+  オフラインでは失敗します。今回の実装は **Publisher 側の Python で評価**します
+- アクセスレベルは trustScore（属性ごとの点数の和）だけでは決まりません。`full` になるのは、
+  entityType が高信頼の区分（`GovernmentOrganization` / `Police`）で、かつ score>=80 のときだけです
+- ViewerVC / PurchaseViewerVC が持つ `allowed_views` は **Token を発行する時点**で
+  確定し、以後は変えません（発行後に権限を引き上げません）
 
 ## 目的
 
@@ -37,20 +37,20 @@ Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/d
 - misuseRecord（過去の濫用記録）
 
 これらを Li 研スマートコントラクト `DataUserVerifier.sol` と同じ重み付けで
-スコア化し、`full` / `access` / `denied` の 3 段に落とします。
+スコア化し、`full` / `access` / `denied` の 3 段階に分類します。
 
 ## この仕様の前提
 
-差し替え対象は **Publisher 内の VC 検証層 + token 層 + projection 層** のみ。
+差し替える対象は **Publisher 内の VC 検証層 + token 層 + projection 層（応答に含めるキーを選別する層）** だけです。
 以下はそのまま再利用します。
 
 - 既存 5 種類の VC（ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC）
-- OID4VCI / OID4VP / DCQL の出入口
+- OID4VCI（VC 発行）/ OID4VP（VC 提示）/ DCQL（提示要求の問い合わせ言語）のエンドポイント
 - bridge ↔ Hardhat の Purchase event 経路
 - Webcam / HA / Demo simulator のデバイス側コード（変更なし）
 
-**Li 研の `DataUserVerifier.sol` は Phase 2 の Publisher が信頼する「ロジック源」**
-であり、オンチェーン呼び出しはしません（理由は後述）。
+**Li 研の `DataUserVerifier.sol` は、Phase 2 の Publisher が評価ロジックの基準として参照するもの**
+で、オンチェーン呼び出しはしません（理由は[なぜオンチェーン呼び出しをしないか](#なぜオンチェーン呼び出しをしないか)を参照）。
 
 ## アーキテクチャ
 
@@ -78,7 +78,9 @@ Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/d
 ```
 
 `DataUserVC` 単体では token を発行しません。**ViewerVC / PurchaseViewerVC を
-発行するときの「クレデンシャル素材」**として使います。
+発行するときの判断材料**として使います。
+
+図中の post-PEX checks は、提示された VC が要求条件に合うことを照合した後に行う追加の検証を指します。
 
 ## 既存 5 種 VC との関係
 
@@ -94,12 +96,12 @@ Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/d
 ## trust_score 評価ロジック
 
 `publisher/app/ssi/trust_score.py` に純関数として実装します。
-`DataUserVerifier.sol` と一致させること（テストで突き合わせ）。
+結果は `DataUserVerifier.sol` と一致させ、テストで両者を突き合わせます。
 
 ### 重み
 
-文字列マッチは **大文字化したうえで完全一致**（スペース込み）。
-未知のラベルは default = **5** にフォールバックします。
+文字列は **大文字化したうえで完全一致**（スペースも含む）で照合します。
+未知のラベルは既定値の **5** にフォールバックします。
 
 ```
 entityType (uppercase exact match):
@@ -130,10 +132,10 @@ misuseRecord == true                    -> -10
 
 `CrimeSearch` の purpose ラベルは Solidity 側の `"CRIME SEARCH"`
 （スペース込み）と一致しないため、現在の Python 実装ではフォールバック値
-**5** になります（だから 35 + 25 ではなく 35 + 5 で 80）。
-ハンズオンでは「ティア境界が再現できれば良い」のでこれで十分機能しますが、
-将来 ZK / オンチェーン同期を入れるときは UI の入力ラベルを正規化する
-小修正が要ります（フォロー TODO）。
+**5** になります（そのため 35 + 25 にはならず、35 + 5 を含む合計 80 になります）。
+ハンズオンではティアの境界を再現できれば足りるので、このままで問題ありません。
+将来、ゼロ知識証明（ZK）やオンチェーンとの同期を入れるときには、UI の入力ラベルを
+正規化する修正が必要です（未対応で、今後の課題です）。
 
 ### しきい値 → アクセスレベル
 
@@ -165,16 +167,17 @@ score >= 60                               -> "access"
 &misuse_record=false
 ```
 
-`DataUserVC` のとき、5 属性すべてが必須。欠落 → 400。
+`DataUserVC` のときは 5 属性すべてが必須です。欠けている場合は 400 を返します。
 
 ### `POST /verifier/request_object`
 
-`vc_kind=DataUserVC` を受け付ける。DCQL の `claims` に上記 5 つを要求。
+`vc_kind=DataUserVC` を受け付けます。DCQL の `claims` で上記の 5 属性を要求します。
 
 ### `POST /verifier/*`（提示エンドポイント）
 
-`DataUserVC` 提示時：
-- post-PEX で 5 属性が claim に存在するか検証
+`DataUserVC` が提示されたときの動作は次のとおりです。
+
+- post-PEX checks で 5 属性が claim に存在するか検証
 - **token を発行しない**
 - レスポンス: `{trust_score, access_level, allowed_views, holder_did}`
 
@@ -194,11 +197,11 @@ score >= 60                               -> "access"
 }
 ```
 
-`data_user_attrs` 省略時は `allowed_views=["event"]` の最小権限で claim。
+`data_user_attrs` を省略した場合は、`allowed_views=["event"]` の最小権限で claim します。
 
 ### `GET /platform/data`
 
-`ViewerToken.allowed_views` を見て:
+`ViewerToken.allowed_views` に応じて、出力するフィールドを選びます。
 
 | allowed_views に含まれる | 出力フィールド |
 |---|---|
@@ -206,7 +209,7 @@ score >= 60                               -> "access"
 | `image` | `image_cid` 追加 |
 | `video` | `video_cid`, `video_duration_sec` 追加 |
 
-含まれないキーは **欠落させる**（null ではなく省く）。
+`allowed_views` に含まれないビューのキーは**応答から省きます**（値を null にするのではなく、キーごと出力しません）。
 
 ## なぜオンチェーン呼び出しをしないか
 
@@ -218,19 +221,19 @@ score >= 60                               -> "access"
 - ハンズオン環境（Hardhat ローカル）では永続性が壊れやすい
 
 そこで **ロジック（重みとしきい値）だけを Python に再実装**し、
-スマートコントラクト側は将来の本番遷移ポイントとして残します。
+スマートコントラクト側は、将来の本番環境へ移行するときに使う候補として残します。
 
 `trust_score.py` は **`DataUserVerifier.sol` のミラー**として保守し、
 変更時はテストで両者が一致することを確認します。
 
 ## ssi-ui の扱い
 
-`ssi-ui/` 配下の Next.js 試験 UI は **deprecated** とし、
+`ssi-ui/` 配下の Next.js 試験 UI は **非推奨（deprecated）** とし、
 今後の機能追加は Phase 2 wallet（`iw3ip-wallet`）+ Publisher 側に集約します。
 
 ## テスト方針
 
-`tests/test_data_user_vc_tiered.py` に 13 ケース：
+`tests/test_data_user_vc_tiered.py` に次の 13 ケースを置きます（括弧内はケース数）。
 
 1. `evaluate()` の純関数テスト（4）
    - GovernmentOrganization × Research × ISO27001 → full
@@ -244,7 +247,7 @@ score >= 60                               -> "access"
 6. `PurchaseViewerVC` が claim の `allowed_views` を継承（1）
 7. `/platform/data` の Tier 1/2/3 投影（3）
 
-合計 88 = 既存 75 + 新規 13。退行なし。
+テストは合計 88 件（既存 75 + 新規 13）で、既存テストに失敗はありません。
 
 ## 将来拡張
 
@@ -255,13 +258,13 @@ score >= 60                               -> "access"
 
 ## tier 拡張: 意味レベルでの段階化（VLM）  {#tier-vlm}
 
-ここまでの §1〜§9 は「**メディアの欠落**」によるアクセス制御です（Tier 2 は
-動画キーが消える、Tier 1 は画像も動画も消える）。次の段階として、**同じ素材から
-情報処理（VLM 推論 + 顔/PII ブラー）を経由した派生データを生成し、tier 別に
-出し分ける**設計に拡張します。Tier 1 は「素材を全く渡さない」のではなく
-「**プライバシー情報を抜いた要約テキスト**」を渡すようになり、low trust の
-受信者でも「何が起きたか」を知ることはできるが「誰がやったか」は分からない、
-という新しい段階が生まれます。
+ここまでの設計（ハンズオンの §1〜§9 に対応）は、**メディアのキーを応答から省く**方式の
+アクセス制御です（Tier 2 では動画のキー、Tier 1 では画像と動画のキーが含まれません）。
+次の段階として、同じ素材に VLM（Vision Language Model。画像を入力に取れる言語モデル）による推論と
+顔 / PII（個人を特定できる情報）のブラー処理を適用して**派生データを生成し、tier 別に
+出し分ける**設計に拡張します。Tier 1 には**プライバシー情報を除いた要約テキスト**を
+渡します。信頼度の低い受信者は「何が起きたか」を知ることができますが、
+「誰がやったか」は分かりません。
 
 ### 新しい tier 定義
 
@@ -269,11 +272,11 @@ score >= 60                               -> "access"
 |---|---|---|---|
 | **3** Full | `full` | 政府機関 + crime + ISO27001 (80) | 生の image / video + 全テキスト派生 |
 | **2** Access | `access` | 企業 + research + ISO27001 (75) | **顔/PII ブラー済 image** + **詳細テキスト**（人名・物体名あり） |
-| **1** Summary | `summary`（新） | 企業 + research のみ (60〜) | **概要テキストのみ**（PII redact 済、image 無し） |
-| 0 Denied | `denied` | 不適格 (<60) | claim 自体を拒否 |
+| **1** Summary | `summary`（新） | 企業 + 不明な purpose + legalCompliance のみ (50〜59) | **概要テキストのみ**（PII redact 済、image 無し） |
+| 0 Denied | `denied` | 不適格 (<50) | claim 自体を拒否 |
 
-`access_level` の値域に **`summary`** を追加します（既存の `denied` のセマンティクスは
-変更なし — score 60 未満は claim 拒否のまま）。
+`access_level` の値域に **`summary`** を追加します。VLM profile が有効なときだけ、score 50〜59 が
+`summary` になります。profile が無効な場合の `denied` の扱いは変わらず、score 60 未満は claim を拒否します。
 
 ### 派生データの schema
 
@@ -282,7 +285,7 @@ score >= 60                               -> "access"
 | キー | 内容 | 露出する tier |
 |---|---|---|
 | `image_url_redacted` | 顔・人物・ナンバープレート等をブラーした image の URL | 2 + 3 |
-| `image_cid_redacted` | 同 IPFS CID（案 C 有効時） | 2 + 3 |
+| `image_cid_redacted` | 同 IPFS CID（ハンズオン §9 の案 C、IPFS 配信が有効な場合） | 2 + 3 |
 | `description_full` | VLM が生成した詳細記述（人名・固有名詞あり） | 2 + 3 |
 | `description_summary` | VLM が生成した概要（PII redact 済） | 1 + 2 + 3 |
 | `description_model` | 推論に使った VLM のモデル ID + バージョン（監査用） | 全 tier |
@@ -319,8 +322,8 @@ allowed_views ⊆ {
 "denied"  -> []
 ```
 
-`full` は **生も派生も全部**見える上位互換。`access` は生メディア無し・ブラー画像
-ありの中間。`summary` は **テキストのみ**で、画像/動画は redacted も含めて一切なし。
+`full` では**生のデータも派生データもすべて**見えます。`access` では生のメディアは見えず、
+ブラー画像と説明文が見えます。`summary` は**テキストのみ**で、画像 / 動画はブラー済みのものも含めて見えません。
 
 ### VLM パイプライン契約
 
@@ -340,7 +343,7 @@ provider page
               └── 既存: platform_client.send(envelope)
 ```
 
-VLM 不在（profile 無効 or 推論失敗）時の **degrade ポリシー**:
+VLM が使えない場合（profile が無効、または推論に失敗）は、機能を縮退（degrade）させて処理を続けます。条件ごとの挙動は次のとおりです。
 
 | 条件 | publisher の挙動 |
 |---|---|
@@ -350,11 +353,11 @@ VLM 不在（profile 無効 or 推論失敗）時の **degrade ポリシー**:
 | profile 有効 + 両方成功 | 全キー生成 |
 
 degrade 時はレスポンスに **`processing_warnings: ["vlm_unavailable", ...]`** を
-乗せて受信側が状況を把握できるようにします。
+含めて、受信側が状況を把握できるようにします。
 
 ### VLM の実装選択肢
 
-- **MVP**: ローカル LLaVA (Ollama 経由 / `ollama run llava` を compose service として起動)
+- **MVP**（最小構成の実装）: ローカル LLaVA (Ollama 経由 / `ollama run llava` を compose service として起動)
 - **将来**: より大きなマルチモーダル LLM（Qwen2-VL 等）への差し替え、または external API
   への切り替えを `VLM_BACKEND=ollama|openai|anthropic` 環境変数で制御
 - **stub モード** (`VLM_BACKEND=stub`): テスト用。決定的にダミー文字列を返す
@@ -366,17 +369,17 @@ degrade 時はレスポンスに **`processing_warnings: ["vlm_unavailable", ...
   順次追加。検出器は `RedactionPipeline` の plug-in として差し込めるよう interface を
   切る
 
-入力画像の content_type が動画の場合、MVP では **Tier 2 用の redacted は生成しない**
-（動画フレーム抽出 + フレーム別ブラーは将来課題）。Tier 3 のみで動画を露出し、
-Tier 2 は description_full テキストのみで済ませます。
+入力の content_type が動画の場合、MVP では **Tier 2 用の redacted は生成しません**
+（動画のフレーム抽出とフレームごとのブラーは将来課題です）。動画は Tier 3 にだけ出力し、
+Tier 2 には description_full のテキストだけを渡します。
 
 ### redact 失敗の検出（研究課題）
 
-VLM が `description_summary` から PII を完全には抜けないケースは構造的に発生し得ます。
-本仕様では **検出責任を post-check ステージに分離**し、初期実装は研究 TODO として
-記録するに留めます。
+VLM は、`description_summary` から PII を完全には除けない場合があります。
+本仕様では**漏れの検出を後段のチェック処理（post-check）に分け**、初期実装には含めず
+研究課題として記録します。
 
-検出案:
+検出方法の案は次のとおりです。
 
 1. `description_full` から固有名詞（人名・組織名・場所名）を NER で抽出
 2. `description_summary` の中に同じ単語が残っていないか diff
@@ -384,19 +387,19 @@ VLM が `description_summary` から PII を完全には抜けないケースは
    `processing_warnings: ["redaction_leak_suspected"]` を立てる
 4. 警告ありの行は audit 経路で人手レビュー queue に積む
 
-これは hands-on の MVP には含めません（spec で意図だけ明文化）。本格運用時は
-別途 PR で実装する想定です。
+これはハンズオンの MVP には含めず、仕様に意図だけを記載します。本格運用時に
+別途実装する想定です。
 
 ### 監査 (audit log) への影響
 
 `audit/logs` に `description_model` と `description_generated_at` が
-記録されることで、**どの VLM 出力が誰にいつ何の tier で届いたか**が再現可能に
-なります。VLM がアップグレードされた前後で同じ画像から異なる説明が生成された
-場合、generated_at で分離できる前提です。
+記録されるので、**どの VLM 出力が誰にいつ何の tier で届いたか**を後から追跡できます。
+VLM のアップグレード前後で同じ画像から異なる説明が生成された場合は、
+generated_at で区別します。
 
 ### テスト方針（追加分）
 
-`tests/test_data_user_vc_tiered_vlm.py` を新設、次のケースをカバー:
+`tests/test_data_user_vc_tiered_vlm.py` を新設し、次のケースを確認します（括弧内はケース数）。
 
 1. `--profile vlm` 無効時に既存の Tier 投影が回帰しない（5）
 2. stub VLM backend で `description_*` キーが期待通りの shape で出る（3）
@@ -410,8 +413,8 @@ VLM が `description_summary` から PII を完全には抜けないケースは
    - 両方失敗 → Tier 1/2 両方とも description_summary 無し（純粋に degraded）
 5. `processing_warnings` の流出経路（2）
 
-合計 +16 ケース、既存 88 と独立に管理します（profile-OFF が回帰しないことが
-最重要）。
+合計 16 ケースを追加し、既存の 88 件とは独立に管理します。このうち、profile が無効なときに
+従来の動作が変わらないことの確認を最も重視します。
 
 ### 将来課題（spec 上で明記）
 

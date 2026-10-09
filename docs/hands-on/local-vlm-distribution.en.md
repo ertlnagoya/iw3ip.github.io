@@ -70,7 +70,7 @@ export VLM_BACKEND=ollama
 export VLM_MODEL=moondream
 export IMAGE_REDACTION_BACKEND=opencv
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
-  publisher hardhat bridge mosquitto vlm vlm-pull
+  publisher bridge mosquitto vlm vlm-pull
 ```
 
 Wait until `vlm-pull` finishes fetching the model (first time only, several GB).
@@ -96,7 +96,7 @@ curl -s http://localhost:8080/health | jq .
 
 ## 2. Capture one frame from the webcam
 
-Grab a single still image from the USB webcam and save it as `snapshot.jpg`.
+Grab a single still image from the USB webcam and save it as `snapshot.jpg`. The script uses OpenCV; install it with `pip install opencv-python` if needed.
 
 ```python
 # capture_snapshot.py

@@ -65,6 +65,7 @@ every `/platform/ingest` call.
 - Completed [SSI Wallet hands-on (Stage 1)](ha-ssi-wallet.md)
 - Publisher running with `feat/ssi-service-vc` or later
 - iw3ip-wallet available if you want to hold ServiceVC on a phone
+- This page uses `192.168.68.53` as the PC's LAN IP. Replace it with your own (check with `ipconfig getifaddr en0` or similar)
 
 ## 1. Start and inspect metadata
 
@@ -191,5 +192,5 @@ each plan step via a VC presentation.
 
 - [SSI Wallet sample (Stage 1)](ha-ssi-wallet.md): human single-use write
 - [SSI Viewer sample (Stage 3)](ha-ssi-viewer.md): human multi-use read
-- [Phase 2 hands-on appendix](webcam-event-sharing.md#補論-ウォレットモードによる認可):
+- [Phase 2 hands-on appendix](webcam-event-sharing.md#appendix-wallet-mode-authorization):
   one-shot wallet mode (no ServiceVC required)

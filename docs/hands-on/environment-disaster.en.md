@@ -164,7 +164,7 @@ curl -X POST http://localhost:8080/consents \
     "retention_days": 30,
     "reshare_allowed": false,
     "valid_from": "2026-02-01T00:00:00Z",
-    "valid_to": "2026-05-01T00:00:00Z",
+    "valid_to": "2027-12-31T23:59:59Z",
     "signature": "PLACEHOLDER"
   }'
 ```
@@ -263,7 +263,7 @@ Expected:
 ## 6. Check the audit logs
 
 ```bash
-curl http://localhost:8080/audit/logs?limit=10
+curl 'http://localhost:8080/audit/logs?limit=10'
 ```
 
 Checkpoints:
@@ -291,7 +291,7 @@ docker exec -i iw3ip-mosquitto mosquitto_pub \
 Then check the audit logs again:
 
 ```bash
-curl http://localhost:8080/audit/logs?limit=10
+curl 'http://localhost:8080/audit/logs?limit=10'
 ```
 
 ## Success criteria
@@ -386,7 +386,7 @@ flow:
   is registered, so the wallet flow ingests the exact same event
   shape (sensor_id / water_level_m / severity) that the main flow uses.
 - Continuous MQTT under wallet mode requires a **multi-use M2M token
-  (ServiceVC)**, which is left to a future hands-on.
+  (ServiceVC)**, which is covered in the [SSI Service hands-on](ha-ssi-service.md).
 
 ### Related
 

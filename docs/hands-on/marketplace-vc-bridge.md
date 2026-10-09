@@ -1,6 +1,6 @@
 # マーケットプレイス × ウォレット連携 (v2 / Stage 5)
 
-v2 の中核ハンズオン。マーケットプレイスでの購入をきっかけに買い手のスマホへ PurchaseViewerVC を発行し、提示によってデータを取得する流れを通します。
+v2 の基本になるハンズオンです。マーケットプレイスでの購入をきっかけに買い手のスマホへ PurchaseViewerVC を発行し、提示によってデータを取得する流れを通します。
 
 > **やること**: 購入 → bridge → PurchaseViewerVC → wallet → ViewerToken → 取得
 >
@@ -10,12 +10,12 @@ v2 の中核ハンズオン。マーケットプレイスでの購入をきっ�
 >
 > **所要時間**: 60 分くらい
 
-!!! abstract "v2 を体験するハンズオン"
+!!! abstract "v2 を試すハンズオン"
     マーケットプレイスでの購入を起点に、買い手のウォレットへ
     PurchaseViewerVC を発行し、提示によってデータを取得する
-    end-to-end フローを体験します。
-    設計詳細は [Marketplace VC Bridge 設計仕様](../design/marketplace-vc-bridge-spec.md)
-    を参照。
+    一連の流れを試します。
+    設計の詳細は [Marketplace VC Bridge 設計仕様](../design/marketplace-vc-bridge-spec.md)
+    を参照してください。
 
 !!! tip "dataset の選択"
     例は `home/env/temperature` で書かれていますが、Stage 6 case B 以降の
@@ -23,17 +23,17 @@ v2 の中核ハンズオン。マーケットプレイスでの購入をきっ�
     Merchandise #4 (`home/event/flood_risk_high`) も登録されており、
     Stage 0 と同じイベントで購入動線を試せます
     ([purchase-viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/purchase-viewer-possible-littering.json)
-    の PD 登録済)。
+    の Presentation Definition が登録済)。
 
 ## 目的
 
 このハンズオンでは、**v1 (現行マーケット + MetaMask + 暗号化 IPFS 配信)**
-の上に **v2 (VC 連携)** が乗ったときに、認可がどう変わるかを体験します。
+に **v2 (VC 連携)** を追加したときに、認可がどう変わるかを確認します。
 
 - 同じ人間が **2 つの身元** (ETH 鍵と did:jwk) を扱う意味
 - ETH 支払いと VC 認可の **役割分離** (支払いと閲覧権限が別レイヤー)
 - bridge service が on-chain Purchase event を off-chain VC 発行に
-  橋渡しする仕組み
+  つなぐ仕組み
 
 ## このページで分かること
 
@@ -85,6 +85,7 @@ v2 の中核ハンズオン。マーケットプレイスでの購入をきっ�
 - iw3ip-wallet が iPhone 実機で動く (Metro bundler 接続済み)
 - LAN IP を確認 (`ipconfig getifaddr en0`)。本ページでは `192.168.68.53` で示すので、
   あなたの環境の IP に読み替えてください
+- 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 
 ---
 
@@ -197,8 +198,8 @@ registered for: 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC
 ```
 
 **形式**: `[` で始まり `]` で終わる文字列なら何でも可 (`isPubKey()` が形式チェックのみ)。
-本来は RSA 公開鍵 (v1 lane で seller が暗号化に使う) ですが、ハンズオンでは v2 lane が
-本筋なので dummy で十分です。
+本来は RSA 公開鍵 (v1 の経路で seller が暗号化に使う) ですが、このハンズオンでは v2 の経路だけを
+確認するので dummy で十分です。
 
 ---
 
@@ -266,7 +267,7 @@ bridge: started rpc=http://host.docker.internal:8545 market=0xe7f1725... publish
 !!! warning "BRIDGE_PUBLIC_PUBLISHER_URL の設定は必須"
     これがないと、後の Step 6 で発行される deeplink 内の
     `credential_issuer` が Docker 内部ホスト名 `http://publisher:8080` になり、
-    iPhone wallet が deeplink を開いた瞬間にメタデータ fetch で詰まります。
+    iPhone wallet が deeplink を開いたときにメタデータを取得できず、失敗します。
 
 ---
 
@@ -301,10 +302,10 @@ bridge: started rpc=http://host.docker.internal:8545 market=0xe7f1725... publish
 
 ### 何を確認するか
 - MetaMask 経由で `Merchandise.purchase()` が成功する
-- bridge が **Purchase event を polling で検知**して `/marketplace/claim` を叩く
+- bridge が **Purchase event を polling で検知**して `/marketplace/claim` を呼び出す
 - publisher の audit log に `marketplace/claim` 行が新規で残る
 
-### 操作 A: ブラウザ経由 (本筋)
+### 操作 A: ブラウザ経由 (通常の手順)
 
 iot-market-ui を起動 (ターミナル D):
 
@@ -325,9 +326,9 @@ http://192.168.68.53:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 (Merchandise #1。`#0` は使わなくても良いが state が IN_PROGRESS のまま残るので注意)
 
 「Purchase」→ MetaMask で確認 → tx 送信。確定後、自動で
-`/purchased/<txHash>?merchandise=...&dataset=...&buyer=...` に遷移し、QR と deeplink が出る。
+`/purchased/<txHash>?merchandise=...&dataset=...&buyer=...` に遷移し、QR と deeplink が表示されます。
 
-### 操作 B: MetaMask が動かない場合の fallback
+### 操作 B: MetaMask が動かない場合の代替手順
 
 ターミナル B (Hardhat console):
 
@@ -363,7 +364,7 @@ bridge: Purchase event from 0xDc64a140... buyer=0x3C44CdDdB6a900fa2b585dd299e03d
 bridge: claim ok jti=2b417b32e6566830 deeplink=openid-credential-offer://?credential_offer=...
 ```
 
-ここの `jti=...` の値はあとで使うのでメモ。
+この `jti=...` の値はあとで使うのでメモしておきます。
 
 #### 6-B. audit log に marketplace/claim 行
 
@@ -381,7 +382,7 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=2' | python3 -m json.tool
 }
 ```
 
-**ここまでで「on-chain 購入 → off-chain 認可コンテキスト確保」が成立**。
+ここまでで、on-chain の購入が publisher に伝わり、VC を発行する準備ができました。
 
 ---
 
@@ -394,7 +395,7 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=2' | python3 -m json.tool
 
 ### 事前準備: Metro bundler 起動
 
-iPhone の wallet が `No script URL provided` エラーで開けない場合、Metro が起動していない。
+iPhone の wallet が `No script URL provided` エラーで開けない場合は、Metro が起動していません。
 ターミナル E:
 
 ```bash
@@ -402,7 +403,7 @@ cd ~/program/iw3ip-wallet
 npx react-native start
 ```
 
-`Metro waiting on...` を確認。wallet で「Reload JS」を押せば普通の画面に戻る。
+`Metro waiting on...` を確認。wallet で「Reload JS」を押せば通常の画面に戻ります。
 
 ### 操作: deeplink を QR で iPhone に渡す
 
@@ -415,7 +416,11 @@ ENCODED=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv
 open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 ```
 
-iPhone カメラで QR を読み取り → wallet が起動 → 「IW3IP Purchase Viewer Credential」承認画面 → 承認。
+iPhone のカメラで QR を読み取ると wallet が起動し、「IW3IP Purchase Viewer Credential」の承認画面が出るので承認します。
+
+!!! warning "QR 生成に外部サービスを使います"
+    上のコマンドは deeplink の内容を外部の QR 生成サービス (api.qrserver.com) に送ります。deeplink には VC 発行用のコードが含まれるため、ローカルのハンズオン環境以外では使わないでください。
+
 
 ### 期待結果
 
@@ -443,7 +448,7 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool
 }
 ```
 
-**この `eth_did_bound` 行が Stage 5 のキーマイルストーン**。
+**この `eth_did_bound` 行を確認できれば、Stage 5 の主要な確認は完了です**。
 MetaMask の鍵と wallet の鍵が「同じ人物」として publisher 上で結びつきました。
 
 ---
@@ -452,7 +457,7 @@ MetaMask の鍵と wallet の鍵が「同じ人物」として publisher 上で�
 
 ### 何を確認するか
 - wallet で **PurchaseViewerVC を提示**すると ViewerToken (60 秒・多回利用) が払い出される
-- PolicyToken (Stage 1) でも ViewerVC (Stage 3) でもなく、購入連動の VC を選ぶ動線
+- ConsentVC (Stage 1) や ViewerVC (Stage 3) と区別して、購入連動の VC を選ぶ
 
 ### 操作
 
@@ -461,11 +466,11 @@ PC ブラウザで:
 http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=PurchaseViewerVC
 ```
 
-`vc_kind=PurchaseViewerVC` が必須 (これが無いと ConsentVC 用 PD が選ばれる)。
+`vc_kind=PurchaseViewerVC` は必須です (指定しないと ConsentVC 用の Presentation Definition が選ばれます)。
 
-QR / deeplink → iPhone wallet で **PurchaseViewerVC を選択して提示**。
+QR または deeplink から iPhone wallet を開き、**PurchaseViewerVC を選択して提示**します。
 
-publisher ログから token 抽出:
+publisher のログから token を取り出します。
 
 ```bash
 PUB=$(docker ps -qf name=publisher)
@@ -488,7 +493,7 @@ TOKEN=oJVsNtb5Un1NginSyyCcJavThu9WkTxRT6b8uhmWjRc
 ## Step 9. データ取得 (`merchandise=<addr>` 逆引き)
 
 ### 何を確認するか
-- ViewerToken で `/platform/data` が叩ける
+- ViewerToken で `/platform/data` を呼び出せる
 - `merchandise=<contract address>` を query に渡すと、publisher が **dataset_id を逆引き**して同じ結果を返す
 - 期限切れ (60 秒経過) で 401 になる
 
@@ -512,8 +517,8 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 }
 ```
 
-`count: 0` でも認可は通っているので OK。実データ投入は別途 `POST /platform/ingest`
-(Stage 1) で行えますが、本ハンズオンでは認可ロジックの検証が目的。
+`count: 0` でも認可は通っているので問題ありません。実データは別途 `POST /platform/ingest`
+(Stage 1) で投入できますが、本ハンズオンの目的は認可ロジックの確認です。
 
 ### 期限切れの確認 (60 秒経過後)
 
@@ -553,13 +558,13 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=10' | python3 -m json.tool
 | -2 | `marketplace/issued` | **`eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c...`** | `did:jwk:...` |
 | -3 | `marketplace/claim` | `claim_received:2b417b32...:tx=0x4e7c...` | `eth:0x3C44...` |
 
-`marketplace/claim` (eth_addr 主体) と `marketplace/issued` (did:jwk 主体) が **同じ claim_id でリンク**しているのが Stage 5 の核心です。
+`marketplace/claim` (eth_addr 主体) と `marketplace/issued` (did:jwk 主体) が **同じ claim_id でリンク**していることを確認してください。これが、支払いをした ETH アドレスと VC を提示した DID を結び付ける記録です。
 
 ---
 
 ## v1 lane との対比
 
-同じ購入で v1 lane (encryptURI 配信) も並走しています。
+同じ購入で、v1 の経路 (encryptURI 配信。以下 v1 lane) も並行して動いています。
 seller 側で `Merchandise.emitUpload(encryptURI)` を呼んでいれば、
 buyer の MetaMask 側でも従来通りの暗号化 URI が見えます。
 
@@ -575,7 +580,7 @@ buyer の MetaMask 側でも従来通りの暗号化 URI が見えます。
 
 ## 完了判定マトリクス
 
-下表が全部 ✅ になれば Stage 5 完了です。
+下表の項目をすべて確認できれば Stage 5 は完了です。
 
 | 工程 | 確認項目 | 出力例 / 場所 |
 | --- | --- | --- |
@@ -599,7 +604,7 @@ buyer の MetaMask 側でも従来通りの暗号化 URI が見えます。
 
 ## トラブルシューティング
 
-実機検証で発生した詰まりポイントとその対処です。
+実機検証で発生した問題とその対処です。
 
 ### A. MetaMask が `chainId エラー` で tx を送れない
 
@@ -610,7 +615,7 @@ MetaMask - RPC Error: Trying to send a raw transaction with an invalid chainId.
 **原因**: Hardhat ノードを再起動した後、MetaMask 側に古い nonce / chainId キャッシュが残っている。
 
 **対処**: MetaMask → Settings → Advanced → **「Clear activity tab data」** または **「Reset Account」**。
-それでも駄目なら **Step 6 操作 B (Hardhat console)** で購入を代替実行できます。bridge と publisher の動作確認には十分です。
+それでも解決しない場合は **Step 6 操作 B (Hardhat console)** で購入を代替実行できます。bridge と publisher の動作確認には十分です。
 
 ### B. Purchase が `0x295f0a57` で revert
 
@@ -676,14 +681,14 @@ ipconfig getifaddr en0   # 現在の LAN IP
 
 ## このハンズオンの限界 (将来課題)
 
-- **eth_addr ↔ did:jwk のなりすまし対策**: MVP は bridge / フロント
-  からの POST を信用するだけ。本番は EIP-712 署名で「この tx は
+- **eth_addr ↔ did:jwk のなりすまし対策**: 現在の最小実装は bridge / フロント
+  からの POST を信用するだけです。本番では EIP-712 署名で「この tx は
   私のもの」と holder に証明させる必要がある (詳細は[設計仕様 §7.2](../design/marketplace-vc-bridge-spec.md))
 - **dataset_id の発見**: 現状フロントで query string にハードコード。
-  Merchandise の `additionalInfo` から動的に読む拡張は別タスク
-- **ServiceVC との統合**: 連続 MQTT を wallet 化する話 (Stage 4 prep) と、
-  購入連動で読む話 (Stage 5) は別レイヤー。両方を組み合わせるシナリオは
-  Stage 6 以降
+  Merchandise の `additionalInfo` から動的に読む拡張は [Stage 6](marketplace-vc-end-to-end.md) で扱う
+- **ServiceVC との統合**: 連続する MQTT の書き込みを VC で認可する仕組み (Stage 4 prep) と、
+  購入に連動して読み出す仕組み (Stage 5) は独立している。両方を組み合わせるシナリオは
+  [Stage 6](marketplace-vc-end-to-end.md) で扱う
 
 ## 関連
 

@@ -12,7 +12,7 @@
 
 !!! note "wallet ハンズオンの M2M 拡張です"
     Stage 1 (ConsentVC + PolicyToken) と Stage 3 (ViewerVC + ViewerToken)
-    を体験済の前提で進めます。本ページは「**人ではないサービス**が
+    を済ませた前提で進めます。本ページは「**人ではないサービス**が
     VC を持って継続的に書き込む」M2M ケースを扱います。
 
 !!! tip "dataset の選択"
@@ -24,14 +24,14 @@
 ## 目的
 
 ConsentVC の PolicyToken は **5 分・単回利用** で、人間が 1 件ずつ
-同意するワークフローに最適化されています。一方で **MQTT publisher の
+同意する使い方を想定しています。一方で **MQTT publisher の
 ように毎秒イベントを ingest する主体**には、毎回提示が要求される
-PolicyToken は使い物になりません。
+PolicyToken は適しません。
 
 ServiceVC は「**サービスが継続的に書き込んでよい**」ことを表す M2M VC
 で、提示すると 1 時間有効・多回利用可能な ServiceToken が払い出されます。
 publisher プロセスがこの ServiceToken を保持し、各 MQTT メッセージに
-Bearer ヘッダで添えて `/platform/ingest` を叩く想定です。
+Bearer ヘッダで添えて `/platform/ingest` を呼び出す想定です。
 
 ```
 [サービス] -- ServiceVC 提示 (1 回) ----> [Verifier]
@@ -45,15 +45,15 @@ Bearer ヘッダで添えて `/platform/ingest` を叩く想定です。
 ## このページで分かること
 
 - 「人の VC (ConsentVC)」と「サービスの VC (ServiceVC)」を分ける理由
-- 単回 (write) / 多回 read (read) / 多回 write (continuous) の
-  トークンセマンティクスの 3 つの形
+- 単回の書き込み、多回の読み出し、多回の書き込みという、
+  トークンの 3 通りの使われ方
 - ServiceToken の TTL 1 時間・write_count 増加の振る舞い
 - `/platform/ingest` が PolicyToken と ServiceToken の両方を受け付ける
   仕組み (順序: PolicyToken → 不一致なら ServiceToken)
 
 ## よくある問題
 
-- ConsentVC / ViewerVC / ServiceVC は **別 VC**。流用できない
+- ConsentVC / ViewerVC / ServiceVC は別々の VC で、流用できない
 - ServiceToken は ViewerToken と TTL も用途も違う。`/platform/ingest`
   だけで使える (read 側 `/platform/data` は ViewerToken のみ)
 - ServiceVC は M2M 想定。スマホウォレットで持つことも可能だが、
@@ -65,6 +65,7 @@ Bearer ヘッダで添えて `/platform/ingest` を叩く想定です。
 - publisher が `feat/ssi-service-vc` 以降のコードで起動している
 - スマホ wallet で ServiceVC を保持する経路を試す場合、
   iw3ip-wallet が利用可能
+- 本ページでは PC の LAN IP を `192.168.68.53` として示します。自分の環境の IP (`ipconfig getifaddr en0` などで確認) に読み替えてください
 
 ## 1. 起動とメタデータ確認
 
@@ -77,7 +78,7 @@ PUB=$(docker ps -qf name=publisher)
 curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ServiceVC
 ```
 
-期待: `"vct": "https://iw3ip.example/credentials/ServiceVC/v1"` が見える。
+`"vct": "https://iw3ip.example/credentials/ServiceVC/v1"` が表示されれば成功です。
 
 ## 2. ServiceVC を発行 (人手の代用 = 実機 wallet)
 
@@ -88,9 +89,10 @@ curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3
 http://192.168.68.53:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temperature&purpose=write_continuous
 ```
 
-→ AirDrop deeplink → wallet で受領。
+表示された QR (または deeplink) をスマホ wallet で開き、受領します。
 
 claim:
+
 - `dataset_id`: `home/env/temperature`
 - `allowed_actions`: `["write_continuous"]`
 
@@ -100,15 +102,15 @@ claim:
 http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ServiceVC
 ```
 
-`vc_kind=ServiceVC` が必須 (これが無いと ConsentVC 用 PD が選ばれる)。
+`vc_kind=ServiceVC` は必須です (指定しないと ConsentVC 用の Presentation Definition が選ばれます)。
 
-提示直後、publisher ログに:
+提示すると、publisher のログ (`docker logs $PUB`) に次の行が出ます。
 
 ```
 service_token_issued jti=... token=... dataset=home/env/temperature ttl=3600s
 ```
 
-`token=` の値が ServiceToken。
+`token=` の値が ServiceToken です。
 
 ## 4. ServiceToken で連続 ingest
 
@@ -124,7 +126,7 @@ for i in 1 2 3 4 5; do
 done
 ```
 
-期待: 5 件すべて `{"status":"received","count":N}` で 200。
+5 件すべてが HTTP 200 で `{"status":"received","count":N}` を返せば成功です。
 
 PolicyToken のように 2 回目で `403 already_consumed` にはなりません。
 
@@ -148,7 +150,7 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=10' | python3 -m json.tool |
 }
 ```
 
-`reason` 末尾の数字は `write_count`。5 回 ingest すれば 1〜5 まで並びます。
+`reason` 末尾の数字は `write_count` です。5 回 ingest すれば 1〜5 まで並びます。
 
 ## 6. エラーケース
 
@@ -185,8 +187,9 @@ Stage 1 ハンズオン (PolicyToken のみ知る参加者) のエラーメッ�
 - **ServiceVC の発行ガバナンス**: 誰が ServiceVC を発行するかのポリシー
   (今は publisher 自身が単独で発行) は将来検討
 
-これらが実装されれば Stage 4 LLM Planner の前段として、
-plan 各ステップの認可を VC で証明する道が開けます。
+これらを実装すると、LLM Planner (Stage 4 として計画) が plan の各ステップを
+実行する際の認可を、VC で証明できるようになります。本ページを Stage 4 prep と
+呼ぶのはこのためです。
 
 ## 関連
 

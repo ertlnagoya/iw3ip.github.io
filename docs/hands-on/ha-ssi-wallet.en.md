@@ -10,17 +10,15 @@ Receive a VC into a smartphone SSI wallet (Sphereon Wallet), then present it to 
 >
 > **Time required**: approx. 60 min
 
-!!! note "This hands-on is under construction"
-    This page drafts a VC verification demo based on a fork of
-    Sphereon mobile-wallet at `ertlnagoya/iw3ip-wallet`.
-    The companion wallet app and backend endpoints are in preparation.
+!!! note "Wallet used on this page"
+    This page uses [`iw3ip-wallet`](https://github.com/ertlnagoya/iw3ip-wallet),
+    a fork of Sphereon mobile-wallet.
 
 !!! tip "Dataset choice"
-    The worked example uses **`home/event/possible_littering`** —
-    the same webcam event Stage 0 [webcam-event-sharing](webcam-event-sharing.md)
-    introduces — so the data shape carries through. Substitute
-    `home/env/temperature` if you only want to exercise the wallet
-    flow with a scalar value.
+    The examples on this page use `home/env/temperature`. The same steps
+    work with `home/event/possible_littering`, the webcam event from Stage 0
+    ([webcam-event-sharing](webcam-event-sharing.md)); substitute the dataset
+    and purpose in that case.
 
 ## Goal
 
@@ -71,10 +69,10 @@ Pipeline:
 
 ## Related repositories
 
-- `iw3ip-wallet` (planned fork): `https://github.com/ertlnagoya/iw3ip-wallet` (in preparation)
+- `iw3ip-wallet`: <https://github.com/ertlnagoya/iw3ip-wallet>
   - upstream: Sphereon-Opensource/mobile-wallet
   - Branch policy: `main` tracks upstream; `iw3ip/*` carries IW3IP-specific changes
-- `iw3ip-verifier` (OID4VP endpoint added inside Publisher, in preparation)
+- [Blockchain_IoT_Marketplace](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace): publisher (includes the OID4VCI / OID4VP endpoints; started with the `ssi-wallet` profile)
 
 ## Shortest path
 
@@ -211,7 +209,7 @@ Holding the VC is not enough; the verifier's constraints must also match.
 ## 7. Audit log check
 
 ```bash
-curl http://localhost:8080/audit/logs?limit=10
+curl 'http://localhost:8080/audit/logs?limit=10'
 ```
 
 Points to verify:
@@ -243,12 +241,9 @@ curl -X POST http://<PC_LAN_IP>:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "dataset_id":"home/event/possible_littering",
-    "purpose":"community_cleaning",
-    "event_type":"possible_littering",
-    "data":{"camera_id":"webcam-401","location":"park-north","object_class":"bottle","confidence":0.87},
-    "ts":"2026-04-28T11:02:00Z",
-    "source":"edge_inference"
+    "dataset_id":"home/env/temperature",
+    "purpose":"research",
+    "value":21.4
   }'
 ```
 

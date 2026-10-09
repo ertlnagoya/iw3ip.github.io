@@ -57,6 +57,7 @@ Pipeline:
 - Have completed §1〜§8 of the [SSI Wallet hands-on](ha-ssi-wallet.md)
 - Publisher running with `feat/ssi-viewer-vc` or later
 - `iw3ip-wallet` available on phone
+- This page uses `192.168.68.53` as the PC's LAN IP. Replace it with your own (check with `ipconfig getifaddr en0` or similar)
 
 ## Related repositories
 
@@ -86,7 +87,7 @@ curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3
 
 ## 2. Write data via ConsentVC (recap)
 
-Follow [SSI Wallet hands-on §5〜§8](ha-ssi-wallet.md#5-verifier-qrで提示)
+Follow [SSI Wallet hands-on §5〜§8](ha-ssi-wallet.md#5-present-via-verifier-qr)
 to present ConsentVC, get a PolicyToken, and POST to `/platform/ingest`.
 Those rows are what §5 will read back.
 

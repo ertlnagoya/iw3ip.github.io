@@ -62,9 +62,16 @@ For buying data on the marketplace (used in Part 1).
 - [MetaMask](https://metamask.io/) — install as a browser extension
 - An Ethereum-style wallet that connects to the local chain
 
-## Optional (used in feature-extensions part)
+## Optional (used in some hands-on pages)
 
-Add these if you plan to do Part 2.
+Add these depending on which hands-on pages you plan to do.
+
+### Python 3 / curl / jq
+
+The HUSKYLENS2 and USB webcam bridges and the exercise programs (`problem_program.py` etc.) run on Python 3. `curl` and `jq` are used to call the APIs and inspect responses.
+
+- Python: <https://www.python.org/>
+- `curl` ships with macOS / Linux. `jq` is available from <https://jqlang.github.io/jq/>
 
 ### Smartphone + SSI wallet app
 

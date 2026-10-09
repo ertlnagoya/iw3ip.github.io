@@ -93,6 +93,10 @@ markdown_extensions:
   - md_in_html
   - toc:
       permalink: true
+      # 日本語の見出しから ID を作る（既定の slugify は非 ASCII 文字を落とす）
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
   - pymdownx.superfences
   - pymdownx.details
   - pymdownx.tabbed:
@@ -154,3 +158,7 @@ nav:
       - Troubleshooting: operations/troubleshooting.md
       - FAQ: operations/faq.md
       - Facilitator Guide: operations/facilitator-guide.md
+
+validation:
+  links:
+    anchors: warn

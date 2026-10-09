@@ -6,13 +6,13 @@
 >
 > **前提**: [環境構築](../setup/index.md) が済んでいること
 >
-> **使うもの**: PC のみ (Docker が動けば OK)
+> **使うもの**: PC のみ (Docker が動けば可)
 >
 > **所要時間**: 約 20 分
 
 ## 目的
 
-**実機なしで Home Assistant と IW3IP の連携を試せる最小シミュレーション環境**です。
+実機なしで Home Assistant と IW3IP の連携を試すための、最小構成のシミュレーション環境を動かします。
 
 Home Assistant の `demo` エンティティを使い、次の流れをローカル PC 上で再現します。
 
@@ -240,7 +240,7 @@ Home Assistant 側で script を実行したら、publisher 側で結果を確�
 
 ```bash
 curl http://localhost:8080/platform/ingest
-curl http://localhost:8080/audit/logs?limit=10
+curl 'http://localhost:8080/audit/logs?limit=10'
 ```
 
 確認ポイント:
@@ -249,7 +249,7 @@ curl http://localhost:8080/audit/logs?limit=10
 - `audit/logs` に `allow` が残る
 - `dataset_id`, `purpose`, `message_hash`, `raw_topic` が確認できる
 
-「データを送れたか」だけでなく「どの条件で送られたか」を監査ログから読み取る点が重要です。
+監査ログからは、データを送れたかどうかに加えて、どの条件で送られたかも読み取ってください。
 
 出力例:
 
@@ -260,11 +260,11 @@ curl http://localhost:8080/audit/logs?limit=10
 - `/platform/ingest` に `home/event/possible_littering` と `home/event/suspicious_activity` が入っていること
 - `/audit/logs` で `action: allow` と `raw_topic` が対応していること
 
-ここで、一部のイベントだけ `/platform/ingest` に出てこないことがあります。その場合は次のワークで原因を特定して直してみましょう。
+ここで、一部のイベントだけ `/platform/ingest` に出てこないことがあります。その場合は、次のワークで原因を特定して直してください。
 
 ## ワーク: 一部のイベントが拒否されるときは (consent の有効期限を直す)
 
-手順5を実行すると、`suspicious_activity` は `/platform/ingest` に出るのに、`possible_littering` など他のデータセットが出てこないことがあります。このとき `audit/logs` には `action: deny` / `reason: no_matching_consent` が残ります。原因の多くは consent VC の **有効期限切れ** です。VC の有効期間 (`valid_from` 〜 `valid_to`) を体験する良い題材なので、**自分で原因を特定して直してみましょう**。
+手順5を実行すると、`suspicious_activity` は `/platform/ingest` に出るのに、`possible_littering` など他のデータセットが出てこないことがあります。このとき `audit/logs` には `action: deny` / `reason: no_matching_consent` が残ります。原因の多くは consent VC の **有効期限切れ** です。VC の有効期間 (`valid_from` 〜 `valid_to`) の働きを確認できるので、自分で原因を特定して直してください。
 
 ### Step 1. 監査ログで「拒否」を確認する
 
@@ -279,14 +279,14 @@ curl 'http://localhost:8080/audit/logs?limit=20'
 ??? question "何が読み取れればよい?"
     - 拒否されたイベントは `action: "deny"`、`reason: "no_matching_consent"`、`subject_did: "unknown"` になっています。
     - 許可されたイベントは `action: "allow"`、`reason: "sent"` で、`subject_did` に発行者の DID が入っています。
-    - つまり「consent が無い」のではなく「一致する consent が見つからない」状態です。これが手がかりです。
+    - consent は登録されているのに、一致するものが見つからない状態です。
 
 ### Step 2. 原因を推測する
 
 許可されるデータセットと拒否されるデータセットで、対応する consent ファイル (`examples/ha_demo/consent_*.json`) の中身がどう違うかを見比べます。とくに `valid_from` と `valid_to` に注目してください。
 
 ??? tip "ヒント"
-    `valid_from` 〜 `valid_to` が VC の有効期間です。**今日の日付がこの範囲の外**だと、その consent は一致しません。拒否されているデータセットの consent の `valid_to` が過去の日付になっていないか確認しましょう。
+    `valid_from` 〜 `valid_to` が VC の有効期間です。**今日の日付がこの範囲の外**だと、その consent は一致しません。拒否されているデータセットの consent の `valid_to` が過去の日付になっていないか確認してください。
 
 ### Step 3. 直して登録し直す
 
@@ -464,25 +464,25 @@ Node-RED は必須ではありません。まず Home Assistant demo だけで�
 
 ## 将来の発展
 
-このサンプルは IW3IP の基本経路を理解するための入口です。将来的には次のような外部環境との接続が考えられます。
+このサンプルでは IW3IP の基本経路を扱いました。将来的には、次のような外部環境との接続が考えられます。
 
 ### FIWARE
 
-都市・施設・複数組織にまたがる IoT データを `Context Broker` と `IoT Agent` で扱う基盤。Home Assistant より構成は重いが、複数主体のデータ連携や通知購読を含む研究拡張に向いている。
+都市・施設・複数組織にまたがる IoT データを `Context Broker` と `IoT Agent` で扱う基盤です。Home Assistant より構成は大きくなりますが、複数主体のデータ連携や通知購読を含む研究拡張に向いています。
 
 - 公式サイト: <https://www.fiware.org/>
 - Tutorials: <https://fiware-tutorials.readthedocs.io/en/latest/>
 
 ### Eclipse Ditto
 
-機器状態やコマンドをデジタルツインとして扱う基盤。Phase 3 と組み合わせると、共有イベント → 判断 → 状態更新・制御結果まで追跡できる。
+機器状態やコマンドをデジタルツインとして扱う基盤です。Phase 3 と組み合わせると、共有イベント → 判断 → 状態更新・制御結果まで追跡できます。
 
 - 公式サイト: <https://eclipse.dev/ditto/>
 - MQTT binding: <https://eclipse.dev/ditto/connectivity-protocol-bindings-mqtt.html>
 
 ### CARLA
 
-都市空間・車両・歩行者・仮想センサを含むシミュレータ。導入は重いが、地域安全・防災・交通系の高度なイベント生成に使え、Phase 2 / 3 の評価環境になり得る。
+都市空間・車両・歩行者・仮想センサを含むシミュレータです。導入の手間はかかりますが、地域安全・防災・交通系のイベント生成に使え、Phase 2 / 3 の評価環境として利用できます。
 
 - 公式サイト: <https://carla.org/>
 - Documentation: <https://carla.readthedocs.io/>
@@ -501,7 +501,7 @@ Node-RED は必須ではありません。まず Home Assistant demo だけで�
   - publisher にたまったイベントを assistant に渡して `execute` する
   - `triggered` と `actions_executed` を確認する
 
-そのため、このページは次の Hands-on への接続点にもなります。
+このページの後は、次の Hands-on に進めます。
 
 - [HA x SSI Publisherサンプル（Phase 1）](ha-ssi-publisher.md)
 - [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)

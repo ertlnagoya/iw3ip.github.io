@@ -115,4 +115,4 @@ EIP-712 (Stage 8).
     - [Marketplace VC Bridge (v1/v2 spec)](marketplace-vc-bridge-spec.md)
     - [SellerVC spec](seller-vc-spec.md)
 - Hands-on
-    - [Phase 2 overview](../hands-on/index.md#phase-2-event-sharing)
+    - [Hands-on overview (Part 2)](../hands-on/index.md)

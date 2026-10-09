@@ -16,4 +16,4 @@ A. Use the same repository at first. Splitting is safer once update ownership ha
 
 ## Q. Which sample should I start with?
 
-A. To run just one, `assistant-demo` is the shortest path. To start from Phase 1 without a device, use the webcam-based samples; with real hardware, start from HUSKYLENS2.
+A. To go through Phase 1 onward without hardware, start from the [HA Demo Simulator](../hands-on/ha-demo-simulator.md). To run a single Phase 3 demo, `assistant-demo` ([LLM Planner hands-on](../hands-on/llm-planner.md)) is the shortest path because it starts with one command. With real hardware, start from [HUSKYLENS2](../hands-on/huskylens2.md) or the [USB webcam](../hands-on/webcam.md), depending on what you have.

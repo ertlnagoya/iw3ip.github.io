@@ -1,6 +1,6 @@
 # ローカル VLM でカメラデータを意味づけして流通する (Part 3)
 
-ラップトップ PC と USB ウェブカメラの映像を、PC 上で動く**ローカル VLM（視覚言語モデル）**で解析して意味テキストを付与し、その AI 加工データを IoT データ流通基盤で配布するまでを体験します。画像そのものを外部クラウドに送らず、解析もローカルで完結させる点が要点です。
+ラップトップ PC と USB ウェブカメラの映像を、PC 上で動く**ローカル VLM（視覚言語モデル）**で解析して意味テキストを付与し、その AI 加工データを IoT データ流通基盤で配布するまでを行います。画像を外部クラウドに送らず、解析もローカルで完結させます。
 
 > **やること**: ウェブカメラ画像をローカル VLM で解析し、生成した意味データ（説明文）を基盤上で流通させる
 >
@@ -14,19 +14,19 @@
     Part 3（知能統合）のハンズオンです。カメラ取り込みの基礎は
     [USB ウェブカメラサンプル](webcam.md)、VLM による tier 別の出し分けは
     [DataUserVC × 段階アクセス](data-user-vc-tiered.md) の §12 で扱います。
-    本ページは「**カメラ → ローカル VLM → 意味データ流通**」を 1 本の流れとして
-    体験することに集中します。
+    本ページは「**カメラ → ローカル VLM → 意味データ流通**」を 1 つの流れとして
+    扱います。
 
 ## 目的
 
-生の画像を配るのではなく、ローカル VLM が生成した「**意味づけされた派生データ**」を流通させます。詳細記述（`description_full`）と、個人情報を除いた要約（`description_summary`）を作り分け、AI をローカルで使うことでプライバシーとデータ主権を保つ設計を体験します。
+生の画像を配るのではなく、ローカル VLM が生成した「**意味づけされた派生データ**」を流通させます。詳細記述（`description_full`）と、個人情報を除いた要約（`description_summary`）を作り分け、AI をローカルで使うことでプライバシーとデータ主権を保つ設計を確認します。
 
 ## このページで分かること
 
 - ローカル VLM（Ollama）を基盤に組み込み、画像から意味データを生成する流れ
 - 生画像ではなく「意味づけした派生データ」を流通させる考え方
-- 個人情報を含む詳細記述と、redact 済み要約の作り分け
-- 推論に使ったモデルや失敗時の degrade 通知（`processing_warnings`）が監査可能であること
+- 個人情報を含む詳細記述と、個人情報を除いた (redact 済みの) 要約の作り分け
+- 推論に使ったモデルと、VLM が使えず品質を落として処理した場合の通知（`processing_warnings`）を監査できること
 
 ## 全体像
 
@@ -60,7 +60,7 @@
 
 ## 1. VLM 付きでサービスを起動する
 
-VLM は opt-in です。`--profile vlm` を付けると Ollama サービスと、モデルを事前取得する `vlm-pull` が一緒に起動します。
+VLM は既定では起動しません。`--profile vlm` を付けると Ollama サービスと、モデルを事前取得する `vlm-pull` が一緒に起動します。教材リポジトリのトップで実行してください（以下は `~/program/` に clone した場合の例です）。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -70,7 +70,7 @@ export VLM_BACKEND=ollama
 export VLM_MODEL=moondream
 export IMAGE_REDACTION_BACKEND=opencv
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
-  publisher hardhat bridge mosquitto vlm vlm-pull
+  publisher bridge mosquitto vlm vlm-pull
 ```
 
 `vlm-pull` がモデルを取得し終わるまで待ちます（初回のみ、数 GB）。
@@ -95,7 +95,7 @@ curl -s http://localhost:8080/health | jq .
 
 ## 2. ウェブカメラから 1 枚撮る
 
-USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。
+USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。OpenCV を使うので、未導入の場合は `pip install opencv-python` で入れてください。
 
 ```python
 # capture_snapshot.py
@@ -153,11 +153,11 @@ curl -s -X POST http://localhost:8080/semantic/analyze \
 
 `--profile vlm` を有効にして起動していれば、publisher はこのとき VLM を呼び出し、行に `description_full` / `description_summary` / `description_model` / `processing_warnings` を付与します。
 
-!!! info "受信側での取得は tier ゲート"
+!!! info "受信側での取得には ViewerToken が必要"
     付与された `description_*` を受信側で取り出すには、DataUserVC を提示して得た
     ViewerToken が必要です（`/platform/data` は素の GET では 401 になります）。信頼度
     ごとに `description_full` / `description_summary` を出し分ける流れは
-    [DataUserVC × 段階アクセス §12](data-user-vc-tiered.md) で扱います。本ページのコアは
+    [DataUserVC × 段階アクセス §12](data-user-vc-tiered.md) で扱います。本ページで扱うのは
     「カメラ → ローカルモデルで意味づけ → 基盤へ流通」までです。
 
 ## 5. 確認ポイント
@@ -224,5 +224,5 @@ python examples/hands_on/local_vlm_distribution/problem_program.py \
 ## 関連ページ
 
 - 前提: [USB ウェブカメラサンプル](webcam.md) / [最短起動](../setup/quickstart.md)
-- 深掘り: [DataUserVC × 段階アクセス（§8 メディア統合・§12 VLM tier）](data-user-vc-tiered.md) / [LLM Planner](llm-planner.md)
+- 詳細: [DataUserVC × 段階アクセス（§8 メディア統合・§12 VLM tier）](data-user-vc-tiered.md) / [LLM Planner](llm-planner.md)
 - 設計: [DataUserVC × 段階アクセス制御 仕様（tier 拡張: 意味レベルの段階化）](data-user-vc-tiered-spec.md)

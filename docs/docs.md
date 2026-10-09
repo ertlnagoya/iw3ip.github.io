@@ -15,7 +15,7 @@
 
 ## ローカル確認
 
-まず依存を入れます。
+依存パッケージをインストールし、ローカルサーバを起動します。
 
 ```bash
 pip install -r docs/requirements.txt

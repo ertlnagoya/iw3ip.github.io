@@ -32,12 +32,34 @@ Purchase (shared by v1 and v2)
 
 Design detail: [Marketplace VC Bridge — v1 / v2 design spec](../design/marketplace-vc-bridge-spec.md).
 
+## How Part, Phase, and Stage relate { #part-phase-stage }
+
+This site uses three kinds of numbering.
+
+- **Part 1–3**: the learning order on this site (Basic, Feature Extensions, Intelligence Integration).
+- **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see [Platform Overview](../platform-overview.md)). Page titles carry the Phase.
+- **Stage 0–7, A, T**: sequence labels for the Part 2 hands-on pages that use VCs. Each page assumes the earlier Stages are done. There is no Stage 2.
+
+| Stage | Hands-on | VC |
+|---|---|---|
+| 0 | [USB Webcam Event Sharing](webcam-event-sharing.md), [Environment / Disaster Event Sharing](environment-disaster.md) | none (JSON registered at `/consents`) |
+| 1 | [SSI Wallet](ha-ssi-wallet.md) | ConsentVC |
+| 3 | [SSI Viewer](ha-ssi-viewer.md) | ViewerVC |
+| 4 prep | [SSI Service](ha-ssi-service.md) | ServiceVC |
+| 5 | [Marketplace × Wallet bridge](marketplace-vc-bridge.md) | PurchaseViewerVC |
+| 6 | [4-VC end-to-end](marketplace-vc-end-to-end.md) | Consent / Viewer / Service / PurchaseViewer |
+| 7 | [Seller VC](marketplace-seller-vc.md) | SellerVC |
+| A | [Mobile App](marketplace-mobile-app.md) | PurchaseViewerVC (phone only) |
+| T | [DataUserVC Tiered Access](data-user-vc-tiered.md) | DataUserVC |
+
+The mapping between VCs and tokens is summarized in [VC Architecture Overview](../design/vc-architecture-overview.md).
+
 ## Overall structure
 
 <div class="iw3ip-phase-grid">
   <div class="iw3ip-phase-card iw3ip-phase-1">
     <div class="iw3ip-phase-kicker">Part 1 / Basic (v1)</div>
-    <h3>📡 Capture and share IoT data</h3>
+    <h3>Capture and share IoT data</h3>
     <p>Pull data off cameras and sensors, view it, and trade it on the marketplace.</p>
     <p class="iw3ip-phase-links">
       <a href="ha-demo-simulator.md">HA Demo Simulator</a> /
@@ -49,7 +71,7 @@ Design detail: [Marketplace VC Bridge — v1 / v2 design spec](../design/marketp
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-2">
     <div class="iw3ip-phase-kicker">Part 2 / Feature Extensions (v2)</div>
-    <h3>🧭 Consent, conditional sharing, tiered access</h3>
+    <h3>Consent, conditional sharing, tiered access</h3>
     <p>Use VCs and a wallet to share according to purpose and trust level. You can stop partway.</p>
     <p class="iw3ip-phase-links">
       <a href="ha-ssi-wallet.md">HA SSI Wallet</a> /
@@ -61,7 +83,7 @@ Design detail: [Marketplace VC Bridge — v1 / v2 design spec](../design/marketp
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-3">
     <div class="iw3ip-phase-kicker">Part 3 / Intelligence Integration</div>
-    <h3>🧠 Let an AI act on requests</h3>
+    <h3>Let an AI act on requests</h3>
     <p>An AI interprets free-form requests and uses Part 1/2 data as material to plan and act.</p>
     <p class="iw3ip-phase-links">
       <a href="local-vlm-distribution.md">Enrich camera data with a local VLM</a> /

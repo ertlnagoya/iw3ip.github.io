@@ -47,7 +47,7 @@ JSON 登録      │ /consents POST  │ —              │ —          │ �
  (横断)        │   ↓ SellerVC が "/marketplace/register" を gate
 ```
 
-**SellerVC は data API を直接 gate しない**。代わりに出品時の身元証跡を audit log に残し、buyer の `/platform/data?merchandise=` レスポンスに `seller_did` として surface される。
+**SellerVC は data API を直接 gate しない**。代わりに出品時の身元証跡を audit log に残し、buyer の `/platform/data?merchandise=` レスポンスに `seller_did` として含まれる。
 
 ## 5. 7 段階のハンズオン
 
@@ -86,7 +86,7 @@ Phase 2 hands-on の依存グラフ
 
 ## 6. v1 / v2 マーケットプレイスの並走
 
-Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ Purchase イベントから両 lane が走る**ように設計されている。
+Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ Purchase イベントから両方の経路が動く**ように設計されている。
 
 | 観点 | v1 (現行) | v2 (Stage 5+) |
 | --- | --- | --- |
@@ -100,7 +100,7 @@ Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ
 
 ## 7. 監査ログのチェーン
 
-1 つの購入から最大 6 行の audit log が連鎖する (Stage 4-prep+5+7 すべて経由した場合):
+1 つの購入から最大 8 種類の audit log 行が連鎖する (Stage 4-prep+5+7 すべて経由した場合):
 
 | # | raw_topic | reason | 主体 (subject_did) |
 | --- | --- | --- | --- |
@@ -140,7 +140,7 @@ Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ
 | **wallet の did:jwk** | iw3ip-wallet | OID4VCI/OID4VP の subject、VC の `cnf` |
 | **publisher issuer 鍵** (did:jwk) | publisher コンテナ | VC 発行の署名 |
 
-Stage 5/7 の `eth_did_bound` audit row が、**Ethereum 鍵 ↔ did:jwk** のリンクを記録する。これは off-chain (publisher の audit log) で **「ETH 支払い者」と「VC 提示者」が同一人物**を主張する仕組み (現状は bridge を信用するだけの MVP; 将来は EIP-712 署名で堅化予定 = Stage 8)。
+Stage 5/7 の `eth_did_bound` audit row が、**Ethereum 鍵 ↔ did:jwk** のリンクを記録する。これは off-chain (publisher の audit log) で **「ETH 支払い者」と「VC 提示者」が同一人物**を主張する仕組み (現状は bridge を信用するだけの MVP; 将来は EIP-712 署名で強化する予定 = Stage 8)。
 
 ## 10. 既知の限界 (Stage 8+ の検討事項)
 
@@ -159,5 +159,5 @@ Stage 5/7 の `eth_did_bound` audit row が、**Ethereum 鍵 ↔ did:jwk** の�
     - [Marketplace VC Bridge (v1/v2 spec)](marketplace-vc-bridge-spec.md) — Stage 5/6 の構造
     - [SellerVC spec (Stage 7 / case C M1)](seller-vc-spec.md) — Stage 7 の設計判断
 - ハンズオン
-    - [Phase 2 overview](../hands-on/index.md#phase-2-イベント共有)
+    - [ハンズオン概要 (Part 2)](../hands-on/index.md)
     - 各 Stage は §5 の表を参照

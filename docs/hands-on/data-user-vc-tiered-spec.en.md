@@ -260,7 +260,7 @@ Total: 88 = 75 existing + 13 new. No regressions.
 
 ## Tier extension: semantic-level redaction (VLM)  {#tier-vlm}
 
-§1–§9 above gate access by **dropping media keys** (Tier 2 hides video,
+The design so far (matching §1–§9 of the hands-on page) gates access by **dropping media keys** (Tier 2 hides video,
 Tier 1 hides image and video). The next step is to **derive new content
 from the same source via VLM inference + face/PII blurring and project
 those derivatives per tier**. Tier 1 is no longer "you get nothing
@@ -273,10 +273,11 @@ recipient can know *what happened* without learning *who did it*.
 |---|---|---|---|
 | **3** Full | `full` | gov + crime + ISO27001 (80) | raw image / video + every text derivative |
 | **2** Access | `access` | enterprise + research + ISO27001 (75) | **face/PII-blurred image** + **detailed text** (named entities present) |
-| **1** Summary | `summary` (new) | enterprise + research only (60–) | **summary text only** (PII-redacted, no image) |
-| 0 Denied | `denied` | unqualified (<60) | claim is rejected |
+| **1** Summary | `summary` (new) | enterprise + unknown purpose + legalCompliance only (50–59) | **summary text only** (PII-redacted, no image) |
+| 0 Denied | `denied` | unqualified (<50) | claim is rejected |
 
-A new `summary` value is added to `access_level`. The `denied`
+A new `summary` value is added to `access_level`: with the VLM profile
+on, scores 50–59 map to `summary`. With the profile off, the `denied`
 semantics are unchanged — `score < 60` still rejects the claim.
 
 ### Derivative schema
@@ -286,7 +287,7 @@ semantics are unchanged — `score < 60` still rejects the claim.
 | Key | Content | Visible at tier |
 |---|---|---|
 | `image_url_redacted` | URL of an image with faces / people / license plates blurred | 2 + 3 |
-| `image_cid_redacted` | IPFS CID of the redacted image (when option C is on) | 2 + 3 |
+| `image_cid_redacted` | IPFS CID of the redacted image (when option C — IPFS delivery, hands-on §9 — is on) | 2 + 3 |
 | `description_full` | VLM-generated detailed description (named entities present) | 2 + 3 |
 | `description_summary` | VLM-generated summary (PII-redacted) | 1 + 2 + 3 |
 | `description_model` | VLM model id + version (audit) | every tier |

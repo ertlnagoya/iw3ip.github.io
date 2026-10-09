@@ -37,6 +37,7 @@ Use HUSKYLENS2 (or mock input) to generate events and confirm that they are prod
 - `sensor-bridge` available
 - `mediator-owner` already running and watching `raw_data/output`
 - for serial mode, the serial device path is visible from the PC
+- Python 3 (serial mode also needs `pyserial`)
 
 ## Exercise Programs
 

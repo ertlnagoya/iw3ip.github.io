@@ -3,7 +3,7 @@
 Using the tools you installed in [Prerequisites](prerequisites.md), start the full hands-on environment together.
 Estimated time: **15–30 min** (the first run pulls Docker images and runs `npm install`).
 
-> This starts **6 separate processes**, each in its own terminal.
+> This starts **6 kinds of processes**. Because the contract deployment and each of the two mediators also take a terminal, you will open 7 terminals in total.
 > Follow the steps in order.
 
 ## What you are starting — overview
@@ -41,7 +41,7 @@ Estimated time: **15–30 min** (the first run pulls Docker images and runs `npm
 
 ## Startup order — top to bottom
 
-> **Open six terminals.** Each process stays running in its own terminal.
+> **Open seven terminals.** Except for the deployment (terminal 2), each process stays running in its own terminal.
 > macOS Terminal: ⌘+T. VS Code: "Split Terminal".
 
 ### 0. Move into the lesson repo
@@ -78,6 +78,7 @@ Private Key: 0xac09...
 > **Don't close this terminal** — the chain has to keep running.
 >
 > The displayed **Account #0 + Private Key** will be imported into MetaMask shortly. Keep them visible.
+> This private key is a publicly known Hardhat test key. Never use it on a real network.
 
 ### 2. Deploy the contracts
 

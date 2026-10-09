@@ -13,8 +13,8 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 !!! abstract "Stage 1〜5 の総合演習"
     Seller が **ServiceVC** で連続書き込みしたデータを、Buyer が
     **PurchaseViewerVC** で読み出す、というシナリオを 1 セッションで
-    通します。バックエンドは Stage 1〜5 で実装済 + Stage 6 case B
-    (dataset_id を Merchandise.additionalInfo から動的取得) のみ。
+    通します。バックエンドは Stage 1〜5 のものに、dataset_id を Merchandise の
+    `additionalInfo` から動的に取得する変更 (本サイトでは Stage 6 case B と呼びます) を加えたものです。
 
 !!! tip "dataset の選択"
     例は `home/env/temperature` ですが、deploy script (Stage 6 case B) で
@@ -27,11 +27,11 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 
 - データフローに関わる 4 種類の VC (ConsentVC / ViewerVC /
   **ServiceVC** / **PurchaseViewerVC**) が **1 つの dataset を介して協調**
-  することを体験 (5 種目の SellerVC は出品身元のガバナンス層なので
-  本ハンズオンの対象ではないが、Stage 7 で並走可能)
+  することを確認する (5 種類目の SellerVC は出品者の身元を扱うもので、
+  [Stage 7](marketplace-seller-vc.md) で扱う)
 - on-chain 支払い (MetaMask) と off-chain 認可 (VC) の **役割分担**を
-  完全な動線で理解する
-- audit log の **チェーン**を読み解く: ETH 鍵 → did:jwk → ServiceVC holder
+  一連の流れで理解する
+- audit log のつながりを読む: ETH 鍵 → did:jwk → ServiceVC holder
   → PurchaseViewerVC holder の関係を追える
 
 ## このページで分かること
@@ -40,7 +40,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
   正しく読み出せる**こと (Stage 4 prep × Stage 5 の連結)
 - Stage 6 case B により Merchandise が **on-chain で dataset_id を保持**し、
   bridge / iot-market-ui がハードコードなしで dataset を解決すること
-- 1 dataset を巡る audit log の **多層チェーン**
+- 1 つの dataset について残る audit log のつながり
 
 ## 全体像
 
@@ -79,8 +79,9 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)
   を一通り通している
 - 既存の publisher + bridge + Hardhat + iot-market-ui を稼働させたまま、
-  本ハンズオンを上に積み上げる想定
-- LAN IP は `192.168.68.53` で示すので、あなたの環境の IP に読み替え
+  そのまま使う想定
+- LAN IP は `192.168.68.53` で示すので、あなたの環境の IP に読み替えてください
+- 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 - このハンズオンでは **同一 iPhone wallet が 1 人で 2 役 (seller + buyer)**
   を兼ねます (実運用の seller / buyer 分離は将来課題)
 
@@ -116,7 +117,7 @@ cd iot-market-ui
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
-詰まったら [Stage 5 ハンズオンのトラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング) を参照。
+詰まったら [Stage 5 ハンズオンのトラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング) を参照してください。
 
 ---
 
@@ -192,7 +193,7 @@ iter 2 {'status': 'received', 'count': N+1}
 
 ServiceVC で書き込んだ温度データを読みたいので、未購入の **温度 Merchandise** を選択 (例: `#3`)。
 
-### 操作 (Hardhat console fallback で確実)
+### 操作 (Hardhat console を使う)
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
@@ -226,7 +227,7 @@ bridge: Purchase event from 0x2279B7A0... buyer=0x3C44... dataset=home/env/tempe
 bridge: claim ok jti=...
 ```
 
-dataset がハードコードでなく on-chain から来ていることを確認。
+dataset がハードコードされた値ではなく、on-chain から取得されていることを確認します。
 
 ```bash
 docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1
@@ -246,7 +247,7 @@ ENCODED=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv
 open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 ```
 
-iPhone wallet で QR を読み → 「IW3IP Purchase Viewer Credential」承認。
+iPhone wallet で QR を読み取り、「IW3IP Purchase Viewer Credential」を承認します。上のコマンドは deeplink を外部の QR 生成サービスに送るため、ローカルのハンズオン環境以外では使わないでください。
 
 VC claims に `dataset_id: home/env/temperature` が入っていることを wallet で確認。
 
@@ -264,7 +265,7 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool | 
 - PurchaseViewerVC を提示すると ViewerToken が出る (Stage 5)
 - `merchandise=<addr>` で取得すると、bridge が解決した dataset_id 経由で
   **Step E1 で seller が書いた値 31〜35 が読める**
-- これが Stage 6 の中心となる確認点
+- これが Stage 6 で確認したい点
 
 ### 操作
 
@@ -274,7 +275,7 @@ PC ブラウザで提示要求:
 http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=PurchaseViewerVC
 ```
 
-QR → wallet で **PurchaseViewerVC** (NOT ServiceVC, NOT ViewerVC) を選んで提示。
+QR → wallet で **PurchaseViewerVC** (ServiceVC や ViewerVC と間違えないこと) を選んで提示。
 
 ```bash
 TOKEN=$(docker logs $PUB 2>&1 | grep "viewer_token_issued vc_kind=PurchaseViewerVC" | tail -1 | sed -E 's/.*token=([^ ]+).*/\1/')
@@ -302,14 +303,14 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 }
 ```
 
-**Step E1 で Seller が書いた 5 件が、Buyer の手に渡った** — Stage 6 完成。
+Step E1 で Seller が書いた 5 件を Buyer が読み出せました。これで Stage 6 は完了です。
 
 ---
 
 ## Step E5. audit log の連鎖
 
 ### 何を確認するか
-- 1 dataset を巡って **複数の主体・操作の鎖**が記録されている
+- 1 つの dataset について、複数の主体と操作が順に記録されている
 
 ```bash
 curl -s 'http://192.168.68.53:8080/audit/logs?limit=20' | python3 -m json.tool \
@@ -376,7 +377,7 @@ holder_did は同一になります。実運用では別端末・別 did:jwk に
 
 **対処**: Hardhat ノードを再起動 (`Ctrl+C` → `npx hardhat node`) してから
 最新の `deployMerchandiseWithIoTMarket.ts` で再デプロイ。MetaMask は
-chainId キャッシュリセット必要 (Step 5 トラブルシューティング A)。
+chainId キャッシュのリセットが必要です ([Stage 5 のトラブルシューティング A](marketplace-vc-bridge.md#トラブルシューティング))。
 
 ### A2. Step E1 開始時に `SERVICE` が空になる
 
@@ -384,14 +385,14 @@ chainId キャッシュリセット必要 (Step 5 トラブルシューティン
 SERVICE=
 ```
 
-**原因**: Step 0-D で publisher を再起動した直後で、過去の
-`service_token_issued` ログが消えており、まだ E1-A (発行) と
-E1-B (提示) を完了していない。
+**原因**: Step E0 で publisher を再起動した直後で、過去の
+`service_token_issued` ログが消えており、まだ Step E1 の発行と
+提示を完了していない。
 
 **対処**: 「ServiceVC を **発行** → wallet で受領 → ServiceVC を
 **提示**」の 2 ステップを実行してから token を grep する。発行と
-提示は別 URL (`/issuer/offer` と `/verifier/request`) なので両方
-踏むこと。
+提示は別 URL (`/issuer/offer` と `/verifier/request`) なので、両方を
+実行すること。
 
 ### B. Step E4 で `count: 0`
 
@@ -399,24 +400,24 @@ E1-B (提示) を完了していない。
 (再起動した) 等で `app.state.ingested` がクリアされている。
 
 **対処**: Step E1 と Step E4 の間で publisher を再起動しないこと。
-再起動した場合は Step E1 から仕切り直し。
+再起動した場合は Step E1 からやり直してください。
 
 ### C. その他
 
 [Stage 5 のトラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング)
-が引き続き有効。
+も参照してください。
 
 ---
 
-## 限界 (Stage 7+ で扱う候補)
+## 限界
 
 - **seller / buyer が同一 wallet**: 真の seller-buyer 分離には iPhone を 2 台
   使うか、wallet 内のアカウント切替に対応する UI が必要
 - **SellerVC**: seller が `Merchandise` を登録するときに身元 VC を要求する
-  ガバナンス層は未実装 (案 C)
+  仕組みは、本ページでは扱わない ([Stage 7](marketplace-seller-vc.md) で扱う)
 - **連続性の観測**: ServiceVC の TTL 1 時間内に複数の buyer が読み出す
-  ケース (multi-tenant read) のストレステストは別途
-- **EIP-712 署名**: eth_addr ↔ did:jwk のなりすまし対策はまだ MVP 状態
+  ケース (multi-tenant read) の負荷試験は未実施
+- **EIP-712 署名**: eth_addr ↔ did:jwk のなりすまし対策は最小実装の段階
 
 ## 関連
 

@@ -1,8 +1,8 @@
 # LLM Planner Hands-on
 
-Replace the rule-based planner in the [regional safety assistant](regional-safety-assistant.en.md) with an LLM-based one, in two steps.
+Replace the rule-based planner in the [regional safety assistant](regional-safety-assistant.en.md) with one based on a large language model (LLM), in three stages.
 
-> **What you'll do**: Swap planner via stub provider first, then a real LLM
+> **What you'll do**: Swap planner via stub provider first, check it in the frontend demo, then use a real LLM
 >
 > **Prerequisites**: [Regional safety assistant](regional-safety-assistant.en.md)
 >
@@ -12,10 +12,11 @@ Replace the rule-based planner in the [regional safety assistant](regional-safet
 
 This hands-on extends the Phase 3 [Regional Safety Assistant sample](regional-safety-assistant.md) and demonstrates the minimum path for **replacing the rule-based planner with an LLM planner**.
 
-This page is organized in two steps:
+This page is organized in three stages:
 
 1. reproduce the flow locally with the `stub` provider
-2. switch to an actual OpenAI-compatible API if available
+2. check how `planner_diagnostics` is shown in the frontend demo (`assistant-demo`)
+3. switch to an actual OpenAI-compatible API if available
 
 ## Shortest path
 
@@ -81,26 +82,26 @@ The exercise programs focus on the minimum request body for `/assistant/plan` an
 
 <details class="iw3ip-toc-details" open>
   <summary>Stage 1: understand the planner shape with the stub provider</summary>
-  <p>Start without any external LLM API. In this stage, the goal is to understand the basic shape of the planner input and output, including `plan` and `planner_diagnostics`.</p>
+  <p>Start without any external LLM API. In this stage, the goal is to understand the basic shape of the planner input and output, including <code>plan</code> and <code>planner_diagnostics</code>.</p>
   <ol>
-    <li><a href="#1-start-with-the-stub-provider">Start with the `stub` provider</a></li>
+    <li><a href="#1-start-with-the-stub-provider">Start with the <code>stub</code> provider</a></li>
     <li><a href="#2-inspect-a-japanese-request">Inspect a Japanese request</a></li>
-    <li><a href="#3-inspect-an-english-request">Inspect an English request</a></li>
   </ol>
 </details>
 
 <details class="iw3ip-toc-details">
   <summary>Stage 2: inspect the frontend demo and diagnostics</summary>
-  <p>Next, inspect the same planner result from the frontend side. This stage focuses on `assistant-demo`, badges, alert panels, and how `planner_diagnostics` should be read in the UI.</p>
+  <p>Next, inspect the same planner result from the frontend side. This stage focuses on <code>assistant-demo</code>, badges, alert panels, and how <code>planner_diagnostics</code> should be read in the UI.</p>
   <ol>
     <li><a href="#25-start-the-react-frontend-demo">Start the React frontend demo</a></li>
+    <li><a href="#3-inspect-an-english-request">Inspect an English request</a></li>
     <li><a href="#4-inspect-the-real-api-environment-template">Inspect the real-API environment template</a></li>
   </ol>
 </details>
 
 <details class="iw3ip-toc-details">
   <summary>Stage 3: switch to an OpenAI-compatible API</summary>
-  <p>Finally, switch to the `openai_compatible` provider while keeping the same overall structure. This is where provider-side failures become visible through `planner_diagnostics`.</p>
+  <p>Finally, switch to the <code>openai_compatible</code> provider while keeping the same overall structure. This is where provider-side failures become visible through <code>planner_diagnostics</code>.</p>
   <ol>
     <li><a href="#5-switch-to-an-openai-compatible-api">Switch to an OpenAI-compatible API</a></li>
   </ol>

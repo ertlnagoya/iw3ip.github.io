@@ -24,17 +24,17 @@
 
 ### 1. Docker
 
-環境全体をまとめて起動するためのツール。
+環境全体をまとめて起動するためのツールです。
 
 - **macOS / Windows**: [Docker Desktop](https://www.docker.com/products/docker-desktop/) をインストールします。GUI 付きで管理が容易です。
-- **Linux**: ディストリ標準の `docker` パッケージか公式 install スクリプト。
+- **Linux**: ディストリビューション標準の `docker` パッケージか、公式のインストールスクリプトを使います。
 - 公式サイト: <https://www.docker.com/>
 
 > **メモリ設定の注意**: Docker Desktop の Settings → Resources → Memory を **6 GB 以上** にしてください。デフォルトの 2 GB では一部コンテナが落ちます。
 
 ### 2. Node.js (npm 同梱)
 
-JavaScript のランタイム。マーケットプレイスの UI とブロックチェーンの起動に使います。
+JavaScript の実行環境です。マーケットプレイスの UI とブロックチェーンの起動に使います。
 
 - 公式: <https://nodejs.org/>
 - バージョンは **LTS (Long Term Support)** を選んでおけば問題ありません
@@ -42,14 +42,14 @@ JavaScript のランタイム。マーケットプレイスの UI とブロッ�
 
 ### 3. Rust (cargo 同梱)
 
-データ保管庫 (`simple-storage`) を動かすための言語。
+データ保管庫 (`simple-storage`) を動かすための言語です。
 
 - 公式 install: <https://www.rust-lang.org/tools/install>
 - 次の 1 行のコマンドでインストールできます: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
 
 ### 4. Git
 
-教材リポジトリを取得するため。
+教材リポジトリの取得に使います。
 
 - 公式: <https://git-scm.com/>
 - macOS は Xcode Command Line Tools に同梱、Linux はディストリ標準でほぼ導入済みです
@@ -62,13 +62,20 @@ JavaScript のランタイム。マーケットプレイスの UI とブロッ�
 - [MetaMask](https://metamask.io/) — 拡張機能をブラウザにインストール
 - ローカルチェーンに接続するための Ethereum 系ウォレットです
 
-## 任意 (機能拡張パートで使う)
+## 任意 (一部のハンズオンで使う)
 
-ハンズオン Part 2 (機能拡張) を進める場合に追加で必要です。
+進めるハンズオンに応じて追加で必要です。
+
+### Python 3 / curl / jq
+
+HUSKYLENS2 や USB ウェブカメラのブリッジ、演習用プログラム (`problem_program.py` など) は Python 3 で動かします。API の呼び出しと応答の確認には `curl` と `jq` を使います。
+
+- Python 公式: <https://www.python.org/>
+- macOS / Linux には `curl` が標準で入っています。`jq` は <https://jqlang.github.io/jq/> から入手できます
 
 ### スマートフォン + SSI ウォレットアプリ
 
-VC (デジタル証明書) を受け取る入れ物。
+Part 2 (機能拡張) で、VC (デジタル証明書) を受け取り、保管するために使います。
 
 - iPhone / Android のどちらでも構いません
 - 推奨アプリ: **Sphereon Wallet** (iPhone は App Store、Android は Play Store)
@@ -80,7 +87,7 @@ VC (デジタル証明書) を受け取る入れ物。
 
 ### VS Code + Dev Containers (推奨)
 
-publisher 内部のコードを読み解きたい人向け。
+publisher 内部のコードを読みたい人向けです。
 
 - VS Code: <https://code.visualstudio.com/>
 - 拡張: [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
@@ -154,7 +161,7 @@ cd Blockchain_IoT_Marketplace
 
 - **WSL2 + Docker Desktop** の組み合わせを推奨します。
 - 参考: <https://learn.microsoft.com/windows/wsl/>
-- パスの区切りなどでハマったら WSL2 内でハンズオン作業をする方が安全です。
+- パスの区切りなどで問題が起きる場合は、WSL2 内でハンズオンの作業をしてください。
 
 ### macOS
 
@@ -177,7 +184,7 @@ cd Blockchain_IoT_Marketplace
 |---|---|
 | **ターミナル** | 文字でコマンドを打つアプリ (macOS: Terminal、Windows: PowerShell / WSL) |
 | **submodule** | リポジトリの中に別のリポジトリを埋め込む仕組み |
-| **コンテナ** | アプリを「箱詰め」して動かす単位。Docker が動かす |
+| **コンテナ** | アプリと実行環境をひとまとめにして動かす単位。Docker が動かす |
 | **拡張機能** | ブラウザに追加できる小さなアプリ。MetaMask はこれ |
 
-詳しい用語は [環境構築 Overview のミニ辞書](index.md)。
+そのほかの用語は [環境構築のミニ辞書](index.md) を参照してください。

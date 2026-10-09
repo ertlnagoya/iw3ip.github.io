@@ -100,7 +100,7 @@ Open:
 ## Run docs locally
 
 ```bash
-pip install mkdocs-material mkdocs-static-i18n
+pip install -r docs/requirements.txt
 mkdocs serve
 ```
 

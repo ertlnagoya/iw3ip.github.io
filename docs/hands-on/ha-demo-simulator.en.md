@@ -240,7 +240,7 @@ After running a Home Assistant script, inspect the publisher side.
 
 ```bash
 curl http://localhost:8080/platform/ingest
-curl http://localhost:8080/audit/logs?limit=10
+curl 'http://localhost:8080/audit/logs?limit=10'
 ```
 
 Checkpoints:

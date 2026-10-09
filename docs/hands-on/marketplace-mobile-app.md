@@ -1,6 +1,6 @@
-# データマーケット モバイルアプリ (Stage A: 案 A の最小版)
+# データマーケット モバイルアプリ (Stage A: PWA 版)
 
-Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホーム画面アプリ (PWA) として体験します。コマンドラインなしで購入から VC 受領、閲覧までタップで進められます。
+Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホーム画面アプリ (PWA: Progressive Web App) として使います。コマンドラインなしで購入から VC 受領、閲覧までタップで進められます。
 
 > **やること**: PWA として iot-market-ui をスマホで使い、購入と VC 取得を進める
 >
@@ -10,12 +10,13 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 >
 > **所要時間**: 30 分くらい
 
-!!! abstract "初学者でも使える PWA 体験"
+!!! abstract "コマンドラインを使わない PWA 版"
     Phase 2 で構築した backend をそのまま使い、`iot-market-ui` を
-    iPhone/Android のホーム画面アプリとして体験するハンズオンです。
+    iPhone/Android のホーム画面アプリとして使うハンズオンです。
     コマンドライン操作なしで、購入から VC 受領、データ閲覧までを
-    スマホ画面のタップで進めます。Stage 8 (信頼モデルの強化) と並行し、
-    Stage 9 (案 B / RN 統合アプリ) への足掛かりです。
+    スマホ画面のタップで進めます。本ページの PWA 版を「案 A」、ウォレット機能を
+    組み込んだネイティブアプリ (React Native) を「案 B」と呼びます。案 B は Stage 9
+    として計画しています。
 
 !!! tip "Stage 0 と同じデータ"
     Stage A の購入対象は Stage 6 case B 以降の deploy script で登録された
@@ -23,13 +24,13 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
     `home/event/flood_risk_high` を選べば、Stage 0
     [webcam-event-sharing](webcam-event-sharing.md) /
     [environment-disaster](environment-disaster.md) と同じカメラ・センサー
-    イベントが、購入経由 (PurchaseViewerVC) で読めるところまで体験できます。
+    イベントが、購入経由 (PurchaseViewerVC) で読めるところまで確認できます。
 
 ## 目的
 
-- iot-market-ui を **PWA (Progressive Web App)** として体験する
+- iot-market-ui を **PWA (Progressive Web App)** として使う
 - 既存の deeplink 連携 (publisher / iw3ip-wallet / MetaMask Mobile) を
-  「初学者でも途中で脱落しない 1 動線」に整理した状態で確認する
+  初学者が迷わず進められる 1 つの流れとして確認する
 - 購入履歴を端末側にローカル保存し、`/my-data` から後日アクセスできる
   ことを確認する
 
@@ -39,7 +40,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 - 購入後 `/purchased/[txHash]` 画面の deeplink ボタンを押すと
   iw3ip-wallet が起動して VC を受領 → ブラウザに復帰
 - `/my-data` で過去の購入が一覧表示される
-- `/welcome` の 3 ステップで初回ユーザでも詰まらないフロー
+- `/welcome` の 3 ステップで、初めての利用者でも準備を進められること
 
 ## つまずきやすい点
 
@@ -49,9 +50,9 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
   受領完了後のブラウザ自動復帰が起きない。**復帰しなくても手動で
   Safari に戻れば動線は途切れません**
 - localStorage は端末ローカル。同じ wallet を別端末で使うと履歴は
-  共有されない (この限界はハンズオンで明記)
+  共有されない
 
-## 公式リンク
+## 先に読むページ
 
 - [VC Architecture Overview](../design/vc-architecture-overview.md) — 全体像
 - [Stage 5: Marketplace × Wallet bridge](marketplace-vc-bridge.md) — 購入動線の元ハンズオン
@@ -59,10 +60,11 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 ## 前提
 
-- Stage 5 / 6 / 7 の e2e 検証が済んでいる
+- Stage 5 / 6 / 7 のハンズオンを済ませている
 - publisher + bridge + Hardhat + iot-market-ui が起動できる
 - iw3ip-wallet (iPhone) が動く
-- LAN IP は `192.168.68.53` で示すのであなたの環境に読み替え
+- LAN IP は `192.168.68.53` で示すので、あなたの環境の IP に読み替えてください
+- 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 
 ## 全体像
 
@@ -117,7 +119,7 @@ VITE v5.x.x  ready in xxx ms
 ```
 
 iPhone Safari で `http://192.168.68.53:5173/welcome` を開くと、3 ステップ
-オンボーディング画面が出る。
+オンボーディング画面が出ます。
 
 ---
 
@@ -144,8 +146,8 @@ iPhone Safari で `http://192.168.68.53:5173/welcome` を開くと、3 ステッ
   `/seller`, `/merchandise/[address]`)
 
 !!! note "Android (Chrome) の場合"
-    自動的に install プロンプトが出る (manifest があるため)。
-    手動でも メニュー → 「アプリをインストール」から追加可。
+    manifest があるため、自動的にインストールを促す表示が出ます。
+    手動でも、メニュー → 「アプリをインストール」から追加できます。
 
 ---
 
@@ -175,7 +177,7 @@ STEP 3 / 3 - 準備完了
 ```
 
 ハンズオン参加者は Stage 1〜7 で既に両方のアプリを設定済のはずなので
-2 回 「もう入っています」をタップすれば `/` に着く。
+「もう入っています」を 2 回タップすれば `/` に進みます。
 
 ---
 
@@ -190,17 +192,17 @@ STEP 3 / 3 - 準備完了
 
 1. MetaMask Mobile を開く → 内蔵ブラウザ (右下のグローブアイコン) で
    `http://192.168.68.53:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9`
-   を開く (PR #20 deploy 由来の Merchandise #1)
+   を開く (deploy script が作る Merchandise #1)
 2. 「Connect your wallet!」をタップして MetaMask 接続
 3. 「Purchase」ボタンを押し、MetaMask 側で **Confirm**
 4. 数秒後、自動で `/purchased/<txHash>` に遷移し QR + 「ウォレットで開く」
    ボタンが表示される
 
 !!! note "PC ブラウザでの代替"
-    iPhone での MetaMask Mobile 操作が難しい場合、PC Chrome の
-    MetaMask 拡張で同じ URL を開いて購入してもよい。tx hash は同じく
-    `/purchased/[txHash]` に流れる。`/my-data` の履歴は iPhone 端末
-    のみに保存されるので、最終確認は iPhone で `/my-data` を開く。
+    iPhone での MetaMask Mobile の操作が難しい場合は、PC の Chrome の
+    MetaMask 拡張で同じ URL を開いて購入しても構いません。購入後は同じく
+    `/purchased/[txHash]` に遷移します。ただし `/my-data` の履歴は購入に
+    使った端末にだけ保存されます。
 
 ---
 
@@ -254,9 +256,9 @@ iw3ip-wallet が起動して「IW3IP 購入閲覧クレデンシャル」確認�
 ```
 
 !!! note "現状の限界 (Stage 9 で解消予定)"
-    ViewerToken の受け渡しが**手動 (ペースト)** な点が現状の最大の
-    UX 課題です。本格的な「タップで完結」は案 B (Stage 9 = ネイティブ
-    アプリで OID4VP クライアント内蔵) で解決します。
+    ViewerToken を手動で貼り付ける必要がある点が、現状の使い勝手の
+    課題です。タップだけで完結させるには、OID4VP クライアントを組み込んだ
+    ネイティブアプリ (案 B、Stage 9) が必要です。
 
 ---
 
@@ -313,16 +315,16 @@ Safari のキャッシュ。
 ### E. その他
 
 [Stage 5 トラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング)
-+ [Stage 7](marketplace-seller-vc.md) のものが引き続き有効。
+と [Stage 7](marketplace-seller-vc.md) のトラブルシューティングも参照してください。
 
 ---
 
 ## 限界 (Stage 9 で解消予定)
 
-- **ViewerToken のペースト**: 自動取得には wallet 側に publisher API
-  叩く実装が必要 (案 B = Stage 9)
+- **ViewerToken の貼り付け**: 自動取得には、wallet 側に publisher API を
+  呼び出す実装が必要 (案 B = Stage 9)
 - **アプリ間スイッチング**: 3 つのアプリ (PWA / MetaMask / iw3ip-wallet)
-  を行き来する。本物のシングルアプリ体験は案 B
+  を行き来する。1 つのアプリで完結させるのは案 B
 - **オフライン対応**: PWA だが service worker は pass-through。チェーン
   read は常にオンライン
 - **iOS の通知 / バックグラウンド処理**: iOS PWA の制約で限定的

@@ -10,28 +10,37 @@
 >
 > **所要時間**: 約 60 分
 
-!!! note "このページは構築予定のハンズオンです"
-    本ページは、Sphereon mobile-wallet を ertlnagoya 配下へ fork した
-    `iw3ip-wallet` を用いた VC 検証デモの設計ドラフトです。
-    対応するアプリ・バックエンド実装は準備中です。
+!!! note "使用するウォレット"
+    本ページでは、Sphereon mobile-wallet を fork した
+    [`iw3ip-wallet`](https://github.com/ertlnagoya/iw3ip-wallet) を使います。
 
 !!! tip "dataset の選択"
-    本ハンズオンの worked example は **`home/event/possible_littering`**
-    (Stage 0 [webcam-event-sharing](webcam-event-sharing.md) と同じ
-    カメライベント) を使います。`home/env/temperature` でも同じ動線が
-    通るので、簡単な値だけで動作確認したい場合は dataset と purpose を
-    読み替えてください。
+    本ハンズオンの例は `home/env/temperature` で書かれています。Stage 0
+    ([webcam-event-sharing](webcam-event-sharing.md)) と同じカメライベント
+    `home/event/possible_littering` でも同じ手順で動作するので、その場合は
+    dataset と purpose を読み替えてください。Stage の番号は
+    [ハンズオン概要](index.md#part-phase-stage) で説明しています。
 
 ## 目的
 
 スマホの SSI ウォレットで受け取った Consent VC を、IW3IP バックエンドが
-OID4VP で検証し、検証が通った要求に対してのみイベントデータを共有する
-流れを体験します。
+OID4VP で検証し、検証が通った要求に対してのみデータを共有する
+流れを試します。
 
 従来の [HA x SSI Publisher サンプル](ha-ssi-publisher.md) では Consent VC
 相当のポリシー JSON を `/consents` に直接登録していました。本サンプルでは、
 **ウォレットが保持する VC を提示 → 検証 → allowed/denied** という
 本来の SSI モデルを扱います。
+
+このページで使う用語:
+
+- **OID4VCI** (OpenID for Verifiable Credential Issuance): VC を発行してウォレットに渡す手順の仕様
+- **OID4VP** (OpenID for Verifiable Presentations): ウォレットが VC を提示する手順の仕様
+- **Issuer / Verifier**: VC を発行する側 / 提示された VC を検証する側。本ハンズオンではどちらも publisher が担う
+- **Presentation Definition (PD)**: Verifier が「どの VC のどの項目を提示してほしいか」を記述した要求。PEX (Presentation Exchange) 仕様で定義されている
+- **SD-JWT VC**: 必要な項目だけを選んで開示できる JWT 形式の VC
+- **did:jwk**: 公開鍵 (JWK) をそのまま識別子にした DID
+- **PolicyToken**: VC の提示が検証された後に publisher が発行する、短命の認可トークン
 
 パイプライン:
 
@@ -49,7 +58,7 @@ OID4VP で検証し、検証が通った要求に対してのみイベントデ�
 - Presentation Definition の `input_descriptors` と VC の claim が食い違うと、
   ウォレットが「提示可能な VC がない」と判定する
 - DID メソッドが issuer / wallet / verifier でずれると署名検証に失敗する
-- SD-JWT VC・W3C VC-JWT・mdoc は非互換。1 形式に固定する
+- SD-JWT VC・W3C VC-JWT・mdoc には互換性がないため、1 つの形式に固定する
 - スマホと PC が別ネットワークだと QR 経由の redirect が届かない
   （[スマホ閲覧アプリ](mobile-viewer.md) と同じ前提）
 
@@ -71,14 +80,14 @@ OID4VP で検証し、検証が通った要求に対してのみイベントデ�
 
 ## 関連リポジトリ
 
-- `iw3ip-wallet` (fork 予定): `https://github.com/ertlnagoya/iw3ip-wallet`（準備中）
+- `iw3ip-wallet`: <https://github.com/ertlnagoya/iw3ip-wallet>
   - upstream: Sphereon-Opensource/mobile-wallet
   - ブランチ方針: `main` は upstream 追従、`iw3ip/*` で IW3IP 固有改変
-- `iw3ip-verifier`（Publisher 内に追加する OID4VP エンドポイント、準備中）
+- [Blockchain_IoT_Marketplace](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace): publisher (OID4VCI / OID4VP のエンドポイントを含む。`ssi-wallet` プロファイルで起動)
 
 ## 最短ルート
 
-最初は次の 5 手順を想定しています。
+最初は次の 5 手順で十分です。
 
 1. Publisher 側で Issuer / Verifier プロファイルを起動する
 2. スマホで `iw3ip-wallet` を開き、Issuer の QR から Consent VC を受領する
@@ -100,7 +109,7 @@ OID4VP で検証し、検証が通った要求に対してのみイベントデ�
   <p>まず Publisher に OID4VCI / OID4VP 相当のエンドポイントを追加したプロファイルで起動します。</p>
   <ol>
     <li><a href="#1-起動">起動</a></li>
-    <li><a href="#2-presentation-definitionを確認">Presentation Definition を確認</a></li>
+    <li><a href="#2-presentation-definition-を確認">Presentation Definition を確認</a></li>
   </ol>
 </details>
 
@@ -109,7 +118,7 @@ OID4VP で検証し、検証が通った要求に対してのみイベントデ�
   <p>Issuer の QR からスマホウォレットへ Consent VC を発行し、保有状態を確認します。</p>
   <ol>
     <li><a href="#3-ウォレットを起動">ウォレットを起動</a></li>
-    <li><a href="#4-issuer-qrで発行">Issuer QR で発行</a></li>
+    <li><a href="#4-issuer-qr-で発行">Issuer QR で発行</a></li>
   </ol>
 </details>
 
@@ -117,7 +126,7 @@ OID4VP で検証し、検証が通った要求に対してのみイベントデ�
   <summary>確認 2: VC を提示し allowed と denied を比較する</summary>
   <p>Verifier QR を読み取り、`purpose` が一致する場合と一致しない場合の判定差を確認します。</p>
   <ol>
-    <li><a href="#5-verifier-qrで提示">Verifier QR で提示</a></li>
+    <li><a href="#5-verifier-qr-で提示">Verifier QR で提示</a></li>
     <li><a href="#6-拒否ケース">拒否ケース</a></li>
     <li><a href="#7-監査ログ確認">監査ログ確認</a></li>
   </ol>
@@ -125,8 +134,8 @@ OID4VP で検証し、検証が通った要求に対してのみイベントデ�
 
 ## 読み進め方
 
-Phase 2 のうち、Consent VC を「登録済みポリシー」ではなく
-「ウォレット提示物」として扱う段階です。既存の
+Phase 2 のうち、Consent VC を、サーバに登録したポリシーとしてではなく、
+ウォレットが提示するものとして扱う段階です。既存の
 [HA x SSI Publisher サンプル](ha-ssi-publisher.md) と
 [環境・防災イベント共有サンプル](environment-disaster.md) を一度通してから
 本ページに進むと、差分が理解しやすくなります。
@@ -206,20 +215,20 @@ http://<PCのLAN_IP>:8080/verifier/request?dataset_id=home/env/temperature&purpo
 ```
 
 ウォレットが同じ VC を持っていても、Verifier 側の要求条件に合わなければ
-拒否される、という点がポイントです。
+拒否されます。
 
 ## 7. 監査ログ確認
 
 ```bash
-curl http://localhost:8080/audit/logs?limit=10
+curl 'http://localhost:8080/audit/logs?limit=10'
 ```
 
 確認ポイント:
 
 - `presentation_verified` イベントが `allow` / `deny` と共に記録される
 - `holder_did`、`vc_hash`、`purpose` が残る
-- HA x SSI Publisher サンプルの監査ログと比べ、ポリシー判定ではなく
-  「誰がどの VC を提示したか」が追加で残る
+- HA x SSI Publisher サンプルの監査ログと比べ、ポリシー判定の結果に加えて
+  「誰がどの VC を提示したか」が残る
 
 ## 8. 共有データを取得する
 
@@ -243,12 +252,9 @@ curl -X POST http://<PCのLAN_IP>:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "dataset_id":"home/event/possible_littering",
-    "purpose":"community_cleaning",
-    "event_type":"possible_littering",
-    "data":{"camera_id":"webcam-401","location":"park-north","object_class":"bottle","confidence":0.87},
-    "ts":"2026-04-28T11:02:00Z",
-    "source":"edge_inference"
+    "dataset_id":"home/env/temperature",
+    "purpose":"research",
+    "value":21.4
   }'
 ```
 
