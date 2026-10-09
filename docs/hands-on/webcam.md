@@ -12,10 +12,7 @@ HUSKYLENS2 がなくても、USB ウェブカメラと OpenCV だけで `person_
 
 ## 目的
 
-USB ウェブカメラの画像から人物とポイ捨ての可能性を検知し、イベントファイルを生成します。
-
-!!! warning "商品として登録されるところまでは、現在は確認できません"
-    現在の `main` の `mediator-owner` が商品として登録するのは、起動時に `raw_data/output` にある動画 (`<カメラ ID>_movie_<番号>.mp4`) と同名の `.json` の組だけです。このページのブリッジが出力する `.txt` のイベントファイルは、商品として登録されません。このページで確認できるのは、イベントファイルの生成までです。
+USB ウェブカメラの画像から人物とポイ捨ての可能性を検知し、イベントファイルを生成します。出力されたファイルは、`mediator-owner` が商品としてマーケットに登録します。
 
 
 ## このページで分かること
@@ -54,11 +51,12 @@ USB ウェブカメラの画像から人物とポイ捨ての可能性を検知�
 
 ## 最短ルート
 
-最初は次の 3 手順で十分です。
+最初は次の 4 手順で十分です。
 
 1. `mock` モードで `webcam_litter_bridge.py` を起動する
 2. `*_webcam_event_*.txt` が生成されることを確認する
 3. ファイルの中身 (イベントの種類と確からしさ) を確認する
+4. `mediator-owner` のターミナルに `Product deployed` と表示されることを確認する
 
 その後の分岐:
 
@@ -109,6 +107,22 @@ details:
 
 1 ファイルが 1 件のイベントです。`event_type` がイベントの種類、`event_score` が確からしさ、`details` が元になった検知の内容です。
 
+### 商品として登録されることを確認する
+
+[最短起動](../setup/quickstart.md) の手順で `mediator-owner` が動いていれば、イベントファイルが出力されるたびに、`mediator-owner` のターミナルに次のように表示されます。
+
+```
+Product deployed: 0xc6ba8c3233ecf65b761049ef63466945c362edd2 for file 401_webcam_event_1791551565.txt
+```
+
+`mediator-owner` は `raw_data/output` を監視していて、新しいイベントファイルを商品としてチェーンに登録します。`0x...` が商品のアドレスです。ブラウザで次の URL を開くと、商品ページが表示されます。
+
+```
+http://localhost:5173/merchandise/<表示されたアドレス>
+```
+
+この商品を購入して受け取るまでの流れは、[ハンズオンの概要の 1.4](index.md) を参照してください。表示されない場合は、教材リポジトリが最新か (`git pull`)、`mediator-owner` を起動し直したかを確認します。
+
 mock でイベントファイルが生成されることを確認できたら、次は USB ウェブカメラ実機で検知を試します。
 
 ## Phase 1: 実機 webcam モードで検知を確認する
@@ -137,6 +151,7 @@ python3 webcam_litter_bridge.py \
 
 - `*_webcam_event_*.txt` が生成される
 - ファイルの `event_type` が `person_detected` または `possible_littering` になっている
+- `mediator-owner` のターミナルに `Product deployed: 0x... for file 401_webcam_event_...txt` と表示される
 
 ## 成功例
 
@@ -157,5 +172,7 @@ python3 webcam_litter_bridge.py \
   - 確認: mock モードでパイプライン自体が動くか
 - 症状: イベントファイルが作成されない
   - 確認: 出力先のフォルダ (`../mediator-owner/raw_data/output`) が存在するか。無ければ `mkdir -p ../mediator-owner/raw_data/output` で作る
-- 症状: イベントが商品として登録されない
-  - ページ冒頭の注意のとおり、現在の `mediator-owner` は `.txt` のイベントファイルを登録しません
+- 症状: イベントが商品として登録されない (`Product deployed` が表示されない)
+  - 確認: `mediator-owner` が起動しているか
+  - 確認: 出力先が `mediator-owner/raw_data/output` と一致しているか
+  - 確認: 教材リポジトリが最新か (`git pull` の後、`mediator-owner` を起動し直す)

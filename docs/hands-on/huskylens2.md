@@ -2,7 +2,7 @@
 
 HUSKYLENS2 という小型 AI カメラからイベントを取り出し、マーケットに出品するまでの一連を試します。
 
-> **やること**: HUSKYLENS2 (または mock) の検知結果からイベントファイルを生成する
+> **やること**: HUSKYLENS2 (または mock) の検知結果からイベントファイルを生成し、商品として登録されることを確認する
 >
 > **前提**: [環境構築](../setup/index.md) と [最短起動](../setup/quickstart.md)
 >
@@ -12,10 +12,7 @@ HUSKYLENS2 という小型 AI カメラからイベントを取り出し、マ�
 
 ## 目的
 
-HUSKYLENS2（または mock の入力）の検知結果を数秒ごとにまとめ、イベントファイルとして出力します。
-
-!!! warning "商品として登録されるところまでは、現在は確認できません"
-    現在の `main` の `mediator-owner` が商品として登録するのは、起動時に `raw_data/output` にある動画 (`<カメラ ID>_movie_<番号>.mp4`) と同名の `.json` の組だけです。このページのブリッジが出力する `.txt` のイベントファイルは、商品として登録されません。このページで確認できるのは、イベントファイルの生成までです。
+HUSKYLENS2（または mock の入力）の検知結果を数秒ごとにまとめ、イベントファイルとして出力します。出力されたファイルは、`mediator-owner` が商品としてマーケットに登録します。
 
 
 ## このページで分かること
@@ -54,11 +51,12 @@ HUSKYLENS2（または mock の入力）の検知結果を数秒ごとにまと�
 
 ## 最短ルート
 
-最初は次の 3 手順で十分です。
+最初は次の 4 手順で十分です。
 
 1. `mock` モードで `huskylens_bridge.py` を起動する
 2. `raw_data/output` にイベントファイルが出ることを確認する
 3. ファイルの中身 (検知した対象と件数) を確認する
+4. `mediator-owner` のターミナルに `Product deployed` と表示されることを確認する
 
 その後の分岐:
 
@@ -126,6 +124,22 @@ samples:
 
 1 ファイルが、8 秒間の検知結果をまとめた 1 件のイベントです。`labels` は検知した対象ごとの件数、`samples` は個々の検知 (時刻、ラベル、信頼度、画面上の位置と大きさ) です。
 
+### 商品として登録されることを確認する
+
+[最短起動](../setup/quickstart.md) の手順で `mediator-owner` が動いていれば、イベントファイルが出力されるたびに、`mediator-owner` のターミナルに次のように表示されます。
+
+```
+Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskylens_1791551565.txt
+```
+
+`mediator-owner` は `raw_data/output` を監視していて、新しいイベントファイルを商品としてチェーンに登録します。`0x...` が商品のアドレスです。ブラウザで次の URL を開くと、商品ページが表示されます。
+
+```
+http://localhost:5173/merchandise/<表示されたアドレス>
+```
+
+この商品を購入して受け取るまでの流れは、[ハンズオンの概要の 1.4](index.md) を参照してください。表示されない場合は、教材リポジトリが最新か (`git pull`)、`mediator-owner` を起動し直したかを確認します。
+
 mock でイベントファイルが生成されることを確認できたら、次は実機の serial 入力を試します。
 
 ## Phase 1: 実機 serial モードで同じ流れを試す
@@ -145,11 +159,13 @@ python3 huskylens_bridge.py \
 
 - `raw_data/output` に `301_huskylens_*.txt` が作成される
 - ファイルの `labels` に、検知した対象 (person など) と件数が入っている
+- `mediator-owner` のターミナルに `Product deployed: 0x... for file 301_huskylens_...txt` と表示される
 
 ## 成功例
 
 - mock モードでもイベントファイルが生成される
 - 実機モードでは、検出対象に応じて継続的にイベントが出力される
+- 商品ページを開けて、購入操作まで進める
 
 ### 4. トラブル時
 
@@ -162,5 +178,7 @@ python3 huskylens_bridge.py \
   - 確認: macOS / Linux の権限やポート名が正しいか
 - 症状: イベントファイルが作成されない
   - 確認: 出力先のフォルダ (`../mediator-owner/raw_data/output`) が存在するか。無ければ `mkdir -p ../mediator-owner/raw_data/output` で作る
-- 症状: イベントが商品として登録されない
-  - ページ冒頭の注意のとおり、現在の `mediator-owner` は `.txt` のイベントファイルを登録しません
+- 症状: イベントが商品として登録されない (`Product deployed` が表示されない)
+  - 確認: `mediator-owner` が起動しているか
+  - 確認: 出力先が `mediator-owner/raw_data/output` と一致しているか
+  - 確認: 教材リポジトリが最新か (`git pull` の後、`mediator-owner` を起動し直す)

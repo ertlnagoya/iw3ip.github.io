@@ -47,7 +47,7 @@ flowchart TB
     AS["assistant :8090<br/>要求の解釈と実行 (Part 3)"]
   end
   subgraph MKT["マーケット側 (最短起動の 7 ターミナル)"]
-    MO["mediator-owner<br/>動画データを商品として登録"]
+    MO["mediator-owner<br/>データを商品として登録"]
     HH["Hardhat :8545<br/>ローカルチェーン"]
     ST["simple-storage / IPFS<br/>データ本体の保管"]
     UI["iot-market-ui :5173<br/>商品一覧と購入画面"]
@@ -58,7 +58,7 @@ flowchart TB
     W["スマホのウォレット<br/>VC の保管と提示"]
   end
   HA -->|MQTT| MQ --> P
-  CAM -.->|イベントファイル<br/>現状は商品登録の対象外| MO
+  CAM -->|イベントファイル| MO
   MO --> HH
   MO --> ST
   UI --- HH

@@ -2,7 +2,7 @@
 
 Turn detections from the HUSKYLENS2 AI camera into event files.
 
-> **What you'll do**: Generate event files from HUSKYLENS2 (or mock) detections
+> **What you'll do**: Generate event files from HUSKYLENS2 (or mock) detections and confirm they are registered as merchandise
 >
 > **Prerequisites**: [Setup](../setup/index.en.md) + [Quickstart](../setup/quickstart.en.md)
 >
@@ -12,10 +12,7 @@ Turn detections from the HUSKYLENS2 AI camera into event files.
 
 ## Goal
 
-Aggregate HUSKYLENS2 (or mock) detections every few seconds and write them out as event files.
-
-!!! warning "Registration as merchandise cannot be confirmed at present"
-    The `mediator-owner` on the current `main` registers only pairs of a video (`<camera ID>_movie_<number>.mp4`) and a `.json` of the same name that exist in `raw_data/output` at startup. The `.txt` event files written by the bridge on this page are not registered as merchandise. What you can confirm on this page is the generation of event files.
+Aggregate HUSKYLENS2 (or mock) detections every few seconds and write them out as event files. `mediator-owner` registers each file on the marketplace as merchandise.
 
 
 ## What this page helps you understand
@@ -54,11 +51,12 @@ In the problem program, the main task is to complete `build_event()` and underst
 
 ## Shortest path
 
-For a first pass, these three steps are enough.
+For a first pass, these four steps are enough.
 
 1. start `huskylens_bridge.py` in `mock` mode
 2. confirm that event files appear under `raw_data/output`
 3. look at the file content (what was detected, with counts)
+4. confirm that the `mediator-owner` terminal prints `Product deployed`
 
 Branches after that:
 
@@ -126,6 +124,22 @@ samples:
 
 Each file is one event that summarizes 8 seconds of detections. `labels` gives the count per detected label, and `samples` lists the individual detections (time, label, confidence, position and size on screen).
 
+### Confirm registration as merchandise
+
+If `mediator-owner` is running as set up in [Quickstart](../setup/quickstart.md), its terminal prints a line like the following each time an event file is written.
+
+```
+Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskylens_1791551565.txt
+```
+
+`mediator-owner` watches `raw_data/output` and registers each new event file on the chain as merchandise. `0x...` is the item's address. Open the following URL in a browser to see its page.
+
+```
+http://localhost:5173/merchandise/<the address shown>
+```
+
+For purchasing the item and receiving the data, see §1.4 of the [Hands-on overview](index.md). If nothing is printed, check that the course repository is up to date (`git pull`) and that `mediator-owner` was restarted.
+
 Once event files are generated in mock mode, the next step is to try the physical serial input.
 
 ## Phase 1: Try the same flow with serial input
@@ -140,6 +154,7 @@ python3 huskylens_bridge.py --mode serial --serial-port /dev/ttyUSB0 --output-di
 
 - `301_huskylens_*.txt` appears under `raw_data/output`
 - `labels` in the file lists what was detected (person, etc.) with counts
+- the `mediator-owner` terminal prints `Product deployed: 0x... for file 301_huskylens_...txt`
 
 ## Success example
 
@@ -154,5 +169,7 @@ python3 huskylens_bridge.py --mode serial --serial-port /dev/ttyUSB0 --output-di
   - Check: `/dev/ttyUSB0`, `/dev/tty.usbserial-*`, or the OS device manager
 - Symptom: no event file is created
   - Check: the output folder (`../mediator-owner/raw_data/output`) exists. If not, create it with `mkdir -p ../mediator-owner/raw_data/output`
-- Symptom: events are not registered as merchandise
-  - As noted at the top of this page, the current `mediator-owner` does not register `.txt` event files
+- Symptom: events are not registered as merchandise (`Product deployed` is not printed)
+  - Check: `mediator-owner` is running
+  - Check: the output path matches `mediator-owner/raw_data/output`
+  - Check: the course repository is up to date (after `git pull`, restart `mediator-owner`)

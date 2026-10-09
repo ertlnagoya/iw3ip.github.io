@@ -11,7 +11,7 @@ Take the events you built in the [USB webcam sample](webcam.en.md) and share the
 > **Time**: ~45 min
 
 This hands-on is a **Phase 2: Event / Intelligence Sharing** extension of the existing [USB Webcam sample](webcam.md).  
-In Phase 1, the USB webcam sample detected `person_detected` and `possible_littering`, and generated event files.  
+In Phase 1, the USB webcam sample detected `person_detected` and `possible_littering`, generated event files, and confirmed that they were registered as merchandise.  
 This page moves to the next step: **sending detected events into the data-sharing platform and controlling sharing based on Consent VC**.
 
 Pipeline:
@@ -261,7 +261,7 @@ In the Phase 1 USB webcam sample, the main focus was:
 
 1. detect a situation with the camera
 2. create an event file
-3. handle it on the marketplace (at present only video data is covered)
+3. register it as merchandise
 
 In this Phase 2 sample, the focus shifts to:
 

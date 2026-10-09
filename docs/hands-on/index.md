@@ -165,7 +165,7 @@ export HOST_IP=192.168.1.20
 ### この Part のゴール
 
 - **データがどこで発生し、どこへ届くか** を追跡できるようになる
-- **マーケットプレイス v1 経路** (暗号化 IPFS 受け渡し) の出品・購入・受け取りの流れを説明でき、購入までを実行できる
+- **マーケットプレイス v1 経路** で、出品 → 購入 → 受け取りを一通り実行できる
 
 ### 1.1 まず動かす — 実機なしで全体像を確認する
 
@@ -194,19 +194,45 @@ export HOST_IP=192.168.1.20
 出品 → 購入 → 暗号化 IPFS から復号して受け取り、までを一通り行います。
 ここまでが **基本 (v1)** の完了点です。
 
-1. **出品**: 最短起動の手順 2 (デプロイ) で、5 件の商品がチェーンに登録されます。このほか `mediator-owner` は、起動時に `raw_data/output` にある動画 (`<カメラ ID>_movie_<番号>.mp4`) と同名の `.json` の組を読み、データを IPFS に置いて商品として登録します。
-2. **購入**: 商品ページ (`http://localhost:5173/merchandise/<商品のアドレス>`) を開き、右上の「Connect your wallet!」で MetaMask (Account #2) を接続してから「Purchase!」を押し、MetaMask で承認します。購入すると、`mediator-buyer` のターミナルに `You bought a product of ...` と表示されます。
-3. **受け取り**: 出品者の `mediator-owner` が購入を検知してデータを購入者向けに暗号化し、`mediator-buyer` がそれを取得・復号して `mediator-buyer/downloads` に保存します。デプロイで登録された 5 件は `mediator-owner` が出品したものではないため、購入はできますがデータは届きません。
+1. **出品**: 1.2 のサンプル ([HUSKYLENS2](huskylens2.md) または [USB ウェブカメラ](webcam.md)。mock モードで可) を動かすと、イベントファイルが `mediator-owner/raw_data/output` に出力されます。`mediator-owner` がそれを検知して商品として登録し、ターミナルに商品のアドレスを表示します。
 
-!!! note "確認できている範囲"
-    購入までは、ローカル環境で動作を確認しています。受け取りは、`mediator-owner` が登録した商品 (動画と `.json` の組) が必要で、その手順はまだこのサイトにありません。
+    ```
+    Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskylens_1791551565.txt
+    ```
+
+2. **購入**: 商品ページ (`http://localhost:5173/merchandise/<表示されたアドレス>`) を開き、右上の「Connect your wallet!」で MetaMask (Account #2) を接続してから「Purchase!」を押し、MetaMask で承認します。
+
+3. **受け取り**: 出品者側の `mediator-owner` が購入を検知し、データの置き場所を購入者の公開鍵で暗号化してチェーンに書き込みます。購入者側の `mediator-buyer` がそれを復号してデータを取得し、内容を検証します。
+
+    `mediator-owner` のターミナル:
+
+    ```
+    Your Product is bought by 0x0000…93bc
+    File uploaded successfully: cf701007aad74177b6ecaa8e4a63c931
+    Upload event sent successfully
+    Verification is successful
+    Withdraw successful
+    ```
+
+    `mediator-buyer` のターミナル:
+
+    ```
+    You bought a product of 0x0000…79c8
+    Downloading file...
+    File downloaded successfully
+    Verification result: true
+    ```
+
+    購入したイベントファイルは `mediator-buyer/downloads` に保存されます。`Verification result: true` は、届いたデータのハッシュが商品に登録された値と一致したことを示し、これを受けて出品者に代金が支払われます (`Withdraw successful`)。
+
+最短起動の手順 2 (デプロイ) で登録される 5 件は、`mediator-owner` が出品したものではありません。購入はできますが、データは届きません。
 
 各プロセスの起動手順は [最短起動](../setup/quickstart.md) にあります。
 
 ### Part 1 の成功判定
 
 - データが publisher に届いていることを `/platform/ingest` のログで確認できた
-- マーケットの商品ページを開き、MetaMask で購入できた (受け取りまで通すには、1.4 のとおり `mediator-owner` が登録した商品が必要)
+- マーケットで出品 → 購入 → 受け取りが一通りでき、`mediator-buyer/downloads` にデータが保存された
 
 ---
 

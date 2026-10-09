@@ -165,7 +165,7 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 ### Goals
 
 - See **where data is generated and where it ends up**
-- Explain the listing, purchase, and delivery flow of the **v1 marketplace path** (encrypted-IPFS delivery), and carry it out up to the purchase
+- Carry out listing → purchase → delivery on the **v1 marketplace path**
 
 ### 1.1 Run it first — check the whole flow without hardware
 
@@ -191,19 +191,45 @@ View the collected data in a phone browser.
 
 The list → buy → decrypt-from-IPFS flow. This is the completion point of **Basic (v1)**.
 
-1. **List**: step 2 of Quickstart (deployment) registers 5 items on the chain. In addition, at startup `mediator-owner` reads pairs of a video (`<camera ID>_movie_<number>.mp4`) and a `.json` of the same name in `raw_data/output`, puts the data on IPFS, and registers them as merchandise.
-2. **Buy**: open a merchandise page (`http://localhost:5173/merchandise/<item address>`), connect MetaMask (Account #2) with "Connect your wallet!" at the top right, press "Purchase!", and confirm in MetaMask. After the purchase, the `mediator-buyer` terminal prints `You bought a product of ...`.
-3. **Receive**: the seller's `mediator-owner` detects the purchase and encrypts the data for the buyer; `mediator-buyer` fetches and decrypts it and saves it under `mediator-buyer/downloads`. The 5 items registered by the deployment were not listed by `mediator-owner`, so they can be purchased but no data is delivered.
+1. **List**: run a sample from §1.2 ([HUSKYLENS2](huskylens2.md) or [USB webcam](webcam.md); mock mode is enough). Event files are written to `mediator-owner/raw_data/output`. `mediator-owner` detects each file, registers it as merchandise, and prints the item's address.
 
-!!! note "What has been verified"
-    The flow up to the purchase has been verified in a local environment. Receiving data requires an item registered by `mediator-owner` (a video and `.json` pair); this site does not yet have steps for that.
+    ```
+    Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskylens_1791551565.txt
+    ```
+
+2. **Buy**: open the merchandise page (`http://localhost:5173/merchandise/<the address shown>`), connect MetaMask (Account #2) with "Connect your wallet!" at the top right, press "Purchase!", and confirm in MetaMask.
+
+3. **Receive**: the seller-side `mediator-owner` detects the purchase, encrypts the location of the data with the buyer's public key, and writes it to the chain. The buyer-side `mediator-buyer` decrypts it, fetches the data, and verifies the content.
+
+    `mediator-owner` terminal:
+
+    ```
+    Your Product is bought by 0x0000…93bc
+    File uploaded successfully: cf701007aad74177b6ecaa8e4a63c931
+    Upload event sent successfully
+    Verification is successful
+    Withdraw successful
+    ```
+
+    `mediator-buyer` terminal:
+
+    ```
+    You bought a product of 0x0000…79c8
+    Downloading file...
+    File downloaded successfully
+    Verification result: true
+    ```
+
+    The purchased event file is saved under `mediator-buyer/downloads`. `Verification result: true` means the hash of the delivered data matches the value registered with the item; the seller is then paid (`Withdraw successful`).
+
+The 5 items registered by step 2 of Quickstart (deployment) were not listed by `mediator-owner`. They can be purchased, but no data is delivered.
 
 Detailed bring-up: [Quickstart](../setup/quickstart.md).
 
 ### Done when…
 
 - `/platform/ingest` shows the publisher receiving your device's data
-- You opened a merchandise page and purchased it with MetaMask (receiving the data additionally requires an item registered by `mediator-owner`, as described in §1.4)
+- Listing → purchase → delivery on the marketplace worked, and the data was saved under `mediator-buyer/downloads`
 
 ---
 

@@ -5,10 +5,11 @@
 Participants should complete:
 
 1. Event generation (mock mode is enough)
-2. Viewing a merchandise page
+2. Confirming registration as merchandise
 3. Purchase
+4. Data reception
 
-Receiving the purchased data additionally requires an item registered by `mediator-owner` (a video and `.json` pair). See §1.4 of the [Hands-on overview](../hands-on/index.md).
+See §1.4 of the [Hands-on overview](../hands-on/index.md) for the steps.
 
 ## Suggested flow (120 min)
 

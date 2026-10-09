@@ -163,11 +163,10 @@ If the State of both `ipfs` and `postgres` is **Up**, they are running.
 
 ### 6. Start the mediators (owner + buyer)
 
-Terminal 6 (owner). Create the watched folder `raw_data/output` first (without it, startup prints `Failed to read raw data dir` and no data is read).
+Terminal 6 (owner):
 
 ```bash
 cd mediator-owner
-mkdir -p raw_data/output
 cargo run -- settings/owner_1.yaml
 ```
 
@@ -190,6 +189,8 @@ Initialization complete!
 Starting blockchain watch
 ====================
 ```
+
+The owner side then prints `Watching raw_data/output for new event files` and registers event files written to that folder as merchandise.
 
 `Pubkey uploaded successfully` means the mediator registered its public key in the PubKey contract. A purchase requires the buyer's public key to be registered. The buyer-side mediator runs as Account #2, so import Account #2 into MetaMask as well.
 

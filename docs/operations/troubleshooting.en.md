@@ -59,10 +59,10 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 ## Product does not appear
 
 - Symptom: no merchandise is shown at <http://localhost:5173>
-  - The top page is a search screen. "Run Search" lists only items that `mediator-owner` registered together with their data. Check the 5 items registered by the deployment by opening `http://localhost:5173/merchandise/<item address>` directly.
+  - The top page is a search screen. "Run Search" lists only items registered together with video metadata. For event-file items and the 5 items registered by the deployment, open `http://localhost:5173/merchandise/<item address>` directly.
   - Check: `mediator-owner` was started with `cargo run -- settings/owner_1.yaml`
-  - Check: `mediator-owner/raw_data/output` exists. Without it, startup prints `Failed to read raw data dir`.
-  - `mediator-owner` registers pairs of `<camera ID>_movie_<number>.mp4` and a `.json` of the same name that exist in `raw_data/output` at startup. The `.txt` files written by the HUSKYLENS2 and USB webcam bridges are not registered.
+  - Check: the `mediator-owner` terminal shows `Watching raw_data/output for new event files`. If not, update the course repository (`git pull`) and restart it
+  - Check: when an event file is written, `Product deployed: 0x... for file ...` is printed. The address shown is the one to use in the merchandise page URL
 
 ## Purchase does not succeed
 

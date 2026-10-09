@@ -164,11 +164,10 @@ docker compose ps
 
 ### 6. 仲介プロセス (オーナー側 + 購入者側) を起動
 
-ターミナル 6 (オーナー側)。監視するフォルダ `raw_data/output` を先に作ります (無いと、起動時に `Failed to read raw data dir` と表示されてデータを読み込めません)。
+ターミナル 6 (オーナー側):
 
 ```bash
 cd mediator-owner
-mkdir -p raw_data/output
 cargo run -- settings/owner_1.yaml
 ```
 
@@ -191,6 +190,8 @@ Initialization complete!
 Starting blockchain watch
 ====================
 ```
+
+オーナー側は、続けて `Watching raw_data/output for new event files` と表示し、このフォルダに出力されるイベントファイルを商品として登録します。
 
 `Pubkey uploaded successfully` は、仲介プロセスが自分の公開鍵を PubKey コントラクトに登録したことを示します。購入には、購入者の公開鍵が登録されている必要があります。購入者側の仲介プロセスは Account #2 として動くので、MetaMask にも Account #2 を取り込みます。
 

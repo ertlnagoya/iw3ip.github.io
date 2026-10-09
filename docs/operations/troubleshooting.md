@@ -57,10 +57,10 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 ## 4. 商品が表示されない
 
 - 症状: <http://localhost:5173> を開いても商品が表示されない
-  - トップページは検索画面です。「Run Search」で一覧に出るのは、`mediator-owner` がデータとあわせて登録した商品だけです。デプロイで登録した 5 件は、`http://localhost:5173/merchandise/<商品のアドレス>` を直接開いて確認します。
+  - トップページは検索画面です。「Run Search」で一覧に出るのは、動画のメタデータとあわせて登録された商品だけです。イベントファイルの商品や、デプロイで登録した 5 件は、`http://localhost:5173/merchandise/<商品のアドレス>` を直接開いて確認します。
   - 確認: `mediator-owner` の実行引数が `cargo run -- settings/owner_1.yaml` になっているか
-  - 確認: `mediator-owner/raw_data/output` があるか。無いと、起動時に `Failed to read raw data dir` と表示されます。
-  - `mediator-owner` が商品として登録するのは、起動時に `raw_data/output` にある `<カメラ ID>_movie_<番号>.mp4` と同名の `.json` の組です。HUSKYLENS2 や USB ウェブカメラのブリッジが出力する `.txt` は登録されません。
+  - 確認: `mediator-owner` のターミナルに `Watching raw_data/output for new event files` と表示されているか。表示されない場合は、教材リポジトリを最新にして (`git pull`) 起動し直します
+  - 確認: イベントファイルを出力したとき、`Product deployed: 0x... for file ...` と表示されるか。表示されたアドレスが商品ページの URL になります
 
 ## 5. 購入できない
 
