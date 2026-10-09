@@ -39,7 +39,7 @@ External websites and papers are positioned as follow-up material for standards,
 ## System overview
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph DEV["Data sources"]
     HA["Home Assistant / sensors"]
     CAM["HUSKYLENS2 / USB camera"]

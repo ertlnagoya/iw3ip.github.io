@@ -17,7 +17,7 @@ IW3IP のハンズオンでは、次のような仕組みを実際に動かし�
 ## 全体構成
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph DEV["データの発生源"]
     HA["Home Assistant / センサ"]
     CAM["HUSKYLENS2 / USB カメラ"]

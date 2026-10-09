@@ -16,7 +16,7 @@ You build this on your own PC as a local development environment for sharing dat
 ## System overview
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph DEV["Data sources"]
     HA["Home Assistant / sensors"]
     CAM["HUSKYLENS2 / USB camera"]
