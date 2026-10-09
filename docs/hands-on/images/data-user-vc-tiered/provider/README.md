@@ -1,7 +1,7 @@
 # Stage T `/provider` page screenshots
 
 Holds the §11.8 real-device validation screenshots referenced from
-`docs/hands-on/data-user-vc-tiered.md` (and `.en.md`).
+`docs/hands-on/data-user-vc-tiered-media.md` (and `.en.md`).
 
 ## Naming convention
 
@@ -32,4 +32,4 @@ Reference from the markdown like:
 ![B Chrome recording](images/data-user-vc-tiered/provider/B-chrome-recording.png)
 ```
 
-Path is relative to `docs/hands-on/data-user-vc-tiered.md`.
+Path is relative to `docs/hands-on/data-user-vc-tiered-media.md`.

@@ -13,7 +13,7 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
 !!! note "Where this page fits"
     This is a Part 3 (intelligence integration) hands-on. Camera capture basics
     are covered in [USB webcam sample](webcam.md), and per-tier projection with a
-    VLM is in §12 of [DataUserVC × tiered access](data-user-vc-tiered.md). This
+    VLM is in §12 of [DataUserVC × tiered access](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur). This
     page focuses on experiencing "**camera → local VLM → distribute semantic
     data**" as a single flow.
 
@@ -159,7 +159,7 @@ If you started with `--profile vlm`, the publisher also calls the VLM here and a
     To read the attached `description_*` on the consumer side you need a
     ViewerToken obtained by presenting a DataUserVC (`/platform/data` returns 401
     for a plain GET). Projecting `description_full` / `description_summary` per
-    trust tier is covered in §12 of [DataUserVC × tiered access](data-user-vc-tiered.md).
+    trust tier is covered in §12 of [DataUserVC × tiered access](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur).
     The core of this page is "camera → local model semantic enrichment →
     distribute over the platform".
 
@@ -227,5 +227,5 @@ Without a template, implement one of these yourself:
 ## Related pages
 
 - Prerequisites: [USB webcam sample](webcam.md) / [Quickstart](../setup/quickstart.en.md)
-- Deep dive: [DataUserVC × tiered access (§8 media integration, §12 VLM tier)](data-user-vc-tiered.md) / [LLM Planner](llm-planner.md)
+- Deep dive: DataUserVC × tiered access ([§8 media integration](data-user-vc-tiered-media.md#8-real-data-integration-option-b--http-media-gateway), [§12 VLM tier](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur)) / [LLM Planner](llm-planner.md)
 - Design: [DataUserVC × tiered access control spec (tier extension: semantic-level redaction)](data-user-vc-tiered-spec.md)

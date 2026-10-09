@@ -228,6 +228,8 @@ VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-
 後半では、画像の内容を構造化したデータ（意味的中間表現）を作り、信頼度に応じて見せ方を変える処理（trust-aware rendering）も扱います。
 
 - [DataUserVC Tiered Access ハンズオン](data-user-vc-tiered.md)
+- [画像・動画を段階アクセスで配信する](data-user-vc-tiered-media.md) — 続きの §8〜§11
+- [意味レベルで段階化する](data-user-vc-tiered-semantic.md) — 続きの §12〜§13
 - [DataUserVC Tiered Access 仕様](data-user-vc-tiered-spec.md)
 
 ### Part 2 の成功判定

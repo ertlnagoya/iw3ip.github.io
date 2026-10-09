@@ -13,7 +13,7 @@
 !!! note "このページの位置付け"
     Part 3（知能統合）のハンズオンです。カメラ取り込みの基礎は
     [USB ウェブカメラサンプル](webcam.md)、VLM による tier 別の出し分けは
-    [DataUserVC × 段階アクセス](data-user-vc-tiered.md) の §12 で扱います。
+    [DataUserVC × 段階アクセス](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。
     本ページは「**カメラ → ローカル VLM → 意味データ流通**」を 1 つの流れとして
     扱います。
 
@@ -157,7 +157,7 @@ curl -s -X POST http://localhost:8080/semantic/analyze \
     付与された `description_*` を受信側で取り出すには、DataUserVC を提示して得た
     ViewerToken が必要です（`/platform/data` は素の GET では 401 になります）。信頼度
     ごとに `description_full` / `description_summary` を出し分ける流れは
-    [DataUserVC × 段階アクセス §12](data-user-vc-tiered.md) で扱います。本ページで扱うのは
+    [DataUserVC × 段階アクセス §12](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) で扱います。本ページで扱うのは
     「カメラ → ローカルモデルで意味づけ → 基盤へ流通」までです。
 
 ## 5. 確認ポイント
@@ -224,5 +224,5 @@ python examples/hands_on/local_vlm_distribution/problem_program.py \
 ## 関連ページ
 
 - 前提: [USB ウェブカメラサンプル](webcam.md) / [最短起動](../setup/quickstart.md)
-- 詳細: [DataUserVC × 段階アクセス（§8 メディア統合・§12 VLM tier）](data-user-vc-tiered.md) / [LLM Planner](llm-planner.md)
+- 詳細: DataUserVC × 段階アクセス（[§8 メディア統合](data-user-vc-tiered-media.md#8-実データ統合案-bhttp-メディアゲートウェイ)・[§12 VLM tier](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー)） / [LLM Planner](llm-planner.md)
 - 設計: [DataUserVC × 段階アクセス制御 仕様（tier 拡張: 意味レベルの段階化）](data-user-vc-tiered-spec.md)

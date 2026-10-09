@@ -258,7 +258,7 @@ score >= 60                               -> "access"
 
 ## tier 拡張: 意味レベルでの段階化（VLM）  {#tier-vlm}
 
-ここまでの設計（ハンズオンの §1〜§9 に対応）は、**メディアのキーを応答から省く**方式の
+ここまでの設計（[ハンズオン](data-user-vc-tiered.md)の §1〜§7 と、[続きのページ](data-user-vc-tiered-media.md)の §8〜§9 に対応）は、**メディアのキーを応答から省く**方式の
 アクセス制御です（Tier 2 では動画のキー、Tier 1 では画像と動画のキーが含まれません）。
 次の段階として、同じ素材に VLM（Vision Language Model。画像を入力に取れる言語モデル）による推論と
 顔 / PII（個人を特定できる情報）のブラー処理を適用して**派生データを生成し、tier 別に
@@ -285,7 +285,7 @@ score >= 60                               -> "access"
 | キー | 内容 | 露出する tier |
 |---|---|---|
 | `image_url_redacted` | 顔・人物・ナンバープレート等をブラーした image の URL | 2 + 3 |
-| `image_cid_redacted` | 同 IPFS CID（ハンズオン §9 の案 C、IPFS 配信が有効な場合） | 2 + 3 |
+| `image_cid_redacted` | 同 IPFS CID（[ハンズオン §9](data-user-vc-tiered-media.md#9-案-cローカル-kubo-ipfs-daemon-で分散配信) の案 C、IPFS 配信が有効な場合） | 2 + 3 |
 | `description_full` | VLM が生成した詳細記述（人名・固有名詞あり） | 2 + 3 |
 | `description_summary` | VLM が生成した概要（PII redact 済） | 1 + 2 + 3 |
 | `description_model` | 推論に使った VLM のモデル ID + バージョン（監査用） | 全 tier |

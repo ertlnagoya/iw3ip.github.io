@@ -224,6 +224,8 @@ Replace IPFS-encrypted delivery with **PurchaseViewerVC + ViewerToken**.
 Switch the response between Tier 3 (video + everything), Tier 2 (image + derived), and Tier 1 (summary only) based on the user's **DataUserVC**. Goes all the way to **semantic intermediate representation + trust-aware rendering**.
 
 - [DataUserVC Tiered Access hands-on](data-user-vc-tiered.md)
+- [Deliver images and video with tiered access](data-user-vc-tiered-media.md) — continues with §8–§11
+- [Tier by semantic level](data-user-vc-tiered-semantic.md) — continues with §12–§13
 - [DataUserVC Tiered Access spec](data-user-vc-tiered-spec.md)
 
 ### Done when…

@@ -260,7 +260,7 @@ Total: 88 = 75 existing + 13 new. No regressions.
 
 ## Tier extension: semantic-level redaction (VLM)  {#tier-vlm}
 
-The design so far (matching §1–§9 of the hands-on page) gates access by **dropping media keys** (Tier 2 hides video,
+The design so far (matching §1–§7 of the [hands-on page](data-user-vc-tiered.md) and §8–§9 of its [follow-up page](data-user-vc-tiered-media.md)) gates access by **dropping media keys** (Tier 2 hides video,
 Tier 1 hides image and video). The next step is to **derive new content
 from the same source via VLM inference + face/PII blurring and project
 those derivatives per tier**. Tier 1 is no longer "you get nothing
@@ -287,7 +287,7 @@ semantics are unchanged — `score < 60` still rejects the claim.
 | Key | Content | Visible at tier |
 |---|---|---|
 | `image_url_redacted` | URL of an image with faces / people / license plates blurred | 2 + 3 |
-| `image_cid_redacted` | IPFS CID of the redacted image (when option C — IPFS delivery, hands-on §9 — is on) | 2 + 3 |
+| `image_cid_redacted` | IPFS CID of the redacted image (when option C — IPFS delivery, [hands-on §9](data-user-vc-tiered-media.md#9-option-c-local-kubo-ipfs-daemon-for-distributed-delivery) — is on) | 2 + 3 |
 | `description_full` | VLM-generated detailed description (named entities present) | 2 + 3 |
 | `description_summary` | VLM-generated summary (PII-redacted) | 1 + 2 + 3 |
 | `description_model` | VLM model id + version (audit) | every tier |

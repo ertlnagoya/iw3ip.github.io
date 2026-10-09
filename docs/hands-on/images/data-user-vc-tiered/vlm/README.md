@@ -1,7 +1,7 @@
 # Stage T VLM tier extension screenshots
 
 Holds the §12 hands-on screenshots referenced from
-`docs/hands-on/data-user-vc-tiered.md` (and `.en.md`).
+`docs/hands-on/data-user-vc-tiered-semantic.md` (and `.en.md`).
 
 ## Naming convention
 
