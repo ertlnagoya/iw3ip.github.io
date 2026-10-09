@@ -130,7 +130,7 @@ Expected output:
   ➜  Local:   http://localhost:5173/
 ```
 
-Open <http://localhost:5173> in a browser. If the marketplace UI appears, the frontend is running.
+Open <http://localhost:5173> in a browser. If the search screen titled "IoT データ検索" (IoT data search) appears, the frontend is running.
 
 ### 4. Start the storage server
 

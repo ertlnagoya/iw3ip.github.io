@@ -165,7 +165,7 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 ### Goals
 
 - See **where data is generated and where it ends up**
-- Round-trip a **v1 marketplace purchase** (encrypted-IPFS delivery)
+- Explain the listing, purchase, and delivery flow of the **v1 marketplace path** (encrypted-IPFS delivery), and carry it out up to the purchase
 
 ### 1.1 Run it first — check the whole flow without hardware
 
@@ -189,7 +189,7 @@ View the collected data in a phone browser.
 
 ### 1.4 Trade on the marketplace (v1 lane)
 
-List → buy → decrypt-from-IPFS round trip. This is the completion point of **Basic (v1)**.
+The list → buy → decrypt-from-IPFS flow. This is the completion point of **Basic (v1)**.
 
 1. **List**: step 2 of Quickstart (deployment) registers 5 items on the chain. In addition, at startup `mediator-owner` reads pairs of a video (`<camera ID>_movie_<number>.mp4`) and a `.json` of the same name in `raw_data/output`, puts the data on IPFS, and registers them as merchandise.
 2. **Buy**: open a merchandise page (`http://localhost:5173/merchandise/<item address>`), connect MetaMask (Account #2) with "Connect your wallet!" at the top right, press "Purchase!", and confirm in MetaMask. After the purchase, the `mediator-buyer` terminal prints `You bought a product of ...`.
@@ -203,7 +203,7 @@ Detailed bring-up: [Quickstart](../setup/quickstart.md).
 ### Done when…
 
 - `/platform/ingest` shows the publisher receiving your device's data
-- A list-buy-receive round trip on the marketplace works
+- You opened a merchandise page and purchased it with MetaMask (receiving the data additionally requires an item registered by `mediator-owner`, as described in §1.4)
 
 ---
 

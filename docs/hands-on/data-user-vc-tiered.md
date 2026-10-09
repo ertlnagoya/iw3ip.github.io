@@ -244,4 +244,4 @@ ViewerToken の発行ログ（`viewer_token_issued ... views=...`）と
 - [意味レベルで段階化する](data-user-vc-tiered-semantic.md) — 続きの §12〜§13（VLM による意味レベルの段階化、意味的中間表現）
 - [スマホSSIウォレットサンプル](ha-ssi-wallet.md) — Phase 2 wallet を立ち上げる
 - [DataUserVC × 段階アクセス制御 仕様](data-user-vc-tiered-spec.md) — 設計根拠
-- [USBウェブカメライベント共有サンプル](webcam-event-sharing.md) — 商品化の前段
+- [USBウェブカメライベント共有サンプル](webcam-event-sharing.md) — イベントを条件付きで共有する

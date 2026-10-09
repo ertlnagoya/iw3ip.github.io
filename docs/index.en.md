@@ -51,7 +51,7 @@ flowchart TB
     AS["assistant :8090<br/>interprets and executes requests (Part 3)"]
   end
   subgraph MKT["Marketplace side (the 7 terminals in Quickstart)"]
-    MO["mediator-owner<br/>registers event files as merchandise"]
+    MO["mediator-owner<br/>registers video data as merchandise"]
     HH["Hardhat :8545<br/>local chain"]
     ST["simple-storage / IPFS<br/>stores the data itself"]
     UI["iot-market-ui :5173<br/>merchandise list and purchase screen"]
@@ -62,7 +62,7 @@ flowchart TB
     W["Phone wallet<br/>stores and presents VCs"]
   end
   HA -->|MQTT| MQ --> P
-  CAM -->|event files| MO
+  CAM -.->|event files<br/>not registered at present| MO
   MO --> HH
   MO --> ST
   UI --- HH
