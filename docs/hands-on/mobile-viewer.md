@@ -126,7 +126,7 @@ npm run dev -- --host 0.0.0.0 --port 5173
 ipconfig getifaddr en0
 ```
 
-`ipconfig getifaddr en0` は macOS のコマンドです。Windows では `ipconfig`、Linux では `ip addr` で確認します。得られた IP アドレスを使って、次の手順でスマホからページを開きます。
+`ipconfig getifaddr en0` は macOS のコマンドです。Windows では `ipconfig`、Linux では `ip addr` で確認します。以下の手順に出てくる `<HOST_IP>` は、ここで得られた IP アドレスに置き換えてください (OS 別の調べ方は [ハンズオンの概要](index.md#host-ip) にもまとめています)。
 
 ## スマホで閲覧画面を確認する
 

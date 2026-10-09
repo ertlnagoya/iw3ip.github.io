@@ -125,7 +125,7 @@ npm run dev -- --host 0.0.0.0 --port 5173
 ipconfig getifaddr en0
 ```
 
-You can now build the URL to open from the smartphone. Next, open the page on the smartphone to confirm it.
+`ipconfig getifaddr en0` is a macOS command. On Windows use `ipconfig`; on Linux use `ip addr` (see also the [Hands-on overview](index.md#host-ip)). Replace `<HOST_IP>` in the following steps with the IP address you found here.
 
 ## Confirm the mobile viewer from the smartphone
 
