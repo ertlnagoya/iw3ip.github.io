@@ -48,7 +48,7 @@ Branches after that:
 
 - Docker / Docker Compose
 - `curl`
-- the `codex/phase3-safety-assistant-sample` branch of the `Blockchain_IoT_Marketplace` repository
+- the `main` branch of the `Blockchain_IoT_Marketplace` repository
 
 References:
 
@@ -59,12 +59,12 @@ References:
 
 This hands-on uses the following files.
 
-- [assistant/app/main.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/assistant/app/main.py)
-- [assistant/app/planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/assistant/app/planner.py)
-- [assistant/app/evaluator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/assistant/app/evaluator.py)
-- [assistant/app/actuator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/assistant/app/actuator.py)
-- [examples/phase3_request_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/examples/phase3_request_park_safety.json)
-- [examples/phase3_events_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/examples/phase3_events_park_safety.json)
+- [assistant/app/main.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/main.py)
+- [assistant/app/planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner.py)
+- [assistant/app/evaluator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/evaluator.py)
+- [assistant/app/actuator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/actuator.py)
+- [examples/phase3_request_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_request_park_safety.json)
+- [examples/phase3_events_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_events_park_safety.json)
 
 Unlike the earlier workshop samples, this page points directly to the **minimum implementation itself** rather than a separate problem/answer pair.  
 That is intentional, because in Phase 3 the module boundaries between planner, evaluator, and actuator are part of what learners should understand.

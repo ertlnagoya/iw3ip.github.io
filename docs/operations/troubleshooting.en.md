@@ -136,3 +136,13 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 - Use the **PC's LAN IP** for the RPC URL in MetaMask (e.g. `http://192.168.1.20:8545`), with chain ID `31337`.
 - Confirm the PC firewall allows `8545` and that the PC and phone are on the same Wi-Fi.
 - If you use the frontend from the phone, set `iot-market-ui/.env.local` to the same LAN IP (see the previous item).
+
+## `GET /platform/ingest` returns 404
+
+- Symptom: `curl http://localhost:8080/platform/ingest` returns `{"detail":"platform_ingest_read_disabled"}` (404)
+  - Cause: `GET /platform/ingest` is a demo-only API that returns every row without authentication, and it is disabled by default.
+  - Fix: restart the publisher with `PLATFORM_INGEST_READ_ENABLED=true`.
+
+    ```bash
+    PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
+    ```

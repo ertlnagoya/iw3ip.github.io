@@ -48,7 +48,7 @@ Phase 3 では、その先として、次の流れを扱います。
 
 - Docker / Docker Compose が使える
 - `curl` が使える
-- ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `codex/phase3-safety-assistant-sample` ブランチを使う
+- ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使う
 
 参考:
 
@@ -59,12 +59,12 @@ Phase 3 では、その先として、次の流れを扱います。
 
 この Hands-on では、次のファイルを使います。
 
-- [assistant/app/main.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/assistant/app/main.py)
-- [assistant/app/planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/assistant/app/planner.py)
-- [assistant/app/evaluator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/assistant/app/evaluator.py)
-- [assistant/app/actuator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/assistant/app/actuator.py)
-- [examples/phase3_request_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/examples/phase3_request_park_safety.json)
-- [examples/phase3_events_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-safety-assistant-sample/examples/phase3_events_park_safety.json)
+- [assistant/app/main.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/main.py)
+- [assistant/app/planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner.py)
+- [assistant/app/evaluator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/evaluator.py)
+- [assistant/app/actuator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/actuator.py)
+- [examples/phase3_request_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_request_park_safety.json)
+- [examples/phase3_events_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_events_park_safety.json)
 
 今回は Phase 3 用の `問題用プログラム / 解答用プログラム` ではなく、**最小実装そのもの**を読む形にしています。  
 理由は、Phase 3 では「planner」「evaluator」「actuator」のモジュール境界自体が学習対象だからです。

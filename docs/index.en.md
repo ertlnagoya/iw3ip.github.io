@@ -45,9 +45,6 @@ The relationship is that **Hands-on is carried out within a Workshop**.
 
 ## If You Want To Run One Demo First
 
-!!! note "Branches to use"
-    The `ha-demo` and `assistant-demo` profiles are not yet merged into `main` of the source repository. Check out the `codex/ha-demo-simulator` branch for `ha-demo`, and the `codex/phase3-frontend-demo` branch for `assistant-demo`.
-
 If you want the simplest Phase 1 / Phase 2 entry without physical devices, `ha-demo-simulator` is the best starting point.
 
 - Matching page: [Home Assistant Demo Simulator sample](hands-on/ha-demo-simulator.md)
@@ -60,7 +57,7 @@ If you want the simplest Phase 1 / Phase 2 entry without physical devices, `ha-d
 Start command:
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d
 ```
 
 Open:

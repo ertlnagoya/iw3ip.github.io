@@ -50,7 +50,7 @@ Branches after that:
 
 - Docker / Docker Compose
 - `curl`
-- the `codex/phase3-frontend-demo` branch of the `Blockchain_IoT_Marketplace` repository
+- the `main` branch of the `Blockchain_IoT_Marketplace` repository
 
 References:
 
@@ -59,22 +59,22 @@ References:
 
 ## Matching source files
 
-- [assistant/app/planner_interface.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/planner_interface.py)
-- [assistant/app/planner_factory.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/planner_factory.py)
-- [assistant/app/llm_planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/llm_planner.py)
-- [assistant/app/llm_prompt.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/llm_prompt.py)
-- [assistant/app/llm_provider.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/llm_provider.py)
-- [assistant/app/plan_validator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/plan_validator.py)
-- [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/hands_on/phase3_llm_planner/problem_program.py)
-- [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/hands_on/phase3_llm_planner/answer_program.py)
-- [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/hands_on/phase3_llm_planner/README.md)
-- [React frontend demo](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/tree/codex/phase3-frontend-demo/assistant-ui)
-- [.env.local.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/.env.local.example)
-- [examples/phase3_llm.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_llm.env.example)
-- [examples/phase3_llm_mock.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_llm_mock.env.example)
-- [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_llm_expected_plan.json)
-- [examples/phase3_llm_mock_server.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_llm_mock_server.py)
-- [examples/phase3_request_station_warning.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_request_station_warning.json)
+- [assistant/app/planner_interface.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner_interface.py)
+- [assistant/app/planner_factory.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner_factory.py)
+- [assistant/app/llm_planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_planner.py)
+- [assistant/app/llm_prompt.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_prompt.py)
+- [assistant/app/llm_provider.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_provider.py)
+- [assistant/app/plan_validator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/plan_validator.py)
+- [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase3_llm_planner/problem_program.py)
+- [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase3_llm_planner/answer_program.py)
+- [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase3_llm_planner/README.md)
+- [React frontend demo](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/tree/main/assistant-ui)
+- [.env.local.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/.env.local.example)
+- [examples/phase3_llm.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_llm.env.example)
+- [examples/phase3_llm_mock.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_llm_mock.env.example)
+- [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_llm_expected_plan.json)
+- [examples/phase3_llm_mock_server.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_llm_mock_server.py)
+- [examples/phase3_request_station_warning.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_request_station_warning.json)
 
 The exercise programs focus on the minimum request body for `/assistant/plan` and on how to summarize the returned plan.
 
@@ -488,7 +488,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 The expected JSON shape is documented here:
 
-- [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_llm_expected_plan.json)
+- [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_llm_expected_plan.json)
 
 Reference screenshot:
 
@@ -610,7 +610,7 @@ Check:
 
 ### `station-front` does not appear
 
-- make sure you are on the `codex/phase3-frontend-demo` branch
+- make sure your `main` branch is up to date (`git pull`)
 
 ## Next steps
 

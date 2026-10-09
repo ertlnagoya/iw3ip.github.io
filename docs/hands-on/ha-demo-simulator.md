@@ -24,7 +24,7 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 
 最初は次の 5 手順で十分です。
 
-1. `docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d`
+1. `PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d`
 2. `http://localhost:8123` を開き、`MQTT` integration を追加する
 3. Consent VC を登録する
 4. `Developer Tools -> Actions` から `script.iw3ip_publish_demo_temperature` または `script.iw3ip_publish_demo_possible_littering` を実行する
@@ -89,16 +89,16 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 - ブラウザで `http://localhost:8123` を開ける
 - `curl` が使える
 
-この Hands-on は、ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `codex/ha-demo-simulator` ブランチを使う想定です。
+この Hands-on は、ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使います。
 
 対応する主なファイル:
 
-- [README（英語）](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/README.md)
-- [README（日本語）](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/README_ja.md)
-- [examples/ha_demo/README.md](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/README.md)
-- [configuration.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/home-assistant-demo/config/configuration.yaml)
-- [scripts.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/home-assistant-demo/config/scripts.yaml)
-- [run_phase3_from_ingest.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/run_phase3_from_ingest.py)
+- [README（英語）](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/README.md)
+- [README（日本語）](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/README_ja.md)
+- [examples/ha_demo/README.md](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/README.md)
+- [configuration.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/home-assistant-demo/config/configuration.yaml)
+- [scripts.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/home-assistant-demo/config/scripts.yaml)
+- [run_phase3_from_ingest.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/run_phase3_from_ingest.py)
 
 ## 読み進め方
 
@@ -112,16 +112,16 @@ Phase 1 では、Home Assistant から publisher までの基本経路が正し�
 
 ## 1. 起動
 
-シミュレーション環境を起動します。
+シミュレーション環境を起動します。`PLATFORM_INGEST_READ_ENABLED=true` は、蓄積されたデータを確認するための `GET /platform/ingest` を有効にする指定です。この API は認証なしで全件を返すデモ用の機能で、指定しない場合は無効 (404) です。Part 2 以降では、読み出しに VC を提示して得るトークンを使います。
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d
 ```
 
 Node-RED も一緒に使う場合:
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo --profile nodered up --build -d
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo --profile nodered up --build -d
 ```
 
 確認:
@@ -192,12 +192,12 @@ curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' 
 
 対象ファイル:
 
-- [consent_temperature.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_temperature.json)
-- [consent_power.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_power.json)
-- [consent_person_detected.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_person_detected.json)
-- [consent_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_flood_risk_high.json)
-- [consent_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_possible_littering.json)
-- [consent_suspicious_activity.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_suspicious_activity.json)
+- [consent_temperature.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_temperature.json)
+- [consent_power.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_power.json)
+- [consent_person_detected.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_person_detected.json)
+- [consent_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_flood_risk_high.json)
+- [consent_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_possible_littering.json)
+- [consent_suspicious_activity.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_suspicious_activity.json)
 
 ## 4. Home Assistant から demo データを送る
 
@@ -368,11 +368,11 @@ docker exec -i iw3ip-mosquitto mosquitto_pub \
 
 関連ファイル:
 
-- [payload_temperature.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_temperature.json)
-- [payload_power.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_power.json)
-- [payload_person_detected.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_person_detected.json)
-- [payload_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_flood_risk_high.json)
-- [payload_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_possible_littering.json)
+- [payload_temperature.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_temperature.json)
+- [payload_power.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_power.json)
+- [payload_person_detected.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_person_detected.json)
+- [payload_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_flood_risk_high.json)
+- [payload_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_possible_littering.json)
 
 同じ MQTT 経路でも常に共有されるわけではないことが確認できます。Phase 3 では、共有されたイベントを assistant へ渡し、要求理解と実行を確認します。
 
@@ -385,7 +385,7 @@ Phase 3 では、publisher に入ったイベントを `assistant` の `observed
 起動:
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 up --build -d
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 up --build -d
 ```
 
 その後、Home Assistant で次の script を実行します。
@@ -458,7 +458,7 @@ Node-RED を使うと、時刻条件や手動ボタンで疑似イベントを�
 
 インポート用 flow:
 
-- [nodered_flows.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/nodered_flows.json)
+- [nodered_flows.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/nodered_flows.json)
 
 Node-RED は必須ではありません。まず Home Assistant demo だけで全体の流れを確認し、イベント注入を柔軟にしたい場合に追加してください。
 

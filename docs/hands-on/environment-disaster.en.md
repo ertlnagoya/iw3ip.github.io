@@ -50,7 +50,7 @@ Branches after that:
 - Docker / Docker Compose is available
 - `curl` is available
 
-This hands-on assumes the source-code repository `Blockchain_IoT_Marketplace` on branch `codex/ha-ssi-publisher-sample`.
+This hands-on assumes the source-code repository `Blockchain_IoT_Marketplace` on the `main` branch.
 
 Matching sample files:
 
@@ -129,10 +129,10 @@ The same event content is also available in `examples/payload_flood_risk_high.js
 
 ## 1. Start the services
 
-Run the following in the source-code repository:
+Run the following in the source-code repository. `PLATFORM_INGEST_READ_ENABLED=true` enables `GET /platform/ingest`, which this page uses to inspect ingested data. It is a demo-only API that returns every row without authentication and is disabled (404) unless set. From Part 2 onward, reads use a token obtained by presenting a VC.
 
 ```bash
-docker compose -f infra/docker-compose.yml up --build -d
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
 ```
 
 Health check:

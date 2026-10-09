@@ -48,7 +48,7 @@ Phase 3 の [地域安全アシスタント](regional-safety-assistant.md) の r
 
 - Docker / Docker Compose が使える
 - `curl` が使える
-- ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `codex/phase3-frontend-demo` ブランチを使う
+- ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使う
 
 参考:
 
@@ -57,22 +57,22 @@ Phase 3 の [地域安全アシスタント](regional-safety-assistant.md) の r
 
 ## 対応するソースコード
 
-- [assistant/app/planner_interface.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/planner_interface.py)
-- [assistant/app/planner_factory.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/planner_factory.py)
-- [assistant/app/llm_planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/llm_planner.py)
-- [assistant/app/llm_prompt.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/llm_prompt.py)
-- [assistant/app/llm_provider.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/llm_provider.py)
-- [assistant/app/plan_validator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/assistant/app/plan_validator.py)
-- [問題用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/hands_on/phase3_llm_planner/problem_program.py)
-- [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/hands_on/phase3_llm_planner/answer_program.py)
-- [演習説明](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/hands_on/phase3_llm_planner/README.md)
-- [React フロントデモ](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/tree/codex/phase3-frontend-demo/assistant-ui)
-- [.env.local.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/.env.local.example)
-- [examples/phase3_llm.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_llm.env.example)
-- [examples/phase3_llm_mock.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_llm_mock.env.example)
-- [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_llm_expected_plan.json)
-- [examples/phase3_llm_mock_server.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_llm_mock_server.py)
-- [examples/phase3_request_station_warning.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_request_station_warning.json)
+- [assistant/app/planner_interface.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner_interface.py)
+- [assistant/app/planner_factory.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner_factory.py)
+- [assistant/app/llm_planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_planner.py)
+- [assistant/app/llm_prompt.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_prompt.py)
+- [assistant/app/llm_provider.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_provider.py)
+- [assistant/app/plan_validator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/plan_validator.py)
+- [問題用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase3_llm_planner/problem_program.py)
+- [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase3_llm_planner/answer_program.py)
+- [演習説明](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase3_llm_planner/README.md)
+- [React フロントデモ](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/tree/main/assistant-ui)
+- [.env.local.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/.env.local.example)
+- [examples/phase3_llm.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_llm.env.example)
+- [examples/phase3_llm_mock.env.example](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_llm_mock.env.example)
+- [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_llm_expected_plan.json)
+- [examples/phase3_llm_mock_server.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_llm_mock_server.py)
+- [examples/phase3_request_station_warning.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_request_station_warning.json)
 
 演習プログラムでは、`/assistant/plan` に送る最小 JSON と、返ってきた `plan` の要約のしかたを確認できます。
 
@@ -486,7 +486,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 期待する JSON の形は、次の example で確認できます。
 
-- [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase3-frontend-demo/examples/phase3_llm_expected_plan.json)
+- [examples/phase3_llm_expected_plan.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_llm_expected_plan.json)
 
 参考スクリーンショット:
 
@@ -608,7 +608,7 @@ LLM の出力はそのまま採用せず、次を必ず検証します。
 
 ### `station-front` にならない
 
-- 実行しているブランチが `codex/phase3-frontend-demo` か確認してください
+- `main` ブランチを最新にしているか確認してください (`git pull`)
 
 ## 次の学習
 

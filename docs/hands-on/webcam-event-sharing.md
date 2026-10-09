@@ -134,10 +134,10 @@ Phase 1 のカメラ検知から Phase 2 のイベント共有へ進むときの
 
 ## 1. サービス起動
 
-ソースコードリポジトリで次を実行します。
+ソースコードリポジトリで次を実行します。`PLATFORM_INGEST_READ_ENABLED=true` は、蓄積されたデータを確認するための `GET /platform/ingest` を有効にする指定です。この API は認証なしで全件を返すデモ用の機能で、指定しない場合は無効 (404) です。Part 2 以降では、読み出しに VC を提示して得るトークンを使います。
 
 ```bash
-docker compose -f infra/docker-compose.yml up --build -d
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
 ```
 
 ヘルスチェック:

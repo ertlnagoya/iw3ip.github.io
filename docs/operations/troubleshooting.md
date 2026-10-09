@@ -135,3 +135,13 @@
 - MetaMask に追加する RPC URL を **PC の LAN IP** にします (例: `http://192.168.1.20:8545`)。チェーン ID は `31337`。
 - PC のファイアウォールで `8545` が許可されているか、PC とスマホが同じ Wi-Fi かを確認します。
 - スマホ版フロントを使う場合は `iot-market-ui/.env.local` も同じ LAN IP に揃えます (項目7参照)。
+
+## 9. `GET /platform/ingest` が 404 になる
+
+- 症状: `curl http://localhost:8080/platform/ingest` が `{"detail":"platform_ingest_read_disabled"}` (404) を返す
+  - 原因: `GET /platform/ingest` は認証なしで全件を返すデモ用の API で、既定では無効です。
+  - 対応: `PLATFORM_INGEST_READ_ENABLED=true` を付けて publisher を起動し直します。
+
+    ```bash
+    PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
+    ```

@@ -24,7 +24,7 @@ This page uses one environment to show Phase 1 state sharing, Phase 2 event shar
 
 For a first pass, these five steps are enough.
 
-1. `docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d`
+1. `PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d`
 2. Open `http://localhost:8123` and add the `MQTT` integration
 3. Register the Consent VCs
 4. Run `script.iw3ip_publish_demo_temperature` or `script.iw3ip_publish_demo_possible_littering` from `Developer Tools -> Actions`
@@ -89,16 +89,16 @@ Branches:
 - a browser that can open `http://localhost:8123`
 - `curl`
 
-This hands-on assumes the source-code repository `Blockchain_IoT_Marketplace` on branch `codex/ha-demo-simulator`.
+This hands-on assumes the source-code repository `Blockchain_IoT_Marketplace` on the `main` branch.
 
 Main matching files:
 
 - [README (English)](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/README.md)
 - [README (Japanese)](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/README_ja.md)
-- [examples/ha_demo/README.md](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/README.md)
-- [configuration.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/home-assistant-demo/config/configuration.yaml)
-- [scripts.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/home-assistant-demo/config/scripts.yaml)
-- [run_phase3_from_ingest.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/run_phase3_from_ingest.py)
+- [examples/ha_demo/README.md](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/README.md)
+- [configuration.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/home-assistant-demo/config/configuration.yaml)
+- [scripts.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/home-assistant-demo/config/scripts.yaml)
+- [run_phase3_from_ingest.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/run_phase3_from_ingest.py)
 
 ## How to read this page
 
@@ -112,16 +112,16 @@ In Phase 1, the goal is to confirm that the basic path from Home Assistant to th
 
 ## 1. Start services
 
-Start the simulation environment.
+Start the simulation environment. `PLATFORM_INGEST_READ_ENABLED=true` enables `GET /platform/ingest`, which this page uses to inspect ingested data. It is a demo-only API that returns every row without authentication and is disabled (404) unless set. From Part 2 onward, reads use a token obtained by presenting a VC.
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d
 ```
 
 If you also want Node-RED:
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo --profile nodered up --build -d
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo --profile nodered up --build -d
 ```
 
 Check:
@@ -192,12 +192,12 @@ Expected:
 
 Matching files:
 
-- [consent_temperature.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_temperature.json)
-- [consent_power.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_power.json)
-- [consent_person_detected.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_person_detected.json)
-- [consent_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_flood_risk_high.json)
-- [consent_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_possible_littering.json)
-- [consent_suspicious_activity.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/consent_suspicious_activity.json)
+- [consent_temperature.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_temperature.json)
+- [consent_power.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_power.json)
+- [consent_person_detected.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_person_detected.json)
+- [consent_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_flood_risk_high.json)
+- [consent_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_possible_littering.json)
+- [consent_suspicious_activity.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_suspicious_activity.json)
 
 ## 4. Send demo data from Home Assistant
 
@@ -368,11 +368,11 @@ docker exec -i iw3ip-mosquitto mosquitto_pub \
 
 Related files:
 
-- [payload_temperature.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_temperature.json)
-- [payload_power.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_power.json)
-- [payload_person_detected.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_person_detected.json)
-- [payload_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_flood_risk_high.json)
-- [payload_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/payload_possible_littering.json)
+- [payload_temperature.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_temperature.json)
+- [payload_power.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_power.json)
+- [payload_person_detected.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_person_detected.json)
+- [payload_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_flood_risk_high.json)
+- [payload_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_possible_littering.json)
 
 By the end of Phase 2, it should be clear that a valid MQTT path does not automatically mean that sharing is allowed. Phase 3 then takes the accepted events and forwards them into the assistant layer for request interpretation and execution.
 
@@ -385,7 +385,7 @@ In Phase 3, the events accumulated by the publisher are converted into `assistan
 Start:
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 up --build -d
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 up --build -d
 ```
 
 Then run this Home Assistant script:
@@ -458,7 +458,7 @@ Node-RED is useful when you want easier manual injection or time-based pseudo ev
 
 Import flow:
 
-- [nodered_flows.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/nodered_flows.json)
+- [nodered_flows.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/nodered_flows.json)
 
 Node-RED is optional in this setup.  
 It is better to first understand the full path with Home Assistant demo alone, and only then add Node-RED if you want clearer event injection.
