@@ -52,6 +52,25 @@ All commands run from the repo root (`Blockchain_IoT_Marketplace/`).
 cd Blockchain_IoT_Marketplace
 ```
 
+### 0.5 Check the host name `host.docker.internal`
+
+The mediators and the frontend connect to the name `host.docker.internal`. Check that this name resolves on your PC.
+
+```bash
+ping -c 1 host.docker.internal
+```
+
+If it prints `cannot resolve` or `Unknown host`, add the following line to your hosts file (administrator rights required).
+
+```
+127.0.0.1 host.docker.internal
+```
+
+- macOS / Linux: `/etc/hosts` (e.g. `sudo sh -c 'echo "127.0.0.1 host.docker.internal" >> /etc/hosts'`)
+- Windows: `C:\Windows\System32\drivers\etc\hosts` (when working inside WSL2, the `/etc/hosts` on the WSL2 side)
+
+After adding it, confirm that `ping` now gets a reply.
+
 ### 1. Start the local blockchain
 
 Terminal 1:
@@ -73,11 +92,14 @@ WARNING: These accounts ... use only for testing.
 Account #0: 0xf39F... (10000 ETH)
 Private Key: 0xac09...
 ...
+Account #2: 0x3C44... (10000 ETH)
+Private Key: 0x5de4...
+...
 ```
 
 > **Don't close this terminal** — the chain has to keep running.
 >
-> The displayed **Account #0 + Private Key** will be imported into MetaMask shortly. Keep them visible.
+> The displayed **Account #2 + Private Key** will be imported into MetaMask shortly (the buyer-side mediator runs as Account #2). Keep them visible.
 > This private key is a publicly known Hardhat test key. Never use it on a real network.
 
 ### 2. Deploy the contracts
@@ -120,7 +142,7 @@ cargo run
 ```
 
 The first run takes a few minutes to compile Rust crates.
-When `Listening on ...` appears, it has started.
+When `listening on 0.0.0.0:3000` appears, it has started.
 
 ### 5. Start IPFS + PostgreSQL (Docker)
 
@@ -141,10 +163,11 @@ If the State of both `ipfs` and `postgres` is **Up**, they are running.
 
 ### 6. Start the mediators (owner + buyer)
 
-Terminal 6 (owner):
+Terminal 6 (owner). Create the watched folder `raw_data/output` first (without it, startup prints `Failed to read raw data dir` and no data is read).
 
 ```bash
 cd mediator-owner
+mkdir -p raw_data/output
 cargo run -- settings/owner_1.yaml
 ```
 
@@ -155,13 +178,38 @@ cd mediator-buyer
 cargo run --bin mediator-b
 ```
 
-When both show `Listening on ...`, they have started.
+Both have started when they print the following (the first run takes a few minutes to compile).
+
+```
+Pubkey uploaded successfully
+====================
+Initialization complete!
+====================
+...
+====================
+Starting blockchain watch
+====================
+```
+
+`Pubkey uploaded successfully` means the mediator registered its public key in the PubKey contract. A purchase requires the buyer's public key to be registered. The buyer-side mediator runs as Account #2, so import Account #2 into MetaMask as well.
 
 ## Verify operation
 
-1. Open <http://localhost:5173>
-2. Set up **MetaMask** (next section)
-3. When the marketplace listings appear, you are ready to move on to hands-on Part 1
+1. Open <http://localhost:5173>. A search screen titled "IoT データ検索" (IoT data search) appears.
+
+    ![Marketplace search screen](../assets/screenshots/market-ui-home.jpg){ width="480" }
+
+2. Open the page of an item deployed in step 2. You should see its description, price, and a "Purchase!" button.
+
+    ```
+    http://localhost:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
+    ```
+
+    ![Merchandise page](../assets/screenshots/market-ui-merchandise.jpg){ width="480" }
+
+3. Set up **MetaMask** (next section).
+
+"Run Search" on the search screen lists items that `mediator-owner` registered together with their data. The 5 items registered by the deployment in step 2 are not covered by the search, so open a merchandise page URL directly. The addresses are printed in step 2 (they are the same every time).
 
 ## MetaMask local-chain setup
 
@@ -176,7 +224,7 @@ Connect MetaMask to the local Hardhat chain.
    - Currency: `ETH`
 4. Save and switch to the new network
 
-Import the **Account #0 Private Key** from step 1:
+Import the **Account #2 Private Key** from step 1:
 
 1. MetaMask top-right icon → **Import account**
 2. Paste the private key (`0x` + 64 hex)
@@ -189,7 +237,7 @@ Reference (network add screen):
 ## You can move on if…
 
 - [ ] All terminals 1–7 are alive (no crash)
-- [ ] <http://localhost:5173> renders the marketplace UI
+- [ ] <http://localhost:5173> shows the search screen, and a merchandise page URL shows an item
 - [ ] MetaMask is on the `Hardhat Local` network
 - [ ] The MetaMask account shows `10000 ETH`
 
@@ -211,6 +259,8 @@ This alone is enough to try the first section of Part 1.
 | `npx: command not found` | Node.js missing | revisit Node.js in [Prerequisites](prerequisites.md) |
 | `cargo: command not found` | Rust missing | revisit Rust in [Prerequisites](prerequisites.md) |
 | `port 5173 already in use` | Another app holds the port | kill it or pick a different port |
+| The IPFS container or the publisher does not start | The IPFS gateway and the publisher both use port 8080 | They cannot run at the same time. Before a hands-on that uses the publisher, run `docker compose down` in the `ipfs` directory |
+| A mediator stops with `dns error` or a connection error | `host.docker.internal` does not resolve | Do step 0.5 |
 | `error connecting to docker` | Docker Desktop not running | start Docker Desktop |
 | MetaMask "Nonce too high" | Chain restarted out of sync | Settings → Advanced → Reset Account |
 | MetaMask rejects `localhost:8545` | Typo in RPC URL | make sure `http://` prefix is there |

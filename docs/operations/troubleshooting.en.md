@@ -20,9 +20,14 @@ Even when several causes are possible, it is usually easiest to start from the c
 
   If it returns `{"jsonrpc":"2.0", ... "error": ... "Parse error: Unexpected end of JSON input"}`, the **node is reachable and healthy** — this is the normal JSON-RPC response to a GET with an empty body, not an error.
 
-### Fix A — keep running natively (the `cargo run` steps in quickstart)
+### Fix A — add a hosts entry (recommended)
 
-Replace `host.docker.internal` with `localhost` in the settings files.
+As in [step 0.5 of Quickstart](../setup/quickstart.md), add `127.0.0.1 host.docker.internal` to your hosts file. Besides the settings files, `host.docker.internal` also appears in `mediator-owner/src/main.rs` (IPFS and PostgreSQL endpoints), `mediator-buyer/src/main.rs`, and the search API of `iot-market-ui`, so this is the most reliable fix.
+
+### Fix A' — edit the settings and sources
+
+If you cannot change the hosts file, replace `host.docker.internal` with `localhost` in the files listed above. The settings file looks like this.
+
 
 - `mediator-owner/settings/owner_1.yaml`:
 
@@ -53,15 +58,16 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 
 ## Product does not appear
 
-- Symptom: product data does not appear in the UI
+- Symptom: no merchandise is shown at <http://localhost:5173>
+  - The top page is a search screen. "Run Search" lists only items that `mediator-owner` registered together with their data. Check the 5 items registered by the deployment by opening `http://localhost:5173/merchandise/<item address>` directly.
   - Check: `mediator-owner` was started with `cargo run -- settings/owner_1.yaml`
-  - Check: files are being created under `raw_data/output`
-  - Action: rerun the flow from sensor input to product generation and confirm intermediate outputs
+  - Check: `mediator-owner/raw_data/output` exists. Without it, startup prints `Failed to read raw data dir`.
+  - `mediator-owner` registers pairs of `<camera ID>_movie_<number>.mp4` and a `.json` of the same name that exist in `raw_data/output` at startup. The `.txt` files written by the HUSKYLENS2 and USB webcam bridges are not registered.
 
 ## Purchase does not succeed
 
 - Symptom: purchase does not succeed
-  - Check: MetaMask is connected with the expected account
+  - Check: MetaMask is connected with Account #2 (`0x3C44...`). A purchase requires the buyer's public key to be registered in the PubKey contract. `mediator-buyer` registers the key of Account #2 at startup, so a purchase from another account reverts
   - Action: after restarting the local chain, clear stale MetaMask state and reconnect
 
 ## Events are rejected with `no_matching_consent`

@@ -52,6 +52,25 @@
 cd Blockchain_IoT_Marketplace
 ```
 
+### 0.5 ホスト名 `host.docker.internal` を確認
+
+仲介プロセスとフロントエンドは、接続先として `host.docker.internal` という名前を使います。この名前が PC 上で引けるかを確認します。
+
+```bash
+ping -c 1 host.docker.internal
+```
+
+`cannot resolve` や `Unknown host` と表示される場合は、hosts ファイルに次の 1 行を追加します (管理者権限が必要です)。
+
+```
+127.0.0.1 host.docker.internal
+```
+
+- macOS / Linux: `/etc/hosts` (例: `sudo sh -c 'echo "127.0.0.1 host.docker.internal" >> /etc/hosts'`)
+- Windows: `C:\Windows\System32\drivers\etc\hosts` (WSL2 の中で作業する場合は WSL2 側の `/etc/hosts`)
+
+追加したら、もう一度 `ping` で応答があることを確認します。
+
 ### 1. ローカルブロックチェーンを起動
 
 ターミナル 1:
@@ -73,11 +92,14 @@ WARNING: These accounts ... use only for testing.
 Account #0: 0xf39F... (10000 ETH)
 Private Key: 0xac09...
 ...
+Account #2: 0x3C44... (10000 ETH)
+Private Key: 0x5de4...
+...
 ```
 
 > **このターミナルは閉じないでください**。ブロックチェーンが動き続けます。
 >
-> 表示された **Account #0 と Private Key** は、後で MetaMask に取り込むので画面に残しておきます。
+> 表示された **Account #2 と Private Key** は、後で MetaMask に取り込むので画面に残しておきます (購入者側の仲介プロセスが Account #2 を使うためです)。
 > この Private Key は Hardhat が公開しているテスト用の鍵で、誰でも知ることができます。実際のネットワークでは使わないでください。
 
 ### 2. コントラクトをデプロイ
@@ -120,7 +142,7 @@ cargo run
 ```
 
 初回は Rust ライブラリのコンパイルで数分かかります。
-`Listening on ...` が出れば起動完了です。
+`listening on 0.0.0.0:3000` が出れば起動完了です。
 
 ### 5. IPFS と PostgreSQL を起動 (Docker)
 
@@ -142,10 +164,11 @@ docker compose ps
 
 ### 6. 仲介プロセス (オーナー側 + 購入者側) を起動
 
-ターミナル 6 (オーナー側):
+ターミナル 6 (オーナー側)。監視するフォルダ `raw_data/output` を先に作ります (無いと、起動時に `Failed to read raw data dir` と表示されてデータを読み込めません)。
 
 ```bash
 cd mediator-owner
+mkdir -p raw_data/output
 cargo run -- settings/owner_1.yaml
 ```
 
@@ -156,13 +179,38 @@ cd mediator-buyer
 cargo run --bin mediator-b
 ```
 
-両方とも `Listening on ...` が表示されれば成功です。
+両方とも、次の表示が出れば成功です (初回はコンパイルに数分かかります)。
+
+```
+Pubkey uploaded successfully
+====================
+Initialization complete!
+====================
+...
+====================
+Starting blockchain watch
+====================
+```
+
+`Pubkey uploaded successfully` は、仲介プロセスが自分の公開鍵を PubKey コントラクトに登録したことを示します。購入には、購入者の公開鍵が登録されている必要があります。購入者側の仲介プロセスは Account #2 として動くので、MetaMask にも Account #2 を取り込みます。
 
 ## 動作確認
 
-1. ブラウザで <http://localhost:5173> を開く
-2. **MetaMask** をセットアップ (次節)
-3. マーケットプレイスで商品が表示されれば、ハンズオン Part 1 へ進めます
+1. ブラウザで <http://localhost:5173> を開きます。「IoT データ検索」という検索画面が表示されます。
+
+    ![マーケットプレイスの検索画面](../assets/screenshots/market-ui-home.jpg){ width="480" }
+
+2. 手順 2 でデプロイした商品のページを開きます。商品の説明、価格、「Purchase!」ボタンが表示されれば成功です。
+
+    ```
+    http://localhost:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
+    ```
+
+    ![商品ページ](../assets/screenshots/market-ui-merchandise.jpg){ width="480" }
+
+3. **MetaMask** をセットアップします (次節)。
+
+検索画面の「Run Search」で一覧に出るのは、`mediator-owner` がデータとあわせて登録した商品です。手順 2 のデプロイで登録される 5 件は検索の対象にならないので、商品ページの URL を直接開いて確認します。アドレスは手順 2 の出力に表示されます (毎回同じ値です)。
 
 ## MetaMask のローカルチェーン設定
 
@@ -177,7 +225,7 @@ MetaMask をローカル Hardhat に接続します。
    - 通貨記号: `ETH`
 4. 保存して、追加したネットワークに切り替える
 
-ステップ 1 で出ていた **Account #0 の Private Key** をインポートします:
+ステップ 1 で出ていた **Account #2 の Private Key** をインポートします:
 
 1. MetaMask 右上のアイコン → **アカウントのインポート**
 2. Private Key を貼り付ける (`0x` 始まりの 64 桁)
@@ -190,7 +238,7 @@ MetaMask をローカル Hardhat に接続します。
 ## ここまでできていれば次に進める
 
 - [ ] ターミナル 1〜7 がすべて立ち上がっていてエラーで落ちていない
-- [ ] <http://localhost:5173> でマーケットプレイス UI が表示される
+- [ ] <http://localhost:5173> で検索画面が、商品ページの URL で商品が表示される
 - [ ] MetaMask が `Hardhat Local` ネットワークに接続できている
 - [ ] MetaMask のアカウント残高が `10000 ETH` 表示
 
@@ -212,6 +260,8 @@ MetaMask をローカル Hardhat に接続します。
 | `npx: command not found` | Node.js が入っていない | [事前準備](prerequisites.md) の Node.js を再確認 |
 | `cargo: command not found` | Rust が入っていない | 同上、Rust を再インストール |
 | `port 5173 already in use` | 別アプリがポート占有 | 占有プロセスを止めるか別ポートで起動 |
+| IPFS のコンテナが起動しない / publisher が起動しない | IPFS のゲートウェイと publisher が、どちらもポート 8080 を使う | 同時には起動できない。publisher を使うハンズオンの前に、`ipfs` ディレクトリで `docker compose down` を実行する |
+| 仲介プロセスが `dns error` や接続エラーで止まる | `host.docker.internal` を引けない | 手順 0.5 を実施 |
 | `error connecting to docker` | Docker Desktop 未起動 | Docker Desktop を起動 |
 | MetaMask に「Nonce too high」 | チェーン再起動でズレた | MetaMask Settings → Advanced → Reset Account |
 | MetaMask が `localhost:8545` を Reject | RPC URL の打ち間違い | `http://` を付け忘れていないか確認 |

@@ -4,10 +4,11 @@
 
 Participants should complete:
 
-1. Event generation
-2. Auto productization
+1. Event generation (mock mode is enough)
+2. Viewing a merchandise page
 3. Purchase
-4. Data reception
+
+Receiving the purchased data additionally requires an item registered by `mediator-owner` (a video and `.json` pair). See §1.4 of the [Hands-on overview](../hands-on/index.md).
 
 ## Suggested flow (120 min)
 

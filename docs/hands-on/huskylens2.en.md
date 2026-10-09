@@ -1,8 +1,8 @@
 # Detect a person on an AI camera (HUSKYLENS2)
 
-Pull events off the HUSKYLENS2 AI camera and list them on the marketplace.
+Turn detections from the HUSKYLENS2 AI camera into event files.
 
-> **What you'll do**: Detect a person on HUSKYLENS2, emit an event, and list it
+> **What you'll do**: Generate event files from HUSKYLENS2 (or mock) detections
 >
 > **Prerequisites**: [Setup](../setup/index.en.md) + [Quickstart](../setup/quickstart.en.md)
 >
@@ -12,18 +12,22 @@ Pull events off the HUSKYLENS2 AI camera and list them on the marketplace.
 
 ## Goal
 
-Use HUSKYLENS2 (or mock input) to generate events and confirm that they are productized in the pipeline.
+Aggregate HUSKYLENS2 (or mock) detections every few seconds and write them out as event files.
+
+!!! warning "Registration as merchandise cannot be confirmed at present"
+    The `mediator-owner` on the current `main` registers only pairs of a video (`<camera ID>_movie_<number>.mp4`) and a `.json` of the same name that exist in `raw_data/output` at startup. The `.txt` event files written by the bridge on this page are not registered as merchandise. What you can confirm on this page is the generation of event files.
+
 
 ## What this page helps you understand
 
 - how HUSKYLENS2 detections are turned into event files
 - when to use `mock` and when to use `serial`
-- which outputs confirm that productization really happened
+- where to look in the generated event files
 
 ## Common stumbling points
 
 - serial port naming and permissions often block the first run
-- the pipeline stops if the `sensor-bridge` output path does not match what `mediator-owner` watches
+- event files cannot be written if the output folder does not exist
 - when real hardware is unstable, it is better to verify the pipeline in `mock` mode first
 
 ## Official links
@@ -35,7 +39,7 @@ Use HUSKYLENS2 (or mock input) to generate events and confirm that they are prod
 
 - HUSKYLENS2 device, or a mock test environment
 - `sensor-bridge` available
-- `mediator-owner` already running and watching `raw_data/output`
+- the output folder `mediator-owner/raw_data/output` exists (the steps create it if missing)
 - for serial mode, the serial device path is visible from the PC
 - Python 3 (serial mode also needs `pyserial`)
 
@@ -50,12 +54,11 @@ In the problem program, the main task is to complete `build_event()` and underst
 
 ## Shortest path
 
-For a first pass, these four steps are enough.
+For a first pass, these three steps are enough.
 
 1. start `huskylens_bridge.py` in `mock` mode
 2. confirm that event files appear under `raw_data/output`
-3. confirm that `mediator-owner` picks them up
-4. confirm that merchandise appears in the frontend
+3. look at the file content (what was detected, with counts)
 
 Branches after that:
 
@@ -67,12 +70,63 @@ Branches after that:
 
 ## Mock first
 
+Run from the top of the course repository (`Blockchain_IoT_Marketplace/`). Mock mode generates simulated detections in place of a device.
+
 ```bash
 cd sensor-bridge
-python3 huskylens_bridge.py --mode mock --output-dir ../mediator-owner/raw_data/output
+mkdir -p ../mediator-owner/raw_data/output
+python3 huskylens_bridge.py \
+  --mode mock \
+  --camera-id 301 \
+  --output-dir ../mediator-owner/raw_data/output \
+  --flush-interval-sec 8
 ```
 
-At this point, the downstream pipeline itself has been confirmed. The next step is to try the same flow with the physical serial input.
+| Argument | Meaning |
+|---|---|
+| `--mode` | Input type: `mock` (simulated data), `serial` (device over serial), `tcp` |
+| `--camera-id` | Camera ID used as the file name prefix |
+| `--output-dir` | Where event files are written |
+| `--flush-interval-sec` | How many seconds of detections go into one file |
+
+One line is printed every 8 seconds, as below. Press `Ctrl+C` to stop.
+
+```
+[bridge] starting HuskyLens2 bridge
+[bridge] mode=mock camera_id=301 output_dir=../mediator-owner/raw_data/output
+[bridge] flush_interval_sec=8 min_confidence=0.50
+[bridge] batch detections=12 file=../mediator-owner/raw_data/output/301_huskylens_1791549165.txt
+[bridge] batch detections=13 file=../mediator-owner/raw_data/output/301_huskylens_1791549173.txt
+```
+
+Look at the generated files.
+
+```bash
+ls ../mediator-owner/raw_data/output
+cat ../mediator-owner/raw_data/output/301_huskylens_*.txt | head -20
+```
+
+```
+# HuskyLens2 Detection Snapshot
+camera_id: 301
+window_start_utc: 2026-10-09T12:32:37.144510+00:00
+window_end_utc: 2026-10-09T12:32:45.178510+00:00
+total_detections: 12
+unique_labels: 3
+top_label: bike
+max_confidence: 0.956
+labels:
+  - bike: 5
+  - person: 4
+  - car: 3
+samples:
+  - {"timestamp": "2026-10-09T12:32:38.149827+00:00", "label": "bike", "confidence": 0.6867, "id": "17", "x": 50.54, "y": 461.24, "w": 28.13, "h": 180.54, "source": "mock"}
+  ...
+```
+
+Each file is one event that summarizes 8 seconds of detections. `labels` gives the count per detected label, and `samples` lists the individual detections (time, label, confidence, position and size on screen).
+
+Once event files are generated in mock mode, the next step is to try the physical serial input.
 
 ## Phase 1: Try the same flow with serial input
 
@@ -85,14 +139,12 @@ python3 huskylens_bridge.py --mode serial --serial-port /dev/ttyUSB0 --output-di
 ## Expected
 
 - `301_huskylens_*.txt` appears under `raw_data/output`
-- Owner mediator detects and productizes
-- merchandise appears in the frontend
+- `labels` in the file lists what was detected (person, etc.) with counts
 
 ## Success example
 
 - mock mode generates event files without hardware
 - serial mode keeps generating files as detections arrive
-- the generated event is reflected as purchasable merchandise
 
 ## Troubleshooting
 
@@ -100,6 +152,7 @@ python3 huskylens_bridge.py --mode serial --serial-port /dev/ttyUSB0 --output-di
   - Action: install with `pip install pyserial`
 - Symptom: the serial port is unknown
   - Check: `/dev/ttyUSB0`, `/dev/tty.usbserial-*`, or the OS device manager
-- Symptom: no productization after file generation
-  - Check: `mediator-owner` is running
-  - Check: the output path matches `../mediator-owner/raw_data/output`
+- Symptom: no event file is created
+  - Check: the output folder (`../mediator-owner/raw_data/output`) exists. If not, create it with `mkdir -p ../mediator-owner/raw_data/output`
+- Symptom: events are not registered as merchandise
+  - As noted at the top of this page, the current `mediator-owner` does not register `.txt` event files

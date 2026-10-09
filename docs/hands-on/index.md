@@ -194,9 +194,12 @@ export HOST_IP=192.168.1.20
 出品 → 購入 → 暗号化 IPFS から復号して受け取り、までを一通り行います。
 ここまでが **基本 (v1)** の完了点です。
 
-1. **出品**: 1.2 のサンプルが `mediator-owner/raw_data/output` にイベントファイルを出力すると、`mediator-owner` がそれを検知して自動で商品として登録します。手動の出品操作はありません。
-2. **購入**: ブラウザで <http://localhost:5173> を開き、商品を選んで「Purchase」を押し、MetaMask で承認します。
-3. **受け取り**: `mediator-buyer` が、IPFS に保存された暗号化データを取得・復号し、`mediator-buyer/downloads` に保存します。
+1. **出品**: 最短起動の手順 2 (デプロイ) で、5 件の商品がチェーンに登録されます。このほか `mediator-owner` は、起動時に `raw_data/output` にある動画 (`<カメラ ID>_movie_<番号>.mp4`) と同名の `.json` の組を読み、データを IPFS に置いて商品として登録します。
+2. **購入**: 商品ページ (`http://localhost:5173/merchandise/<商品のアドレス>`) を開き、右上の「Connect your wallet!」で MetaMask (Account #2) を接続してから「Purchase!」を押し、MetaMask で承認します。購入すると、`mediator-buyer` のターミナルに `You bought a product of ...` と表示されます。
+3. **受け取り**: 出品者の `mediator-owner` が購入を検知してデータを購入者向けに暗号化し、`mediator-buyer` がそれを取得・復号して `mediator-buyer/downloads` に保存します。デプロイで登録された 5 件は `mediator-owner` が出品したものではないため、購入はできますがデータは届きません。
+
+!!! note "確認できている範囲"
+    購入までは、ローカル環境で動作を確認しています。受け取りは、`mediator-owner` が登録した商品 (動画と `.json` の組) が必要で、その手順はまだこのサイトにありません。
 
 各プロセスの起動手順は [最短起動](../setup/quickstart.md) にあります。
 

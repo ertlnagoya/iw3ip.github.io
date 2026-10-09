@@ -191,9 +191,12 @@ View the collected data in a phone browser.
 
 List → buy → decrypt-from-IPFS round trip. This is the completion point of **Basic (v1)**.
 
-1. **List**: when a sample from 1.2 writes an event file to `mediator-owner/raw_data/output`, `mediator-owner` detects it and registers it as merchandise automatically. There is no manual listing step.
-2. **Buy**: open <http://localhost:5173>, pick an item, press "Purchase", and confirm in MetaMask.
-3. **Receive**: `mediator-buyer` fetches and decrypts the encrypted data stored on IPFS and saves it under `mediator-buyer/downloads`.
+1. **List**: step 2 of Quickstart (deployment) registers 5 items on the chain. In addition, at startup `mediator-owner` reads pairs of a video (`<camera ID>_movie_<number>.mp4`) and a `.json` of the same name in `raw_data/output`, puts the data on IPFS, and registers them as merchandise.
+2. **Buy**: open a merchandise page (`http://localhost:5173/merchandise/<item address>`), connect MetaMask (Account #2) with "Connect your wallet!" at the top right, press "Purchase!", and confirm in MetaMask. After the purchase, the `mediator-buyer` terminal prints `You bought a product of ...`.
+3. **Receive**: the seller's `mediator-owner` detects the purchase and encrypts the data for the buyer; `mediator-buyer` fetches and decrypts it and saves it under `mediator-buyer/downloads`. The 5 items registered by the deployment were not listed by `mediator-owner`, so they can be purchased but no data is delivered.
+
+!!! note "What has been verified"
+    The flow up to the purchase has been verified in a local environment. Receiving data requires an item registered by `mediator-owner` (a video and `.json` pair); this site does not yet have steps for that.
 
 Detailed bring-up: [Quickstart](../setup/quickstart.md).
 

@@ -19,9 +19,13 @@
 
   `{"jsonrpc":"2.0", ... "error": ... "Parse error: Unexpected end of JSON input"}` が返れば、**ノードは到達可能で正常** です (空ボディの GET に対する JSON-RPC の正常な応答であり、エラーではありません)。
 
-### 対処 A — ネイティブ実行のまま直す (quickstart の `cargo run` 手順)
+### 対処 A — hosts ファイルに追記する (推奨)
 
-設定ファイル中の `host.docker.internal` を `localhost` に読み替えます。
+[最短起動の手順 0.5](../setup/quickstart.md) のとおり、hosts ファイルに `127.0.0.1 host.docker.internal` を追加します。`host.docker.internal` は設定ファイルのほか、`mediator-owner/src/main.rs` (IPFS と PostgreSQL の接続先)、`mediator-buyer/src/main.rs`、`iot-market-ui` の検索 API にも書かれているため、この方法がいちばん確実です。
+
+### 対処 A' — 設定とソースを書き換える
+
+hosts ファイルを変更できない場合は、上に挙げたファイル中の `host.docker.internal` を `localhost` に書き換えます。設定ファイルは次のとおりです。
 
 - `mediator-owner/settings/owner_1.yaml`:
 
@@ -52,15 +56,16 @@
 
 ## 4. 商品が表示されない
 
-- 症状: 商品が表示されない
+- 症状: <http://localhost:5173> を開いても商品が表示されない
+  - トップページは検索画面です。「Run Search」で一覧に出るのは、`mediator-owner` がデータとあわせて登録した商品だけです。デプロイで登録した 5 件は、`http://localhost:5173/merchandise/<商品のアドレス>` を直接開いて確認します。
   - 確認: `mediator-owner` の実行引数が `cargo run -- settings/owner_1.yaml` になっているか
-  - 確認: `raw_data/output` にファイルが作成されているか
-  - 対応: センサ入力側から商品生成までの手順を再実行し、途中の出力ファイル作成を確認する
+  - 確認: `mediator-owner/raw_data/output` があるか。無いと、起動時に `Failed to read raw data dir` と表示されます。
+  - `mediator-owner` が商品として登録するのは、起動時に `raw_data/output` にある `<カメラ ID>_movie_<番号>.mp4` と同名の `.json` の組です。HUSKYLENS2 や USB ウェブカメラのブリッジが出力する `.txt` は登録されません。
 
 ## 5. 購入できない
 
 - 症状: 購入できない
-  - 確認: MetaMask の接続アカウントが正しいか
+  - 確認: MetaMask の接続アカウントが Account #2 (`0x3C44...`) か。購入には、購入者の公開鍵が PubKey コントラクトに登録されている必要があります。`mediator-buyer` が起動時に Account #2 の公開鍵を登録するので、他のアカウントでは購入が取り消されます (revert)
   - 対応: ローカルチェーン再起動後は MetaMask のキャッシュをクリア
 
 ## 6. イベントが共有されず `no_matching_consent` で拒否される
