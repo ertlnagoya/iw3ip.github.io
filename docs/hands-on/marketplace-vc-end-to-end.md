@@ -278,6 +278,7 @@ http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_ki
 QR → wallet で **PurchaseViewerVC** (ServiceVC や ViewerVC と間違えないこと) を選んで提示。
 
 ```bash
+PUB=$(docker ps -qf name=publisher)   # Step E1 と別のターミナルで実行する場合に必要
 TOKEN=$(docker logs $PUB 2>&1 | grep "viewer_token_issued vc_kind=PurchaseViewerVC" | tail -1 | sed -E 's/.*token=([^ ]+).*/\1/')
 echo "TOKEN=$TOKEN"
 
@@ -302,6 +303,8 @@ curl -s -H "Authorization: Bearer $TOKEN" \
   ]
 }
 ```
+
+`count` が 5 になるのは、この dataset に他のデータを書き込んでいない場合です。Step E1 より前に同じ dataset へ書き込んでいると、その分だけ件数が増えます。
 
 Step E1 で Seller が書いた 5 件を Buyer が読み出せました。これで Stage 6 は完了です。
 
@@ -365,7 +368,7 @@ holder_did は同一になります。実運用では別端末・別 did:jwk に
 | seller の書き込み | (off-line で IPFS に upload) | publisher への ingest (audit 残る) |
 | buyer の身元 | MetaMask の eth address のみ | eth + did:jwk (eth_did_bound で紐付け) |
 | データ配信 | encryptURI 復号 | publisher API (Bearer ViewerToken) |
-| 監査の網羅性 | on-chain Upload event のみ | audit 6 行 (write x5 + read x1 + bridge 等) |
+| 監査の網羅性 | on-chain Upload event のみ | publisher の audit log に 10 行 (Seller の提示 1 + 書き込み 5 + bridge の claim 1 + VC 発行 1 + Buyer の提示 1 + 読み出し 1) |
 
 ---
 
@@ -375,7 +378,7 @@ holder_did は同一になります。実運用では別端末・別 did:jwk に
 
 **原因**: Merchandise が古いデプロイで `dataset_id` を持っていない (Stage 6 case B 以前のデプロイ)。
 
-**対処**: Hardhat ノードを再起動 (`Ctrl+C` → `npx hardhat node`) してから
+**対処**: Hardhat ノードを再起動 (`Ctrl+C` → `npx hardhat node --hostname 0.0.0.0`) してから
 最新の `deployMerchandiseWithIoTMarket.ts` で再デプロイ。MetaMask は
 chainId キャッシュのリセットが必要です ([Stage 5 のトラブルシューティング A](marketplace-vc-bridge.md#トラブルシューティング))。
 

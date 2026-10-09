@@ -1,4 +1,4 @@
-# Back the seller's identity (Seller VC, Stage 7)
+# Back the seller's identity (Seller VC / Stage 7)
 
 This page adds a layer that uses a VC to back "who" is selling a dataset. It covers the fifth VC type, SellerVC.
 
@@ -268,7 +268,8 @@ Values of `owner_verify`:
 
 - `skipped`: `MARKETPLACE_HARDHAT_RPC` is not set (for testing / development)
 - `verified`: getOwner() matches seller_eth_addr on-chain
-- `rpc_failed`: the RPC cannot be reached, and the call returns 502 (`fail-closed`)
+
+If the RPC cannot be reached, the response has no `owner_verify`; the call fails with HTTP 502 (`chain_rpc_failed`). If the on-chain owner does not match `seller_eth_addr`, it fails with 403 (`owner_mismatch`).
 
 ### audit log
 
@@ -299,7 +300,13 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool
 
 ### Steps
 
-Follow the procedure of the [Stage 5 hands-on](marketplace-vc-bridge.md): purchase with MetaMask → receive in the wallet
+The bridge watches only the Merchandise that were registered in IoTMarket when it started. Before purchasing the Merchandise added in Step S3, recreate the bridge so that it picks it up.
+
+```bash
+docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
+```
+
+Then follow the procedure of the [Stage 5 hands-on](marketplace-vc-bridge.md): purchase with MetaMask → receive in the wallet
 → obtain a ViewerToken → fetch.
 
 ```bash
@@ -392,10 +399,10 @@ and then run `docker compose up -d --build publisher` again.
 
 ### C. `owner_mismatch` (403)
 
-**Cause**: The eth address of the SellerVC holder differs from that of Merchandise.getOwner().
-This happens when the Hardhat account used for the deploy differs from the eth account that obtained the SellerVC.
+**Cause**: The `seller_eth_addr` passed to `/marketplace/register` differs from the on-chain
+Merchandise.getOwner(). This happens when `seller_eth_addr` is not the address of the Hardhat account used for the deploy.
 
-**Fix**: Redo receiving the SellerVC and deploying the Merchandise with the same Hardhat signer
+**Fix**: Set `seller_eth_addr` to the address of the Hardhat signer that deployed the Merchandise
 (for example, Account #1 = `iotOwner`).
 
 ### D. `try { ... } catch (e) { ... }` causes a SyntaxError in the Hardhat console
@@ -404,8 +411,9 @@ This happens when the Hardhat account used for the deploy differs from the eth a
 Uncaught SyntaxError: missing ) after argument list
 ```
 
-**Cause**: The Hardhat console (Node REPL) evaluates statements one line at a time, so pasting a
-`try`/`catch` that spans multiple lines causes a syntax error on the first line.
+**Cause**: The Hardhat console (Node REPL) evaluates input as soon as it forms a complete statement.
+The line that closes the `try { ... }` block is treated as complete, so a `catch` on the next line
+is a syntax error (multi-line calls with an unclosed parenthesis, such as `deploy(...)`, are fine).
 
 **Fix**: Write it on one line. Example:
 

@@ -261,7 +261,8 @@ curl -s -X POST http://192.168.68.53:8080/marketplace/register \
 `owner_verify` の値:
 - `skipped`: `MARKETPLACE_HARDHAT_RPC` 未設定 (テスト/開発用)
 - `verified`: on-chain で getOwner() が seller_eth_addr と一致
-- `rpc_failed`: RPC に到達できず 502 (`fail-closed`)
+
+RPC に到達できない場合は、レスポンスに `owner_verify` は含まれず、HTTP 502 (`chain_rpc_failed`) で失敗します。on-chain の owner が `seller_eth_addr` と一致しない場合は 403 (`owner_mismatch`) です。
 
 ### audit log
 
@@ -290,8 +291,14 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool
 
 ### 操作
 
-[Stage 5 ハンズオン](marketplace-vc-bridge.md) の手順で MetaMask 購入 → wallet 受領
-→ ViewerToken 取得 → 取得。
+bridge は、起動時に IoTMarket に登録されていた Merchandise だけを監視します。Step S3 で追加した Merchandise を購入する前に、bridge を再作成して認識させます。
+
+```bash
+docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
+```
+
+その後、[Stage 5 ハンズオン](marketplace-vc-bridge.md) の手順で MetaMask 購入 → wallet 受領
+→ ViewerToken 取得 → 取得の順に進めます。
 
 ```bash
 TOKEN=<buyer の ViewerToken>
@@ -382,11 +389,12 @@ SellerVC を別途発行する。
 
 ### C. `owner_mismatch` (403)
 
-**原因**: SellerVC の holder と Merchandise.getOwner() の eth address が違う。
-deploy した Hardhat account と SellerVC を取った eth account が違うときに起こる。
+**原因**: `/marketplace/register` に渡した `seller_eth_addr` と、on-chain の
+Merchandise.getOwner() が違う。deploy に使った Hardhat account と別のアドレスを
+`seller_eth_addr` に指定したときに起こる。
 
-**対処**: 同じ Hardhat signer (例: Account #1 = `iotOwner`) で SellerVC 受領 +
-Merchandise deploy をやり直す。
+**対処**: `seller_eth_addr` に、Merchandise を deploy した Hardhat signer
+(例: Account #1 = `iotOwner`) のアドレスを指定する。
 
 ### D. Hardhat console で `try { ... } catch (e) { ... }` が SyntaxError
 
@@ -394,8 +402,10 @@ Merchandise deploy をやり直す。
 Uncaught SyntaxError: missing ) after argument list
 ```
 
-**原因**: Hardhat console (Node REPL) は文を 1 行ずつ評価するので、複数行
-にわたる `try`/`catch` を貼ると最初の行で構文エラーになる。
+**原因**: Hardhat console (Node REPL) は、入力が 1 つの文として完結した時点で
+評価する。`try { ... }` のブロックが閉じた行で文が完結したと判断されるため、
+`catch` を次の行に書くと構文エラーになる (括弧が閉じていない `deploy(...)` の
+ような複数行の呼び出しは問題ない)。
 
 **対処**: 1 行にまとめて書く。例:
 

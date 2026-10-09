@@ -21,7 +21,8 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 !!! tip "Stage 0 と同じデータ"
     Stage A の購入対象は Stage 6 case B 以降の deploy script で登録された
     Merchandise リストから選びます。`home/event/possible_littering` や
-    `home/event/flood_risk_high` を選べば、Stage 0
+    `home/event/flood_risk_high` を選べば、Stage 0 (Stage の一覧は
+    [ハンズオンの概要](index.md#part-phase-stage) を参照)
     [webcam-event-sharing](webcam-event-sharing.md) /
     [environment-disaster](environment-disaster.md) と同じカメラ・センサー
     イベントが、購入経由 (PurchaseViewerVC) で読めるところまで確認できます。

@@ -284,6 +284,7 @@ http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_ki
 QR code → in the wallet, select the **PurchaseViewerVC** (do not confuse it with the ServiceVC or the ViewerVC) and present it.
 
 ```bash
+PUB=$(docker ps -qf name=publisher)   # needed when running in a different terminal from Step E1
 TOKEN=$(docker logs $PUB 2>&1 | grep "viewer_token_issued vc_kind=PurchaseViewerVC" | tail -1 | sed -E 's/.*token=([^ ]+).*/\1/')
 echo "TOKEN=$TOKEN"
 
@@ -308,6 +309,8 @@ curl -s -H "Authorization: Bearer $TOKEN" \
   ]
 }
 ```
+
+`count` is 5 only when nothing else has been written to this dataset. If you ingested into the same dataset before Step E1, the count is higher by that amount.
 
 The Buyer has read the five rows that the Seller wrote in Step E1. This completes Stage 6.
 
@@ -372,7 +375,7 @@ the holder_did is identical. In real operation they are separate devices and sep
 | Seller writes | (uploaded to IPFS off-line) | ingest to the publisher (left in the audit log) |
 | Buyer identity | MetaMask eth address only | eth + did:jwk (bound by eth_did_bound) |
 | Data delivery | encryptURI decryption | publisher API (Bearer ViewerToken) |
-| Audit coverage | on-chain Upload event only | 6 audit rows (write x5 + read x1 + bridge, etc.) |
+| Audit coverage | on-chain Upload event only | 10 rows in the publisher audit log (seller presentation 1 + writes 5 + bridge claim 1 + VC issuance 1 + buyer presentation 1 + read 1) |
 
 ---
 
@@ -382,7 +385,7 @@ the holder_did is identical. In real operation they are separate devices and sep
 
 **Cause**: The Merchandise is from an old deployment and has no `dataset_id` (a deployment from before Stage 6 case B).
 
-**Fix**: Restart the Hardhat node (`Ctrl+C` → `npx hardhat node`) and then
+**Fix**: Restart the Hardhat node (`Ctrl+C` → `npx hardhat node --hostname 0.0.0.0`) and then
 redeploy with the latest `deployMerchandiseWithIoTMarket.ts`. MetaMask
 needs its chainId cache reset ([Troubleshooting A in Stage 5](marketplace-vc-bridge.md#troubleshooting)).
 

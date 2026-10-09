@@ -40,7 +40,7 @@ publisher が検証し、検証に成功したときだけ marketplace 側で「
 | 観点 | v6 (現行) | v7 (本仕様) |
 | --- | --- | --- |
 | Merchandise 登録権限 | 誰でも可 | 誰でも可 (互換)。ただし seller の身元は別途 publisher で検証 |
-| Seller 身元 | Merchandise.owner (eth) のみ | + did:jwk + SellerVC claims (`licensed_datasets`, `valid_to`) |
+| Seller 身元 | Merchandise.owner (eth) のみ | + did:jwk + SellerVC claims (`seller_id`, `licensed_datasets`。有効期限は `exp`) |
 | 不正出品の検出 | 不可 | publisher の audit `marketplace/seller_registered` 行で追跡可 |
 | buyer の参照 | Merchandise.owner | + `/platform/data` レスポンスに `seller_did` 同梱 |
 
@@ -55,7 +55,7 @@ v6 との互換性は完全に保つ。SellerVC を提示しない seller は v6
   "iss": "did:jwk:<publisher-issuer>",
   "sub": "did:jwk:<seller-holder>",
   "iat": 1735000000,
-  "exp": 1735000000 + 86400 * 365,
+  "exp": 1766536000,
   "seller_id": "ertl-nagoya-seller-001",
   "licensed_datasets": [
     "home/env/temperature",
@@ -122,7 +122,7 @@ Authorization: Bearer <SellerToken>
 1. SellerToken が有効
 2. Merchandise.getAllAdditionalInfo() で `dataset_id` を読み出し
 3. `dataset_id` が SellerToken の `licensed_datasets` に含まれる
-4. (任意 / Stage 7+) Merchandise.getOwner() == `seller_eth_addr` を検証
+4. (任意) Merchandise.getOwner() == `seller_eth_addr` を検証。publisher に `MARKETPLACE_HARDHAT_RPC` を設定したときだけ行う
 
 成功時:
 
@@ -149,7 +149,7 @@ Authorization: Bearer <SellerToken>
   "dataset_id": "home/env/temperature",
   "count": 5,
   "read_count": 1,
-  "seller_did": "did:jwk:..." | "unknown",
+  "seller_did": "did:jwk:...",
   "rows": [...]
 }
 ```
@@ -266,6 +266,7 @@ e2e (end-to-end) テストには、ハンズオンの手順をそのまま用い
 2. **Merchandise.getOwner() == seller_eth_addr の検証**
    - Stage 7 で必須にするか / Stage 8 以降に回すか
    - 推奨: 必須 (なりすまし対策として最低限必要)
+   - 実装: 任意とした。`MARKETPLACE_HARDHAT_RPC` を設定したときだけ検証し、未設定の場合は検証を省いて監査ログに `owner_verify=skipped` と記録する
 3. **`/seller` UI でどこまで自動化**
    - Hardhat への deploy も UI 内で行うか / ハンズオンでは Hardhat console で代替するか
    - 推奨: 後者 (UI 工数を抑える)

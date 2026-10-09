@@ -5,7 +5,7 @@
     to Merchandise registration on iot-market. It introduces a **fifth VC**
     (Verifiable Credential), following ConsentVC / ViewerVC / ServiceVC /
     PurchaseViewerVC, and uses a VC to show who may sell which dataset. It is a draft written before implementation.
-    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in §5 of the [VC architecture overview](vc-architecture-overview.md)).
+    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Seven hands-on stages" section of the [VC architecture overview](vc-architecture-overview.md)).
     Stage 7 corresponds to the hands-on [marketplace-seller-vc](../hands-on/marketplace-seller-vc.md), Stage 6 to [marketplace-vc-end-to-end](../hands-on/marketplace-vc-end-to-end.md), and Stage 5 to [marketplace-vc-bridge](../hands-on/marketplace-vc-bridge.md).
     Stage 8 and later have no hands-on yet and refer to items for future consideration.
 
@@ -40,7 +40,7 @@ Here, the current configuration up to Stage 6 is called v6, and the configuratio
 | Aspect | v6 (current) | v7 (this spec) |
 | --- | --- | --- |
 | Permission to register a Merchandise | Anyone | Anyone (compatible). The seller's identity is verified separately by the publisher |
-| Seller identity | Merchandise.owner (eth) only | + did:jwk + SellerVC claims (`licensed_datasets`, `valid_to`) |
+| Seller identity | Merchandise.owner (eth) only | + did:jwk + SellerVC claims (`seller_id`, `licensed_datasets`; expiry is `exp`) |
 | Detecting fraudulent listings | Not possible | Traceable through the publisher's audit row `marketplace/seller_registered` |
 | What the buyer can refer to | Merchandise.owner | + `seller_did` included in the `/platform/data` response |
 
@@ -55,7 +55,7 @@ keeps working through the v6 path as before (the publisher records seller_did = 
   "iss": "did:jwk:<publisher-issuer>",
   "sub": "did:jwk:<seller-holder>",
   "iat": 1735000000,
-  "exp": 1735000000 + 86400 * 365,
+  "exp": 1766536000,
   "seller_id": "ertl-nagoya-seller-001",
   "licensed_datasets": [
     "home/env/temperature",
@@ -124,7 +124,7 @@ Server-side verification:
 1. The SellerToken is valid
 2. Read `dataset_id` with Merchandise.getAllAdditionalInfo()
 3. `dataset_id` is included in the SellerToken's `licensed_datasets`
-4. (Optional / Stage 7+) Verify that Merchandise.getOwner() == `seller_eth_addr`
+4. (Optional) Verify that Merchandise.getOwner() == `seller_eth_addr`. Done only when `MARKETPLACE_HARDHAT_RPC` is set on the publisher
 
 On success:
 
@@ -151,7 +151,7 @@ The response of `GET /platform/data?merchandise=<addr>` optionally includes
   "dataset_id": "home/env/temperature",
   "count": 5,
   "read_count": 1,
-  "seller_did": "did:jwk:..." | "unknown",
+  "seller_did": "did:jwk:...",
   "rows": [...]
 }
 ```
@@ -269,6 +269,7 @@ The total is 2–3 weeks, roughly the same as Stage 5/6.
 2. **Verifying Merchandise.getOwner() == seller_eth_addr**
     - Make it mandatory in Stage 7, or defer it to Stage 8 and later
     - Recommendation: mandatory (the minimum needed against impersonation)
+    - Implementation: made optional. The check runs only when `MARKETPLACE_HARDHAT_RPC` is set; otherwise it is skipped and the audit log records `owner_verify=skipped`
 3. **How much to automate in the `/seller` UI**
     - Do the deploy to Hardhat inside the UI as well, or use the Hardhat console instead in the hands-on
     - Recommendation: the latter (keeps the UI effort down)
@@ -285,4 +286,4 @@ The total is 2–3 weeks, roughly the same as Stage 5/6.
 - [Marketplace × Wallet bridge (Stage 5)](../hands-on/marketplace-vc-bridge.md)
 - [Marketplace VC end-to-end (Stage 6)](../hands-on/marketplace-vc-end-to-end.md)
 - [Back the seller's identity with a Seller VC (Stage 7)](../hands-on/marketplace-seller-vc.md) (the hands-on created in C6)
-- [VC architecture overview](vc-architecture-overview.md) (the list of Stage numbers is in §5)
+- [VC architecture overview](vc-architecture-overview.md) (the list of Stage numbers is in the "Seven hands-on stages" section)

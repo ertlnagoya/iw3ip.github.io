@@ -323,7 +323,7 @@ PC ブラウザ (Chrome 等) で次にアクセス:
 http://192.168.68.53:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 ```
 
-(Merchandise #1。`#0` は使わなくても良いが state が IN_PROGRESS のまま残るので注意)
+(Merchandise #1 の例です。一度購入した Merchandise は state が IN_PROGRESS になり、再度は購入できません。やり直すときは、未購入の Merchandise のアドレスを使ってください)
 
 「Purchase」→ MetaMask で確認 → tx 送信。確定後、自動で
 `/purchased/<txHash>?merchandise=...&dataset=...&buyer=...` に遷移し、QR と deeplink が表示されます。

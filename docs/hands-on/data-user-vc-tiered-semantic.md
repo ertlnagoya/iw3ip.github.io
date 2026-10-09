@@ -419,7 +419,7 @@ Publish ボタンとは独立して動くので、確認だけして Publish せ
 | `_coerce_trust_level()` | 不明な値 / None → ANONYMOUS |
 | `TrustPolicyEngine.evaluate()` | `privacy_risk_score >= 0.9` で image kinds 剥奪 |
 | `TrustPolicyEngine.evaluate_safe()` | 内部例外 → `allowed_outputs=frozenset()` (空) |
-| `_compute_mask_plan()` | face/text/screen/whiteboard/document/id_card/name_tag/`unknown_sensitive` を MEDIUM 以下で常時マスク |
+| `_compute_mask_plan()` | face/text/screen/whiteboard/document/id_card/name_tag/`unknown_sensitive` を HIGH 以下でマスク (HIGH の `unknown_sensitive` だけは `SEMANTIC_ALLOW_UNKNOWN_AT_HIGH=true` で解除可) |
 | `TrustAwareRenderer.render()` | ORIGINAL_FRAME に対して `trust_level in (OWNER, ADMIN)` を二重チェック |
 | `_render_masked()` | cv2 / decode / encode 失敗 → text fallback |
 | `SemanticIntermediateRepresentation.empty()` | `privacy_risk_score=1.0` でアナライザ失敗を fail-closed 状態として表現 |

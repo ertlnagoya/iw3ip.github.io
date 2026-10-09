@@ -337,7 +337,7 @@ Open the following in a PC browser (Chrome, etc.):
 http://192.168.68.53:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 ```
 
-(This is Merchandise #1. You do not have to use `#0`, but note that its state stays IN_PROGRESS.)
+(This example uses Merchandise #1. Once purchased, a Merchandise moves to the IN_PROGRESS state and cannot be purchased again. When you retry, use the address of a Merchandise that has not been purchased.)
 
 "Purchase" → confirm in MetaMask → the tx is sent. Once it is confirmed, the page moves automatically to
 `/purchased/<txHash>?merchandise=...&dataset=...&buyer=...` and shows a QR code and a deeplink.

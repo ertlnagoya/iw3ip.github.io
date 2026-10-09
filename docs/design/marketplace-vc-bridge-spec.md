@@ -112,7 +112,7 @@ Identifier、分散型識別子) の方式で、ここではウォレットの�
 | PostgreSQL `ipfs_records` | メタデータインデックス | **無し** |
 | `iot-market-ui` ホーム + リスト + 既存 purchase 動線 | 商品発見と購入 | **無し** |
 
-### 3.2 v2 で **追加** するもの (v1 には存在しない)
+### 3.2 v2 で使うもの (新規に追加するものと、既存のものの再利用)
 
 | コンポーネント | 役割 |
 |---|---|
@@ -136,7 +136,7 @@ Identifier、分散型識別子) の方式で、ここではウォレットの�
 
 | 項目 | 理由 |
 |---|---|
-| KYC (Know Your Customer) / 身元確認 VC | スコープ外。将来 Stage 5+ で検討 |
+| KYC (Know Your Customer) / 身元確認 VC | スコープ外。将来 (Stage 8 以降) に検討 |
 | did:ethr 等の eth-did 統合プロトコル | MVP (Minimum Viable Product、ハンズオンで動かす最小限の実装) では eth_addr ↔ did:jwk を publisher が **off-chain で記録** |
 | マルチチェーン対応 | Hardhat ローカル前提 |
 | 価格交渉・オークション | v1 仕様のまま |
@@ -202,7 +202,7 @@ sequenceDiagram
   "iss": "did:jwk:...",
   "sub": "did:jwk:<buyer_holder>",
   "iat": 1735000000,
-  "exp": 1735086400,
+  "exp": 1766536000,
   "merchandise_address": "0x...",
   "buyer_eth_addr": "0x...",
   "tx_hash": "0x...",
@@ -303,7 +303,7 @@ claim の進行状況を返す。
 - `tx_hash`
 - `buyer_eth_addr`
 
-これらは既存の audit_log テーブルに ALTER COLUMN で追加する。
+これらは既存の audit_log テーブルに `ALTER TABLE ... ADD COLUMN` で追加する。
 
 ## 10. テスト戦略
 
@@ -347,7 +347,8 @@ e2e (end-to-end) テストには、ハンズオンの手順をそのまま用い
 2. bridge を `ssi-wallet` profile に同居させるか、別 profile (`marketplace-vc`) を
    作るか。M2 で決定する
 3. PurchaseViewerVC の TTL は 24 時間で良いか (購入後数日して気付いて閲覧する
-   ケースを想定するなら 7 日?)。ハンズオン参加者と相談して決める
+   ケースを想定するなら 7 日?)。→ 実装では個別の TTL を設けず、他の VC と同じ
+   `credential_ttl_days` (既定 365 日) とした (§6 参照)
 4. 既存の `mobile-viewer.md` は v1 ベース (= 動作未実装の `/mobile`) のまま更新
    されていない。本仕様で `/purchased/[txHash]` を新設するなら、`mobile-viewer.md`
    の刷新を M6 に含める

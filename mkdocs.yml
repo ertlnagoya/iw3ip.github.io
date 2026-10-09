@@ -71,7 +71,7 @@ plugins:
             "Wire wallet to the marketplace (v2)": マーケットと連携してみよう (v2)
             "Hand a credential to the buyer's wallet (Bridge / Stage 5)": 購入後に証明書をウォレットへ渡す (Bridge / Stage 5)
             "Tie four credentials together end-to-end (Stage 6)": 4 種類の証明書を 1 動線でつなぐ (Stage 6)
-            "Back the seller's identity (Seller VC, Stage 7)": 出品者の身元を裏付ける (Seller VC / Stage 7)
+            "Back the seller's identity (Seller VC / Stage 7)": 出品者の身元を裏付ける (Seller VC / Stage 7)
             "Marketplace as a phone app (Stage A)": スマホアプリで購入から閲覧まで (Stage A)
             "Process data before sharing": データ処理を入れてみよう (段階アクセス + 画像処理 + VLM)
             "Tier the response by trust (DataUserVC / Stage T)": 信頼度に応じて見せる中身を変える (DataUserVC / Stage T)
@@ -150,7 +150,7 @@ nav:
           - "Wire wallet to the marketplace (v2)":
               - "Hand a credential to the buyer's wallet (Bridge / Stage 5)": hands-on/marketplace-vc-bridge.md
               - "Tie four credentials together end-to-end (Stage 6)": hands-on/marketplace-vc-end-to-end.md
-              - "Back the seller's identity (Seller VC, Stage 7)": hands-on/marketplace-seller-vc.md
+              - "Back the seller's identity (Seller VC / Stage 7)": hands-on/marketplace-seller-vc.md
               - "Marketplace as a phone app (Stage A)": hands-on/marketplace-mobile-app.md
           - "Process data before sharing":
               - "Tier the response by trust (DataUserVC / Stage T)": hands-on/data-user-vc-tiered.md

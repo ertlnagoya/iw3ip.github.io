@@ -4,7 +4,7 @@
     This is the design spec for **v2**, which connects the marketplace to an SSI (Self-Sovereign Identity) wallet on a smartphone.
     The existing system is called **v1** and the system implemented by this spec is called **v2**;
     the common parts and the derived parts are stated explicitly. This document is the draft for milestone M1 (design freeze) in §11.
-    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in §5 of the [VC architecture overview](vc-architecture-overview.md)).
+    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Seven hands-on stages" section of the [VC architecture overview](vc-architecture-overview.md)).
     This spec corresponds to the Stage 5 hands-on [marketplace-vc-bridge](../hands-on/marketplace-vc-bridge.md).
 
 ## 1. Relationship between v1 and v2
@@ -136,7 +136,7 @@ Identifier) method that derives the identifier from a public key (JWK); here it 
 
 | Item | Reason |
 |---|---|
-| KYC (Know Your Customer) / identity verification VC | Out of scope. To be considered in a future Stage 5+ |
+| KYC (Know Your Customer) / identity verification VC | Out of scope. To be considered in the future (Stage 8 and later) |
 | eth-did integration protocols such as did:ethr | In the MVP (Minimum Viable Product, the minimal implementation run in the hands-on), the publisher **records eth_addr ↔ did:jwk off-chain** |
 | Multi-chain support | Assumes local Hardhat |
 | Price negotiation / auctions | Unchanged from the v1 spec |
@@ -202,7 +202,7 @@ sequenceDiagram
   "iss": "did:jwk:...",
   "sub": "did:jwk:<buyer_holder>",
   "iat": 1735000000,
-  "exp": 1735086400,
+  "exp": 1766536000,
   "merchandise_address": "0x...",
   "buyer_eth_addr": "0x...",
   "tx_hash": "0x...",
@@ -305,7 +305,7 @@ New recorded items:
 - `tx_hash`
 - `buyer_eth_addr`
 
-These are added to the existing audit_log table with ALTER COLUMN.
+These are added to the existing audit_log table with `ALTER TABLE ... ADD COLUMN`.
 
 ## 10. Test strategy
 
@@ -349,7 +349,8 @@ The e2e (end-to-end) test uses the hands-on procedure as is.
 2. Whether to place the bridge in the `ssi-wallet` profile or create a separate profile (`marketplace-vc`).
    To be decided in M2
 3. Whether a 24-hour TTL is right for the PurchaseViewerVC (7 days, if we assume the case where the buyer
-   notices and views the data several days after the purchase?). To be decided in consultation with hands-on participants
+   notices and views the data several days after the purchase?). → The implementation does not use a separate TTL;
+   it follows `credential_ttl_days` (default 365 days), as for the other VCs (see §6)
 4. The existing `mobile-viewer.md` is still based on v1 (= the unimplemented `/mobile`) and has not been
    updated. If this spec adds `/purchased/[txHash]`, include the rewrite of `mobile-viewer.md`
    in M6
@@ -360,4 +361,4 @@ The e2e (end-to-end) test uses the hands-on procedure as is.
 - [SSI Viewer hands-on (Stage 3)](../hands-on/ha-ssi-viewer.md)
 - [SSI Service hands-on (Stage 4 prep)](../hands-on/ha-ssi-service.md)
 - [Marketplace × Wallet bridge hands-on (Stage 5)](../hands-on/marketplace-vc-bridge.md)
-- [VC architecture overview](vc-architecture-overview.md) (the list of Stage numbers is in §5)
+- [VC architecture overview](vc-architecture-overview.md) (the list of Stage numbers is in the "Seven hands-on stages" section)

@@ -22,7 +22,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
     In Stage A, you choose what to purchase from the list of Merchandise registered by the
     deploy script of Stage 6 case B and later. If you choose `home/event/possible_littering` or
     `home/event/flood_risk_high`, you can confirm that the same camera and sensor
-    events as in Stage 0
+    events as in Stage 0 (see the [Hands-on overview](index.md#part-phase-stage) for the list of Stages)
     ([webcam-event-sharing](webcam-event-sharing.md) /
     [environment-disaster](environment-disaster.md))
     can be read through a purchase (PurchaseViewerVC).
