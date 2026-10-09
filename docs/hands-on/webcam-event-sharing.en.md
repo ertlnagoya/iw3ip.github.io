@@ -59,9 +59,9 @@ Matching sample files:
 
 Exercise programs:
 
-- [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_webcam_event_sharing/problem_program.py)
-- [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_webcam_event_sharing/answer_program.py)
-- [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/phase2_webcam_event_sharing/README.md)
+- [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase2_webcam_event_sharing/problem_program.py)
+- [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase2_webcam_event_sharing/answer_program.py)
+- [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase2_webcam_event_sharing/README.md)
 
 This exercise asks learners to write the code that sends a `possible_littering` event to `/simulate/publish`.  
 The problem program makes it clear that a Phase 1 detection event becomes a Phase 2 condition-controlled sharing event.

@@ -10,7 +10,7 @@
 
 - 個人情報保護委員会, 顔識別機能付きカメラに関する検討資料: <https://www.ppc.go.jp/files/pdf/20220128_shiryou-2_kentoukadai.pdf>
 - 千葉尚路, 樋野公宏, 「プライバシーと調和する都市空間の防犯カメラ設置のあり方に関する研究」, 都市計画報告集, 2017: <https://www.jstage.jst.go.jp/article/reportscpij/16/2/16_124/_article/-char/ja/>
-- 自治体の防犯カメラ設置過程と運用課題を扱う事例研究, 2016: <https://www.jstage.jst.go.jp/article/journalcpij/51/3/51_357/_pdf>
+- 村中大輝, 雨宮護, 大山智也, 「地方自治体による公共空間への防犯カメラ大規模設置事業の取り組み実態と評価」, 都市計画論文集, Vol.51, No.3, pp.357-364, 2016: <https://www.jstage.jst.go.jp/article/journalcpij/51/3/51_357/_pdf>
 
 ### 行方不明者・落とし物・公共的情報共有
 

@@ -187,7 +187,7 @@ sequenceDiagram
 
     B->>W: 提示 (verifier_request)
     W->>PUB: OID4VP /verifier/response
-    PUB->>PUB: verify, mint ViewerToken (24h)
+    PUB->>PUB: verify, mint ViewerToken (60s)
     PUB-->>W: ViewerToken
     B->>PUB: GET /platform/data?merchandise=<addr><br/>Bearer ViewerToken
     PUB->>PUB: token check + scope (merchandise)
@@ -217,7 +217,7 @@ sequenceDiagram
 ViewerVC との違い:
 
 - `merchandise_address`, `buyer_eth_addr`, `tx_hash` の 3 つが必須 (購入文脈)
-- TTL (有効期間) はウォレットでの受領後 24 時間 (購入直後のアクセスを想定)
+- VC の有効期間は、設計時点ではウォレットでの受領後 24 時間 (購入直後のアクセスを想定) としていた。現在の実装では、他の VC と同じく publisher の設定値 `credential_ttl_days` (既定 365 日) に従う。提示して得る ViewerToken の有効期間は 60 秒である
 - `allowed_actions=["read"]` は ViewerVC と同じ
 
 ## 7. eth_addr ↔ did:jwk 紐付け (MVP の選択肢)

@@ -45,6 +45,9 @@ IW3IP の全体像、実装例、ハンズオン手順をまとめたドキュ�
 
 ## まず 1 つ動かしたい場合
 
+!!! note "使用するブランチ"
+    `ha-demo` と `assistant-demo` のプロファイルは、教材リポジトリの `main` には未反映です。`ha-demo` は `codex/ha-demo-simulator` ブランチ、`assistant-demo` は `codex/phase3-frontend-demo` ブランチを checkout して実行してください。
+
 実機なしで Phase 1 / Phase 2 の基本経路を確認したい場合は、`ha-demo-simulator` から始めてください。Phase 1〜3 は基盤の発展段階を表す区分で、[プロジェクト概要のフェーズ構成](platform-overview.md#フェーズ構成) で説明しています。
 
 - 対応ページ: [Home Assistant Demo Simulator サンプル](hands-on/ha-demo-simulator.md)

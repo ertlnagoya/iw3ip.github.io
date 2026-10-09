@@ -169,9 +169,9 @@ View the collected data in a phone browser.
 
 List → buy → decrypt-from-IPFS round trip. This is the completion point of **Basic (v1)**.
 
-- List with iot-market-ui
-- Buy with MetaMask
-- Decrypt the encrypted data stored on IPFS
+1. **List**: when a sample from 1.2 writes an event file to `mediator-owner/raw_data/output`, `mediator-owner` detects it and registers it as merchandise automatically. There is no manual listing step.
+2. **Buy**: open <http://localhost:5173>, pick an item, press "Purchase", and confirm in MetaMask.
+3. **Receive**: `mediator-buyer` fetches and decrypts the encrypted data stored on IPFS and saves it under `mediator-buyer/downloads`.
 
 Detailed bring-up: [Quickstart](../setup/quickstart.md).
 

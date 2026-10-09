@@ -234,7 +234,7 @@ The scope for now is only **mapping natural language into the existing plan sche
 2. add `LLMPlanner`
 3. add a JSON validator
 4. add a fallback
-5. switch with the `PLANNER_MODE=rule_based|llm` environment variable
+5. switch with the `ASSISTANT_PLANNER_MODE=rule_based|llm` environment variable
 6. confirm JSON validation and fallback with pytest
 
 ## Expected Learning Outcome

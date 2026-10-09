@@ -234,7 +234,7 @@ LLM には少なくとも次を与えます。
 2. `LLMPlanner` を追加する
 3. JSON validator を追加する
 4. フォールバックを追加する
-5. `PLANNER_MODE=rule_based|llm` を環境変数で切り替える
+5. 環境変数 `ASSISTANT_PLANNER_MODE=rule_based|llm` で切り替える
 6. pytest で JSON 検証とフォールバックを確認する
 
 ## 期待される学習効果

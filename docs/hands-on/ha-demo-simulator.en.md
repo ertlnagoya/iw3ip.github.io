@@ -93,8 +93,8 @@ This hands-on assumes the source-code repository `Blockchain_IoT_Marketplace` on
 
 Main matching files:
 
-- [README (English)](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/README.md)
-- [README (Japanese)](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/README_ja.md)
+- [README (English)](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/README.md)
+- [README (Japanese)](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/README_ja.md)
 - [examples/ha_demo/README.md](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/examples/ha_demo/README.md)
 - [configuration.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/home-assistant-demo/config/configuration.yaml)
 - [scripts.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/ha-demo-simulator/home-assistant-demo/config/scripts.yaml)

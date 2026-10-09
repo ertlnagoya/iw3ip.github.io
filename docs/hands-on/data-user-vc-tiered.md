@@ -1007,6 +1007,8 @@ curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Ente
 
 #### 12.3.d Tier 0（denied）— §2c と同じ
 
+VLM 拡張を有効にすると tier は 4 段階になり、summary が Tier 1、denied が Tier 0 になります。§2c の「Tier 1（denied）」は、VLM 拡張を使わない 3 段階の場合の呼び方で、同じプロファイルを指します。
+
 ```bash
 curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true' | jq .
 ```

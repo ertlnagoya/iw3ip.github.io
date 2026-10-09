@@ -41,9 +41,9 @@ Use HUSKYLENS2 (or mock input) to generate events and confirm that they are prod
 
 ## Exercise Programs
 
-- [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/huskylens2_mock/problem_program.py)
-- [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/huskylens2_mock/answer_program.py)
-- [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/codex/phase2-hands-on-sample-programs/examples/hands_on/huskylens2_mock/README.md)
+- [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/huskylens2_mock/problem_program.py)
+- [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/huskylens2_mock/answer_program.py)
+- [Exercise guide](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/huskylens2_mock/README.md)
 
 This exercise asks learners to build a mock event file under `mediator-owner/raw_data/output`.  
 In the problem program, the main task is to complete `build_event()` and understand the minimum JSON structure for a HUSKYLENS2 detection event.

@@ -68,7 +68,7 @@ Required claims beyond a regular ViewerVC:
 - `allowed_actions: ["read"]`
 
 VCT: `https://iw3ip.example/credentials/PurchaseViewerVC/v1`
-TTL: 24 h (subject to review)
+TTL: 24 h in the original design. The current implementation follows the publisher setting `credential_ttl_days` (default 365 days), as for the other VCs; the ViewerToken obtained by presenting it lives 60 seconds.
 
 ## 5. eth_addr ↔ did:jwk binding
 

@@ -172,11 +172,11 @@ VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-
 出品 → 購入 → 暗号化 IPFS から復号して受け取り、までを一通り行います。
 ここまでが **基本 (v1)** の完了点です。
 
-- iot-market-ui で出品する
-- MetaMask で購入する
-- IPFS に保存された暗号化データを復号して受け取る
+1. **出品**: 1.2 のサンプルが `mediator-owner/raw_data/output` にイベントファイルを出力すると、`mediator-owner` がそれを検知して自動で商品として登録します。手動の出品操作はありません。
+2. **購入**: ブラウザで <http://localhost:5173> を開き、商品を選んで「Purchase」を押し、MetaMask で承認します。
+3. **受け取り**: `mediator-buyer` が、IPFS に保存された暗号化データを取得・復号し、`mediator-buyer/downloads` に保存します。
 
-詳しい起動手順は [最短起動](../setup/quickstart.md) にあります。
+各プロセスの起動手順は [最短起動](../setup/quickstart.md) にあります。
 
 ### Part 1 の成功判定
 
