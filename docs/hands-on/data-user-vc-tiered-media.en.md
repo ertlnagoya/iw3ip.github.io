@@ -10,9 +10,8 @@ This page continues [Tier the response by trust](data-user-vc-tiered.md) (§0–
 >
 > **Time**: ~90 min
 
-As on the first page, the command examples assume that the PC's LAN IP is
-`192.168.68.53` and that the course repository is cloned to
-`~/program/Blockchain_IoT_Marketplace`. Options A / B / C are compared in
+As on the first page, the command examples assume that the course repository is cloned to
+`~/program/Blockchain_IoT_Marketplace`. `$HOST_IP` and `<HOST_IP>` are the PC's LAN IP (see the [Hands-on overview](index.md#host-ip) for how to set it). Options A / B / C are compared in
 [§0b](data-user-vc-tiered.md#0b-choosing-how-to-carry-the-actual-image--video-bytes).
 
 ## 8. Real-data integration (Option B — HTTP media gateway)
@@ -28,7 +27,7 @@ folds it into the event payload as `image_url` / `video_url`.
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
-  --base-url http://192.168.68.53:8080
+  --base-url http://$HOST_IP:8080
 ```
 
 The script:
@@ -51,7 +50,7 @@ real photo / clip:
 
 ```bash
 python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
-  --base-url http://192.168.68.53:8080 \
+  --base-url http://$HOST_IP:8080 \
   --image /path/to/snapshot.jpg \
   --video /path/to/clip.mp4 \
   --video-duration-sec 12
@@ -95,7 +94,7 @@ docker compose -f infra/docker-compose.yml ps ipfs
 Verify the publisher picked up the env vars:
 
 ```bash
-curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer >/dev/null
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer >/dev/null
 docker compose -f infra/docker-compose.yml exec publisher \
   python -c "from publisher.app.config import Settings; \
              s=Settings(); \
@@ -111,7 +110,7 @@ example path; substitute a file of your own):
 
 ```bash
 python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
-  --base-url http://192.168.68.53:8080 \
+  --base-url http://$HOST_IP:8080 \
   --image /tmp/stage_t_demo.jpg \
   --video /tmp/stage_t_demo.jpg
 ```
@@ -121,12 +120,12 @@ Expected output (`cid` starts with `bafk...`):
 ```json
 [upload] {
   "image": {
-    "url": "http://192.168.68.53:8080/media/<sha256>.jpg",
+    "url": "http://<HOST_IP>:8080/media/<sha256>.jpg",
     "sha256": "...",
     "content_type": "image/jpeg",
     "byte_size": 7645,
     "cid": "bafkreigb...",
-    "ipfs_gateway_url": "http://192.168.68.53:8080/ipfs/bafkreigb..."
+    "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreigb..."
   },
   ...
 }
@@ -143,16 +142,16 @@ for Tier 2 / Tier 3:
 
 ```bash
 curl -s -H "authorization: Bearer $TOK_GOV" \
-  "http://192.168.68.53:8080/platform/data?dataset_id=home/event/possible_littering" \
-  | jq '.rows[0] | {image_cid, image_url, ipfs_gateway: ("http://192.168.68.53:8080/ipfs/"+.image_cid)}'
+  "http://$HOST_IP:8080/platform/data?dataset_id=home/event/possible_littering" \
+  | jq --arg h "$HOST_IP" '.rows[0] | {image_cid, image_url, ipfs_gateway: ("http://"+$h+":8080/ipfs/"+.image_cid)}'
 ```
 
 Open any of these on the buyer's iPhone Safari:
 
 | Method | Example URL |
 |---|---|
-| Publisher HTTP gateway | `http://192.168.68.53:8080/media/<sha256>.jpg` (Option B compatible) |
-| Publisher IPFS proxy | `http://192.168.68.53:8080/ipfs/<cid>` |
+| Publisher HTTP gateway | `http://<HOST_IP>:8080/media/<sha256>.jpg` (Option B compatible) |
+| Publisher IPFS proxy | `http://<HOST_IP>:8080/ipfs/<cid>` |
 | Public IPFS gateway | `https://ipfs.io/ipfs/<cid>` (needs internet) |
 
 The last entry is the punchline: even with the publisher offline, the
@@ -205,8 +204,8 @@ URL** on either device — the page detects the user agent and switches
 mode:
 
 ```
-iPhone Safari:  http://192.168.68.53:8080/buyer/start?ds=home/event/possible_littering
-PC Chrome:      http://192.168.68.53:8080/buyer/start?ds=home/event/possible_littering
+iPhone Safari:  http://<HOST_IP>:8080/buyer/start?ds=home/event/possible_littering
+PC Chrome:      http://<HOST_IP>:8080/buyer/start?ds=home/event/possible_littering
 ```
 
 ### 10.2 Same-device (iPhone) flow
@@ -366,7 +365,7 @@ No special prep beyond having `docker compose ... up -d publisher`
 running. From a PC browser:
 
 ```
-http://192.168.68.53:8080/provider/start?ds=home/event/possible_littering
+http://<HOST_IP>:8080/provider/start?ds=home/event/possible_littering
 ```
 
 `ds=` is a **hint** only (SellerVC verification isn't dataset-scoped),

@@ -65,7 +65,7 @@ Bearer ヘッダで添えて `/platform/ingest` を呼び出す想定です。
 - publisher が `feat/ssi-service-vc` 以降のコードで起動している
 - スマホ wallet で ServiceVC を保持する経路を試す場合、
   iw3ip-wallet が利用可能
-- 本ページでは PC の LAN IP を `192.168.68.53` として示します。自分の環境の IP (`ipconfig getifaddr en0` などで確認) に読み替えてください
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 
 ## 1. 起動とメタデータ確認
 
@@ -75,7 +75,7 @@ PUB=$(docker ps -qf name=publisher)
 
 # ServiceVC が含まれていることを確認 (現在のリリースでは ConsentVC /
 # ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC の 5 種が並ぶ)
-curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ServiceVC
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ServiceVC
 ```
 
 `"vct": "https://iw3ip.example/credentials/ServiceVC/v1"` が表示されれば成功です。
@@ -86,7 +86,7 @@ curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3
 スマホ wallet を使うのが簡単です。PC ブラウザで:
 
 ```
-http://192.168.68.53:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temperature&purpose=write_continuous
+http://<HOST_IP>:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temperature&purpose=write_continuous
 ```
 
 表示された QR (または deeplink) をスマホ wallet で開き、受領します。
@@ -99,7 +99,7 @@ claim:
 ## 3. ServiceVC を提示
 
 ```
-http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ServiceVC
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ServiceVC
 ```
 
 `vc_kind=ServiceVC` は必須です (指定しないと ConsentVC 用の Presentation Definition が選ばれます)。
@@ -118,7 +118,7 @@ service_token_issued jti=... token=... dataset=home/env/temperature ttl=3600s
 SERVICE=<service_token>
 
 for i in 1 2 3 4 5; do
-  curl -s -X POST http://192.168.68.53:8080/platform/ingest \
+  curl -s -X POST http://$HOST_IP:8080/platform/ingest \
     -H "Authorization: Bearer $SERVICE" \
     -H "Content-Type: application/json" \
     -d "{\"dataset_id\":\"home/env/temperature\",\"value\":$((20 + i))}" \
@@ -133,7 +133,7 @@ PolicyToken のように 2 回目で `403 already_consumed` にはなりませ�
 ## 5. write_count を audit log で確認
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=10' | python3 -m json.tool | head -60
+curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool | head -60
 ```
 
 各 ingest が次の形で記録されます:

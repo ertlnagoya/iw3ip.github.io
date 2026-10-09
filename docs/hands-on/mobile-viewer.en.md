@@ -65,12 +65,12 @@ For a first pass, these five steps are enough.
 1. prepare `iot-market-ui/.env.local` and set the endpoint for your setup (`127.0.0.1` for PC-only, the LAN IP for a phone)
 2. start `iot-market-ui` on `0.0.0.0:5173`
 3. check the PC LAN IP
-4. open `http://<LAN_IP>:5173/` from the smartphone (homepage)
+4. open `http://<HOST_IP>:5173/` from the smartphone (homepage)
 5. confirm that the search UI is visible
 
 Branches after that:
 
-- **Specific item**: open `http://<LAN_IP>:5173/merchandise/<address>` directly
+- **Specific item**: open `http://<HOST_IP>:5173/merchandise/<address>` directly
   (use a Merchandise address from the Hardhat deploy output)
 - **Purchase path**: open the same URL in MetaMask Mobile
 - **VC-mediated path (v2)**: jump to [Stage 5](marketplace-vc-bridge.md);
@@ -101,8 +101,8 @@ Edit `.env.local` and set the host for your scenario.
 - **From a phone**: replace it with the PC's LAN IP (see step 2).
 
     ```
-    VITE_RPC_URL=http://<YOUR_PC_LAN_IP>:8545
-    VITE_PUBLISHER_URL=http://<YOUR_PC_LAN_IP>:8080
+    VITE_RPC_URL=http://<HOST_IP>:8545
+    VITE_PUBLISHER_URL=http://<HOST_IP>:8080
     ```
 
 !!! warning "Expose the Hardhat node on the LAN for phone access"
@@ -132,20 +132,20 @@ You can now build the URL to open from the smartphone. Next, open the page on th
 ## Open from smartphone
 
 ```txt
-http://<YOUR_PC_LAN_IP>:5173/
+http://<HOST_IP>:5173/
 ```
 
 For an individual item (Merchandise contract address from the
 Hardhat deploy):
 
 ```txt
-http://<YOUR_PC_LAN_IP>:5173/merchandise/<merchandise_address>
+http://<HOST_IP>:5173/merchandise/<merchandise_address>
 ```
 
 Use MetaMask mobile in-app browser for purchase actions. Add the local chain
 network to MetaMask Mobile beforehand:
 
-- RPC URL: `http://<YOUR_PC_LAN_IP>:8545` (e.g. `http://192.168.1.20:8545`)
+- RPC URL: `http://<HOST_IP>:8545` (e.g. `http://192.168.1.20:8545`)
 - Chain ID: `31337` / Currency symbol: `ETH`
 
 If MetaMask rejects the network, confirm the node was started with

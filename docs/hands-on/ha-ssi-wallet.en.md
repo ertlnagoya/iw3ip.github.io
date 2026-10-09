@@ -63,6 +63,7 @@ Pipeline:
 
 - Docker / Docker Compose available
 - PC and phone on the same LAN
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - Installable `iw3ip-wallet` (fork) build on the phone
   (TestFlight / internal APK / Expo dev build)
 - You have completed the [HA x SSI Publisher Sample](ha-ssi-publisher.md) once
@@ -120,25 +121,41 @@ Points to verify:
 Open `iw3ip-wallet` on the phone and complete first-run setup.
 An initial key is generated as `did:jwk`.
 
+Right after first run, only the wallet's own card (Holder details) is shown.
+
+![Wallet right after first run](images/ha-ssi-wallet/05-holder-details.png){ width="220" }
+
 ## 4. Issue via issuer QR
 
 Open in the PC browser:
 
 ```txt
-http://<PC_LAN_IP>:8080/issuer/offer?type=ConsentVC&dataset_id=home/env/temperature&purpose=research
+http://<HOST_IP>:8080/issuer/offer?type=ConsentVC&dataset_id=home/env/temperature&purpose=research
 ```
 
-Scan the displayed QR with the wallet, approve, and store the VC.
+Scan the displayed QR with the wallet. Because this is the first interaction with the publisher, the wallet asks for confirmation. Choose "はい、続行" (Yes, continue), and answer the follow-up confirmation the same way. The hands-on publisher is not in the wallet's trusted list, so it is shown as a low trust level.
+
+| Confirm the party | Confirm to continue |
+|---|---|
+| ![Confirm the party](images/ha-ssi-wallet/04-trust-prompt.png){ width="220" } | ![Confirm to continue](images/ha-ssi-wallet/03-trust-confirm-modal.png){ width="220" } |
+
+The wallet shows the content of the VC being issued; accept it. Once stored, "IW3IP 同意クレデンシャル" (IW3IP consent credential) appears in the list.
+
+| Content of the offered VC | List after storing |
+|---|---|
+| ![Content of the offered VC](images/ha-ssi-wallet/02-credential-offer.png){ width="220" } | ![List after storing](images/ha-ssi-wallet/01-credential-list.png){ width="220" } |
 
 ## 5. Present via verifier QR
 
 Open in the PC browser:
 
 ```txt
-http://<PC_LAN_IP>:8080/verifier/request?dataset_id=home/env/temperature&purpose=research
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&purpose=research
 ```
 
-Scan the QR with the wallet and select the matching VC to present.
+Scan the QR with the wallet. It shows the request and the fields of the VC to be presented; review them and choose "共有" (Share).
+
+![Presentation confirmation screen](images/ha-ssi-wallet/09-vp-information-request.png){ width="220" }
 
 Expected result:
 
@@ -181,6 +198,10 @@ Points to verify:
 - Compared with HA x SSI Publisher, the log additionally records
   "who presented which VC" rather than just the policy outcome
 
+The wallet keeps a history as well. Open the VC card to see when it was received and when it was presented to which party.
+
+![Wallet activity history](images/ha-ssi-wallet/10-card-activity.png){ width="220" }
+
 ## 8. Pull shared data
 
 Pass the `policy_token` from §5 as a `Authorization: Bearer` header to
@@ -199,7 +220,7 @@ Request:
 ```bash
 TOKEN=<policy_token>  # from the verifier response in §5
 
-curl -X POST http://<PC_LAN_IP>:8080/platform/ingest \
+curl -X POST http://$HOST_IP:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -218,7 +239,7 @@ Expected result:
 The audit log gains a PolicyToken consumption entry:
 
 ```bash
-curl 'http://<PC_LAN_IP>:8080/audit/logs?limit=5'
+curl "http://$HOST_IP:8080/audit/logs?limit=5"
 ```
 
 ```json

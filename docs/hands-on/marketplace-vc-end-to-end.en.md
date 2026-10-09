@@ -79,7 +79,7 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)
 - The existing publisher + bridge + Hardhat + iot-market-ui are assumed to stay running
   and to be used as they are
-- This page uses `192.168.68.53` as the LAN IP, so replace it with the IP of your environment
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet cloned to `~/program/iw3ip-wallet`
 - In this hands-on, **one iPhone wallet plays two roles (seller + buyer)**
   for a single person (separating seller and buyer as in real operation is future work)
@@ -132,7 +132,7 @@ If you get stuck, see [Troubleshooting in the Stage 5 hands-on](marketplace-vc-b
 In a PC browser (Mac):
 
 ```
-http://192.168.68.53:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temperature&purpose=write_continuous
+http://<HOST_IP>:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temperature&purpose=write_continuous
 ```
 
 Show the QR code → scan it with the iPhone wallet → **approve "IW3IP Service Credential"**.
@@ -140,7 +140,7 @@ Show the QR code → scan it with the iPhone wallet → **approve "IW3IP Service
 Then present it:
 
 ```
-http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ServiceVC
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ServiceVC
 ```
 
 QR code → **select the ServiceVC** in the wallet and present it.
@@ -152,7 +152,7 @@ PUB=$(docker ps -qf name=publisher)
 SERVICE=$(docker logs $PUB 2>&1 | grep "service_token_issued" | tail -1 | sed -E 's/.*token=([^ ]+).*/\1/')
 
 for i in 1 2 3 4 5; do
-  curl -s -X POST http://192.168.68.53:8080/platform/ingest \
+  curl -s -X POST http://$HOST_IP:8080/platform/ingest \
     -H "Authorization: Bearer $SERVICE" \
     -H "Content-Type: application/json" \
     -d "{\"dataset_id\":\"home/env/temperature\",\"value\":$((30 + i))}" \
@@ -250,6 +250,8 @@ ENCODED=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv
 open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 ```
 
+`open` is a macOS command. On Linux use `xdg-open`, on Windows (WSL) use `explorer.exe`, or paste the printed URL into a browser.
+
 Scan the QR code with the iPhone wallet and approve "IW3IP Purchase Viewer Credential". The command above sends the deeplink to an external QR generation service, so do not use it outside a local hands-on environment.
 
 Confirm in the wallet that the VC claims contain `dataset_id: home/env/temperature`.
@@ -257,7 +259,7 @@ Confirm in the wallet that the VC claims contain `dataset_id: home/env/temperatu
 audit:
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool | grep -A1 marketplace/issued
+curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool | grep -A1 marketplace/issued
 ```
 
 → `eth_did_bound:claim=...:eth=0x3C44...:tx=0x...`
@@ -278,7 +280,7 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool | 
 Request a presentation in a PC browser:
 
 ```
-http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=PurchaseViewerVC
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=PurchaseViewerVC
 ```
 
 QR code → in the wallet, select the **PurchaseViewerVC** (do not confuse it with the ServiceVC or the ViewerVC) and present it.
@@ -290,7 +292,7 @@ echo "TOKEN=$TOKEN"
 
 MERCHANDISE=0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6
 curl -s -H "Authorization: Bearer $TOKEN" \
-  "http://192.168.68.53:8080/platform/data?merchandise=$MERCHANDISE" | python3 -m json.tool
+  "http://$HOST_IP:8080/platform/data?merchandise=$MERCHANDISE" | python3 -m json.tool
 ```
 
 ### Expected output
@@ -323,7 +325,7 @@ The Buyer has read the five rows that the Seller wrote in Step E1. This complete
 - For one dataset, multiple subjects and operations are recorded in order
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=20' | python3 -m json.tool \
+curl -s "http://$HOST_IP:8080/audit/logs?limit=20" | python3 -m json.tool \
   | grep -E "raw_topic|reason|holder_did|subject_did" | head -40
 ```
 

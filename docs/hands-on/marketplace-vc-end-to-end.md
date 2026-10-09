@@ -80,7 +80,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
   を一通り通している
 - 既存の publisher + bridge + Hardhat + iot-market-ui を稼働させたまま、
   そのまま使う想定
-- LAN IP は `192.168.68.53` で示すので、あなたの環境の IP に読み替えてください
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 - このハンズオンでは **同一 iPhone wallet が 1 人で 2 役 (seller + buyer)**
   を兼ねます (実運用の seller / buyer 分離は将来課題)
@@ -132,7 +132,7 @@ npm run dev -- --host 0.0.0.0 --port 5173
 PC ブラウザ (Mac) で:
 
 ```
-http://192.168.68.53:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temperature&purpose=write_continuous
+http://<HOST_IP>:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temperature&purpose=write_continuous
 ```
 
 QR を表示 → iPhone wallet で読み取り → **「IW3IP Service Credential」承認**。
@@ -140,7 +140,7 @@ QR を表示 → iPhone wallet で読み取り → **「IW3IP Service Credential
 そのまま提示:
 
 ```
-http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ServiceVC
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ServiceVC
 ```
 
 QR → wallet で **ServiceVC を選択**して提示。
@@ -152,7 +152,7 @@ PUB=$(docker ps -qf name=publisher)
 SERVICE=$(docker logs $PUB 2>&1 | grep "service_token_issued" | tail -1 | sed -E 's/.*token=([^ ]+).*/\1/')
 
 for i in 1 2 3 4 5; do
-  curl -s -X POST http://192.168.68.53:8080/platform/ingest \
+  curl -s -X POST http://$HOST_IP:8080/platform/ingest \
     -H "Authorization: Bearer $SERVICE" \
     -H "Content-Type: application/json" \
     -d "{\"dataset_id\":\"home/env/temperature\",\"value\":$((30 + i))}" \
@@ -247,13 +247,15 @@ ENCODED=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv
 open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 ```
 
+`open` は macOS のコマンドです。Linux では `xdg-open`、Windows (WSL) では `explorer.exe` に読み替えるか、表示された URL をブラウザに貼り付けてください。
+
 iPhone wallet で QR を読み取り、「IW3IP Purchase Viewer Credential」を承認します。上のコマンドは deeplink を外部の QR 生成サービスに送るため、ローカルのハンズオン環境以外では使わないでください。
 
 VC claims に `dataset_id: home/env/temperature` が入っていることを wallet で確認。
 
 audit:
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool | grep -A1 marketplace/issued
+curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool | grep -A1 marketplace/issued
 ```
 → `eth_did_bound:claim=...:eth=0x3C44...:tx=0x...`
 
@@ -272,7 +274,7 @@ curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool | 
 PC ブラウザで提示要求:
 
 ```
-http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=PurchaseViewerVC
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=PurchaseViewerVC
 ```
 
 QR → wallet で **PurchaseViewerVC** (ServiceVC や ViewerVC と間違えないこと) を選んで提示。
@@ -284,7 +286,7 @@ echo "TOKEN=$TOKEN"
 
 MERCHANDISE=0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6
 curl -s -H "Authorization: Bearer $TOKEN" \
-  "http://192.168.68.53:8080/platform/data?merchandise=$MERCHANDISE" | python3 -m json.tool
+  "http://$HOST_IP:8080/platform/data?merchandise=$MERCHANDISE" | python3 -m json.tool
 ```
 
 ### 期待出力
@@ -316,7 +318,7 @@ Step E1 で Seller が書いた 5 件を Buyer が読み出せました。これ
 - 1 つの dataset について、複数の主体と操作が順に記録されている
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=20' | python3 -m json.tool \
+curl -s "http://$HOST_IP:8080/audit/logs?limit=20" | python3 -m json.tool \
   | grep -E "raw_topic|reason|holder_did|subject_did" | head -40
 ```
 

@@ -64,14 +64,14 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 - You have completed the Stage 5 / 6 / 7 hands-ons
 - You can start publisher + bridge + Hardhat + iot-market-ui
 - iw3ip-wallet (iPhone) works
-- The LAN IP is shown as `192.168.68.53`; replace it with the IP of your environment
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet to `~/program/iw3ip-wallet`
 
 ## Overview
 
 ```
 [First launch]
-   iPhone Safari → http://192.168.68.53:5173/welcome
+   iPhone Safari → http://<HOST_IP>:5173/welcome
         ↓ complete the 3 steps → "マーケットへ進む" (Go to the market)
 [Add to Home Screen]
    Safari menu → Add to Home Screen
@@ -108,8 +108,8 @@ git checkout main && git pull --ff-only
 
 cd iot-market-ui
 cat > .env.local <<EOF
-VITE_RPC_URL=http://192.168.68.53:8545
-VITE_PUBLISHER_URL=http://192.168.68.53:8080
+VITE_RPC_URL=http://$HOST_IP:8545
+VITE_PUBLISHER_URL=http://$HOST_IP:8080
 EOF
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
@@ -118,10 +118,10 @@ npm run dev -- --host 0.0.0.0 --port 5173
 
 ```
 VITE v5.x.x  ready in xxx ms
-➜  Network: http://192.168.68.53:5173/
+➜  Network: http://<HOST_IP>:5173/
 ```
 
-When you open `http://192.168.68.53:5173/welcome` in iPhone Safari, the 3-step
+When you open `http://<HOST_IP>:5173/welcome` in iPhone Safari, the 3-step
 onboarding screen appears.
 
 ---
@@ -136,7 +136,7 @@ onboarding screen appears.
 
 ### Steps (iPhone)
 
-1. Open `http://192.168.68.53:5173/` in Safari
+1. Open `http://<HOST_IP>:5173/` in Safari
 2. Tap the **share button** (a square with an upward arrow) at the bottom of the screen
 3. Select **"ホーム画面に追加" (Add to Home Screen)**
 4. Check the name (for example, `IW3IP`) and tap **"追加" (Add)**
@@ -165,7 +165,7 @@ onboarding screen appears.
 
 ### Steps (iPhone, launched from the home screen app or Safari)
 
-Open `http://192.168.68.53:5173/welcome` → read the three steps shown and
+Open `http://<HOST_IP>:5173/welcome` → read the three steps shown and
 tap through them.
 
 ### Expected display
@@ -197,7 +197,7 @@ tapping "もう入っています" (Already installed) twice takes you to `/`.
 ### Steps (iPhone, MetaMask Mobile)
 
 1. Open MetaMask Mobile → in the built-in browser (the globe icon at the bottom right), open
-   `http://192.168.68.53:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9`
+   `http://<HOST_IP>:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9`
    (Merchandise #1, created by the deploy script)
 2. Tap "Connect your wallet!" to connect MetaMask
 3. Press the "Purchase" button and **Confirm** on the MetaMask side
@@ -293,7 +293,7 @@ iw3ip-wallet launches and shows the "IW3IP 購入閲覧クレデンシャル" (I
 **Fix**:
 
 - Confirm that you opened the page in Safari (the iOS default)
-- Open `http://192.168.68.53:5173/manifest.webmanifest` directly and check that JSON is
+- Open `http://<HOST_IP>:5173/manifest.webmanifest` directly and check that JSON is
   displayed
 - Confirm that you opened the page with the LAN IP, not `http://localhost`
 

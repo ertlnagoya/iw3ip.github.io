@@ -74,6 +74,7 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 
 - Docker / Docker Compose が使える
 - PC とスマホが同じ LAN に接続されている
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - スマホに `iw3ip-wallet`（fork 版）のビルドをインストールできる
   （TestFlight / 内部配布 APK / Expo dev build のいずれか）
 - [HA x SSI Publisher サンプル](ha-ssi-publisher.md) の構成を一度起動できている
@@ -131,25 +132,41 @@ curl http://localhost:8080/verifier/presentation-definitions/consent-temperature
 `iw3ip-wallet` をスマホで起動し、初回ログインを完了します。
 初期鍵は `did:jwk` として生成されます。
 
+起動直後は、ウォレット自身のカード (Holder details) だけが表示されます。
+
+![起動直後のウォレット](images/ha-ssi-wallet/05-holder-details.png){ width="220" }
+
 ## 4. Issuer QR で発行
 
 PC ブラウザで以下を開きます。
 
 ```txt
-http://<PCのLAN_IP>:8080/issuer/offer?type=ConsentVC&dataset_id=home/env/temperature&purpose=research
+http://<HOST_IP>:8080/issuer/offer?type=ConsentVC&dataset_id=home/env/temperature&purpose=research
 ```
 
-表示された QR をスマホウォレットから読み取り、提示同意 → VC を保存します。
+表示された QR をスマホウォレットで読み取ります。初めての相手 (publisher) なので確認の画面が出ます。「はい、続行」を選び、続く確認にも「はい、続行」と答えます。ハンズオンの publisher はウォレットが信頼する一覧に入っていないため、「低い信頼レベル」と表示されます。
+
+| 相手の確認 | 続行の確認 |
+|---|---|
+| ![相手の確認](images/ha-ssi-wallet/04-trust-prompt.png){ width="220" } | ![続行の確認](images/ha-ssi-wallet/03-trust-confirm-modal.png){ width="220" } |
+
+発行される VC の内容が表示されるので、受け取ります。保存されると、一覧に「IW3IP 同意クレデンシャル」が加わります。
+
+| 受け取る VC の内容 | 保存後の一覧 |
+|---|---|
+| ![受け取る VC の内容](images/ha-ssi-wallet/02-credential-offer.png){ width="220" } | ![保存後の一覧](images/ha-ssi-wallet/01-credential-list.png){ width="220" } |
 
 ## 5. Verifier QR で提示
 
 PC ブラウザで以下を開きます。
 
 ```txt
-http://<PCのLAN_IP>:8080/verifier/request?dataset_id=home/env/temperature&purpose=research
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&purpose=research
 ```
 
-表示された QR をウォレットで読み取り、該当する VC を選択して提示します。
+表示された QR をウォレットで読み取ります。要求の内容と、提示する VC の項目が表示されるので、確認して「共有」を選びます。
+
+![提示の確認画面](images/ha-ssi-wallet/09-vp-information-request.png){ width="220" }
 
 期待結果:
 
@@ -192,6 +209,10 @@ curl 'http://localhost:8080/audit/logs?limit=10'
 - HA x SSI Publisher サンプルの監査ログと比べ、ポリシー判定の結果に加えて
   「誰がどの VC を提示したか」が残る
 
+ウォレット側にも履歴が残ります。VC のカードを開くと、受け取った時刻と、どの相手にいつ提示したかを確認できます。
+
+![ウォレットの履歴](images/ha-ssi-wallet/10-card-activity.png){ width="220" }
+
 ## 8. 共有データを取得する
 
 §5 で得た `policy_token` を `Authorization: Bearer` ヘッダに付けて
@@ -210,7 +231,7 @@ PolicyToken の性質:
 ```bash
 TOKEN=<policy_token>  # §5 の verifier レスポンスから取得
 
-curl -X POST http://<PCのLAN_IP>:8080/platform/ingest \
+curl -X POST http://$HOST_IP:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -229,7 +250,7 @@ curl -X POST http://<PCのLAN_IP>:8080/platform/ingest \
 監査ログには PolicyToken 消費イベントが追加されます。
 
 ```bash
-curl 'http://<PCのLAN_IP>:8080/audit/logs?limit=5'
+curl "http://$HOST_IP:8080/audit/logs?limit=5"
 ```
 
 ```json

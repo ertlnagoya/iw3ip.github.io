@@ -56,7 +56,7 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 - [SSI Wallet ハンズオン](ha-ssi-wallet.md) の §1〜§8 を一度通している
 - publisher が `feat/ssi-viewer-vc` 以降のコードで起動している
 - スマホで `iw3ip-wallet` が使える
-- 本ページでは PC の LAN IP を `192.168.68.53` として示します。自分の環境の IP (`ipconfig getifaddr en0` などで確認) に読み替えてください
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 
 ## 関連リポジトリ
 
@@ -75,13 +75,13 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
-curl http://192.168.68.53:8080/health
+curl http://$HOST_IP:8080/health
 ```
 
 `/.well-known/openid-credential-issuer` に **`ConsentVC` と `ViewerVC` の両方** が登録されていることを確認します。
 
 ```bash
-curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ViewerVC
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ViewerVC
 ```
 
 ## 2. ConsentVC でデータを書き込む（おさらい）
@@ -95,11 +95,11 @@ ConsentVC を提示 → PolicyToken 取得 → `/platform/ingest` でデータ�
 PC ブラウザで:
 
 ```txt
-http://192.168.68.53:8080/issuer/offer?type=ViewerVC&dataset_id=home/env/temperature
+http://<HOST_IP>:8080/issuer/offer?type=ViewerVC&dataset_id=home/env/temperature
 ```
 
 ConsentVC のときと同じ流れですが、`type=ViewerVC` を指定します。
-QR / AirDrop deeplink でスマホウォレットに送信し、ViewerVC を保存します。
+表示された QR をスマホウォレットで読み取り、ViewerVC を保存します (iPhone と Mac の組み合わせなら、deeplink を AirDrop で送ることもできます)。
 
 ウォレット内で別カードとして表示されることを確認してください。
 Claim:
@@ -112,7 +112,7 @@ Claim:
 PC ブラウザで:
 
 ```txt
-http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ViewerVC
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ViewerVC
 ```
 
 `vc_kind=ViewerVC` の query が ConsentVC 用 PD ではなく **viewer-temperature.json** を選ばせます。
@@ -138,7 +138,7 @@ QR または deeplink でウォレットを開き、ViewerVC を選んで提示�
 TOKEN=<viewer_token>
 
 curl -s -H "Authorization: Bearer $TOKEN" \
-  'http://192.168.68.53:8080/platform/data?dataset_id=home/env/temperature' | python3 -m json.tool
+  "http://$HOST_IP:8080/platform/data?dataset_id=home/env/temperature" | python3 -m json.tool
 ```
 
 期待結果:
@@ -173,14 +173,14 @@ TTL (60 秒) 内であれば連続呼び出し可能で、各回 `read_count` �
 ```bash
 sleep 65
 curl -i -H "Authorization: Bearer $TOKEN" \
-  'http://192.168.68.53:8080/platform/data?dataset_id=home/env/temperature'
+  "http://$HOST_IP:8080/platform/data?dataset_id=home/env/temperature"
 # → 401 viewer_token_expired
 ```
 
 ## 7. 監査ログ
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=10' | python3 -m json.tool
+curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool
 ```
 
 ViewerVC 経由の read は次のように記録されます:

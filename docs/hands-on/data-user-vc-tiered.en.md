@@ -54,10 +54,9 @@ Pipeline:
 - Docker / Docker Compose
 - `curl`, `jq`
 
-The command examples on this page assume that the PC's LAN IP is
-`192.168.68.53` and that the course repository is cloned to
-`~/program/Blockchain_IoT_Marketplace`. Substitute the values for your
-own environment.
+The command examples on this page assume that the course repository is cloned to `~/program/Blockchain_IoT_Marketplace`.
+
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 
 ## 0b. Choosing how to carry the actual image / video bytes
 

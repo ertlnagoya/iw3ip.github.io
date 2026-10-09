@@ -85,8 +85,7 @@ is added to **v1 (the current marketplace + MetaMask + encrypted IPFS delivery)*
 - You have verified [Stage 1](ha-ssi-wallet.md) and [Stage 3](ha-ssi-viewer.md)
 - You can start iot-market-ui (Svelte) and the Hardhat local chain
 - iw3ip-wallet runs on a physical iPhone (connected to the Metro bundler)
-- Check your LAN IP (`ipconfig getifaddr en0`). This page uses `192.168.68.53`,
-  so replace it with the IP of your environment
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet cloned to `~/program/iw3ip-wallet`
 
 ---
@@ -227,7 +226,7 @@ git checkout main && git pull --ff-only
 cat > infra/.env <<EOF
 BRIDGE_HARDHAT_RPC=http://host.docker.internal:8545
 BRIDGE_IOT_MARKET_ADDRESS=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
-BRIDGE_PUBLIC_PUBLISHER_URL=http://192.168.68.53:8080
+BRIDGE_PUBLIC_PUBLISHER_URL=http://$HOST_IP:8080
 EOF
 
 docker compose -f infra/docker-compose.yml \
@@ -241,7 +240,7 @@ docker compose -f infra/docker-compose.yml \
 
 ```bash
 sleep 5
-curl -s http://192.168.68.53:8080/health
+curl -s http://$HOST_IP:8080/health
 ```
 
 → `{"status":"ok","service":"publisher"}`
@@ -249,7 +248,7 @@ curl -s http://192.168.68.53:8080/health
 #### 4-B. Is PurchaseViewerVC registered?
 
 ```bash
-curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A1 PurchaseViewerVC
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A1 PurchaseViewerVC
 ```
 
 →
@@ -296,7 +295,7 @@ Use a browser that **supports the MetaMask extension, such as Chrome, Firefox, o
 1. MetaMask extension icon → network name at the top → **"Add network"**
 2. Enter:
     - Network Name: `Hardhat localhost`
-    - RPC URL: `http://192.168.68.53:8545`
+    - RPC URL: `http://<HOST_IP>:8545`
     - Chain ID: `31337`
     - Currency: `ETH`
 3. After saving, switch to `Hardhat localhost`
@@ -325,8 +324,8 @@ Start iot-market-ui (Terminal D):
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
 cat > .env.local <<EOF
-VITE_RPC_URL=http://192.168.68.53:8545
-VITE_PUBLISHER_URL=http://192.168.68.53:8080
+VITE_RPC_URL=http://$HOST_IP:8545
+VITE_PUBLISHER_URL=http://$HOST_IP:8080
 EOF
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
@@ -334,7 +333,7 @@ npm run dev -- --host 0.0.0.0 --port 5173
 Open the following in a PC browser (Chrome, etc.):
 
 ```
-http://192.168.68.53:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
+http://<HOST_IP>:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 ```
 
 (This example uses Merchandise #1. Once purchased, a Merchandise moves to the IN_PROGRESS state and cannot be purchased again. When you retry, use the address of a Merchandise that has not been purchased.)
@@ -385,7 +384,7 @@ Note down this `jti=...` value because you use it later.
 #### 6-B. A marketplace/claim row in the audit log
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=2' | python3 -m json.tool
+curl -s "http://$HOST_IP:8080/audit/logs?limit=2" | python3 -m json.tool
 ```
 
 →
@@ -435,6 +434,8 @@ ENCODED=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv
 open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 ```
 
+`open` is a macOS command. On Linux use `xdg-open`, on Windows (WSL) use `explorer.exe`, or paste the printed URL into a browser.
+
 Scan the QR code with the iPhone camera. The wallet starts and shows the approval screen for "IW3IP Purchase Viewer Credential", so approve it.
 
 !!! warning "QR generation uses an external service"
@@ -453,7 +454,7 @@ Scan the QR code with the iPhone camera. The wallet starts and shows the approva
 #### 7-B. The eth↔did binding is recorded in the audit log
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool
+curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 ```
 
 →
@@ -485,7 +486,7 @@ The MetaMask key and the wallet key are now tied together on the publisher as "t
 In a PC browser:
 
 ```
-http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=PurchaseViewerVC
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=PurchaseViewerVC
 ```
 
 `vc_kind=PurchaseViewerVC` is required (without it, the Presentation Definition for ConsentVC is selected).
@@ -526,7 +527,7 @@ TOKEN=oJVsNtb5Un1NginSyyCcJavThu9WkTxRT6b8uhmWjRc
 MERCHANDISE=0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 
 curl -s -H "Authorization: Bearer $TOKEN" \
-  "http://192.168.68.53:8080/platform/data?merchandise=$MERCHANDISE" | python3 -m json.tool
+  "http://$HOST_IP:8080/platform/data?merchandise=$MERCHANDISE" | python3 -m json.tool
 ```
 
 ### Expected output
@@ -547,7 +548,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ```bash
 curl -s -H "Authorization: Bearer $TOKEN" \
-  "http://192.168.68.53:8080/platform/data?dataset_id=home/env/temperature" | python3 -m json.tool
+  "http://$HOST_IP:8080/platform/data?dataset_id=home/env/temperature" | python3 -m json.tool
 ```
 
 →
@@ -572,7 +573,7 @@ This is also normal behavior, as specified in Stage 5 / Stage 3.
 ### Steps
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=10' | python3 -m json.tool
+curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool
 ```
 
 ### Expected output (newest first)
@@ -658,14 +659,14 @@ Error: VM Exception while processing transaction: reverted with an unrecognized 
 **Cause 1**: The `credential_issuer` in the deeplink issued by the bridge is
 `http://publisher:8080` (the Docker-internal host name), which the iPhone cannot reach.
 
-**Fix**: Set `BRIDGE_PUBLIC_PUBLISHER_URL=http://<LAN_IP>:8080` in `infra/.env` and
+**Fix**: Set `BRIDGE_PUBLIC_PUBLISHER_URL=http://<HOST_IP>:8080` in `infra/.env` and
 restart the bridge (Step 4). Fetch the deeplink again and confirm that the `credential_issuer` inside it
 is the LAN IP:
 
 ```bash
 DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1 | sed -E 's/.*deeplink=//')
 echo "$DEEPLINK" | python3 -c "import sys,urllib.parse,json; d=urllib.parse.unquote(sys.stdin.read().split('credential_offer=',1)[1]); print(json.loads(d)['credential_issuer'])"
-# → http://192.168.68.53:8080  (not publisher:8080)
+# → http://<HOST_IP>:8080  (not publisher:8080)
 ```
 
 **Cause 2**: The wallet shows the `No script URL provided` error screen, which means the Metro bundler is not running.
@@ -694,7 +695,7 @@ git checkout main && git pull --ff-only
 docker compose -f infra/docker-compose.yml --profile mv-bridge up --build -d bridge
 ```
 
-### E. The iPhone cannot reach `192.168.68.53:8080/health`
+### E. The iPhone cannot reach `<HOST_IP>:8080/health`
 
 **Cause**: The PC and the phone are on different networks, or the Mac's LAN IP has changed.
 

@@ -10,8 +10,7 @@
 >
 > **所要時間**: 90 分くらい
 
-コマンド例は 1 ページ目と同じく、PC の LAN IP を `192.168.68.53`、教材リポジトリを
-`~/program/Blockchain_IoT_Marketplace` に clone した前提で示します。案 A / 案 B / 案 C の違いは
+コマンド例は 1 ページ目と同じく、教材リポジトリを `~/program/Blockchain_IoT_Marketplace` に clone した前提で示します。`$HOST_IP` と `<HOST_IP>` は PC の LAN IP です (設定のしかたは [ハンズオンの概要](index.md#host-ip) を参照)。案 A / 案 B / 案 C の違いは
 [§0b](data-user-vc-tiered.md#0b-実データ画像--動画統合の選び方) を参照してください。
 
 ## 8. 実データ統合（案 B：HTTP メディア・ゲートウェイ）
@@ -26,7 +25,7 @@ POST して、返ってきた URL を payload の `image_url` / `video_url` に�
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
-  --base-url http://192.168.68.53:8080
+  --base-url http://$HOST_IP:8080
 ```
 
 このスクリプトは次の 3 ステップを順に実行します。
@@ -35,7 +34,7 @@ python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 2. `POST /media/upload` で 2 つアップロード（sha256 が同じファイルは重複保存しない）
 3. `image_url` / `video_url` 付きイベントを `/simulate/publish` に送る
 
-スクリプト出力に `image_url` / `video_url` の `http://192.168.68.53:8080/media/...`
+スクリプト出力に `image_url` / `video_url` の `http://<HOST_IP>:8080/media/...`
 形式の URL が表示されます。
 
 ### 8.2 受信側（既存の Tier 3 / 2 / 1 フロー）
@@ -51,7 +50,7 @@ iPhone Safari で `image_url` をタップすると、1×1 JPEG が表示され�
 
 ```bash
 python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
-  --base-url http://192.168.68.53:8080 \
+  --base-url http://$HOST_IP:8080 \
   --image /path/to/snapshot.jpg \
   --video /path/to/clip.mp4 \
   --video-duration-sec 12
@@ -93,7 +92,7 @@ docker compose -f infra/docker-compose.yml ps ipfs
 publisher の設定に `IPFS_API_URL=http://ipfs:5001` が反映されたことを確認します。
 
 ```bash
-curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer >/dev/null
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer >/dev/null
 docker compose -f infra/docker-compose.yml exec publisher \
   python -c "from publisher.app.config import Settings; \
              print('IPFS_API_URL=', Settings().ipfs_api_url); \
@@ -107,7 +106,7 @@ docker compose -f infra/docker-compose.yml exec publisher \
 
 ```bash
 python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
-  --base-url http://192.168.68.53:8080 \
+  --base-url http://$HOST_IP:8080 \
   --image /tmp/stage_t_demo.jpg \
   --video /tmp/stage_t_demo.jpg
 ```
@@ -117,12 +116,12 @@ python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 ```json
 [upload] {
   "image": {
-    "url": "http://192.168.68.53:8080/media/<sha256>.jpg",
+    "url": "http://<HOST_IP>:8080/media/<sha256>.jpg",
     "sha256": "...",
     "content_type": "image/jpeg",
     "byte_size": 7645,
     "cid": "bafkreigb...",
-    "ipfs_gateway_url": "http://192.168.68.53:8080/ipfs/bafkreigb..."
+    "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreigb..."
   },
   ...
 }
@@ -137,16 +136,16 @@ Tier 3 / 2 の `/platform/data` 応答に `image_cid` と `image_url` の両方�
 
 ```bash
 curl -s -H "authorization: Bearer $TOK_GOV" \
-  "http://192.168.68.53:8080/platform/data?dataset_id=home/event/possible_littering" \
-  | jq '.rows[0] | {image_cid, image_url, ipfs_gateway: ("http://192.168.68.53:8080/ipfs/"+.image_cid)}'
+  "http://$HOST_IP:8080/platform/data?dataset_id=home/event/possible_littering" \
+  | jq --arg h "$HOST_IP" '.rows[0] | {image_cid, image_url, ipfs_gateway: ("http://"+$h+":8080/ipfs/"+.image_cid)}'
 ```
 
 iPhone Safari でいずれかを開いてください。
 
 | 取得方法 | URL 例 |
 |---|---|
-| publisher の HTTP gateway | `http://192.168.68.53:8080/media/<sha256>.jpg`（案 B 互換） |
-| publisher の IPFS proxy | `http://192.168.68.53:8080/ipfs/<cid>` |
+| publisher の HTTP gateway | `http://<HOST_IP>:8080/media/<sha256>.jpg`（案 B 互換） |
+| publisher の IPFS proxy | `http://<HOST_IP>:8080/ipfs/<cid>` |
 | 公開 IPFS gateway | `https://ipfs.io/ipfs/<cid>`（インターネット接続が必要） |
 
 最後の**公開 IPFS gateway** で取得できれば、publisher が停止していても CID だけで
@@ -202,8 +201,8 @@ publisher 内蔵の **PWA Viewer**（`/buyer/start` + `/viewer`。PWA は Progre
 ページが User-Agent（ブラウザの種類を示す情報）を見て動作を切り替えます。
 
 ```
-iPhone Safari:  http://192.168.68.53:8080/buyer/start?ds=home/event/possible_littering
-PC Chrome:      http://192.168.68.53:8080/buyer/start?ds=home/event/possible_littering
+iPhone Safari:  http://<HOST_IP>:8080/buyer/start?ds=home/event/possible_littering
+PC Chrome:      http://<HOST_IP>:8080/buyer/start?ds=home/event/possible_littering
 ```
 
 ### 10.2 同一デバイス（iPhone）の挙動
@@ -356,7 +355,7 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 PC ブラウザで次の URL を開きます。
 
 ```
-http://192.168.68.53:8080/provider/start?ds=home/event/possible_littering
+http://<HOST_IP>:8080/provider/start?ds=home/event/possible_littering
 ```
 
 `ds=` は表示用の**ヒント**です。SellerVC の検証はデータセット単位ではないので

@@ -65,7 +65,7 @@ every `/platform/ingest` call.
 - Completed [SSI Wallet hands-on (Stage 1)](ha-ssi-wallet.md)
 - Publisher running with `feat/ssi-service-vc` or later
 - iw3ip-wallet available if you want to hold ServiceVC on a phone
-- This page uses `192.168.68.53` as the PC's LAN IP. Replace it with your own (check with `ipconfig getifaddr en0` or similar)
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 
 ## 1. Start and inspect metadata
 
@@ -75,7 +75,7 @@ PUB=$(docker ps -qf name=publisher)
 
 # Confirm ServiceVC is registered (the current release exposes 5:
 # ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC)
-curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ServiceVC
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ServiceVC
 ```
 
 Expected: `"vct": "https://iw3ip.example/credentials/ServiceVC/v1"` appears.
@@ -86,10 +86,10 @@ Production would issue to a publisher-embedded holder. For the hands-on,
 the phone wallet is easiest. Open in a PC browser:
 
 ```
-http://192.168.68.53:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temperature&purpose=write_continuous
+http://<HOST_IP>:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temperature&purpose=write_continuous
 ```
 
-Send the deeplink to the wallet via AirDrop and store the credential.
+Open the displayed QR code (or deeplink) in the phone wallet and store the credential.
 
 Claims:
 
@@ -99,7 +99,7 @@ Claims:
 ## 3. Present the ServiceVC
 
 ```
-http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ServiceVC
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ServiceVC
 ```
 
 `vc_kind=ServiceVC` is required; without it the ConsentVC PD is selected.
@@ -118,7 +118,7 @@ service_token_issued jti=... token=... dataset=home/env/temperature ttl=3600s
 SERVICE=<service_token>
 
 for i in 1 2 3 4 5; do
-  curl -s -X POST http://192.168.68.53:8080/platform/ingest \
+  curl -s -X POST http://$HOST_IP:8080/platform/ingest \
     -H "Authorization: Bearer $SERVICE" \
     -H "Content-Type: application/json" \
     -d "{\"dataset_id\":\"home/env/temperature\",\"value\":$((20 + i))}" \
@@ -133,7 +133,7 @@ Unlike PolicyToken, the second call doesn't trigger `403 already_consumed`.
 ## 5. Inspect write_count in the audit log
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=10' | python3 -m json.tool | head -60
+curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool | head -60
 ```
 
 Each ingest produces:

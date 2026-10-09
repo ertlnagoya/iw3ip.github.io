@@ -36,9 +36,53 @@ External websites and papers are positioned as follow-up material for standards,
 - **Design**: the overall picture of VCs and tokens, and design specs
 - **Operations**: troubleshooting, FAQ, and the facilitator guide
 
-## Overall flow
+## System overview
 
-![Overall image](assets/raspberryPi.jpg)
+```mermaid
+flowchart LR
+  subgraph DEV["Data sources"]
+    HA["Home Assistant / sensors"]
+    CAM["HUSKYLENS2 / USB camera"]
+  end
+  subgraph PUB["Publisher side (started with docker compose)"]
+    MQ["mosquitto<br/>MQTT broker"]
+    P["publisher :8080<br/>normalization, consent / VC checks, audit log"]
+    BR["bridge<br/>reports purchases to the publisher"]
+    AS["assistant :8090<br/>interprets and executes requests (Part 3)"]
+  end
+  subgraph MKT["Marketplace side (the 7 terminals in Quickstart)"]
+    MO["mediator-owner<br/>registers event files as merchandise"]
+    HH["Hardhat :8545<br/>local chain"]
+    ST["simple-storage / IPFS<br/>stores the data itself"]
+    UI["iot-market-ui :5173<br/>merchandise list and purchase screen"]
+    MB["mediator-buyer<br/>fetches and decrypts purchased data"]
+  end
+  subgraph USER["Users"]
+    MM["MetaMask<br/>payment"]
+    W["Phone wallet<br/>stores and presents VCs"]
+  end
+  HA -->|MQTT| MQ --> P
+  CAM -->|event files| MO
+  MO --> HH
+  MO --> ST
+  UI --- HH
+  MM -->|purchase| UI
+  ST --> MB
+  HH -->|Purchase event| BR --> P
+  P <-->|VC issuance and presentation| W
+  P -->|ingested events| AS
+```
+
+Two groups of processes are started.
+
+- **Marketplace side**: the blockchain (Hardhat), the merchandise UI, data storage, and the mediators. Start them in 7 terminals by following [Quickstart](setup/quickstart.md). Used for listing and purchasing data (the second half of Part 1 and the marketplace integration in Part 2).
+- **Publisher side**: the MQTT broker and the publisher. Start them with `docker compose -f infra/docker-compose.yml up` in the course repository. Used for ingesting data, deciding whether sharing is allowed by consent or VC, and the audit log (the first half of Part 1, Part 2, and Part 3).
+
+The two groups run independently. In the Part 2 marketplace integration, the bridge reports purchase events to the publisher and connects them. The [tech stack table in the Hands-on overview](hands-on/index.md#tech-stack-at-a-glance) shows which hands-on uses which.
+
+Small devices such as a Raspberry Pi with a camera can also serve as data sources.
+
+![Raspberry Pi with a camera module](assets/raspberryPi.jpg){ width="360" }
 
 ## If You Want To Run One Demo First
 

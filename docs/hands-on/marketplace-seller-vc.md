@@ -74,7 +74,7 @@
 - deploy script が、`dataset_id` を `additionalInfo` に持つ Merchandise を作る版 (Stage 6 以降) である
 - publisher が Stage 7 に対応したコード (`main` の最新) で起動している
 - iw3ip-wallet (iPhone) が動く
-- LAN IP は `192.168.68.53` で示すので、あなたの環境の IP に読み替えてください
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 
 ---
@@ -92,7 +92,7 @@ docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bri
 sleep 5
 
 # 5 種目の VC が出ているか
-curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer \
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer \
   | python3 -m json.tool | grep -A1 SellerVC
 # → "vct": "https://iw3ip.example/credentials/SellerVC/v1"
 ```
@@ -111,7 +111,7 @@ curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer \
 PC ブラウザで:
 
 ```
-http://192.168.68.53:8080/issuer/offer?type=SellerVC&seller_id=ertl-seller-001&licensed_datasets=home/env/temperature,home/env/humidity
+http://<HOST_IP>:8080/issuer/offer?type=SellerVC&seller_id=ertl-seller-001&licensed_datasets=home/env/temperature,home/env/humidity
 ```
 
 QR を iPhone wallet で読み取り → **「IW3IP セラークレデンシャル」** 承認 → 受領。
@@ -138,7 +138,7 @@ QR を iPhone wallet で読み取り → **「IW3IP セラークレデンシャ�
 PC ブラウザで:
 
 ```
-http://192.168.68.53:8080/verifier/request?vc_kind=SellerVC
+http://<HOST_IP>:8080/verifier/request?vc_kind=SellerVC
 ```
 
 `dataset_id` パラメータは不要です (SellerVC は特定の dataset に依存しません)。
@@ -233,7 +233,7 @@ SELLER_ETH=<Step S3 のseller address>
 MERCH=<Step S3 のmerchandise address>
 TX_HASH=<Step S3 のregister tx hash>
 
-curl -s -X POST http://192.168.68.53:8080/marketplace/register \
+curl -s -X POST http://$HOST_IP:8080/marketplace/register \
   -H "Authorization: Bearer $SELLER" \
   -H "Content-Type: application/json" \
   -d "{
@@ -268,7 +268,7 @@ RPC に到達できない場合は、レスポンスに `owner_verify` は含ま
 ### audit log
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool
+curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 ```
 
 → 直近に:
@@ -304,7 +304,7 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 ```bash
 TOKEN=<buyer の ViewerToken>
 curl -s -H "Authorization: Bearer $TOKEN" \
-  "http://192.168.68.53:8080/platform/data?merchandise=$MERCH" | python3 -m json.tool
+  "http://$HOST_IP:8080/platform/data?merchandise=$MERCH" | python3 -m json.tool
 ```
 
 ### 期待出力
@@ -335,7 +335,7 @@ Merchandise (`/marketplace/register` を呼んでいない) は `"unknown"` が�
 iot-market-ui を起動済の状態で:
 
 ```
-http://192.168.68.53:5173/seller
+http://<HOST_IP>:5173/seller
 ```
 
 UI の手順:

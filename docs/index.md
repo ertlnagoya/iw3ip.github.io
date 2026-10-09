@@ -32,9 +32,53 @@ IW3IP の全体像、実装例、ハンズオン手順をまとめたドキュ�
 - **設計**: VC とトークンの全体像、設計仕様
 - **運用**: トラブルシュート、FAQ、講師向けの進行ガイド
 
-## 全体フロー
+## 全体構成
 
-![全体イメージ](assets/raspberryPi.jpg)
+```mermaid
+flowchart LR
+  subgraph DEV["データの発生源"]
+    HA["Home Assistant / センサ"]
+    CAM["HUSKYLENS2 / USB カメラ"]
+  end
+  subgraph PUB["publisher 側 (docker compose で起動)"]
+    MQ["mosquitto<br/>MQTT ブローカー"]
+    P["publisher :8080<br/>正規化・同意と VC の判定・監査ログ"]
+    BR["bridge<br/>購入を publisher に伝える"]
+    AS["assistant :8090<br/>要求の解釈と実行 (Part 3)"]
+  end
+  subgraph MKT["マーケット側 (最短起動の 7 ターミナル)"]
+    MO["mediator-owner<br/>イベントファイルを商品として登録"]
+    HH["Hardhat :8545<br/>ローカルチェーン"]
+    ST["simple-storage / IPFS<br/>データ本体の保管"]
+    UI["iot-market-ui :5173<br/>商品一覧と購入画面"]
+    MB["mediator-buyer<br/>購入データの取得と復号"]
+  end
+  subgraph USER["利用者"]
+    MM["MetaMask<br/>支払い"]
+    W["スマホのウォレット<br/>VC の保管と提示"]
+  end
+  HA -->|MQTT| MQ --> P
+  CAM -->|イベントファイル| MO
+  MO --> HH
+  MO --> ST
+  UI --- HH
+  MM -->|購入| UI
+  ST --> MB
+  HH -->|Purchase イベント| BR --> P
+  P <-->|VC の発行と提示| W
+  P -->|蓄積したイベント| AS
+```
+
+起動するものは 2 系統あります。
+
+- **マーケット側**: ブロックチェーン (Hardhat)、商品一覧の画面、データ保管、仲介プロセスです。[最短起動](setup/quickstart.md) の手順で、ターミナルを 7 つ使って起動します。データの出品と購入 (Part 1 の後半、Part 2 のマーケット連携) で使います。
+- **publisher 側**: MQTT ブローカーと publisher です。教材リポジトリで `docker compose -f infra/docker-compose.yml up` を実行して起動します。データの取り込み、同意や VC による共有可否の判定、監査ログ (Part 1 の前半、Part 2、Part 3) で使います。
+
+2 つの系統は独立して動きます。Part 2 のマーケット連携では、bridge が購入のイベントを publisher に伝えて両者をつなぎます。各ハンズオンがどちらを使うかは、[ハンズオンの概要の早見表](hands-on/index.md#使う技術要素の早見表) にまとめています。
+
+データの発生源には、Raspberry Pi とカメラのような小型の機器も使えます。
+
+![Raspberry Pi とカメラモジュール](assets/raspberryPi.jpg){ width="360" }
 
 ## まず 1 つ動かしたい場合
 

@@ -66,12 +66,12 @@ homepage `/` をスマホで開く形に読み替えてください。
 1. `iot-market-ui/.env.local` を用意し、接続先を自分の環境に合わせる (PC のみなら `127.0.0.1`、スマホからなら LAN IP)
 2. `iot-market-ui` を `0.0.0.0:5173` で起動する
 3. PC の LAN IP を確認する
-4. スマホで `http://<LAN_IP>:5173/` を開く (homepage)
+4. スマホで `http://<HOST_IP>:5173/` を開く (homepage)
 5. 検索 UI が見えることを確認する
 
 その後の分岐:
 
-- **個別の商品を見る場合**: `http://<LAN_IP>:5173/merchandise/<address>` を直接開く
+- **個別の商品を見る場合**: `http://<HOST_IP>:5173/merchandise/<address>` を直接開く
   (Hardhat デプロイ後の Merchandise アドレスを指定)
 - **購入まで確認したい場合**: MetaMask モバイルのブラウザで開きます
 - **VC 連携 (v2) を試したい場合**: [Stage 5 ハンズオン](marketplace-vc-bridge.md)
@@ -101,8 +101,8 @@ cp .env.example .env.local
 - **スマホから操作する場合**: PC の LAN IP (手順2で確認) に置き換えます。
 
     ```
-    VITE_RPC_URL=http://<PCのLAN_IP>:8545
-    VITE_PUBLISHER_URL=http://<PCのLAN_IP>:8080
+    VITE_RPC_URL=http://<HOST_IP>:8545
+    VITE_PUBLISHER_URL=http://<HOST_IP>:8080
     ```
 
 !!! warning "スマホから使うときは Hardhat ノードも LAN 公開する"
@@ -133,7 +133,7 @@ ipconfig getifaddr en0
 ### 3. スマホでアクセス
 
 ```txt
-http://<PCのLAN_IP>:5173/
+http://<HOST_IP>:5173/
 ```
 
 例 (homepage):
@@ -145,14 +145,14 @@ http://192.168.1.20:5173/
 個別の商品を直接開く場合 (Hardhat にデプロイされた Merchandise アドレスを指定):
 
 ```txt
-http://<PCのLAN_IP>:5173/merchandise/<merchandise_address>
+http://<HOST_IP>:5173/merchandise/<merchandise_address>
 ```
 
 ### 4. 購入時の注意
 
 - スマホで購入する場合は MetaMaskモバイル内ブラウザを推奨
 - MetaMask モバイルにローカルチェーンのネットワークを追加しておく:
-    - RPC URL: `http://<PCのLAN_IP>:8545` (例: `http://192.168.1.20:8545`)
+    - RPC URL: `http://<HOST_IP>:8545` (例: `http://192.168.1.20:8545`)
     - チェーン ID: `31337` / 通貨記号: `ETH`
 - ネットワーク追加が拒否される場合は、ノードを `--hostname 0.0.0.0` で起動しているか、`.env.local` と MetaMask の RPC が **127.0.0.1 ではなく PC の LAN IP** になっているかを確認
 

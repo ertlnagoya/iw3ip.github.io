@@ -54,6 +54,26 @@ This site uses three kinds of numbering.
 
 The mapping between VCs and tokens is summarized in [VC Architecture Overview](../design/vc-architecture-overview.md).
 
+## About `$HOST_IP` in commands { #host-ip }
+
+Hands-on pages where a phone connects to the PC use the PC's IP address on the LAN. Commands on each page write it as `$HOST_IP`; URLs that you type into a browser or phone write it as `<HOST_IP>`.
+
+First find the PC's IP address.
+
+| OS | Command |
+|---|---|
+| macOS | `ipconfig getifaddr en0` (change to `en1` etc. for wired LAN) |
+| Linux | `hostname -I` (the first address shown) |
+| Windows | Run `ipconfig` in PowerShell and read "IPv4 Address" |
+
+In each terminal where you run commands, first run the following (replace `192.168.1.20` with your own IP).
+
+```bash
+export HOST_IP=192.168.1.20
+```
+
+After that, commands containing `$HOST_IP` can be pasted and run as they are. Replace `<HOST_IP>` in URLs with the same IP address. On Windows with WSL2, also set `HOST_IP` to the IP address shown by `ipconfig` on the Windows side.
+
 ## Overall structure
 
 <div class="iw3ip-phase-grid">

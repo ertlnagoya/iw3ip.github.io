@@ -57,7 +57,7 @@ Pipeline:
 - Have completed §1〜§8 of the [SSI Wallet hands-on](ha-ssi-wallet.md)
 - Publisher running with `feat/ssi-viewer-vc` or later
 - `iw3ip-wallet` available on phone
-- This page uses `192.168.68.53` as the PC's LAN IP. Replace it with your own (check with `ipconfig getifaddr en0` or similar)
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 
 ## Related repositories
 
@@ -76,13 +76,13 @@ Pipeline:
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
-curl http://192.168.68.53:8080/health
+curl http://$HOST_IP:8080/health
 ```
 
 Confirm the issuer metadata advertises **both** ConsentVC and ViewerVC:
 
 ```bash
-curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ViewerVC
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ViewerVC
 ```
 
 ## 2. Write data via ConsentVC (recap)
@@ -96,11 +96,11 @@ Those rows are what §5 will read back.
 Open in the PC browser:
 
 ```txt
-http://192.168.68.53:8080/issuer/offer?type=ViewerVC&dataset_id=home/env/temperature
+http://<HOST_IP>:8080/issuer/offer?type=ViewerVC&dataset_id=home/env/temperature
 ```
 
 Same flow as ConsentVC, but with **`type=ViewerVC`**. Send the QR/deeplink
-to the wallet via AirDrop and store the credential.
+to the wallet by scanning the QR code (with an iPhone and a Mac you can also send the deeplink via AirDrop) and store the credential.
 
 The wallet should display a separate card with claims:
 
@@ -110,7 +110,7 @@ The wallet should display a separate card with claims:
 ## 4. Present the ViewerVC
 
 ```txt
-http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ViewerVC
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ViewerVC
 ```
 
 `vc_kind=ViewerVC` selects `viewer-temperature.json` instead of the
@@ -135,7 +135,7 @@ Expected response:
 TOKEN=<viewer_token>
 
 curl -s -H "Authorization: Bearer $TOKEN" \
-  'http://192.168.68.53:8080/platform/data?dataset_id=home/env/temperature' | python3 -m json.tool
+  "http://$HOST_IP:8080/platform/data?dataset_id=home/env/temperature" | python3 -m json.tool
 ```
 
 Expected response:
@@ -170,14 +170,14 @@ Verify expiry:
 ```bash
 sleep 65
 curl -i -H "Authorization: Bearer $TOKEN" \
-  'http://192.168.68.53:8080/platform/data?dataset_id=home/env/temperature'
+  "http://$HOST_IP:8080/platform/data?dataset_id=home/env/temperature"
 # → 401 viewer_token_expired
 ```
 
 ## 7. Audit log
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=10' | python3 -m json.tool
+curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool
 ```
 
 ViewerVC reads appear as:

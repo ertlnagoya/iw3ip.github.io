@@ -24,6 +24,13 @@ At minimum, these four terms cover the essentials.
 Instead of keeping records on a single server, blockchain has multiple participants share the same history and links each block with hashes, which makes the record hard to rewrite after the fact.  
 The point is not that tampering is impossible, but that **tampering is easy to detect and history can be reconciled across participants.**
 
+```mermaid
+flowchart LR
+  B1["Block 1<br/>transactions<br/>hash: a3f…"] --> B2["Block 2<br/>transactions<br/>previous hash: a3f…<br/>hash: 7c1…"] --> B3["Block 3<br/>transactions<br/>previous hash: 7c1…<br/>hash: e90…"]
+```
+
+Each block contains the hash of the block before it. Rewriting a past block changes its hash, which no longer matches the value recorded in the following block, so the change is detectable.
+
 ### What It Is Good At, and What It Is Not
 
 Blockchain is not a universal tool. You need to decide what to put on it and what to leave to other systems.

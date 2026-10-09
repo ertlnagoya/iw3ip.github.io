@@ -14,6 +14,50 @@ IW3IP のハンズオンでは、次のような仕組みを実際に動かし�
 これらを、データを安全かつ条件付きで他者と共有するためのローカル開発環境として、自分の PC 上に構築します。
 実際のクラウドや金銭は使いません。すべてローカル PC で完結します。
 
+## 全体構成
+
+```mermaid
+flowchart LR
+  subgraph DEV["データの発生源"]
+    HA["Home Assistant / センサ"]
+    CAM["HUSKYLENS2 / USB カメラ"]
+  end
+  subgraph PUB["publisher 側 (docker compose で起動)"]
+    MQ["mosquitto<br/>MQTT ブローカー"]
+    P["publisher :8080<br/>正規化・同意と VC の判定・監査ログ"]
+    BR["bridge<br/>購入を publisher に伝える"]
+    AS["assistant :8090<br/>要求の解釈と実行 (Part 3)"]
+  end
+  subgraph MKT["マーケット側 (最短起動の 7 ターミナル)"]
+    MO["mediator-owner<br/>イベントファイルを商品として登録"]
+    HH["Hardhat :8545<br/>ローカルチェーン"]
+    ST["simple-storage / IPFS<br/>データ本体の保管"]
+    UI["iot-market-ui :5173<br/>商品一覧と購入画面"]
+    MB["mediator-buyer<br/>購入データの取得と復号"]
+  end
+  subgraph USER["利用者"]
+    MM["MetaMask<br/>支払い"]
+    W["スマホのウォレット<br/>VC の保管と提示"]
+  end
+  HA -->|MQTT| MQ --> P
+  CAM -->|イベントファイル| MO
+  MO --> HH
+  MO --> ST
+  UI --- HH
+  MM -->|購入| UI
+  ST --> MB
+  HH -->|Purchase イベント| BR --> P
+  P <-->|VC の発行と提示| W
+  P -->|蓄積したイベント| AS
+```
+
+起動するものは 2 系統あります。
+
+- **マーケット側**: ブロックチェーン (Hardhat)、商品一覧の画面、データ保管、仲介プロセスです。[最短起動](quickstart.md) の手順で、ターミナルを 7 つ使って起動します。データの出品と購入 (Part 1 の後半、Part 2 のマーケット連携) で使います。
+- **publisher 側**: MQTT ブローカーと publisher です。教材リポジトリで `docker compose -f infra/docker-compose.yml up` を実行して起動します。データの取り込み、同意や VC による共有可否の判定、監査ログ (Part 1 の前半、Part 2、Part 3) で使います。
+
+2 つの系統は独立して動きます。Part 2 のマーケット連携では、bridge が購入のイベントを publisher に伝えて両者をつなぎます。各ハンズオンがどちらを使うかは、[ハンズオンの概要の早見表](../hands-on/index.md#使う技術要素の早見表) にまとめています。
+
 ## 全体の流れ
 
 ハンズオンは **基本**、**機能拡張**、**知能統合** の 3 つの Part に分かれています。
@@ -80,6 +124,25 @@ IW3IP のハンズオンでは、次のような仕組みを実際に動かし�
 | **PurchaseViewerVC** | データ購入後に発行される閲覧用 VC |
 | **bridge** | マーケットプレイスとウォレットをつなぐ仲介サービス |
 | **audit log** | 誰が・いつ・何を見たかを残す監査ログ |
+| **MQTT** | 機器どうしがメッセージを送り合うための軽量な通信方式。送り先を **topic** という名前で指定し、中身を **payload** と呼ぶ |
+| **Home Assistant** | 家庭内の機器やセンサをまとめて管理するオープンソースのソフトウェア。本サイトではデータの発生源として使う |
+| **Node-RED** | 処理の流れを画面上でつないで作るツール。疑似イベントを流すのに使う (任意) |
+| **エッジ** | カメラやセンサのすぐそばにある計算機。ここで検知などの処理を行う |
+| **正規化** | 機器ごとに異なる形式のデータを、共通の形式にそろえること |
+| **dataset_id** | データの種類を表す名前 (例: `home/env/temperature`)。同意や VC はこの単位で与える |
+| **Hardhat** | 手元の PC でブロックチェーンを動かすための開発ツール |
+| **MetaMask** | ブロックチェーン上の支払いに使うウォレット (ブラウザ拡張 / スマホアプリ)。VC を入れるウォレットとは別物 |
+| **RPC** | ブロックチェーンのノードに命令を送るための接続口。URL (例: `http://localhost:8545`) で指定する |
+| **tx** (トランザクション) | ブロックチェーンに記録される 1 回の操作 (購入など)。処理が取り消されることを **revert** と呼ぶ |
+| **IoTMarket / Merchandise / PubKey** | マーケットのスマートコントラクト。IoTMarket は商品の一覧、Merchandise は商品 1 件、PubKey は購入者の公開鍵の登録簿 |
+| **mediator-owner / mediator-buyer** | 出品者側 / 購入者側で動く仲介プログラム。前者はデータを商品として登録し、後者は購入したデータを取得して復号する |
+| **IPFS** | ファイルを複数の計算機に分散して保管する仕組み |
+| **Issuer / Holder / Verifier** | VC を発行する側 / 持つ側 / 検証する側。本サイトでは publisher が Issuer と Verifier、ウォレットが Holder |
+| **OID4VCI / OID4VP** | VC をウォレットに発行する手順 / ウォレットが VC を提示する手順の標準仕様 |
+| **claim** | VC に書かれた項目 (例: `dataset_id`)。API の `/marketplace/claim` は「購入を publisher に申告する」という別の意味 |
+| **トークン** | VC の提示が検証された後に publisher が発行する短い文字列。API を呼ぶときに `Authorization: Bearer <トークン>` として付ける |
+| **TTL** | 有効期間。トークンは TTL を過ぎると使えなくなる |
+| **deeplink** | タップするとアプリが開くリンク。QR コードの中身もこれ |
 
 ## 必要な機材
 

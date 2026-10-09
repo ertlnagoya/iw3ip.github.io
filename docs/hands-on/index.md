@@ -54,6 +54,26 @@ v2 は v1 を置き換えるものではなく、v1 に追加する経路です�
 
 VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-architecture-overview.md) にまとめています。
 
+## コマンド中の `$HOST_IP` について { #host-ip }
+
+スマホから PC に接続するハンズオンでは、PC の LAN 内の IP アドレスを使います。各ページのコマンドは `$HOST_IP`、ブラウザやスマホに入力する URL は `<HOST_IP>` と書いています。
+
+まず PC の IP アドレスを調べます。
+
+| OS | コマンド |
+|---|---|
+| macOS | `ipconfig getifaddr en0` (有線 LAN の場合は `en1` などに変える) |
+| Linux | `hostname -I` (最初に表示されるアドレス) |
+| Windows | PowerShell で `ipconfig` を実行し、「IPv4 アドレス」を見る |
+
+コマンドを実行するターミナルごとに、最初に次を実行します (`192.168.1.20` は自分の IP に置き換えます)。
+
+```bash
+export HOST_IP=192.168.1.20
+```
+
+以後、`$HOST_IP` を含むコマンドはそのまま貼り付けて実行できます。URL の `<HOST_IP>` は、同じ IP アドレスに置き換えて入力します。Windows で WSL2 を使う場合も、`HOST_IP` には Windows 側の `ipconfig` で表示される IP アドレスを設定します。
+
 ## 全体構成
 
 <div class="iw3ip-phase-grid">

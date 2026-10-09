@@ -83,8 +83,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 - [Stage 1](ha-ssi-wallet.md) と [Stage 3](ha-ssi-viewer.md) の動作確認が済んでいる
 - iot-market-ui (Svelte) と Hardhat ローカルチェーンが起動できる
 - iw3ip-wallet が iPhone 実機で動く (Metro bundler 接続済み)
-- LAN IP を確認 (`ipconfig getifaddr en0`)。本ページでは `192.168.68.53` で示すので、
-  あなたの環境の IP に読み替えてください
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 
 ---
@@ -221,7 +220,7 @@ git checkout main && git pull --ff-only
 cat > infra/.env <<EOF
 BRIDGE_HARDHAT_RPC=http://host.docker.internal:8545
 BRIDGE_IOT_MARKET_ADDRESS=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
-BRIDGE_PUBLIC_PUBLISHER_URL=http://192.168.68.53:8080
+BRIDGE_PUBLIC_PUBLISHER_URL=http://$HOST_IP:8080
 EOF
 
 docker compose -f infra/docker-compose.yml \
@@ -235,14 +234,14 @@ docker compose -f infra/docker-compose.yml \
 
 ```bash
 sleep 5
-curl -s http://192.168.68.53:8080/health
+curl -s http://$HOST_IP:8080/health
 ```
 → `{"status":"ok","service":"publisher"}`
 
 #### 4-B. PurchaseViewerVC が登録済か
 
 ```bash
-curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A1 PurchaseViewerVC
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A1 PurchaseViewerVC
 ```
 →
 ```
@@ -284,7 +283,7 @@ bridge: started rpc=http://host.docker.internal:8545 market=0xe7f1725... publish
 1. MetaMask 拡張アイコン → 上部のネットワーク名 → **「ネットワークを追加」**
 2. 入力:
    - Network Name: `Hardhat localhost`
-   - RPC URL: `http://192.168.68.53:8545`
+   - RPC URL: `http://<HOST_IP>:8545`
    - Chain ID: `31337`
    - Currency: `ETH`
 3. 保存後、`Hardhat localhost` に切替
@@ -312,15 +311,15 @@ iot-market-ui を起動 (ターミナル D):
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
 cat > .env.local <<EOF
-VITE_RPC_URL=http://192.168.68.53:8545
-VITE_PUBLISHER_URL=http://192.168.68.53:8080
+VITE_RPC_URL=http://$HOST_IP:8545
+VITE_PUBLISHER_URL=http://$HOST_IP:8080
 EOF
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
 PC ブラウザ (Chrome 等) で次にアクセス:
 ```
-http://192.168.68.53:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
+http://<HOST_IP>:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 ```
 
 (Merchandise #1 の例です。一度購入した Merchandise は state が IN_PROGRESS になり、再度は購入できません。やり直すときは、未購入の Merchandise のアドレスを使ってください)
@@ -369,7 +368,7 @@ bridge: claim ok jti=2b417b32e6566830 deeplink=openid-credential-offer://?creden
 #### 6-B. audit log に marketplace/claim 行
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=2' | python3 -m json.tool
+curl -s "http://$HOST_IP:8080/audit/logs?limit=2" | python3 -m json.tool
 ```
 →
 ```json
@@ -416,6 +415,8 @@ ENCODED=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv
 open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 ```
 
+`open` は macOS のコマンドです。Linux では `xdg-open`、Windows (WSL) では `explorer.exe` に読み替えるか、表示された URL をブラウザに貼り付けてください。
+
 iPhone のカメラで QR を読み取ると wallet が起動し、「IW3IP Purchase Viewer Credential」の承認画面が出るので承認します。
 
 !!! warning "QR 生成に外部サービスを使います"
@@ -435,7 +436,7 @@ iPhone のカメラで QR を読み取ると wallet が起動し、「IW3IP Purc
 #### 7-B. audit log で eth↔did 紐付けが記録される
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool
+curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 ```
 →
 ```json
@@ -463,7 +464,7 @@ MetaMask の鍵と wallet の鍵が「同じ人物」として publisher 上で�
 
 PC ブラウザで:
 ```
-http://192.168.68.53:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=PurchaseViewerVC
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=PurchaseViewerVC
 ```
 
 `vc_kind=PurchaseViewerVC` は必須です (指定しないと ConsentVC 用の Presentation Definition が選ばれます)。
@@ -503,7 +504,7 @@ TOKEN=oJVsNtb5Un1NginSyyCcJavThu9WkTxRT6b8uhmWjRc
 MERCHANDISE=0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 
 curl -s -H "Authorization: Bearer $TOKEN" \
-  "http://192.168.68.53:8080/platform/data?merchandise=$MERCHANDISE" | python3 -m json.tool
+  "http://$HOST_IP:8080/platform/data?merchandise=$MERCHANDISE" | python3 -m json.tool
 ```
 
 ### 期待出力
@@ -524,7 +525,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ```bash
 curl -s -H "Authorization: Bearer $TOKEN" \
-  "http://192.168.68.53:8080/platform/data?dataset_id=home/env/temperature" | python3 -m json.tool
+  "http://$HOST_IP:8080/platform/data?dataset_id=home/env/temperature" | python3 -m json.tool
 ```
 →
 ```json
@@ -546,7 +547,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 ### 操作
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=10' | python3 -m json.tool
+curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool
 ```
 
 ### 期待出力 (新しい順)
@@ -632,14 +633,14 @@ Error: VM Exception while processing transaction: reverted with an unrecognized 
 **原因 1**: bridge から発行された deeplink 内の `credential_issuer` が
 `http://publisher:8080` (Docker 内部ホスト名) になっており、iPhone から到達不能。
 
-**対処**: `infra/.env` に `BRIDGE_PUBLIC_PUBLISHER_URL=http://<LAN_IP>:8080` を設定して
+**対処**: `infra/.env` に `BRIDGE_PUBLIC_PUBLISHER_URL=http://<HOST_IP>:8080` を設定して
 bridge を再起動 (Step 4)。deeplink を再取得して、内部にある `credential_issuer` が
 LAN IP になっていることを確認:
 
 ```bash
 DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1 | sed -E 's/.*deeplink=//')
 echo "$DEEPLINK" | python3 -c "import sys,urllib.parse,json; d=urllib.parse.unquote(sys.stdin.read().split('credential_offer=',1)[1]); print(json.loads(d)['credential_issuer'])"
-# → http://192.168.68.53:8080  (publisher:8080 ではなく)
+# → http://<HOST_IP>:8080  (publisher:8080 ではなく)
 ```
 
 **原因 2**: wallet が `No script URL provided` エラー画面を出している = Metro bundler 未起動。
@@ -667,7 +668,7 @@ git checkout main && git pull --ff-only
 docker compose -f infra/docker-compose.yml --profile mv-bridge up --build -d bridge
 ```
 
-### E. iPhone から `192.168.68.53:8080/health` に届かない
+### E. iPhone から `<HOST_IP>:8080/health` に届かない
 
 **原因**: PC とスマホが別ネットワークか、Mac の LAN IP が変わっている。
 

@@ -74,7 +74,7 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
 - The deploy script is the version that creates Merchandise contracts with `dataset_id` in `additionalInfo` (Stage 6 or later)
 - The publisher is running with code that supports Stage 7 (the latest `main`)
 - iw3ip-wallet (iPhone) works
-- This page uses `192.168.68.53` as the LAN IP, so replace it with the IP of your environment
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet cloned to `~/program/iw3ip-wallet`
 
 ---
@@ -92,7 +92,7 @@ docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bri
 sleep 5
 
 # Is the fifth VC type exposed?
-curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer \
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer \
   | python3 -m json.tool | grep -A1 SellerVC
 # → "vct": "https://iw3ip.example/credentials/SellerVC/v1"
 ```
@@ -112,7 +112,7 @@ curl -s http://192.168.68.53:8080/.well-known/openid-credential-issuer \
 In a PC browser:
 
 ```
-http://192.168.68.53:8080/issuer/offer?type=SellerVC&seller_id=ertl-seller-001&licensed_datasets=home/env/temperature,home/env/humidity
+http://<HOST_IP>:8080/issuer/offer?type=SellerVC&seller_id=ertl-seller-001&licensed_datasets=home/env/temperature,home/env/humidity
 ```
 
 Scan the QR code with the iPhone wallet → approve **"IW3IP Seller Credential"** → receive.
@@ -141,7 +141,7 @@ Scan the QR code with the iPhone wallet → approve **"IW3IP Seller Credential"*
 In a PC browser:
 
 ```
-http://192.168.68.53:8080/verifier/request?vc_kind=SellerVC
+http://<HOST_IP>:8080/verifier/request?vc_kind=SellerVC
 ```
 
 The `dataset_id` parameter is not needed (a SellerVC does not depend on a specific dataset).
@@ -239,7 +239,7 @@ SELLER_ETH=<seller address from Step S3>
 MERCH=<merchandise address from Step S3>
 TX_HASH=<register tx hash from Step S3>
 
-curl -s -X POST http://192.168.68.53:8080/marketplace/register \
+curl -s -X POST http://$HOST_IP:8080/marketplace/register \
   -H "Authorization: Bearer $SELLER" \
   -H "Content-Type: application/json" \
   -d "{
@@ -274,7 +274,7 @@ If the RPC cannot be reached, the response has no `owner_verify`; the call fails
 ### audit log
 
 ```bash
-curl -s 'http://192.168.68.53:8080/audit/logs?limit=3' | python3 -m json.tool
+curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 ```
 
 → Among the most recent rows:
@@ -312,7 +312,7 @@ Then follow the procedure of the [Stage 5 hands-on](marketplace-vc-bridge.md): p
 ```bash
 TOKEN=<the buyer's ViewerToken>
 curl -s -H "Authorization: Bearer $TOKEN" \
-  "http://192.168.68.53:8080/platform/data?merchandise=$MERCH" | python3 -m json.tool
+  "http://$HOST_IP:8080/platform/data?merchandise=$MERCH" | python3 -m json.tool
 ```
 
 ### Expected output
@@ -344,7 +344,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 With iot-market-ui already running:
 
 ```
-http://192.168.68.53:5173/seller
+http://<HOST_IP>:5173/seller
 ```
 
 Procedure in the UI:

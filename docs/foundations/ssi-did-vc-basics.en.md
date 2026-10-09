@@ -29,6 +29,41 @@ As a practical starting analogy, it is helpful to read this as: **DID = ID, VC =
 In many conventional systems, one service provider stores both identity and permission data, making reuse and independent verification difficult.  
 SSI-oriented systems aim to let users or organizations hold credentials and present them only when needed.
 
+### Issuer, Holder, and Verifier
+
+Three roles are involved in a VC.
+
+```mermaid
+flowchart LR
+  I["Issuer<br/>signs and issues the VC"] -->|"1. issue the VC"| H["Holder<br/>keeps the VC in a wallet"]
+  H -->|"2. present the VC"| V["Verifier<br/>checks the signature and content"]
+  V -.->|"verify the signature with the issuer's public key"| I
+```
+
+| Role | What it does | Who plays it on this site |
+|---|---|---|
+| Issuer | Signs the content of a VC and issues it | publisher |
+| Holder | Receives and stores the VC, and presents it when needed | the phone wallet |
+| Verifier | Checks the signature and content of a presented VC and decides whether to allow the request | publisher |
+
+The verifier can check the signature with the issuer's public key without contacting the issuer. The holder decides which VC to show to whom and when.
+
+### Issuance and presentation protocols
+
+The wallet-based hands-on pages (Part 2) use the following standards.
+
+| Term | Meaning |
+|---|---|
+| OID4VCI (OpenID for Verifiable Credential Issuance) | How an issuer hands a VC to a wallet. The wallet receives it by scanning a QR code |
+| OID4VP (OpenID for Verifiable Presentations) | How a wallet presents a VC to a verifier. The wallet scans a QR code shown by the verifier |
+| Presentation Definition (PD) | The verifier's request stating which fields of which VC it wants to see |
+| SD-JWT VC | A VC format that lets the holder disclose only the fields that are needed |
+| did:jwk | A DID that uses the public key itself as the identifier. The wallet creates one at first run |
+
+### VCs and tokens
+
+A VC is a long-lived credential and is not presented on every API call. On this site, once a VC presentation is verified, the publisher issues a short-lived **token**, and APIs are called with that token. The mapping between VC kinds and tokens is summarized in the [VC architecture overview](../design/vc-architecture-overview.md).
+
 ## Position in This System
 
 ### Minimal Model in This Site

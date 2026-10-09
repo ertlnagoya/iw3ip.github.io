@@ -48,9 +48,9 @@
 - Docker / Docker Compose が使える
 - `curl`, `jq` が使える
 
-本ページのコマンド例は、PC の LAN IP を `192.168.68.53`、教材リポジトリを
-`~/program/Blockchain_IoT_Marketplace` に clone した前提で示します。自分の環境の値に
-読み替えてください。
+本ページのコマンド例は、教材リポジトリを `~/program/Blockchain_IoT_Marketplace` に clone した前提で示します。
+
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 
 ## 0b. 実データ（画像 / 動画）統合の選び方
 

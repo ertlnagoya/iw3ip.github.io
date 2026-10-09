@@ -64,14 +64,14 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 - Stage 5 / 6 / 7 のハンズオンを済ませている
 - publisher + bridge + Hardhat + iot-market-ui が起動できる
 - iw3ip-wallet (iPhone) が動く
-- LAN IP は `192.168.68.53` で示すので、あなたの環境の IP に読み替えてください
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 
 ## 全体像
 
 ```
 [初回起動]
-   iPhone Safari → http://192.168.68.53:5173/welcome
+   iPhone Safari → http://<HOST_IP>:5173/welcome
         ↓ 3 ステップ完了 → 「マーケットへ進む」
 [ホーム画面追加]
    Safari メニュー → ホーム画面に追加
@@ -107,8 +107,8 @@ git checkout main && git pull --ff-only
 
 cd iot-market-ui
 cat > .env.local <<EOF
-VITE_RPC_URL=http://192.168.68.53:8545
-VITE_PUBLISHER_URL=http://192.168.68.53:8080
+VITE_RPC_URL=http://$HOST_IP:8545
+VITE_PUBLISHER_URL=http://$HOST_IP:8080
 EOF
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
@@ -116,10 +116,10 @@ npm run dev -- --host 0.0.0.0 --port 5173
 ### 期待出力
 ```
 VITE v5.x.x  ready in xxx ms
-➜  Network: http://192.168.68.53:5173/
+➜  Network: http://<HOST_IP>:5173/
 ```
 
-iPhone Safari で `http://192.168.68.53:5173/welcome` を開くと、3 ステップ
+iPhone Safari で `http://<HOST_IP>:5173/welcome` を開くと、3 ステップ
 オンボーディング画面が出ます。
 
 ---
@@ -133,7 +133,7 @@ iPhone Safari で `http://192.168.68.53:5173/welcome` を開くと、3 ステッ
 
 ### 操作 (iPhone)
 
-1. Safari で `http://192.168.68.53:5173/` を開く
+1. Safari で `http://<HOST_IP>:5173/` を開く
 2. 画面下の **共有ボタン** (□に↑) をタップ
 3. **「ホーム画面に追加」** を選択
 4. 名前 (例: `IW3IP`) を確認して **「追加」**
@@ -161,7 +161,7 @@ iPhone Safari で `http://192.168.68.53:5173/welcome` を開くと、3 ステッ
 
 ### 操作 (iPhone, ホーム画面アプリ起動 or Safari)
 
-`http://192.168.68.53:5173/welcome` を開く → 表示される 3 ステップを
+`http://<HOST_IP>:5173/welcome` を開く → 表示される 3 ステップを
 読みながらタップ。
 
 ### 期待表示
@@ -192,7 +192,7 @@ STEP 3 / 3 - 準備完了
 ### 操作 (iPhone, MetaMask Mobile)
 
 1. MetaMask Mobile を開く → 内蔵ブラウザ (右下のグローブアイコン) で
-   `http://192.168.68.53:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9`
+   `http://<HOST_IP>:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9`
    を開く (deploy script が作る Merchandise #1)
 2. 「Connect your wallet!」をタップして MetaMask 接続
 3. 「Purchase」ボタンを押し、MetaMask 側で **Confirm**
@@ -285,7 +285,7 @@ iw3ip-wallet が起動して「IW3IP 購入閲覧クレデンシャル」確認�
 **対処**:
 
 - Safari (iOS 標準) で開いていることを確認
-- `http://192.168.68.53:5173/manifest.webmanifest` を直接開いて JSON が
+- `http://<HOST_IP>:5173/manifest.webmanifest` を直接開いて JSON が
   表示されるか確認
 - `http://localhost` ではなく LAN IP で開いていることを確認
 
