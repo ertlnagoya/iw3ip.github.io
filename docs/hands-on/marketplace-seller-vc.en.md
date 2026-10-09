@@ -6,7 +6,7 @@ Add a layer that proves *who* is selling a dataset, using the fifth VC: SellerVC
 >
 > **Prerequisites**: [Marketplace VC end-to-end](marketplace-vc-end-to-end.en.md) (Stage 6)
 >
-> **What you need**: PC + MetaMask + smartphone (Sphereon Wallet)
+> **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
 > **Time**: ~45 min
 

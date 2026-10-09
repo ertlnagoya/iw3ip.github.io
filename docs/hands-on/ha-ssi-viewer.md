@@ -6,7 +6,7 @@
 >
 > **前提**: [HA SSI Wallet サンプル](ha-ssi-wallet.md) (Stage 1) を済ませていること
 >
-> **使うもの**: PC + スマホ (Sphereon Wallet)
+> **使うもの**: PC + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 約 45 分
 

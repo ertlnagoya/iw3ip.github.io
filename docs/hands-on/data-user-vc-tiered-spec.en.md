@@ -11,7 +11,7 @@ This is a design document, not a step-by-step. For the walk-through, see
 
 - How the new **DataUserVC** relates to the existing five VCs
   (ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC)
-- How the trustScore logic from Li-lab's `DataUserVerifier.sol` is folded
+- How the trustScore logic from Li et al.'s `DataUserVerifier.sol` is folded
   into the Phase 2 Publisher
 - The unidirectional flow: VC verification → trustScore → allowed_views
 - Separation of concerns between data sources (HA / RaspberryPi / USB
@@ -39,7 +39,7 @@ their DataUserVC attributes:
 - dataHandlingPolicy (ISO27001 / other)
 - misuseRecord (history of misuse)
 
-We score these with the same weights as Li-lab's `DataUserVerifier.sol`,
+We score these with the same weights as Li et al.'s `DataUserVerifier.sol`,
 then collapse the score into `full` / `access` / `denied`.
 
 ## Prerequisites

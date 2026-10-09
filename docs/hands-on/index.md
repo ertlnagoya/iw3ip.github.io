@@ -132,7 +132,7 @@ VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-
 - **publisher**: ハンズオン用のサーバ。どのサブグループでも `docker compose up` で起動します。
 - **ブロックチェーン**: Hardhat ローカルチェーン + デプロイ済コントラクト。マーケットでの売買が起点になるサブグループで必要です。
 - **MetaMask**: ブロックチェーンに対する署名・送金に使います。ローカルチェーンに接続して使います。
-- **SSI ウォレット**: スマホに入れる Sphereon Wallet です。VC の受け取りと提示に使います。
+- **SSI ウォレット**: スマホに入れる iw3ip-wallet (Sphereon Wallet の fork) です。VC の受け取りと提示に使います。
 - **IPFS (暗号化配信)**: v1 で、購入後のデータ受け渡しに使います。v2 では VC を使う経路が加わります。
 - **画像処理 / LLM**: OpenCV (Tier 2 のぼかし処理)、Ollama で動かす VLM（視覚言語モデル。LLaVA / moondream）、Phase 3 の LLM Planner を指します。
 

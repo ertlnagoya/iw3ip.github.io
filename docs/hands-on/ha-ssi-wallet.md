@@ -1,12 +1,12 @@
 # スマホSSIウォレットサンプル（Phase 2）
 
-スマホ SSI ウォレット (Sphereon Wallet) で VC を受け取り、その VC を提示してデータ操作を許可してもらう流れを試します。Part 2 (機能拡張) の最初のハンズオンです。
+スマホ SSI ウォレット (iw3ip-wallet) で VC を受け取り、その VC を提示してデータ操作を許可してもらう流れを試します。Part 2 (機能拡張) の最初のハンズオンです。
 
 > **やること**: スマホで Consent VC を受け取り、提示して書き込みを許可してもらう
 >
 > **前提**: [HA SSI Publisher サンプル](ha-ssi-publisher.md) または [HA Demo Simulator](ha-demo-simulator.md) を済ませてあること
 >
-> **使うもの**: PC + スマホ (Sphereon Wallet 入り)
+> **使うもの**: PC + スマホ (iw3ip-wallet 入り)
 >
 > **所要時間**: 約 60 分
 

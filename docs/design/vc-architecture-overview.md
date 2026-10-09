@@ -157,7 +157,7 @@ Stage 5/7 の `eth_did_bound` audit row が、**Ethereum 鍵 ↔ did:jwk** の�
 
 - 設計仕様
     - [Marketplace VC Bridge (v1/v2 spec)](marketplace-vc-bridge-spec.md) — Stage 5/6 の構造
-    - [SellerVC spec (Stage 7 / case C M1)](seller-vc-spec.md) — Stage 7 の設計判断
+    - [SellerVC 設計仕様 (Stage 7)](seller-vc-spec.md) — Stage 7 の設計判断
 - ハンズオン
     - [ハンズオン概要 (Part 2)](../hands-on/index.md)
     - 各 Stage は §5 の表を参照

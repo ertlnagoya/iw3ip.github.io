@@ -6,7 +6,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 >
 > **前提**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)
 >
-> **使うもの**: PC + スマホ (Sphereon Wallet) + MetaMask モバイル
+> **使うもの**: PC + スマホ (iw3ip-wallet) + MetaMask モバイル
 >
 > **所要時間**: 30 分くらい
 

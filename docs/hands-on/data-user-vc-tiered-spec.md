@@ -11,7 +11,7 @@ Publisher が公開するカメラ視野を **イベント／画像／動画** �
 
 - 既存 5 種類の VC（ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC）と、
   6 種類目として追加する **DataUserVC** の関係
-- Li 研のスマートコントラクト `DataUserVerifier.sol` に書かれた trustScore（信頼度スコア）算出ロジックを
+- Li らのスマートコントラクト `ssi/contracts/DataUserVerifier.sol`（[論文](../publications.md) 1 の著者による実装）に書かれた trustScore（信頼度スコア）算出ロジックを
   Phase 2 の Publisher にどのように取り込むか
 - 「VC 検証 → trustScore → allowed_views」という単方向データフロー
 - データ供給側（HA / RaspberryPi / USB Webcam）と Publisher の責務分離
@@ -36,7 +36,7 @@ Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/d
 - dataHandlingPolicy（ISO27001 / その他）
 - misuseRecord（過去の濫用記録）
 
-これらを Li 研スマートコントラクト `DataUserVerifier.sol` と同じ重み付けで
+これらを Li らのスマートコントラクト `DataUserVerifier.sol` と同じ重み付けで
 スコア化し、`full` / `access` / `denied` の 3 段階に分類します。
 
 ## この仕様の前提
@@ -49,7 +49,7 @@ Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/d
 - bridge ↔ Hardhat の Purchase event 経路
 - Webcam / HA / Demo simulator のデバイス側コード（変更なし）
 
-**Li 研の `DataUserVerifier.sol` は、Phase 2 の Publisher が評価ロジックの基準として参照するもの**
+**Li らの `DataUserVerifier.sol` は、Phase 2 の Publisher が評価ロジックの基準として参照するもの**
 で、オンチェーン呼び出しはしません（理由は[なぜオンチェーン呼び出しをしないか](#なぜオンチェーン呼び出しをしないか)を参照）。
 
 ## アーキテクチャ

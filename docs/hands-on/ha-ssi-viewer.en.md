@@ -6,7 +6,7 @@
 >
 > **Prerequisites**: [HA SSI Wallet](ha-ssi-wallet.en.md) (Stage 1) finished
 >
-> **What you need**: PC + smartphone (Sphereon Wallet)
+> **What you need**: PC + smartphone (iw3ip-wallet)
 >
 > **Time required**: approx. 45 min
 

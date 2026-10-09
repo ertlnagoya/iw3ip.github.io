@@ -6,7 +6,7 @@ Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC).
 >
 > **Prerequisites**: [HA SSI Wallet](ha-ssi-wallet.en.md) and [Webcam event sharing](webcam-event-sharing.en.md)
 >
-> **What you need**: PC + smartphone (Sphereon Wallet)
+> **What you need**: PC + smartphone (iw3ip-wallet)
 >
 > **Time**: ~90 min
 

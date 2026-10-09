@@ -6,7 +6,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 >
 > **前提**: [最短起動](../setup/quickstart.md) と [HA SSI Wallet](ha-ssi-wallet.md)
 >
-> **使うもの**: PC + MetaMask + スマホ (Sphereon Wallet)
+> **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 60 分くらい
 

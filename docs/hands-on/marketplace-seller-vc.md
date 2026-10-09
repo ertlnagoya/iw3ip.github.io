@@ -6,7 +6,7 @@
 >
 > **前提**: [Marketplace VC end-to-end](marketplace-vc-end-to-end.md) (Stage 6)
 >
-> **使うもの**: PC + MetaMask + スマホ (Sphereon Wallet)
+> **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 45 分くらい
 

@@ -78,7 +78,9 @@ The HUSKYLENS2 and USB webcam bridges and the exercise programs (`problem_progra
 A container for the VCs (digital credentials) you receive.
 
 - iPhone or Android works
-- Recommended: **Sphereon Wallet** (App Store / Play Store)
+- App to use: **iw3ip-wallet** ([ertlnagoya/iw3ip-wallet](https://github.com/ertlnagoya/iw3ip-wallet)), a fork of the open-source Sphereon Wallet
+- Build the `iw3ip/phase2-consent-vc` branch and install it on your device. See [README.iw3ip.md](https://github.com/ertlnagoya/iw3ip-wallet/blob/iw3ip/phase2-consent-vc/README.iw3ip.md). In a class, the instructor may distribute a prepared build instead
+- The store version of Sphereon Wallet does not include a fix for a navigation failure when presenting right after receiving a VC, so it has not been verified with the hands-on pages on this site
 - What the app looks like:
 
 | Credential list | Offer dialog |
@@ -151,7 +153,7 @@ The initial clone takes a few minutes (the repo is large).
 - [ ] `docker run hello-world` succeeds
 - [ ] You have a `Blockchain_IoT_Marketplace` directory
 - [ ] (Part 1) MetaMask shows up in your browser's extensions list
-- [ ] (Part 2) Sphereon Wallet is installed on your phone
+- [ ] (Part 2) iw3ip-wallet is installed on your phone
 
 All checked → head to [Quickstart](quickstart.md).
 

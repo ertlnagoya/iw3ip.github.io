@@ -1,12 +1,12 @@
 # Mobile SSI Wallet Sample (Phase 2)
 
-Receive a VC into a smartphone SSI wallet (Sphereon Wallet), then present it to authorize a data action. This is the first hands-on in Part 2 (Feature Extensions).
+Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to authorize a data action. This is the first hands-on in Part 2 (Feature Extensions).
 
 > **What you'll do**: Receive a Consent VC on your phone and present it to allow a write
 >
 > **Prerequisites**: [HA SSI Publisher](ha-ssi-publisher.en.md) or [HA Demo Simulator](ha-demo-simulator.en.md) finished
 >
-> **What you need**: PC + smartphone with Sphereon Wallet
+> **What you need**: PC + smartphone with iw3ip-wallet
 >
 > **Time required**: approx. 60 min
 

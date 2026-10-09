@@ -6,7 +6,7 @@
 >
 > **前提**: [HA SSI Wallet](ha-ssi-wallet.md) と [USB ウェブカメライベント共有](webcam-event-sharing.md)
 >
-> **使うもの**: PC + スマホ (Sphereon Wallet)
+> **使うもの**: PC + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 90 分くらい
 

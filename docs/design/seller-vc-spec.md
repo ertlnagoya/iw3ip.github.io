@@ -1,10 +1,10 @@
-# SellerVC — マーケット出品ガバナンス VC (Stage 7 prep / M1 spec)
+# SellerVC — マーケット出品ガバナンス VC (Stage 7 設計仕様)
 
 !!! abstract "このドキュメントの位置付け"
-    iot-market への Merchandise 登録に身元確認を追加する **Stage 7
-    (case C)** の設計仕様である。ConsentVC / ViewerVC / ServiceVC /
+    iot-market への Merchandise 登録に身元確認を追加する **Stage 7**
+    の設計仕様である。ConsentVC / ViewerVC / ServiceVC /
     PurchaseViewerVC に続く **5 種類目の VC** (Verifiable Credential) を導入し、
-    誰がどの dataset を売ってよいかを VC で示す。**M1 ドラフト**である。
+    誰がどの dataset を売ってよいかを VC で示す。実装前に書いた草稿である。
     本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像](vc-architecture-overview.md) の §5)。
     Stage 7 はハンズオン [marketplace-seller-vc](../hands-on/marketplace-seller-vc.md)、Stage 6 は [marketplace-vc-end-to-end](../hands-on/marketplace-vc-end-to-end.md)、Stage 5 は [marketplace-vc-bridge](../hands-on/marketplace-vc-bridge.md) に対応する。
     Stage 8 以降はまだハンズオンが無く、将来の検討事項を指す。

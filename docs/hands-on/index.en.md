@@ -132,7 +132,7 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 - **publisher**: the hands-on server. Every sub-group brings it up with `docker compose up`.
 - **Blockchain**: a local Hardhat chain plus deployed contracts. Required when the marketplace purchase is the entry point.
 - **MetaMask**: signs / sends transactions on the local chain.
-- **SSI wallet**: Sphereon Wallet on a phone — receives and presents VCs.
+- **SSI wallet**: iw3ip-wallet (a fork of Sphereon Wallet) on a phone — receives and presents VCs.
 - **IPFS (encrypted)**: the v1 post-purchase delivery lane. v2 replaces this role with VCs.
 - **Image proc. / LLM**: OpenCV (Tier 2 blur), Ollama (LLaVA / moondream for VLM), and the LLM planner in Part 3.
 

@@ -6,7 +6,7 @@ Use the same backend from Part 2 but install `iot-market-ui` as a PWA on your ph
 >
 > **Prerequisites**: [Marketplace VC Bridge](marketplace-vc-bridge.en.md) (Stage 5)
 >
-> **What you need**: PC + smartphone (Sphereon Wallet) + MetaMask mobile
+> **What you need**: PC + smartphone (iw3ip-wallet) + MetaMask mobile
 >
 > **Time**: ~30 min
 

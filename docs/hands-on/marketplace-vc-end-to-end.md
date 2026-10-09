@@ -6,7 +6,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 >
 > **前提**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)
 >
-> **使うもの**: PC + MetaMask + スマホ (Sphereon Wallet)
+> **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 90 分くらい
 

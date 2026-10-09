@@ -6,7 +6,7 @@ The core v2 hands-on. After a marketplace purchase, mint a PurchaseViewerVC into
 >
 > **Prerequisites**: [Quickstart](../setup/quickstart.en.md) and [HA SSI Wallet](ha-ssi-wallet.en.md)
 >
-> **What you need**: PC + MetaMask + smartphone (Sphereon Wallet)
+> **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
 > **Time**: ~60 min
 

@@ -6,7 +6,7 @@ The capstone of Stage 1–5: a Seller writes data with a ServiceVC, a Buyer read
 >
 > **Prerequisites**: [Marketplace VC Bridge](marketplace-vc-bridge.en.md) (Stage 5)
 >
-> **What you need**: PC + MetaMask + smartphone (Sphereon Wallet)
+> **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
 > **Time**: ~90 min
 

@@ -78,7 +78,9 @@ HUSKYLENS2 や USB ウェブカメラのブリッジ、演習用プログラム 
 Part 2 (機能拡張) で、VC (デジタル証明書) を受け取り、保管するために使います。
 
 - iPhone / Android のどちらでも構いません
-- 推奨アプリ: **Sphereon Wallet** (iPhone は App Store、Android は Play Store)
+- 使用するアプリ: **iw3ip-wallet** ([ertlnagoya/iw3ip-wallet](https://github.com/ertlnagoya/iw3ip-wallet))。オープンソースの Sphereon Wallet を fork したものです
+- `iw3ip/phase2-consent-vc` ブランチをビルドして端末に入れます。手順は [README.iw3ip.md](https://github.com/ertlnagoya/iw3ip-wallet/blob/iw3ip/phase2-consent-vc/README.iw3ip.md) を参照してください。授業では、講師が用意したビルドを配布する方法もあります
+- ストア版の Sphereon Wallet は、VC を受け取った直後の提示で画面遷移に失敗する不具合への修正を含まないため、本サイトのハンズオンでは動作を確認していません
 - インストール後の画面例:
 
 | クレデンシャル一覧 | 受け取り画面 |
@@ -151,7 +153,7 @@ cd Blockchain_IoT_Marketplace
 - [ ] `docker run hello-world` が成功する
 - [ ] `Blockchain_IoT_Marketplace` ディレクトリができている
 - [ ] (Part 1 を進める人) MetaMask が拡張機能としてブラウザに表示されている
-- [ ] (Part 2 を進める人) スマホに Sphereon Wallet が入っている
+- [ ] (Part 2 を進める人) スマホに iw3ip-wallet が入っている
 
 すべてチェックできたら → [最短起動](quickstart.md) に進んでください。
 
