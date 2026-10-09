@@ -1,4 +1,4 @@
-# Mobile Viewer (v1)
+# View purchases on a phone (v1)
 
 Browse v1-marketplace data (current + MetaMask + encrypted IPFS) from a phone browser. The v2 VC flow is a separate page.
 
@@ -78,43 +78,9 @@ Branches after that:
   wallet-aware flows
 - If the connection fails early: jump to the troubleshooting section first
 
-## Process table of contents
-
-<details class="iw3ip-toc-details" open>
-  <summary>Preparation: expose the frontend and confirm the LAN IP</summary>
-  <p>First configure the frontend endpoint (.env.local), expose the frontend on the LAN, and confirm the PC IP address that the smartphone should use.</p>
-  <ol>
-    <li><a href="#env-local">Configure the frontend endpoint (.env.local)</a></li>
-    <li><a href="#serve-frontend-on-lan">Serve frontend on LAN</a></li>
-    <li><a href="#check-the-pc-lan-ip">Check the PC LAN IP</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 1: open the mobile viewer from the smartphone</summary>
-  <p>Next, open the homepage `/` (or a specific `/merchandise/[address]`) from the smartphone and confirm that the UI is visible.</p>
-  <ol>
-    <li><a href="#open-from-smartphone">Open from smartphone</a></li>
-    <li><a href="#success-example">Success example</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 2: purchase path and troubleshooting</summary>
-  <p>Finally, if needed, test the wallet-based purchase path and review the most common reasons why the phone cannot connect.</p>
-  <ol>
-    <li><a href="#open-from-smartphone">Open from smartphone</a></li>
-    <li><a href="#troubleshooting">Troubleshooting</a></li>
-  </ol>
-</details>
-
-## How to read this page
-
-This page is a procedure for checking Phase 1 results from a smartphone. For a quick pass, opening the URL and viewing the list is enough. As a hands-on, it is better to confirm both "it runs on the same LAN" and "the wallet-based purchase entry point".
-
 ## Prepare the connection baseline
 
-## 0. Configure the frontend endpoint (.env.local) { #env-local }
+### 0. Configure the frontend endpoint (.env.local) { #env-local }
 
 `iot-market-ui` reads the blockchain (RPC) and publisher endpoints from `iot-market-ui/.env.local`. If that file is missing or points at the wrong host, the merchandise page returns **HTTP 500**. Copy the template first and match it to your setup.
 

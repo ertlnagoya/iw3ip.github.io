@@ -1,4 +1,4 @@
-# USB Webcam Event Sharing Sample (Phase 2)
+# Share detections, not raw frames
 
 Take the events you built in the [USB webcam sample](webcam.en.md) and share them through a Consent VC gate.
 
@@ -66,40 +66,6 @@ Exercise programs:
 This exercise asks learners to write the code that sends a `possible_littering` event to `/simulate/publish`.  
 The problem program makes it clear that a Phase 1 detection event becomes a Phase 2 condition-controlled sharing event.
 
-## Process table of contents
-
-<details class="iw3ip-toc-details" open>
-  <summary>Preparation: start the publisher and register the Consent VC</summary>
-  <p>First start the publisher and register the Consent VC needed for this event-sharing scenario. These steps prepare the minimum baseline for policy evaluation.</p>
-  <ol>
-    <li><a href="#1-start-the-services">Start the services</a></li>
-    <li><a href="#2-register-a-consent-vc-for-this-hands-on">Register a Consent VC for this hands-on</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 1: compare allowed and denied</summary>
-  <p>Next, send the same `possible_littering` event under two different purposes and compare the result.</p>
-  <ol>
-    <li><a href="#3-reproduce-an-allowed-case">Reproduce an allowed case</a></li>
-    <li><a href="#4-inspect-what-reached-the-platform-api">Inspect what reached the Platform API</a></li>
-    <li><a href="#5-reproduce-a-denied-case">Reproduce a denied case</a></li>
-    <li><a href="#6-check-the-audit-logs">Check the audit logs</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 2: reproduce the same sharing path through MQTT</summary>
-  <p>Finally, reproduce the same event-sharing path through MQTT and confirm that the policy logic remains the same.</p>
-  <ol>
-    <li><a href="#7-try-the-mqtt-path-as-well">Try the MQTT path as well</a></li>
-  </ol>
-</details>
-
-## How to read this page
-
-This page is meant to show the transition from Phase 1 camera detection to Phase 2 event sharing. If you only need a quick confirmation path, the `allowed` case is enough. If you want to understand the actual point of the hands-on, it is better to continue through the denied case and the audit log as well.
-
 ## Scenario
 
 Suppose a community camera detects possible littering in a public park.  
@@ -132,7 +98,7 @@ The same event content is also available in `examples/payload_possible_littering
 
 ## Phase 2: Prepare the event-sharing baseline
 
-## 1. Start the services
+### 1. Start the services
 
 Run the following in the source-code repository. `PLATFORM_INGEST_READ_ENABLED=true` enables `GET /platform/ingest`, which this page uses to inspect ingested data. It is a demo-only API that returns every row without authentication and is disabled (404) unless set. From Part 2 onward, reads use a token obtained by presenting a VC.
 
@@ -152,7 +118,7 @@ Expected:
 {"status":"ok","service":"publisher"}
 ```
 
-## 2. Register a Consent VC for this hands-on
+### 2. Register a Consent VC for this hands-on
 
 This hands-on allows `home/event/possible_littering` only for `community_cleaning` and `research`.
 
@@ -184,7 +150,7 @@ At this point, the minimum setup for evaluating `possible_littering` is ready. T
 
 ## Phase 2: Compare allowed and denied
 
-## 3. Reproduce an allowed case
+### 3. Reproduce an allowed case
 
 Inject the littering event with `purpose = community_cleaning`.
 
@@ -214,7 +180,7 @@ Expected:
 {"status":"allowed","dataset_id":"home/event/possible_littering"}
 ```
 
-## 4. Inspect what reached the Platform API
+### 4. Inspect what reached the Platform API
 
 ```bash
 curl http://localhost:8080/platform/ingest
@@ -227,7 +193,7 @@ Checkpoints:
 - `payload.message_type` is `event`
 - `payload.payload.event_type` is `possible_littering`
 
-## 5. Reproduce a denied case
+### 5. Reproduce a denied case
 
 Send the same event again, but with `purpose = advertising`.
 
@@ -257,7 +223,7 @@ Expected:
 {"status":"denied","dataset_id":"home/event/possible_littering","reason":"no_matching_consent"}
 ```
 
-## 6. Check the audit logs
+### 6. Check the audit logs
 
 ```bash
 curl 'http://localhost:8080/audit/logs?limit=10'
@@ -274,7 +240,7 @@ By this point, it should be clear that the center of Phase 2 is no longer detect
 
 ## Phase 2: Confirm the same policy through MQTT
 
-## 7. Try the MQTT path as well
+### 7. Try the MQTT path as well
 
 ```bash
 docker exec -i iw3ip-mosquitto mosquitto_pub \

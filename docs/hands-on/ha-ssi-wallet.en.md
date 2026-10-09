@@ -1,4 +1,4 @@
-# Mobile SSI Wallet Sample (Phase 2)
+# Authenticate the data provider (Consent VC / Stage 1)
 
 Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to authorize a data action. This is the first hands-on in Part 2 (Feature Extensions).
 
@@ -90,44 +90,6 @@ Next branches:
 - To see revocation: revoke the VC; the same presentation should become `denied`
 - To compare with Phase 1: observe that audit logs now capture presentation
   events rather than direct `/consents` registration
-
-## Stage-by-stage table of contents
-
-<details class="iw3ip-toc-details" open>
-  <summary>Setup: start publisher / issuer / verifier</summary>
-  <p>Start the publisher with OID4VCI / OID4VP endpoints enabled.</p>
-  <ol>
-    <li><a href="#1-start">Start</a></li>
-    <li><a href="#2-inspect-presentation-definition">Inspect Presentation Definition</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 1: issue a VC to the wallet</summary>
-  <p>Issue a Consent VC from the issuer QR and confirm it is stored in the wallet.</p>
-  <ol>
-    <li><a href="#3-open-the-wallet">Open the wallet</a></li>
-    <li><a href="#4-issue-via-issuer-qr">Issue via issuer QR</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 2: present the VC and compare allowed vs denied</summary>
-  <p>Scan the verifier QR and compare behavior when `purpose` matches vs not.</p>
-  <ol>
-    <li><a href="#5-present-via-verifier-qr">Present via verifier QR</a></li>
-    <li><a href="#6-denial-case">Denial case</a></li>
-    <li><a href="#7-audit-log-check">Audit log check</a></li>
-  </ol>
-</details>
-
-## How to read this page
-
-This is the Phase 2 stage that treats the Consent VC as a wallet-presented
-artifact rather than a pre-registered policy. Run the
-[HA x SSI Publisher Sample](ha-ssi-publisher.md) and
-[Environment Disaster Sample](environment-disaster.md) first, then come back
-to this page to see the delta.
 
 ## 1. Start
 

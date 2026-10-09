@@ -1,4 +1,4 @@
-# Marketplace mobile app (Stage A — minimal PWA)
+# Marketplace as a phone app (Stage A)
 
 Use the same backend from Part 2 but install `iot-market-ui` as a PWA on your phone's home screen. Purchase and VC receipt happen by tap, no command line.
 

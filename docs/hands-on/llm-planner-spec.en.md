@@ -1,4 +1,4 @@
-# LLM Planner Replacement Spec
+# LLM Planner replacement spec
 
 This is a specification for replacing the planner in the [Regional Safety Assistant sample](regional-safety-assistant.md) with an **LLM-based planner** (LLM: large language model).  
 It is not an implementation procedure but a design document that defines **what to fix and where to replace**.

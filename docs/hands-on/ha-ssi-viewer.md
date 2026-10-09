@@ -1,4 +1,4 @@
-# SSI ビューワサンプル（Phase 2 / Stage 3）
+# データ閲覧者の認証 (Viewer VC / Stage 3)
 
 [HA SSI Wallet](ha-ssi-wallet.md) では書き込み側を VC で保護しました。ここでは読み出し側を VC で保護します。
 

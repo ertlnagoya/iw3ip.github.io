@@ -1,4 +1,4 @@
-# Seller VC で出品身元を裏付ける (Stage 7)
+# 出品者の身元を裏付ける (Seller VC / Stage 7)
 
 出品者が「誰として」その dataset を売るのかを VC で裏付ける層を加えます。5 種類目の VC である SellerVC を扱います。
 

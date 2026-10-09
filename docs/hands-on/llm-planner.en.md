@@ -1,4 +1,4 @@
-# LLM Planner Hands-on
+# Let an AI plan the steps (LLM Planner)
 
 Replace the rule-based planner in the [regional safety assistant](regional-safety-assistant.en.md) with one based on a large language model (LLM), in three stages.
 
@@ -78,39 +78,6 @@ References:
 
 The exercise programs focus on the minimum request body for `/assistant/plan` and on how to summarize the returned plan.
 
-## Process table of contents
-
-<details class="iw3ip-toc-details" open>
-  <summary>Stage 1: understand the planner shape with the stub provider</summary>
-  <p>Start without any external LLM API. In this stage, the goal is to understand the basic shape of the planner input and output, including <code>plan</code> and <code>planner_diagnostics</code>.</p>
-  <ol>
-    <li><a href="#1-start-with-the-stub-provider">Start with the <code>stub</code> provider</a></li>
-    <li><a href="#2-inspect-a-japanese-request">Inspect a Japanese request</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Stage 2: inspect the frontend demo and diagnostics</summary>
-  <p>Next, inspect the same planner result from the frontend side. This stage focuses on <code>assistant-demo</code>, badges, alert panels, and how <code>planner_diagnostics</code> should be read in the UI.</p>
-  <ol>
-    <li><a href="#25-start-the-react-frontend-demo">Start the React frontend demo</a></li>
-    <li><a href="#3-inspect-an-english-request">Inspect an English request</a></li>
-    <li><a href="#4-inspect-the-real-api-environment-template">Inspect the real-API environment template</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Stage 3: switch to an OpenAI-compatible API</summary>
-  <p>Finally, switch to the <code>openai_compatible</code> provider while keeping the same overall structure. This is where provider-side failures become visible through <code>planner_diagnostics</code>.</p>
-  <ol>
-    <li><a href="#5-switch-to-an-openai-compatible-api">Switch to an OpenAI-compatible API</a></li>
-  </ol>
-</details>
-
-## How to read this page
-
-This page focuses on the planner part of Phase 3. Proceeding in the order `stub` provider → UI → real API makes the differences easy to see.
-
 ## Architecture Diagram
 
 ```mermaid
@@ -127,7 +94,7 @@ Rather than embedding the LLM directly in `main.py`, the replacement is isolated
 
 ## Stage 1: Understand the planner shape with the stub provider
 
-## 1. Start with the `stub` provider
+### 1. Start with the `stub` provider
 
 Run the following in the `Blockchain_IoT_Marketplace` repository.
 
@@ -160,7 +127,7 @@ Expected:
 {"status":"ok","service":"assistant"}
 ```
 
-## 2. Inspect a Japanese request
+### 2. Inspect a Japanese request
 
 ```bash
 curl -X POST http://localhost:8090/assistant/plan \
@@ -191,7 +158,7 @@ At this point, the minimum path from natural-language request to `plan` is worki
 
 ## Stage 2: Inspect the frontend demo and diagnostics
 
-## 2.5 Start the React frontend demo
+### 2.5 Start the React frontend demo
 
 There is also a minimal React screen for calling the Phase 3 assistant from a browser.
 
@@ -228,7 +195,7 @@ This profile starts:
 - `llm-mock`
 - `assistant-ui`
 
-## 3. Inspect an English request
+### 3. Inspect an English request
 
 ```bash
 curl -X POST http://localhost:8090/assistant/plan \
@@ -255,7 +222,7 @@ Example expected output:
 
 This confirms that the planner can also map an English request to `station-front`.
 
-## 4. Inspect the real-API environment template
+### 4. Inspect the real-API environment template
 
 To use an actual OpenAI-compatible API, inspect the example environment file:
 
@@ -469,7 +436,7 @@ At this point, `planner_diagnostics` can be read from both the API and the UI. T
 
 ## Stage 3: Switch to an OpenAI-compatible API
 
-## 5. Switch to an OpenAI-compatible API
+### 5. Switch to an OpenAI-compatible API
 
 If your API key and model are ready, start the server like this:
 
@@ -494,7 +461,7 @@ Reference screenshot:
 
 ![LLM planner response](../assets/llm-planner-response.svg)
 
-## 5.2 Try the HTTP path with the local mock server
+### 5.2 Try the HTTP path with the local mock server
 
 If you do not want to call a real API yet, you can check just the HTTP path with an OpenAI-compatible mock server.
 
@@ -537,7 +504,7 @@ Checkpoints:
 - `planner_diagnostics.user_message` is readable enough to show in the UI
 - `planner_diagnostics.used_fallback` is `false`
 
-## 5.5 Use the exercise pytest
+### 5.5 Use the exercise pytest
 
 This hands-on also includes a reusable pytest file for both the problem and answer programs.
 
@@ -554,7 +521,7 @@ PHASE3_LLM_HANDS_ON_MODULE=examples.hands_on.phase3_llm_planner.problem_program 
 pytest -q tests/test_phase3_llm_hands_on_program.py
 ```
 
-## 6. Check validator and fallback behavior
+### 6. Check validator and fallback behavior
 
 The LLM output is not adopted as-is; the following are always validated:
 

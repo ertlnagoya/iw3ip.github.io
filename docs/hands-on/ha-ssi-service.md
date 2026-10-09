@@ -1,4 +1,4 @@
-# SSI サービスサンプル（Phase 2 / Stage 4 prep）
+# 機器間での連携認証 (Service VC / Stage 4 prep)
 
 人ではなく、サービス (プログラム) が VC を持って継続的に書き込む M2M (machine to machine) のケースを扱います。
 

@@ -1,4 +1,4 @@
-# DataUserVC × Tiered Access Spec
+# Tiered access design spec
 
 A design document defining how the Publisher narrows the camera view it
 exposes — to **event / image / video** in three tiers — based on the

@@ -1,12 +1,7 @@
 # Operations
 
-Operational material covering in-session troubleshooting and common questions.  
-When a problem occurs, find the item closest to the symptom and work through the checks and actions in order.
+Troubleshooting during a session, common questions, and the facilitator guide.
 
-## How to use this chapter
-
-- For finding a cause quickly, see [Troubleshooting](troubleshooting.md)
-- For confirming how to proceed and how things are positioned, see [FAQ](faq.md)
-
-- [Troubleshooting](troubleshooting.md)
-- [FAQ](faq.md)
+- [Troubleshooting](troubleshooting.md): find the item closest to the symptom and work through the checks and actions in order
+- [FAQ](faq.md): questions about how to proceed and how the material is positioned
+- [Facilitator Guide](facilitator-guide.md): timing and checklists for a class or workshop

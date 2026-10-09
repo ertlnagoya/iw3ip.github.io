@@ -1,4 +1,4 @@
-# Seller VC for marketplace identity (Stage 7)
+# Back the seller's identity (Seller VC, Stage 7)
 
 Add a layer that proves *who* is selling a dataset, using the fifth VC: SellerVC.
 

@@ -1,4 +1,4 @@
-# USB Webcam Sample (Littering)
+# Detect with a USB webcam (OpenCV)
 
 Without a HUSKYLENS2, a generic USB webcam plus OpenCV is enough to emit `person_detected` and `possible_littering` events.
 
@@ -62,38 +62,6 @@ Branches after that:
 - If you only want to confirm the downstream pipeline: `mock` mode is enough
 - If you want to inspect real camera detection: continue to `webcam` mode
 - If the camera cannot be opened: check camera index and device ownership first
-
-## Process table of contents
-
-<details class="iw3ip-toc-details" open>
-  <summary>Check 1: confirm event generation in mock mode</summary>
-  <p>Start with mock mode so you can confirm that the downstream pipeline works even without the real camera.</p>
-  <ol>
-    <li><a href="#mock-first">Mock first</a></li>
-    <li><a href="#success-example">Success example</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 2: inspect detections in webcam mode</summary>
-  <p>Next, switch to the real USB webcam and inspect how `person_detected` and `possible_littering` are produced.</p>
-  <ol>
-    <li><a href="#usb-webcam">USB webcam</a></li>
-    <li><a href="#event-types">Event types</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 3: review caveats and troubleshoot common failures</summary>
-  <p>Finally, review the limits of the heuristic approach and the most common issues related to cameras and output paths.</p>
-  <ol>
-    <li><a href="#troubleshooting">Troubleshooting</a></li>
-  </ol>
-</details>
-
-## How to read this page
-
-This is a Phase 1 camera-input page. As with the HUSKYLENS2 page, it is usually easier to confirm the downstream path with `mock` first and only then move to the real camera path.
 
 ## Phase 1: Confirm the pipeline in mock mode
 

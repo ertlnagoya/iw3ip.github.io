@@ -1,4 +1,4 @@
-# スマホSSIウォレットサンプル（Phase 2）
+# データ提供者の認証 (Consent VC / Stage 1)
 
 スマホ SSI ウォレット (iw3ip-wallet) で VC を受け取り、その VC を提示してデータ操作を許可してもらう流れを試します。Part 2 (機能拡張) の最初のハンズオンです。
 
@@ -101,44 +101,6 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 - 失効を見たい場合: VC を revoke → 同じ提示で `denied` になることを確認する
 - Phase 1 との違いを見たい場合: `/consents` への直接登録ではなく
   提示経由になった点を監査ログで比較する
-
-## 工程別の目次
-
-<details class="iw3ip-toc-details" open>
-  <summary>準備: Publisher / Issuer / Verifier を起動する</summary>
-  <p>まず Publisher に OID4VCI / OID4VP 相当のエンドポイントを追加したプロファイルで起動します。</p>
-  <ol>
-    <li><a href="#1-起動">起動</a></li>
-    <li><a href="#2-presentation-definition-を確認">Presentation Definition を確認</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 1: VC を発行してウォレットに保存する</summary>
-  <p>Issuer の QR からスマホウォレットへ Consent VC を発行し、保有状態を確認します。</p>
-  <ol>
-    <li><a href="#3-ウォレットを起動">ウォレットを起動</a></li>
-    <li><a href="#4-issuer-qr-で発行">Issuer QR で発行</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 2: VC を提示し allowed と denied を比較する</summary>
-  <p>Verifier QR を読み取り、`purpose` が一致する場合と一致しない場合の判定差を確認します。</p>
-  <ol>
-    <li><a href="#5-verifier-qr-で提示">Verifier QR で提示</a></li>
-    <li><a href="#6-拒否ケース">拒否ケース</a></li>
-    <li><a href="#7-監査ログ確認">監査ログ確認</a></li>
-  </ol>
-</details>
-
-## 読み進め方
-
-Phase 2 のうち、Consent VC を、サーバに登録したポリシーとしてではなく、
-ウォレットが提示するものとして扱う段階です。既存の
-[HA x SSI Publisher サンプル](ha-ssi-publisher.md) と
-[環境・防災イベント共有サンプル](environment-disaster.md) を一度通してから
-本ページに進むと、差分が理解しやすくなります。
 
 ## 1. 起動
 

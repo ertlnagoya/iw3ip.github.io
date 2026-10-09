@@ -1,4 +1,4 @@
-# Marketplace × Wallet bridge (v2 / Stage 5)
+# Hand a credential to the buyer's wallet (Bridge / Stage 5)
 
 The core v2 hands-on. After a marketplace purchase, mint a PurchaseViewerVC into the buyer's phone wallet and use it to fetch data.
 

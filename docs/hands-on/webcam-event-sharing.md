@@ -1,4 +1,4 @@
-# USBウェブカメライベント共有サンプル（Phase 2）
+# 検知イベントだけを共有する
 
 [USB ウェブカメラサンプル](webcam.md) で作ったイベントを、Consent VC を介して共有可否を制御しながら送信します。
 
@@ -66,40 +66,6 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 この演習では、`possible_littering` イベントを `/simulate/publish` に送るコードを書きます。  
 問題用プログラムでは、Phase 1 の検知イベントが Phase 2 では「条件付き共有イベント」へ変わることを確認できます。
 
-## 工程別の目次
-
-<details class="iw3ip-toc-details" open>
-  <summary>準備: publisher と Consent VC を用意する</summary>
-  <p>最初に publisher を起動し、このイベント共有で必要な Consent VC を登録します。ここまでは共有可否を判定するための準備段階です。</p>
-  <ol>
-    <li><a href="#1-サービス起動">サービス起動</a></li>
-    <li><a href="#2-この-hands-on-用の-consent-vc-を登録">この Hands-on 用の Consent VC を登録</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 1: allowed と denied を比較する</summary>
-  <p>次に、同じ `possible_littering` イベントを 2 つの目的で送り、許可される場合と拒否される場合を比較します。</p>
-  <ol>
-    <li><a href="#3-許可されるケースを再現する">許可されるケースを再現する</a></li>
-    <li><a href="#4-platform-api-に届いた内容を確認する">Platform API に届いた内容を確認する</a></li>
-    <li><a href="#5-拒否されるケースを再現する">拒否されるケースを再現する</a></li>
-    <li><a href="#6-監査ログを確認する">監査ログを確認する</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 2: MQTT 経路でも同じイベント共有を試す</summary>
-  <p>最後に MQTT 経路でも同じイベント共有を再現し、判定の考え方が変わらないことを確認します。</p>
-  <ol>
-    <li><a href="#7-mqtt-経路でも試す">MQTT 経路でも試す</a></li>
-  </ol>
-</details>
-
-## 読み進め方
-
-Phase 1 のカメラ検知から Phase 2 のイベント共有へ進むときの違いを確認するページです。短時間なら `allowed` だけでも構いませんが、この Hands-on の主題は「同じイベントでも目的次第で共有結果が変わる」ことなので、`denied` と監査ログまで見ることを勧めます。
-
 ## シナリオ
 
 地域のカメラでポイ捨ての可能性が検知されたとします。  
@@ -132,7 +98,7 @@ Phase 1 のカメラ検知から Phase 2 のイベント共有へ進むときの
 
 ## Phase 2: イベント共有の前提を整える
 
-## 1. サービス起動
+### 1. サービス起動
 
 ソースコードリポジトリで次を実行します。`PLATFORM_INGEST_READ_ENABLED=true` は、蓄積されたデータを確認するための `GET /platform/ingest` を有効にする指定です。この API は認証なしで全件を返すデモ用の機能で、指定しない場合は無効 (404) です。Part 2 以降では、読み出しに VC を提示して得るトークンを使います。
 
@@ -152,7 +118,7 @@ curl http://localhost:8080/health
 {"status":"ok","service":"publisher"}
 ```
 
-## 2. この Hands-on 用の Consent VC を登録
+### 2. この Hands-on 用の Consent VC を登録
 
 この Hands-on では、`home/event/possible_littering` を `community_cleaning` と `research` の目的でのみ許可します。
 
@@ -184,7 +150,7 @@ curl http://localhost:8080/consents
 
 ## Phase 2: allowed と denied を比較する
 
-## 3. 許可されるケースを再現する
+### 3. 許可されるケースを再現する
 
 `purpose = community_cleaning` として、ポイ捨てイベントを疑似投入します。
 
@@ -214,7 +180,7 @@ curl -X POST http://localhost:8080/simulate/publish \
 {"status":"allowed","dataset_id":"home/event/possible_littering"}
 ```
 
-## 4. Platform API に届いた内容を確認する
+### 4. Platform API に届いた内容を確認する
 
 ```bash
 curl http://localhost:8080/platform/ingest
@@ -227,7 +193,7 @@ curl http://localhost:8080/platform/ingest
 - `payload.message_type` が `event`
 - `payload.payload.event_type` が `possible_littering`
 
-## 5. 拒否されるケースを再現する
+### 5. 拒否されるケースを再現する
 
 同じイベントを `advertising` 目的で送ります。
 
@@ -257,7 +223,7 @@ curl -X POST http://localhost:8080/simulate/publish \
 {"status":"denied","dataset_id":"home/event/possible_littering","reason":"no_matching_consent"}
 ```
 
-## 6. 監査ログを確認する
+### 6. 監査ログを確認する
 
 ```bash
 curl 'http://localhost:8080/audit/logs?limit=10'
@@ -274,7 +240,7 @@ curl 'http://localhost:8080/audit/logs?limit=10'
 
 ## Phase 2: MQTT 経路でも同じ判定を確認する
 
-## 7. MQTT 経路でも試す
+### 7. MQTT 経路でも試す
 
 ```bash
 docker exec -i iw3ip-mosquitto mosquitto_pub \

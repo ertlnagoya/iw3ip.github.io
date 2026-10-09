@@ -24,24 +24,17 @@ IW3IP の全体像、実装例、ハンズオン手順をまとめたドキュ�
 
 外部サイトや論文は、標準仕様や研究背景を詳しく調べたいときの参考資料です。
 
-## ドキュメント構成
+## サイトの構成
 
-- **Workshop**: 講師・TA 向けの進行設計（目的、時間配分、運営）
-- **Hands-on**: 受講者向けの実作業手順（コマンド、期待結果、確認ポイント）
-
-**Workshop の中で Hands-on を実施する** という関係です。
+- **学習基礎**: ブロックチェーン、Hardhat、SSI / DID / VC の基礎と、授業での使い方
+- **環境構築**: ツールのインストールと、ハンズオン環境の起動
+- **ハンズオン**: 受講者が手を動かす手順（コマンド、期待結果、確認ポイント）
+- **設計**: VC とトークンの全体像、設計仕様
+- **運用**: トラブルシュート、FAQ、講師向けの進行ガイド
 
 ## 全体フロー
 
 ![全体イメージ](assets/raspberryPi.jpg)
-
-## はじめに読むページ
-
-1. [Workshop / 事前準備](setup/prerequisites.md)
-2. [Learning Foundations / 学習ロードマップ](foundations/roadmap.md)
-3. [Workshop / 最短起動](setup/quickstart.md)
-4. [Hands-on](hands-on/index.md)
-5. [Operations / トラブルシュート](operations/troubleshooting.md)
 
 ## まず 1 つ動かしたい場合
 
@@ -92,10 +85,13 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 3. [ブロックチェーン基礎](foundations/blockchain-basics.md)
 4. [Hardhat基礎](foundations/hardhat-basics.md)
 5. [SSI/DID/VC基礎](foundations/ssi-did-vc-basics.md)
-6. [Home Assistant Demo Simulator サンプル](hands-on/ha-demo-simulator.md)
-7. [最短起動](setup/quickstart.md)
-8. [Hands-on](hands-on/index.md)
-9. [参考文献](foundations/references.md)
+6. [事前準備](setup/prerequisites.md)
+7. [HA Demo Simulator](hands-on/ha-demo-simulator.md)（実機なしで一通り動かす）
+8. [最短起動](setup/quickstart.md)
+9. [ハンズオン](hands-on/index.md)
+10. [参考文献](foundations/references.md)
+
+途中で詰まったら [トラブルシュート](operations/troubleshooting.md) を参照してください。
 
 ## ローカルでDocsを起動
 

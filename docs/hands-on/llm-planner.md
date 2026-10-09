@@ -1,4 +1,4 @@
-# LLM Plannerハンズオン
+# AI に手順を考えさせる (LLM Planner)
 
 Phase 3 の [地域安全アシスタント](regional-safety-assistant.md) の rule-based planner を、LLM（Large Language Model、大規模言語モデル）ベースの planner に差し替える最小構成を試します。
 
@@ -76,39 +76,6 @@ Phase 3 の [地域安全アシスタント](regional-safety-assistant.md) の r
 
 演習プログラムでは、`/assistant/plan` に送る最小 JSON と、返ってきた `plan` の要約のしかたを確認できます。
 
-## 工程別の目次
-
-<details class="iw3ip-toc-details" open>
-  <summary>段階 1: stub provider で planner の入出力を確認する</summary>
-  <p>LLM の外部 API を使わず、<code>stub</code> provider で planner の入力と出力の形を確認します。ここでは <code>plan</code> と <code>planner_diagnostics</code> の基本を確認できれば十分です。</p>
-  <ol>
-    <li><a href="#1-stub-provider-で起動"><code>stub</code> provider で起動</a></li>
-    <li><a href="#2-日本語要求で-plan-を確認">日本語要求で <code>plan</code> を確認</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>段階 2: frontend demo と diagnostics を確認する</summary>
-  <p>次に、同じ planner の結果をフロントからどう読むかを確認します。ここでは <code>assistant-demo</code>、<code>badge</code>、<code>alert</code>、<code>planner_diagnostics</code> の役割を確認します。</p>
-  <ol>
-    <li><a href="#25-react-フロントデモを起動">React フロントデモを起動</a></li>
-    <li><a href="#3-英語要求で-plan-を確認">英語要求で <code>plan</code> を確認</a></li>
-    <li><a href="#4-実-api-用の環境変数を確認">実 API 用の環境変数を確認</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>段階 3: OpenAI 互換 API へ切り替える</summary>
-  <p>最後に、同じ構造を保ったまま <code>openai_compatible</code> provider へ切り替えます。<code>stub</code> と違って、外部 API の失敗が <code>planner_diagnostics</code> にどう表れるかも確認できます。</p>
-  <ol>
-    <li><a href="#5-openai-互換-api-に切り替える">OpenAI 互換 API に切り替える</a></li>
-  </ol>
-</details>
-
-## 読み進め方
-
-このページは Phase 3 の planner 部分だけを扱います。`stub` provider → UI → 実 API の順で進めると、差分が見えやすくなります。
-
 ## アーキテクチャ図
 
 ```mermaid
@@ -125,7 +92,7 @@ LLM の呼び出しは `main.py` に直接書かず、planner の差し替えは
 
 ## 段階 1: stub provider で planner の入出力を確認する
 
-## 1. `stub` provider で起動
+### 1. `stub` provider で起動
 
 `Blockchain_IoT_Marketplace` リポジトリで次を実行します。
 
@@ -158,7 +125,7 @@ curl http://localhost:8090/health
 {"status":"ok","service":"assistant"}
 ```
 
-## 2. 日本語要求で `plan` を確認
+### 2. 日本語要求で `plan` を確認
 
 ```bash
 curl -X POST http://localhost:8090/assistant/plan \
@@ -189,7 +156,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 ## 段階 2: frontend demo と diagnostics を確認する
 
-## 2.5 React フロントデモを起動
+### 2.5 React フロントデモを起動
 
 Phase 3 assistant の API をブラウザから操作する最小の React 画面もあります。
 
@@ -226,7 +193,7 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 - `llm-mock`
 - `assistant-ui`
 
-## 3. 英語要求で `plan` を確認
+### 3. 英語要求で `plan` を確認
 
 ```bash
 curl -X POST http://localhost:8090/assistant/plan \
@@ -253,7 +220,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 英語の要求でも `station-front` を読み取れることを確認します。
 
-## 4. 実 API 用の環境変数を確認
+### 4. 実 API 用の環境変数を確認
 
 実際の OpenAI 互換 API を使う場合は、次の example を参照します。
 
@@ -467,7 +434,7 @@ defineProps<{
 
 ## 段階 3: OpenAI 互換 API へ切り替える
 
-## 5. OpenAI 互換 API に切り替える
+### 5. OpenAI 互換 API に切り替える
 
 API キーや model を設定済みなら、次のように起動できます。
 
@@ -492,7 +459,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 ![LLM planner response](../assets/llm-planner-response.svg)
 
-## 5.2 local mock server で HTTP 経路を試す
+### 5.2 local mock server で HTTP 経路を試す
 
 実 API をまだ使いたくない場合は、OpenAI 互換のモックサーバで HTTP 経路だけ確認できます。
 
@@ -535,7 +502,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 - `planner_diagnostics.user_message` が画面表示用に読める
 - `planner_diagnostics.used_fallback` が `false`
 
-## 5.5 演習用 pytest を使う
+### 5.5 演習用 pytest を使う
 
 このハンズオンには、問題用プログラムと解答用プログラムの両方に使える pytest もあります。
 
@@ -552,7 +519,7 @@ PHASE3_LLM_HANDS_ON_MODULE=examples.hands_on.phase3_llm_planner.problem_program 
 pytest -q tests/test_phase3_llm_hands_on_program.py
 ```
 
-## 6. validator と fallback を確認
+### 6. validator と fallback を確認
 
 LLM の出力はそのまま採用せず、次を必ず検証します。
 

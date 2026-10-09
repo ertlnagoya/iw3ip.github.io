@@ -62,11 +62,11 @@ The mapping between VCs and tokens is summarized in [VC Architecture Overview](.
     <h3>Capture and share IoT data</h3>
     <p>Pull data off cameras and sensors, view it, and trade it on the marketplace.</p>
     <p class="iw3ip-phase-links">
-      <a href="ha-demo-simulator.md">HA Demo Simulator</a> /
-      <a href="huskylens2.md">HUSKYLENS2</a> /
-      <a href="webcam.md">USB Webcam</a> /
-      <a href="ha-ssi-publisher.md">HA Publisher</a> /
-      <a href="mobile-viewer.md">Mobile Viewer</a>
+      <a href="ha-demo-simulator/">HA Demo Simulator</a> /
+      <a href="huskylens2/">HUSKYLENS2</a> /
+      <a href="webcam/">USB Webcam</a> /
+      <a href="ha-ssi-publisher/">HA Publisher</a> /
+      <a href="mobile-viewer/">Mobile Viewer</a>
     </p>
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-2">
@@ -74,11 +74,11 @@ The mapping between VCs and tokens is summarized in [VC Architecture Overview](.
     <h3>Consent, conditional sharing, tiered access</h3>
     <p>Use VCs and a wallet to share according to purpose and trust level. You can stop partway.</p>
     <p class="iw3ip-phase-links">
-      <a href="ha-ssi-wallet.md">HA SSI Wallet</a> /
-      <a href="webcam-event-sharing.md">Webcam Event Sharing</a> /
-      <a href="environment-disaster.md">Environment Disaster</a> /
-      <a href="marketplace-vc-bridge.md">VC Bridge</a> /
-      <a href="data-user-vc-tiered.md">DataUserVC Tiered</a>
+      <a href="ha-ssi-wallet/">HA SSI Wallet</a> /
+      <a href="webcam-event-sharing/">Webcam Event Sharing</a> /
+      <a href="environment-disaster/">Environment Disaster</a> /
+      <a href="marketplace-vc-bridge/">VC Bridge</a> /
+      <a href="data-user-vc-tiered/">DataUserVC Tiered</a>
     </p>
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-3">
@@ -86,9 +86,9 @@ The mapping between VCs and tokens is summarized in [VC Architecture Overview](.
     <h3>Let an AI act on requests</h3>
     <p>An AI interprets free-form requests and uses Part 1/2 data as material to plan and act.</p>
     <p class="iw3ip-phase-links">
-      <a href="local-vlm-distribution.md">Enrich camera data with a local VLM</a> /
-      <a href="regional-safety-assistant.md">Regional Safety Assistant</a> /
-      <a href="llm-planner.md">LLM Planner</a>
+      <a href="local-vlm-distribution/">Enrich camera data with a local VLM</a> /
+      <a href="regional-safety-assistant/">Regional Safety Assistant</a> /
+      <a href="llm-planner/">LLM Planner</a>
     </p>
   </div>
 </div>

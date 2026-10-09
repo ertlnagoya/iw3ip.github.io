@@ -1,4 +1,4 @@
-# USBウェブカメラサンプル（ポイ捨て検知）
+# USB カメラでポイ捨てを検知する (OpenCV)
 
 HUSKYLENS2 がなくても、USB ウェブカメラと OpenCV だけで `person_detected` / `possible_littering` イベントを作れます。
 
@@ -63,43 +63,9 @@ USB ウェブカメラの画像から人物とポイ捨ての可能性を検知�
 - 実機のカメラ検知まで見たい場合: `webcam` モードへ進みます
 - カメラが開けない場合: `camera-index` と占有状況の確認を先に行います
 
-## 工程別の目次
-
-<details class="iw3ip-toc-details" open>
-  <summary>確認 1: mock モードでイベント生成を確認する</summary>
-  <p>最初に mock モードでイベントファイル生成を確認し、カメラ実機がなくても後段が動くことを確認します。</p>
-  <ol>
-    <li><a href="#1-mockで最小確認">mockで最小確認</a></li>
-    <li><a href="#4-確認ポイント">確認ポイント</a></li>
-    <li><a href="#成功例">成功例</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 2: 実機 webcam モードで検知を確認する</summary>
-  <p>次に USB ウェブカメラ実機を使い、`person_detected` と `possible_littering` がどう出力されるかを確認します。</p>
-  <ol>
-    <li><a href="#2-実機usb-webcam">実機（USB webcam）</a></li>
-    <li><a href="#3-判定ロジック簡易">判定ロジック（簡易）</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 3: 注意点とトラブルを整理する</summary>
-  <p>最後に、ヒューリスティックの限界と、カメラデバイスや出力先パスで発生しやすいトラブルを整理します。</p>
-  <ol>
-    <li><a href="#5-注意">注意</a></li>
-    <li><a href="#トラブル時">トラブル時</a></li>
-  </ol>
-</details>
-
-## 読み進め方
-
-Phase 1 のカメラ入力ページです。HUSKYLENS2 と同様、まず `mock` でパイプラインを確認してから実機カメラに進むと、問題を切り分けやすくなります。
-
 ## Phase 1: mock モードでパイプラインを確認する
 
-## 1. mockで最小確認
+### 1. mockで最小確認
 
 ```bash
 cd webcam-bridge
@@ -114,7 +80,7 @@ mock でパイプラインの動作を確認できたら、次は USB ウェブ�
 
 ## Phase 1: 実機 webcam モードで検知を確認する
 
-## 2. 実機（USB webcam）
+### 2. 実機（USB webcam）
 
 ```bash
 python3 webcam_litter_bridge.py \
@@ -127,12 +93,12 @@ python3 webcam_litter_bridge.py \
   --person-away-seconds 5
 ```
 
-## 3. 判定ロジック（簡易）
+### 3. 判定ロジック（簡易）
 
 - 人を検出 → `person_detected`
 - `bottle/cup` が一定時間残留し、人が近くにいない → `possible_littering`
 
-## 4. 確認ポイント
+### 4. 確認ポイント
 
 - `*_webcam_event_*.txt` が生成される
 - 商品化されて購入可能になる
@@ -143,7 +109,7 @@ python3 webcam_litter_bridge.py \
 - 実機モードで `person_detected` または `possible_littering` が出力される
 - 商品一覧に反映され、購入できる
 
-## 5. 注意
+### 5. 注意
 
 この検知は、学習用の簡易な規則（ヒューリスティック）によるもので、厳密な判定ではありません。
 

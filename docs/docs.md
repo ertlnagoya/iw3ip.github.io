@@ -41,4 +41,4 @@ mkdocs build --strict
 
 公開先:
 
-- <https://ertlnagoya.github.io/iw3ip.github.io/>
+- <https://www.ertl.jp/iw3ip.github.io/>

@@ -1,4 +1,4 @@
-# 4 種 VC を 1 動線で繋ぐ end-to-end (v2 / Stage 6)
+# 4 種類の証明書を 1 動線でつなぐ (Stage 6)
 
 Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデータを Buyer が PurchaseViewerVC で読み出すシナリオを 1 セッションで通します。
 

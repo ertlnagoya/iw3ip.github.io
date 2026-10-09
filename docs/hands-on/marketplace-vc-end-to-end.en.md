@@ -1,4 +1,4 @@
-# 4-VC end-to-end (v2 / Stage 6)
+# Tie four credentials together end-to-end (Stage 6)
 
 The capstone of Stage 1–5: a Seller writes data with a ServiceVC, a Buyer reads it with a PurchaseViewerVC, all in one session.
 

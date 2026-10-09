@@ -1,4 +1,4 @@
-# Home Assistant Demo Simulator サンプル（Phase 1 / Phase 2 / Phase 3）
+# 実機なしで一連を動かす (HA Demo Simulator)
 
 実機なしで Home Assistant の `demo` モードを使い、データの発生から共有までを最小構成で動かすページです。最初に試すのに向いています。
 
@@ -36,37 +36,6 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 - Phase 2 まで進む場合: `possible_littering` を送って `allow` と `deny` の両方を見る
 - Phase 3 まで進む場合: `ha-demo-phase3` を起動して `run_phase3_from_ingest.py --plan-only` を実行する
 
-## Phase 別の目次
-
-<details class="iw3ip-toc-details" open>
-  <summary>Phase 1: 状態共有までを確認する</summary>
-  <p>この段階では、環境起動、Home Assistant 初期設定、Consent VC 登録、基本的な script 実行、`/platform/ingest` の確認まで進みます。</p>
-  <ol>
-    <li><a href="#1-起動">起動</a></li>
-    <li><a href="#2-home-assistant-の初期設定">Home Assistant の初期設定</a></li>
-    <li><a href="#3-consent-vc-を登録">Consent VC を登録</a></li>
-    <li><a href="#4-home-assistant-から-demo-データを送る">Home Assistant から demo データを送る</a></li>
-    <li><a href="#5-publisher-側の結果を確認">publisher 側の結果を確認</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Phase 2: イベント共有と拒否を確認する</summary>
-  <p>この段階では、許可される共有だけでなく、Consent VC に一致しない要求が拒否されることも確認します。</p>
-  <ol>
-    <li><a href="#6-拒否ケースを確認">拒否ケースを確認</a></li>
-    <li><a href="#7-mqtt-経路を直接試す">MQTT 経路を直接試す</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Phase 3: assistant の plan と execute を確認する</summary>
-  <p>最後に、publisher に蓄積されたイベントを assistant 側へ渡し、人間の要求から `plan` と `execute` がどう分かれるかを確認します。</p>
-  <ol>
-    <li><a href="#8-phase-3-を試す">Phase 3 を試す</a></li>
-  </ol>
-</details>
-
 ## このページで分かること
 
 - 実機がなくても `temperature`、`power`、`person_detected`、`flood_risk_high`、`possible_littering` を再現できること
@@ -100,17 +69,11 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 - [scripts.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/home-assistant-demo/config/scripts.yaml)
 - [run_phase3_from_ingest.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/run_phase3_from_ingest.py)
 
-## 読み進め方
-
-このページは長めの手順書です。短時間で確認したい場合は `最短ルート` と `Phase 別の目次` を先に見て、必要な段階だけを開いて進めてください。
-
-一方で、ワークショップや自主学習で全体像まで理解したい場合は、Phase 1 から順に読み進める方が流れをつかみやすくなります。特に、`allowed` と `denied`、さらに `plan` と `execute` の違いは、前の段階を見ておくと理解しやすくなります。
-
 ## Phase 1: 状態共有を確認する
 
 Phase 1 では、Home Assistant から publisher までの基本経路が正しく動いていることを確かめます。最初に状態データを 1 つ送り、`platform/ingest` に記録されることを確認すれば十分です。
 
-## 1. 起動
+### 1. 起動
 
 シミュレーション環境を起動します。`PLATFORM_INGEST_READ_ENABLED=true` は、蓄積されたデータを確認するための `GET /platform/ingest` を有効にする指定です。この API は認証なしで全件を返すデモ用の機能で、指定しない場合は無効 (404) です。Part 2 以降では、読み出しに VC を提示して得るトークンを使います。
 
@@ -136,7 +99,7 @@ curl http://localhost:8080/health
 {"status":"ok","service":"publisher"}
 ```
 
-## 2. Home Assistant の初期設定
+### 2. Home Assistant の初期設定
 
 ブラウザで次を開きます。
 
@@ -173,7 +136,7 @@ curl http://localhost:8080/health
 - `mosquitto` サービスが表示されていること
 - この画面が見えれば `mqtt.publish` を使う準備は完了していること
 
-## 3. Consent VC を登録
+### 3. Consent VC を登録
 
 Home Assistant demo で扱うデータセットに対応する Consent VC を登録します。
 
@@ -199,7 +162,7 @@ curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' 
 - [consent_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_possible_littering.json)
 - [consent_suspicious_activity.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_suspicious_activity.json)
 
-## 4. Home Assistant から demo データを送る
+### 4. Home Assistant から demo データを送る
 
 Home Assistant の `Developer Tools -> Actions` から、次の script を実行します。画面上部の action 選択欄で `script.turn_on` を選び、target entity に対象の script を指定すると再現しやすいです。
 
@@ -234,7 +197,7 @@ Phase の対応:
   - `possible_littering`
   - `suspicious_activity`
 
-## 5. publisher 側の結果を確認
+### 5. publisher 側の結果を確認
 
 Home Assistant 側で script を実行したら、publisher 側で結果を確認します。
 
@@ -262,11 +225,11 @@ curl 'http://localhost:8080/audit/logs?limit=10'
 
 ここで、一部のイベントだけ `/platform/ingest` に出てこないことがあります。その場合は、次のワークで原因を特定して直してください。
 
-## ワーク: 一部のイベントが拒否されるときは (consent の有効期限を直す)
+### ワーク: 一部のイベントが拒否されるときは (consent の有効期限を直す)
 
 手順5を実行すると、`suspicious_activity` は `/platform/ingest` に出るのに、`possible_littering` など他のデータセットが出てこないことがあります。このとき `audit/logs` には `action: deny` / `reason: no_matching_consent` が残ります。原因の多くは consent VC の **有効期限切れ** です。VC の有効期間 (`valid_from` 〜 `valid_to`) の働きを確認できるので、自分で原因を特定して直してください。
 
-### Step 1. 監査ログで「拒否」を確認する
+#### Step 1. 監査ログで「拒否」を確認する
 
 まず audit ログを読みます。zsh では `?` がワイルドカード扱いになるため、URL をクォートで囲みます。
 
@@ -281,14 +244,14 @@ curl 'http://localhost:8080/audit/logs?limit=20'
     - 許可されたイベントは `action: "allow"`、`reason: "sent"` で、`subject_did` に発行者の DID が入っています。
     - consent は登録されているのに、一致するものが見つからない状態です。
 
-### Step 2. 原因を推測する
+#### Step 2. 原因を推測する
 
 許可されるデータセットと拒否されるデータセットで、対応する consent ファイル (`examples/ha_demo/consent_*.json`) の中身がどう違うかを見比べます。とくに `valid_from` と `valid_to` に注目してください。
 
 ??? tip "ヒント"
     `valid_from` 〜 `valid_to` が VC の有効期間です。**今日の日付がこの範囲の外**だと、その consent は一致しません。拒否されているデータセットの consent の `valid_to` が過去の日付になっていないか確認してください。
 
-### Step 3. 直して登録し直す
+#### Step 3. 直して登録し直す
 
 期限切れの consent の `valid_to` を、今日より先の日付に書き換えます。エディタで該当ファイルを開いて直しても構いませんし、まとめて延ばすこともできます (macOS の `sed` は `-i ''` が必要)。
 
@@ -298,7 +261,7 @@ sed -i '' 's/"valid_to": "2026-05-01T00:00:00Z"/"valid_to": "2027-12-31T23:59:59
 
 直したら、手順3と同じ要領で consent を登録し直し、各レスポンスに `"status":"stored"` が返ることを確認します。
 
-### Step 4. もう一度イベントを送って確認する
+#### Step 4. もう一度イベントを送って確認する
 
 手順4のスクリプト (または手順7の直接 publish) でイベントを送り直し、`/platform/ingest` に今度は入ることを確認します。
 
@@ -311,7 +274,7 @@ curl 'http://localhost:8080/platform/ingest'
     - それでも拒否される場合は、`purpose` が consent の `allowed_purposes` に含まれているかも確認します。
     - 詳しくは [トラブルシュート](../operations/troubleshooting.md) の「`no_matching_consent`」の項目を参照してください。
 
-### 考えてみよう
+#### 考えてみよう
 
 VC になぜ有効期限があるのでしょうか。期限の無い同意と比べて何が安全になるのか、また実運用で期限が切れたときにどう運用すべきかを考えてみてください。
 
@@ -319,7 +282,7 @@ Home Assistant → publisher の基本共有経路が動いていることを確
 
 ## Phase 2: イベント共有と拒否を確認する
 
-## 6. 拒否ケースを確認
+### 6. 拒否ケースを確認
 
 Home Assistant script では主に許可されるケースを流すので、拒否ケースは HTTP 疑似投入で確認します。
 
@@ -355,7 +318,7 @@ curl -X POST http://localhost:8080/simulate/publish \
 - 入力 topic は正しくても、`purpose` が Consent VC と一致しないと拒否されること
 - `simulate/publish` のレスポンスと `audit/logs` の両方で拒否を確認すること
 
-## 7. MQTT 経路を直接試す
+### 7. MQTT 経路を直接試す
 
 Home Assistant を使わず、同じ topic に直接 publish することもできます。
 
@@ -378,7 +341,7 @@ docker exec -i iw3ip-mosquitto mosquitto_pub \
 
 ## Phase 3: assistant の plan と execute を確認する
 
-## 8. Phase 3 を試す
+### 8. Phase 3 を試す
 
 Phase 3 では、publisher に入ったイベントを `assistant` の `observed_events` へ変換して、`plan -> execute` を確認します。
 
@@ -452,7 +415,9 @@ python3 examples/ha_demo/run_phase3_from_ingest.py \
 - `matched_counts.suspicious_activity = 1`
 - `actions_executed` に 2 件の action が入る
 
-## 9. Node-RED を使う場合
+## 補足
+
+### 9. Node-RED を使う場合
 
 Node-RED を使うと、時刻条件や手動ボタンで疑似イベントを流しやすくなります。
 
@@ -461,6 +426,44 @@ Node-RED を使うと、時刻条件や手動ボタンで疑似イベントを�
 - [nodered_flows.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/nodered_flows.json)
 
 Node-RED は必須ではありません。まず Home Assistant demo だけで全体の流れを確認し、イベント注入を柔軟にしたい場合に追加してください。
+
+### 10. 何が Phase 1 で、何が Phase 2 / 3 なのか
+
+このサンプルは 1 つの環境で Phase 1 / Phase 2 / Phase 3 を通して確認できます。
+
+- Phase 1:
+  - `temperature` や `power` のような状態共有
+  - 基本的な受信、正規化、送信、記録
+- Phase 2:
+  - `flood_risk_high` や `possible_littering` のようなイベント共有
+  - `purpose` と Consent VC に基づく条件付き共有
+- Phase 3:
+  - publisher にたまったイベントを assistant に渡して `execute` する
+  - `triggered` と `actions_executed` を確認する
+
+このページの後は、次の Hands-on に進めます。
+
+- [HA x SSI Publisherサンプル（Phase 1）](ha-ssi-publisher.md)
+- [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
+- [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
+
+### 11. 停止
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ha-demo down
+```
+
+Node-RED も含めて止める場合:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ha-demo --profile nodered down
+```
+
+Phase 3 を含めて止める場合:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 down
+```
 
 ## 将来の発展
 
@@ -486,41 +489,3 @@ Node-RED は必須ではありません。まず Home Assistant demo だけで�
 
 - 公式サイト: <https://carla.org/>
 - Documentation: <https://carla.readthedocs.io/>
-
-## 10. 何が Phase 1 で、何が Phase 2 / 3 なのか
-
-このサンプルは 1 つの環境で Phase 1 / Phase 2 / Phase 3 を通して確認できます。
-
-- Phase 1:
-  - `temperature` や `power` のような状態共有
-  - 基本的な受信、正規化、送信、記録
-- Phase 2:
-  - `flood_risk_high` や `possible_littering` のようなイベント共有
-  - `purpose` と Consent VC に基づく条件付き共有
-- Phase 3:
-  - publisher にたまったイベントを assistant に渡して `execute` する
-  - `triggered` と `actions_executed` を確認する
-
-このページの後は、次の Hands-on に進めます。
-
-- [HA x SSI Publisherサンプル（Phase 1）](ha-ssi-publisher.md)
-- [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
-- [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
-
-## 11. 停止
-
-```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo down
-```
-
-Node-RED も含めて止める場合:
-
-```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo --profile nodered down
-```
-
-Phase 3 を含めて止める場合:
-
-```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 down
-```

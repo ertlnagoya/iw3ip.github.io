@@ -1,4 +1,4 @@
-# Environment and Disaster Event Sharing Sample (Phase 2)
+# Share disaster events
 
 Share edge-generated disaster events instead of raw camera frames.
 
@@ -66,40 +66,6 @@ Exercise programs:
 This exercise asks learners to complete the request that sends a `flood_risk_high` event to `/simulate/publish`.  
 The problem program makes the `allowed` / `denied` difference visible at code level by changing only the `purpose`.
 
-## Process table of contents
-
-<details class="iw3ip-toc-details" open>
-  <summary>Preparation: start services and register the Consent VC</summary>
-  <p>First start the publisher and register the Consent VC used in this event-sharing scenario. These are the prerequisites for all later allow/deny checks.</p>
-  <ol>
-    <li><a href="#1-start-the-services">Start the services</a></li>
-    <li><a href="#2-register-a-consent-vc-for-this-hands-on">Register a Consent VC for this hands-on</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 1: compare allowed and denied</summary>
-  <p>Next, use the same `flood_risk_high` event to compare an allowed case and a denied case. This is where the role of `purpose` becomes explicit.</p>
-  <ol>
-    <li><a href="#3-reproduce-an-allowed-case">Reproduce an allowed case</a></li>
-    <li><a href="#4-inspect-what-reached-the-platform-api">Inspect what reached the Platform API</a></li>
-    <li><a href="#5-reproduce-a-denied-case">Reproduce a denied case</a></li>
-    <li><a href="#6-check-the-audit-logs">Check the audit logs</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 2: reproduce the same event flow through MQTT</summary>
-  <p>Finally, reproduce the same event-sharing flow through MQTT instead of HTTP simulation and confirm that the policy logic is the same.</p>
-  <ol>
-    <li><a href="#7-try-the-mqtt-path-as-well">Try the MQTT path as well</a></li>
-  </ol>
-</details>
-
-## How to read this page
-
-This page is one of the core Phase 2 examples, so it is intentionally detailed. If you only need a fast confirmation path, the `allowed` case is enough. However, the main educational point here is that the same event can be either shared or rejected depending on the purpose, so the page works best when you read through the denied case as well.
-
 ## Scenario
 
 Assume an edge sensor near a river generates a `flood_risk_high` event based on rising water level and surrounding conditions.  
@@ -127,7 +93,7 @@ The same event content is also available in `examples/payload_flood_risk_high.js
 
 ## Phase 2: Prepare the event-sharing baseline
 
-## 1. Start the services
+### 1. Start the services
 
 Run the following in the source-code repository. `PLATFORM_INGEST_READ_ENABLED=true` enables `GET /platform/ingest`, which this page uses to inspect ingested data. It is a demo-only API that returns every row without authentication and is disabled (404) unless set. From Part 2 onward, reads use a token obtained by presenting a VC.
 
@@ -147,7 +113,7 @@ Expected:
 {"status":"ok","service":"publisher"}
 ```
 
-## 2. Register a Consent VC for this hands-on
+### 2. Register a Consent VC for this hands-on
 
 This hands-on allows `home/event/flood_risk_high` only for `disaster_response` and `research`.
 
@@ -185,7 +151,7 @@ At this point, the minimum setup for evaluating `flood_risk_high` is ready. The 
 
 ## Phase 2: Compare allowed and denied
 
-## 3. Reproduce an allowed case
+### 3. Reproduce an allowed case
 
 Inject a disaster event with `purpose = disaster_response`.
 
@@ -215,7 +181,7 @@ Expected:
 {"status":"allowed","dataset_id":"home/event/flood_risk_high"}
 ```
 
-## 4. Inspect what reached the Platform API
+### 4. Inspect what reached the Platform API
 
 If the event is allowed, it is forwarded to the dummy Platform API inside the Publisher.
 
@@ -230,7 +196,7 @@ Checkpoints:
 - `payload.message_type` is `event`
 - `payload.payload.event_type` is `flood_risk_high`
 
-## 5. Reproduce a denied case
+### 5. Reproduce a denied case
 
 Now send the same event with `purpose = advertising`.
 
@@ -260,7 +226,7 @@ Expected:
 {"status":"denied","dataset_id":"home/event/flood_risk_high","reason":"no_matching_consent"}
 ```
 
-## 6. Check the audit logs
+### 6. Check the audit logs
 
 ```bash
 curl 'http://localhost:8080/audit/logs?limit=10'
@@ -277,7 +243,7 @@ By this point, it should be clear that Phase 2 is not only about generating an e
 
 ## Phase 2: Confirm the same policy through MQTT
 
-## 7. Try the MQTT path as well
+### 7. Try the MQTT path as well
 
 You can reproduce the same event-sharing flow through MQTT instead of HTTP simulation.
 

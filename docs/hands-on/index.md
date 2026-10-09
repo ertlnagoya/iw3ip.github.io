@@ -62,11 +62,11 @@ VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-
     <h3>IoT データを取って共有する</h3>
     <p>カメラやセンサからデータを取り、見て、マーケットプレイスで売買する基本の経路を扱います。</p>
     <p class="iw3ip-phase-links">
-      <a href="ha-demo-simulator.md">HA Demo Simulator</a> /
-      <a href="huskylens2.md">HUSKYLENS2</a> /
-      <a href="webcam.md">USB Webcam</a> /
-      <a href="ha-ssi-publisher.md">HA Publisher</a> /
-      <a href="mobile-viewer.md">Mobile Viewer</a>
+      <a href="ha-demo-simulator/">HA Demo Simulator</a> /
+      <a href="huskylens2/">HUSKYLENS2</a> /
+      <a href="webcam/">USB Webcam</a> /
+      <a href="ha-ssi-publisher/">HA Publisher</a> /
+      <a href="mobile-viewer/">Mobile Viewer</a>
     </p>
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-2">
@@ -74,11 +74,11 @@ VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-
     <h3>同意・条件付き共有・段階アクセス</h3>
     <p>VC とウォレットを使って、目的や信頼度に応じた共有を扱います。途中で止めても問題ありません。</p>
     <p class="iw3ip-phase-links">
-      <a href="ha-ssi-wallet.md">HA SSI Wallet</a> /
-      <a href="webcam-event-sharing.md">Webcam Event Sharing</a> /
-      <a href="environment-disaster.md">Environment Disaster</a> /
-      <a href="marketplace-vc-bridge.md">VC Bridge</a> /
-      <a href="data-user-vc-tiered.md">DataUserVC Tiered</a>
+      <a href="ha-ssi-wallet/">HA SSI Wallet</a> /
+      <a href="webcam-event-sharing/">Webcam Event Sharing</a> /
+      <a href="environment-disaster/">Environment Disaster</a> /
+      <a href="marketplace-vc-bridge/">VC Bridge</a> /
+      <a href="data-user-vc-tiered/">DataUserVC Tiered</a>
     </p>
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-3">
@@ -86,9 +86,9 @@ VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-
     <h3>AI に要求を解釈させる</h3>
     <p>人の要求を AI が解釈し、Part 1/2 で集めたデータを材料に判断・処理する応用段階です。</p>
     <p class="iw3ip-phase-links">
-      <a href="local-vlm-distribution.md">ローカル VLM でカメラデータを意味づけ</a> /
-      <a href="regional-safety-assistant.md">Regional Safety Assistant</a> /
-      <a href="llm-planner.md">LLM Planner</a>
+      <a href="local-vlm-distribution/">ローカル VLM でカメラデータを意味づけ</a> /
+      <a href="regional-safety-assistant/">Regional Safety Assistant</a> /
+      <a href="llm-planner/">LLM Planner</a>
     </p>
   </div>
 </div>

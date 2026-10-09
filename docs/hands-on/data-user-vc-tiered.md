@@ -1,4 +1,4 @@
-# DataUserVC × 段階アクセス（Phase 2 拡張）
+# 信頼度に応じて見せる中身を変える (DataUserVC / Stage T)
 
 受信者の信頼度 (DataUserVC) に応じて、見せる中身を Tier 3 / Tier 2 / Tier 1 の 3 段階に切り替えます。後半（§12〜§13）では、映像を意味的中間表現に変換し、受信者の信頼度に応じて出力を変えるレンダリング（trust-aware rendering）までを扱います。全体で長めのハンズオンです。
 

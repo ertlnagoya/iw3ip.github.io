@@ -1,4 +1,4 @@
-# SSI Service Sample (Phase 2 / Stage 4 prep)
+# Authenticate machines (Service VC / Stage 4 prep)
 
 Covers the M2M (machine-to-machine) case where a service (a program), not a person, holds a VC and writes continuously.
 

@@ -1,4 +1,4 @@
-# HUSKYLENS2 Sample
+# Detect a person on an AI camera (HUSKYLENS2)
 
 Pull events off the HUSKYLENS2 AI camera and list them on the marketplace.
 
@@ -62,38 +62,6 @@ Branches after that:
 - If you only want to confirm the pipeline: `mock` mode is enough
 - If you want to confirm the real device path: continue with `serial` mode
 - If serial mode fails early: jump to the troubleshooting section first
-
-## Process table of contents
-
-<details class="iw3ip-toc-details" open>
-  <summary>Check 1: confirm event generation in mock mode</summary>
-  <p>Start with mock mode so you can confirm that the downstream pipeline works even without a physical sensor input.</p>
-  <ol>
-    <li><a href="#mock-first">Mock first</a></li>
-    <li><a href="#expected">Expected</a></li>
-    <li><a href="#success-example">Success example</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 2: try the same flow in serial mode</summary>
-  <p>Next, use the real HUSKYLENS2 device and confirm that it can feed the same downstream path as the mock mode.</p>
-  <ol>
-    <li><a href="#real-device-serial">Real device (serial)</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 3: troubleshoot typical serial and path issues</summary>
-  <p>Finally, isolate the common failure points such as serial ports, missing libraries, and mismatched output paths.</p>
-  <ol>
-    <li><a href="#troubleshooting">Troubleshooting</a></li>
-  </ol>
-</details>
-
-## How to read this page
-
-This is a Phase 1 device-integration page, so there is no need to start with the hardware path immediately. In practice, it is easier to confirm the downstream pipeline with `mock` first and only then switch to `serial` when the basic flow is already known to work.
 
 ## Phase 1: Confirm the pipeline in mock mode
 

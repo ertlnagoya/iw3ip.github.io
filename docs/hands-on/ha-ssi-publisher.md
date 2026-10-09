@@ -1,4 +1,4 @@
-# HA x SSI Publisherサンプル（Phase 1）
+# Home Assistant のデータを取り込む (HA SSI Publisher)
 
 Home Assistant の状態を MQTT で受け、Consent VC で共有可否を判定する最小構成を組みます。
 
@@ -73,43 +73,9 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 この演習では、`/simulate/publish` に送る最小 JSON を自分で組み立てます。  
 問題用プログラムでは、`topic`・`payload`・`purpose` をどのようにまとめるかを確認できます。
 
-## 工程別の目次
-
-<details class="iw3ip-toc-details" open>
-  <summary>準備: publisher を起動して Consent VC を登録する</summary>
-  <p>まずは publisher 自体が起動していることを確認し、最低限の Consent VC を登録します。ここまでは、後続の許可・拒否判定の前提作業です。</p>
-  <ol>
-    <li><a href="#1-起動">起動</a></li>
-    <li><a href="#2-consent-vc-を登録">Consent VC を登録</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 1: HTTP 疑似投入で allowed と denied を比較する</summary>
-  <p>次に、同じ API を使って、許可される場合と拒否される場合の違いを比較します。ここで `purpose` と `dataset_id` の関係を確認します。</p>
-  <ol>
-    <li><a href="#3-許可されるケース">許可されるケース</a></li>
-    <li><a href="#4-拒否されるケース">拒否されるケース</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 2: MQTT 経路と監査ログを確認する</summary>
-  <p>最後に、HTTP 疑似投入ではなく MQTT から publisher へ入る経路を試し、監査ログに何が残るかを確認します。</p>
-  <ol>
-    <li><a href="#5-mqtt経路を試す">MQTT経路を試す</a></li>
-    <li><a href="#6-監査ログ確認">監査ログ確認</a></li>
-    <li><a href="#7-停止">停止</a></li>
-  </ol>
-</details>
-
-## 読み進め方
-
-Phase 1 の基本構成を確認するページです。短時間で済ませる場合は `最短ルート` だけで十分です。共有制御の考え方まで理解したい場合は、`allowed` と `denied` を両方確認してから MQTT 経路へ進んでください。
-
 ## Phase 1: 最小構成を確認する
 
-## 1. 起動
+### 1. 起動
 
 ```bash
 docker compose -f infra/docker-compose.yml up --build -d
@@ -127,7 +93,7 @@ curl http://localhost:8080/health
 {"status":"ok","service":"publisher"}
 ```
 
-## 2. Consent VC を登録
+### 2. Consent VC を登録
 
 ```bash
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_temperature.json
@@ -144,7 +110,7 @@ Phase 2 の Hands-on と対応する追加ファイル:
 
 ## Phase 1: allowed と denied を比較する
 
-## 3. 許可されるケース
+### 3. 許可されるケース
 
 ```bash
 curl -X POST http://localhost:8080/simulate/publish \
@@ -168,7 +134,7 @@ curl -X POST http://localhost:8080/simulate/publish \
 {"status":"allowed","dataset_id":"home/env/temperature"}
 ```
 
-## 4. 拒否されるケース
+### 4. 拒否されるケース
 
 ```bash
 curl -X POST http://localhost:8080/simulate/publish \
@@ -196,7 +162,7 @@ curl -X POST http://localhost:8080/simulate/publish \
 
 ## Phase 1: MQTT 経路と監査ログを確認する
 
-## 5. MQTT経路を試す
+### 5. MQTT経路を試す
 
 ```bash
 docker exec -i iw3ip-mosquitto mosquitto_pub \
@@ -205,7 +171,7 @@ docker exec -i iw3ip-mosquitto mosquitto_pub \
   -m '{"event_type":"person_detected","data":{"camera_id":"front_door","confidence":0.93},"ts":"2026-02-28T10:00:20Z","source":"edge_inference"}'
 ```
 
-## 6. 監査ログ確認
+### 6. 監査ログ確認
 
 ```bash
 curl 'http://localhost:8080/audit/logs?limit=10'
@@ -216,7 +182,7 @@ curl 'http://localhost:8080/audit/logs?limit=10'
 - `allow` / `deny` / `send_error` が記録される
 - `dataset_id`, `purpose`, `message_hash` が残る
 
-## 7. 停止
+### 7. 停止
 
 ```bash
 docker compose -f infra/docker-compose.yml down

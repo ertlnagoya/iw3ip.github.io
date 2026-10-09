@@ -1,4 +1,4 @@
-# 地域安全アシスタントサンプル（Phase 3）
+# 地域安全アシスタントを動かす
 
 Phase 2 で集めたイベント (`possible_littering` など) を材料に、人の自由文の要求を AI が plan に分解して応答する、Phase 3 の基本になるサンプルです。
 
@@ -69,41 +69,6 @@ Phase 3 では、その先として、次の流れを扱います。
 今回は Phase 3 用の `問題用プログラム / 解答用プログラム` ではなく、**最小実装そのもの**を読む形にしています。  
 理由は、Phase 3 では「planner」「evaluator」「actuator」のモジュール境界自体が学習対象だからです。
 
-## 工程別の目次
-
-<details class="iw3ip-toc-details" open>
-  <summary>段階 1: planner が要求をどう解釈するかを見る</summary>
-  <p>最初に、人間の要求がどのように `plan` へ変換されるかを見ます。この段階では、まだ実行結果よりも、対象場所・注目イベント・action の組み立て方に注目します。</p>
-  <ol>
-    <li><a href="#1-assistant-サービスを起動">assistant サービスを起動</a></li>
-    <li><a href="#2-計画生成を確認">計画生成を確認</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>段階 2: evaluate と actuator がどう動くかを見る</summary>
-  <p>次に、既存イベントを使って `execute` を確認します。ここでは `triggered` がどう決まり、その結果としてどの action が実行されるかを見るのが中心です。</p>
-  <ol>
-    <li><a href="#3-実行を確認">実行を確認</a></li>
-    <li><a href="#4-実行履歴を確認">実行履歴を確認</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>段階 3: Phase 2 との違いを整理する</summary>
-  <p>最後に、Phase 2 のイベント共有と Phase 3 の要求解釈・判定・制御の違いを整理します。ここまで読むと、なぜ planner、evaluator、actuator を分離するのかが見えやすくなります。</p>
-  <ol>
-    <li><a href="#5-phase-2-と-phase-3-の違いを整理">Phase 2 と Phase 3 の違いを整理</a></li>
-    <li><a href="#6-成功判定">成功判定</a></li>
-    <li><a href="#7-よくある問題">よくある問題</a></li>
-    <li><a href="#8-停止">停止</a></li>
-  </ol>
-</details>
-
-## 読み進め方
-
-Phase 3 の考え方を理解するための代表ページです。短時間で済ませる場合は `plan` と `execute` だけで十分です。Phase 2 との違いやモジュール境界まで理解したい場合は、最後の整理まで読んでください。
-
 ## 想定シナリオ
 
 利用者は次のように依頼します。
@@ -149,7 +114,7 @@ sequenceDiagram
 
 ## Phase 3: planner が要求をどう解釈するかを見る
 
-## 1. assistant サービスを起動
+### 1. assistant サービスを起動
 
 `Blockchain_IoT_Marketplace` リポジトリで次を実行します。
 
@@ -175,7 +140,7 @@ curl http://localhost:8090/health
 - `docker ps` で `assistant` が `Up` か確認してください
 - `docker compose -f infra/docker-compose.yml --profile assistant logs assistant` でログも確認できます
 
-## 2. 計画生成を確認
+### 2. 計画生成を確認
 
 まず、自然言語要求がどのような計画に変換されるかを見ます。
 
@@ -209,7 +174,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 ## Phase 3: evaluate と actuator がどう動くかを見る
 
-## 3. 実行を確認
+### 3. 実行を確認
 
 次に、サンプルイベントを使って実際に判定と制御を走らせます。
 
@@ -246,7 +211,7 @@ curl -X POST http://localhost:8090/assistant/execute \
 - その結果 `triggered: true`
 - そのため `light_on` と `send_notification` を実行
 
-## 4. 実行履歴を確認
+### 4. 実行履歴を確認
 
 ```bash
 curl http://localhost:8090/assistant/executions
@@ -265,7 +230,7 @@ Phase 3 はイベント共有にとどまらず、要求に応じた計画・判
 
 ## Phase 3: Phase 2 との違いを整理する
 
-## 5. Phase 2 と Phase 3 の違いを整理
+### 5. Phase 2 と Phase 3 の違いを整理
 
 Phase 2 では、主に次を扱いました。
 
@@ -281,7 +246,7 @@ Phase 3 では、その上に次が追加されます。
 
 Phase 3 は **「イベント共有」から「要求に応じた判断・行動」へ進む段階** です。
 
-## 6. 成功判定
+### 6. 成功判定
 
 この Hands-on では、次を確認できれば成功です。
 
@@ -290,23 +255,23 @@ Phase 3 は **「イベント共有」から「要求に応じた判断・行動
 - `light_on` と `send_notification` が `executed` になる
 - `/assistant/executions` で履歴を確認できる
 
-## 7. よくある問題
+### 7. よくある問題
 
-### `examples/phase3_request_park_safety.json` が見つからない
+#### `examples/phase3_request_park_safety.json` が見つからない
 
 - 実行ディレクトリが `Blockchain_IoT_Marketplace` のルートか確認してください
 
-### 期待した action が実行されない
+#### 期待した action が実行されない
 
 - `examples/phase3_events_park_safety.json` のイベント件数がしきい値未満の可能性があります
 - `possible_littering` の件数と `location` を確認してください
 
-### どこが AI なのか分かりにくい
+#### どこが AI なのか分かりにくい
 
 この最小実装では、planner はまだルールベースです。  
 ただし、**自然言語要求を構造化計画へ変換するモジュール境界**を先に作っているため、将来的に LLM や外部 planner に差し替えやすくしています。
 
-## 8. 停止
+### 8. 停止
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile assistant down

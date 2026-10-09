@@ -1,4 +1,4 @@
-# 環境・防災イベント共有サンプル（Phase 2）
+# 防災イベントを共有する
 
 カメラ画像そのものではなく、エッジ側で生成された防災イベントを共有対象にする例です。
 
@@ -65,40 +65,6 @@
 この演習では、`flood_risk_high` イベントを `/simulate/publish` に送るリクエストを完成させます。  
 問題用プログラムでは、同じイベントでも `purpose` によって `allowed` / `denied` が変わることをコードレベルで確認できます。
 
-## 工程別の目次
-
-<details class="iw3ip-toc-details" open>
-  <summary>準備: サービス起動と Consent VC 登録</summary>
-  <p>最初に publisher を起動し、このイベント共有で使う Consent VC を登録します。ここまでは以後の許可・拒否判定の前提作業です。</p>
-  <ol>
-    <li><a href="#1-サービス起動">サービス起動</a></li>
-    <li><a href="#2-この-hands-on-用の-consent-vc-を登録">この Hands-on 用の Consent VC を登録</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 1: allowed と denied を比較する</summary>
-  <p>次に、同じ `flood_risk_high` イベントを使って、共有される場合と拒否される場合を比べます。ここで `purpose` が判定結果を変えることを確認します。</p>
-  <ol>
-    <li><a href="#3-許可されるケースを再現する">許可されるケースを再現する</a></li>
-    <li><a href="#4-platform-api-に届いた内容を確認する">Platform API に届いた内容を確認する</a></li>
-    <li><a href="#5-拒否されるケースを再現する">拒否されるケースを再現する</a></li>
-    <li><a href="#6-監査ログを確認する">監査ログを確認する</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 2: MQTT 経路で同じイベント共有を試す</summary>
-  <p>最後に HTTP 疑似投入ではなく MQTT からも同じイベント共有を再現し、経路が変わっても判定の考え方は同じであることを確認します。</p>
-  <ol>
-    <li><a href="#7-mqtt-経路でも試す">MQTT 経路でも試す</a></li>
-  </ol>
-</details>
-
-## 読み進め方
-
-Phase 2 の代表例として、イベント共有の考え方を確認するページです。短時間なら `allowed` だけでも構いませんが、主題は「同じイベントでも目的で共有可否が変わる」ことなので、`denied` まで見てから進むことを勧めます。
-
 ## シナリオ
 
 河川近くのエッジセンサが、水位上昇や周辺情報から `flood_risk_high` というイベントを生成したとします。  
@@ -126,7 +92,7 @@ Phase 2 の代表例として、イベント共有の考え方を確認するペ
 
 ## Phase 2: イベント共有の前提を整える
 
-## 1. サービス起動
+### 1. サービス起動
 
 ソースコードリポジトリで次を実行します。`PLATFORM_INGEST_READ_ENABLED=true` は、蓄積されたデータを確認するための `GET /platform/ingest` を有効にする指定です。この API は認証なしで全件を返すデモ用の機能で、指定しない場合は無効 (404) です。Part 2 以降では、読み出しに VC を提示して得るトークンを使います。
 
@@ -146,7 +112,7 @@ curl http://localhost:8080/health
 {"status":"ok","service":"publisher"}
 ```
 
-## 2. この Hands-on 用の Consent VC を登録
+### 2. この Hands-on 用の Consent VC を登録
 
 この Hands-on では、`home/event/flood_risk_high` を `disaster_response` と `research` の目的でのみ許可します。
 
@@ -184,7 +150,7 @@ curl http://localhost:8080/consents
 
 ## Phase 2: allowed と denied を比較する
 
-## 3. 許可されるケースを再現する
+### 3. 許可されるケースを再現する
 
 `purpose = disaster_response` として、防災イベントを疑似投入します。
 
@@ -214,7 +180,7 @@ curl -X POST http://localhost:8080/simulate/publish \
 {"status":"allowed","dataset_id":"home/event/flood_risk_high"}
 ```
 
-## 4. Platform API に届いた内容を確認する
+### 4. Platform API に届いた内容を確認する
 
 許可された場合、Publisher 内のダミー Platform API に転送されます。
 
@@ -229,7 +195,7 @@ curl http://localhost:8080/platform/ingest
 - `payload.message_type` が `event`
 - `payload.payload.event_type` が `flood_risk_high`
 
-## 5. 拒否されるケースを再現する
+### 5. 拒否されるケースを再現する
 
 今度は同じイベントを `advertising` 目的で送ります。
 
@@ -259,7 +225,7 @@ curl -X POST http://localhost:8080/simulate/publish \
 {"status":"denied","dataset_id":"home/event/flood_risk_high","reason":"no_matching_consent"}
 ```
 
-## 6. 監査ログを確認する
+### 6. 監査ログを確認する
 
 ```bash
 curl 'http://localhost:8080/audit/logs?limit=10'
@@ -276,7 +242,7 @@ Phase 2 では、イベントがどの条件で共有されるかを説明でき
 
 ## Phase 2: MQTT 経路でも同じ判定を確認する
 
-## 7. MQTT 経路でも試す
+### 7. MQTT 経路でも試す
 
 MQTT 経由でも同じイベント共有を再現できます。
 

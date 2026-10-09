@@ -1,4 +1,4 @@
-# Regional Safety Assistant Sample (Phase 3)
+# Run the regional safety assistant
 
 Step into Part 3: feed the events you gathered in Part 2 (`possible_littering` etc.) to an AI, let it break a free-form request into a plan, and run it.
 
@@ -69,41 +69,6 @@ This hands-on uses the following files.
 Unlike the earlier workshop samples, this page points directly to the **minimum implementation itself** rather than a separate problem/answer pair.  
 That is intentional, because in Phase 3 the module boundaries between planner, evaluator, and actuator are part of what learners should understand.
 
-## Process table of contents
-
-<details class="iw3ip-toc-details" open>
-  <summary>Stage 1: inspect how the planner interprets the request</summary>
-  <p>Start by inspecting how a human request is converted into a `plan`. At this stage, the main focus is not execution yet, but how the system chooses the target area, watch events, and actions.</p>
-  <ol>
-    <li><a href="#1-start-the-assistant-service">Start the assistant service</a></li>
-    <li><a href="#2-inspect-the-generated-plan">Inspect the generated plan</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Stage 2: inspect evaluator and actuator behavior</summary>
-  <p>Next, run the execution path against the sample events. This stage focuses on how `triggered` is decided and how that result is turned into device actions.</p>
-  <ol>
-    <li><a href="#3-execute-the-plan">Execute the plan</a></li>
-    <li><a href="#4-inspect-execution-history">Inspect execution history</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Stage 3: organize the difference from Phase 2</summary>
-  <p>Finally, compare Phase 2 event sharing and Phase 3 request interpretation, evaluation, and control. This makes the separation between planner, evaluator, and actuator easier to understand.</p>
-  <ol>
-    <li><a href="#5-difference-between-phase-2-and-phase-3">Difference between Phase 2 and Phase 3</a></li>
-    <li><a href="#6-success-criteria">Success criteria</a></li>
-    <li><a href="#7-common-issues">Common issues</a></li>
-    <li><a href="#8-stop-services">Stop services</a></li>
-  </ol>
-</details>
-
-## How to read this page
-
-This is the representative page for understanding the Phase 3 approach. For a quick pass, `plan` and `execute` are enough. To understand the difference from Phase 2 and the module boundaries, read through the final summary as well.
-
 ## Scenario
 
 The user asks:
@@ -149,7 +114,7 @@ Note that `plan` and `execute` are separated, and that the relevant events are g
 
 ## Phase 3: Inspect how the planner interprets the request
 
-## 1. Start the assistant service
+### 1. Start the assistant service
 
 Run the following in the `Blockchain_IoT_Marketplace` repository.
 
@@ -175,7 +140,7 @@ If you see `Connection refused`:
 - check whether the assistant service is `Up` with `docker ps`
 - inspect logs with `docker compose -f infra/docker-compose.yml --profile assistant logs assistant`
 
-## 2. Inspect the generated plan
+### 2. Inspect the generated plan
 
 First, inspect how the natural-language request is turned into a plan.
 
@@ -209,7 +174,7 @@ The request has been converted into a structured `plan`. Next, see how event eva
 
 ## Phase 3: Inspect evaluator and actuator behavior
 
-## 3. Execute the plan
+### 3. Execute the plan
 
 Now execute the request against the sample event file.
 
@@ -246,7 +211,7 @@ How to read the result:
 - therefore `triggered` becomes `true`
 - as a result, `light_on` and `send_notification` are executed
 
-## 4. Inspect execution history
+### 4. Inspect execution history
 
 ```bash
 curl http://localhost:8090/assistant/executions
@@ -265,7 +230,7 @@ Phase 3 goes beyond event sharing: it is the stage that handles planning, evalua
 
 ## Phase 3: Organize the difference from Phase 2
 
-## 5. Difference between Phase 2 and Phase 3
+### 5. Difference between Phase 2 and Phase 3
 
 In Phase 2, the focus was mainly on:
 
@@ -281,7 +246,7 @@ Phase 3 adds:
 
 Phase 3 is the stage that moves from **"sharing events" to "deciding and acting in response to a request."**
 
-## 6. Success criteria
+### 6. Success criteria
 
 This hands-on is successful if you can confirm the following:
 
@@ -290,23 +255,23 @@ This hands-on is successful if you can confirm the following:
 - `light_on` and `send_notification` appear as `executed`
 - `/assistant/executions` shows the recorded history
 
-## 7. Common issues
+### 7. Common issues
 
-### `examples/phase3_request_park_safety.json` cannot be found
+#### `examples/phase3_request_park_safety.json` cannot be found
 
 - make sure your current directory is the root of `Blockchain_IoT_Marketplace`
 
-### Expected actions do not run
+#### Expected actions do not run
 
 - the event count in `examples/phase3_events_park_safety.json` may be below threshold
 - check both the `possible_littering` count and the `location`
 
-### It is unclear where the AI part is
+#### It is unclear where the AI part is
 
 In this minimum implementation, the planner is still rule-based.  
 However, the **module boundary that converts a natural-language request into a structured plan** is built first, which makes it easy to later replace with an LLM or an external planner.
 
-## 8. Stop services
+### 8. Stop services
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile assistant down

@@ -1,4 +1,4 @@
-# SSI Viewer Sample (Phase 2 / Stage 3)
+# Authenticate the viewer (Viewer VC / Stage 3)
 
 [HA SSI Wallet](ha-ssi-wallet.en.md) protected the write side with a VC. This page protects the read side with a VC.
 

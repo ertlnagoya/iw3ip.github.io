@@ -1,4 +1,4 @@
-# Enrich camera data with a local VLM and distribute it (Part 3)
+# Enrich camera data with a local VLM
 
 Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-language model)** running on the PC, attach semantic text to them, and distribute that AI-enriched data over the IoT data-distribution platform. The key point is that the images never leave for an external cloud — the analysis is done entirely locally.
 

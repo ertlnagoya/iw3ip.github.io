@@ -1,4 +1,4 @@
-# DataUserVC × Tiered Access (Phase 2 extension)
+# Tier the response by trust (DataUserVC / Stage T)
 
 Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC). Goes all the way to semantic intermediate representation and trust-aware rendering — long but thorough.
 

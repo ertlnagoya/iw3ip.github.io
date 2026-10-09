@@ -1,4 +1,4 @@
-# Home Assistant Demo Simulator Sample (Phase 1 / Phase 2 / Phase 3)
+# Run the whole pipeline without hardware (HA Demo Simulator)
 
 A page that runs data generation through sharing in a minimal setup, using Home Assistant's `demo` mode with no real device. A good one to try first.
 
@@ -36,37 +36,6 @@ Branches:
 - If you want to continue to Phase 2: send `possible_littering` and inspect both `allow` and `deny`
 - If you want to continue to Phase 3: start `ha-demo-phase3` and run `run_phase3_from_ingest.py --plan-only`
 
-## Phase-based table of contents
-
-<details class="iw3ip-toc-details" open>
-  <summary>Phase 1: confirm the basic state-sharing path</summary>
-  <p>This part covers environment startup, initial Home Assistant setup, Consent VC registration, basic script execution, and checking `/platform/ingest`.</p>
-  <ol>
-    <li><a href="#1-start-services">Start services</a></li>
-    <li><a href="#2-initial-home-assistant-setup">Initial Home Assistant setup</a></li>
-    <li><a href="#3-register-consent-vcs">Register Consent VCs</a></li>
-    <li><a href="#4-send-demo-data-from-home-assistant">Send demo data from Home Assistant</a></li>
-    <li><a href="#5-check-publisher-results">Check publisher results</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Phase 2: confirm event sharing and denial</summary>
-  <p>This part explains not only successful sharing but also how requests are rejected when they do not match the Consent VC.</p>
-  <ol>
-    <li><a href="#6-check-a-denied-case">Check a denied case</a></li>
-    <li><a href="#7-test-the-mqtt-path-directly">Test the MQTT path directly</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Phase 3: confirm assistant planning and execution</summary>
-  <p>The last part passes the events accumulated in the publisher to the assistant and shows how `plan` and `execute` are separated.</p>
-  <ol>
-    <li><a href="#8-try-phase-3">Try Phase 3</a></li>
-  </ol>
-</details>
-
 ## What this page covers
 
 - how to reproduce `temperature`, `power`, `person_detected`, `flood_risk_high`, and `possible_littering` without real devices
@@ -100,17 +69,11 @@ Main matching files:
 - [scripts.yaml](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/home-assistant-demo/config/scripts.yaml)
 - [run_phase3_from_ingest.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/run_phase3_from_ingest.py)
 
-## How to read this page
-
-This page is intentionally detailed. If you want the shortest confirmation path, start from `Shortest path` and the `Phase-based table of contents`, and only open the phase you need.
-
-If you want to understand the whole flow for a workshop or self-study, reading from Phase 1 in order is more effective. In particular, the difference between `allowed` and `denied`, and later the difference between `plan` and `execute`, is easier to understand after following the earlier steps.
-
 ## Phase 1: Confirm the basic state-sharing path
 
 In Phase 1, the goal is to confirm that the basic path from Home Assistant to the publisher is working. It is enough to send one state-oriented dataset first and confirm that it appears in `platform/ingest`.
 
-## 1. Start services
+### 1. Start services
 
 Start the simulation environment. `PLATFORM_INGEST_READ_ENABLED=true` enables `GET /platform/ingest`, which this page uses to inspect ingested data. It is a demo-only API that returns every row without authentication and is disabled (404) unless set. From Part 2 onward, reads use a token obtained by presenting a VC.
 
@@ -136,7 +99,7 @@ Expected:
 {"status":"ok","service":"publisher"}
 ```
 
-## 2. Initial Home Assistant setup
+### 2. Initial Home Assistant setup
 
 Open:
 
@@ -173,7 +136,7 @@ What to check:
 - the `mosquitto` service is shown
 - once this screen is visible, Home Assistant is ready to use `mqtt.publish`
 
-## 3. Register Consent VCs
+### 3. Register Consent VCs
 
 Register the Consent VCs used by the demo datasets.
 
@@ -199,7 +162,7 @@ Matching files:
 - [consent_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_possible_littering.json)
 - [consent_suspicious_activity.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/consent_suspicious_activity.json)
 
-## 4. Send demo data from Home Assistant
+### 4. Send demo data from Home Assistant
 
 In Home Assistant, open `Developer Tools -> Actions` and run these scripts. In practice, it is easiest to choose `script.turn_on` in the action selector and then specify the target script entity.
 
@@ -234,7 +197,7 @@ Phase mapping:
   - `possible_littering`
   - `suspicious_activity`
 
-## 5. Check publisher results
+### 5. Check publisher results
 
 After running a Home Assistant script, inspect the publisher side.
 
@@ -262,11 +225,11 @@ Focus points:
 
 At this point, some events may not appear in `/platform/ingest`. If so, work through the exercise below to find and fix the cause.
 
-## Exercise: when some events are rejected (fix the consent expiry)
+### Exercise: when some events are rejected (fix the consent expiry)
 
 When you run step 5, `suspicious_activity` may appear in `/platform/ingest` while other datasets such as `possible_littering` do not. In that case `audit/logs` shows `action: deny` / `reason: no_matching_consent`. The usual cause is an **expired consent VC**. This is a good way to learn about a VC's validity period (`valid_from`–`valid_to`), so **diagnose and fix it yourself**.
 
-### Step 1. Confirm the denial in the audit log
+#### Step 1. Confirm the denial in the audit log
 
 Read the audit log first. In zsh, quote the URL because `?` is treated as a glob.
 
@@ -281,14 +244,14 @@ Look at `action` / `dataset_id` / `reason` / `subject_did`.
     - Allowed events have `action: "allow"`, `reason: "sent"`, and the issuer DID in `subject_did`.
     - So the problem is not that a consent is missing, but that no *matching* consent is found. That is the clue.
 
-### Step 2. Form a hypothesis
+#### Step 2. Form a hypothesis
 
 Compare the consent files (`examples/ha_demo/consent_*.json`) for an allowed dataset versus a denied one. Pay attention to `valid_from` and `valid_to`.
 
 ??? tip "Hint"
     `valid_from`–`valid_to` is the VC's validity period. If **today's date falls outside this range**, the consent does not match. Check whether the `valid_to` of a denied dataset's consent is in the past.
 
-### Step 3. Fix and re-register
+#### Step 3. Fix and re-register
 
 Change the expired consent's `valid_to` to a future date. You can edit the file in an editor, or extend them all at once (macOS `sed` needs `-i ''`).
 
@@ -298,7 +261,7 @@ sed -i '' 's/"valid_to": "2026-05-01T00:00:00Z"/"valid_to": "2027-12-31T23:59:59
 
 Then re-register the consents as in step 3 and confirm each response contains `"status":"stored"`.
 
-### Step 4. Re-send the events and verify
+#### Step 4. Re-send the events and verify
 
 Re-run the step 4 scripts (or the direct publish from step 7), then confirm the events now appear in `/platform/ingest`.
 
@@ -311,7 +274,7 @@ curl 'http://localhost:8080/platform/ingest'
     - If it is still denied, check that the event's `purpose` is included in the consent's `allowed_purposes`.
     - See the "`no_matching_consent`" item in [Troubleshooting](../operations/troubleshooting.md) for details.
 
-### Something to think about
+#### Something to think about
 
 Why do VCs have an expiry at all? Consider what becomes safer compared with consent that never expires, and how you would operate the system when a consent expires in production.
 
@@ -319,7 +282,7 @@ Once this part works, the basic sharing path from Home Assistant to the publishe
 
 ## Phase 2: Confirm event sharing and denial
 
-## 6. Check a denied case
+### 6. Check a denied case
 
 The Home Assistant scripts mainly exercise allowed paths, so use HTTP simulation to confirm denial.
 
@@ -355,7 +318,7 @@ What to check here:
 - the input topic can be correct and still be rejected when `purpose` does not match the Consent VC
 - you should confirm the rejection in both the `simulate/publish` response and `audit/logs`
 
-## 7. Test the MQTT path directly
+### 7. Test the MQTT path directly
 
 You can also publish directly to the same topic without Home Assistant.
 
@@ -378,7 +341,7 @@ By the end of Phase 2, it should be clear that a valid MQTT path does not automa
 
 ## Phase 3: Confirm assistant planning and execution
 
-## 8. Try Phase 3
+### 8. Try Phase 3
 
 In Phase 3, the events accumulated by the publisher are converted into `assistant` `observed_events`, and then you inspect `plan -> execute`.
 
@@ -452,7 +415,9 @@ Focus points in `execute`:
 - `matched_counts.suspicious_activity = 1`
 - `actions_executed` contains two actions
 
-## 9. If you want to use Node-RED
+## Additional notes
+
+### 9. If you want to use Node-RED
 
 Node-RED is useful when you want easier manual injection or time-based pseudo events.
 
@@ -462,6 +427,44 @@ Import flow:
 
 Node-RED is optional in this setup.  
 It is better to first understand the full path with Home Assistant demo alone, and only then add Node-RED if you want clearer event injection.
+
+### 10. What is Phase 1, Phase 2, and Phase 3 here?
+
+This sample lets you go through Phase 1, Phase 2, and Phase 3 in a single environment.
+
+- Phase 1:
+  - state sharing such as `temperature` and `power`
+  - basic receive, normalize, send, and record flow
+- Phase 2:
+  - event sharing such as `flood_risk_high` and `possible_littering`
+  - conditional sharing based on `purpose` and Consent VC
+- Phase 3:
+  - pass publisher events to the assistant and execute the plan
+  - inspect `triggered` and `actions_executed`
+
+This page therefore also serves as a connection point to the following hands-on pages:
+
+- [HA x SSI Publisher sample (Phase 1)](ha-ssi-publisher.md)
+- [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
+- [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md)
+
+### 11. Stop services
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ha-demo down
+```
+
+If Node-RED is also running:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ha-demo --profile nodered down
+```
+
+If you also started the Phase 3 path:
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 down
+```
 
 ## Future extensions
 
@@ -487,41 +490,3 @@ CARLA is a simulator for urban spaces, vehicles, pedestrians, and virtual sensor
 
 - Official site: <https://carla.org/>
 - Documentation: <https://carla.readthedocs.io/>
-
-## 10. What is Phase 1, Phase 2, and Phase 3 here?
-
-This sample lets you go through Phase 1, Phase 2, and Phase 3 in a single environment.
-
-- Phase 1:
-  - state sharing such as `temperature` and `power`
-  - basic receive, normalize, send, and record flow
-- Phase 2:
-  - event sharing such as `flood_risk_high` and `possible_littering`
-  - conditional sharing based on `purpose` and Consent VC
-- Phase 3:
-  - pass publisher events to the assistant and execute the plan
-  - inspect `triggered` and `actions_executed`
-
-This page therefore also serves as a connection point to the following hands-on pages:
-
-- [HA x SSI Publisher sample (Phase 1)](ha-ssi-publisher.md)
-- [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
-- [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md)
-
-## 11. Stop services
-
-```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo down
-```
-
-If Node-RED is also running:
-
-```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo --profile nodered down
-```
-
-If you also started the Phase 3 path:
-
-```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 down
-```

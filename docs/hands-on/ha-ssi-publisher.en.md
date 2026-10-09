@@ -1,4 +1,4 @@
-# HA x SSI Publisher Sample (Phase 1)
+# Pull from Home Assistant (HA SSI Publisher)
 
 Build a minimal setup that receives Home Assistant state over MQTT and decides whether to share it with a Consent VC.
 
@@ -73,43 +73,9 @@ Exercise programs:
 This exercise asks learners to construct the minimum request body for `/simulate/publish`.  
 The problem program focuses on how `topic`, `payload`, and `purpose` are combined into one request.
 
-## Process table of contents
-
-<details class="iw3ip-toc-details" open>
-  <summary>Preparation: start the publisher and register Consent VCs</summary>
-  <p>First confirm that the publisher is running and then register the minimum Consent VCs. These steps are the prerequisites for the later allow/deny checks.</p>
-  <ol>
-    <li><a href="#1-start-services">Start services</a></li>
-    <li><a href="#2-register-consent-vcs">Register Consent VCs</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 1: compare allowed and denied through HTTP simulation</summary>
-  <p>Next, compare an allowed request and a denied request through the same API entry point. This is where the relation between `purpose` and `dataset_id` becomes clear.</p>
-  <ol>
-    <li><a href="#3-allowed-case">Allowed case</a></li>
-    <li><a href="#4-denied-case">Denied case</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>Check 2: inspect MQTT ingestion and audit logs</summary>
-  <p>Finally, send data through MQTT instead of HTTP simulation and check what remains in the audit log.</p>
-  <ol>
-    <li><a href="#5-test-mqtt-ingestion-path">Test MQTT ingestion path</a></li>
-    <li><a href="#6-check-audit-logs">Check audit logs</a></li>
-    <li><a href="#7-stop-services">Stop services</a></li>
-  </ol>
-</details>
-
-## How to read this page
-
-This page confirms the basic Phase 1 setup. If you want to finish quickly, `Shortest path` is enough. If you want to understand the idea of sharing control, compare both `allowed` and `denied` before moving on to the MQTT path.
-
 ## Phase 1: Confirm the minimal setup
 
-## 1. Start services
+### 1. Start services
 
 ```bash
 docker compose -f infra/docker-compose.yml up --build -d
@@ -127,7 +93,7 @@ Expected:
 {"status":"ok","service":"publisher"}
 ```
 
-## 2. Register Consent VCs
+### 2. Register Consent VCs
 
 ```bash
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_temperature.json
@@ -144,7 +110,7 @@ The setup needed for the checks is now complete. Next, compare a request that is
 
 ## Phase 1: Compare allowed and denied
 
-## 3. Allowed case
+### 3. Allowed case
 
 ```bash
 curl -X POST http://localhost:8080/simulate/publish \
@@ -168,7 +134,7 @@ Expected:
 {"status":"allowed","dataset_id":"home/env/temperature"}
 ```
 
-## 4. Denied case
+### 4. Denied case
 
 ```bash
 curl -X POST http://localhost:8080/simulate/publish \
@@ -196,7 +162,7 @@ The important point here is that a request can have the correct structure and st
 
 ## Phase 1: Inspect MQTT ingestion and audit logs
 
-## 5. Test MQTT ingestion path
+### 5. Test MQTT ingestion path
 
 ```bash
 docker exec -i iw3ip-mosquitto mosquitto_pub \
@@ -205,7 +171,7 @@ docker exec -i iw3ip-mosquitto mosquitto_pub \
   -m '{"event_type":"person_detected","data":{"camera_id":"front_door","confidence":0.93},"ts":"2026-02-28T10:00:20Z","source":"edge_inference"}'
 ```
 
-## 6. Check audit logs
+### 6. Check audit logs
 
 ```bash
 curl 'http://localhost:8080/audit/logs?limit=10'
@@ -216,7 +182,7 @@ Checkpoints:
 - actions include `allow`, `deny`, and/or `send_error`
 - each record includes `dataset_id`, `purpose`, and `message_hash`
 
-## 7. Stop services
+### 7. Stop services
 
 ```bash
 docker compose -f infra/docker-compose.yml down

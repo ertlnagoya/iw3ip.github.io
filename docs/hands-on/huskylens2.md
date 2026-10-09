@@ -1,4 +1,4 @@
-# HUSKYLENS2サンプル
+# AI カメラで人物を検知する (HUSKYLENS2)
 
 HUSKYLENS2 という小型 AI カメラからイベントを取り出し、マーケットに出品するまでの一連を試します。
 
@@ -63,41 +63,9 @@ HUSKYLENS2（または中継入力）からイベントを作り、商品化ま�
 - 実機接続まで確認したい場合: 次に `serial` モードを試します
 - シリアルで止まる場合: 先に [トラブル時](#4-トラブル時) を確認してください
 
-## 工程別の目次
-
-<details class="iw3ip-toc-details" open>
-  <summary>確認 1: mock モードでイベント生成を確認する</summary>
-  <p>最初に mock モードでイベントファイル生成を確認し、センサ入力がなくても後段のパイプラインが動くことを確かめます。</p>
-  <ol>
-    <li><a href="#1-mockで最小確認">mockで最小確認</a></li>
-    <li><a href="#3-確認ポイント">確認ポイント</a></li>
-    <li><a href="#成功例">成功例</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 2: 実機 serial モードで同じ流れを試す</summary>
-  <p>次に HUSKYLENS2 実機を使って同じ出力先へイベントを出し、mock と同じ後段が利用できることを確認します。</p>
-  <ol>
-    <li><a href="#2-実機serial">実機（serial）</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 3: トラブル時の切り分けを行う</summary>
-  <p>最後に、シリアルポート、依存ライブラリ、出力先パスのような典型的な失敗点を切り分けます。</p>
-  <ol>
-    <li><a href="#4-トラブル時">トラブル時</a></li>
-  </ol>
-</details>
-
-## 読み進め方
-
-Phase 1 のデバイス接続ページです。まず `mock` で後段のパイプラインを確認してから `serial` に切り替えると、問題を切り分けやすくなります。
-
 ## Phase 1: mock モードでパイプラインを確認する
 
-## 1. mockで最小確認
+### 1. mockで最小確認
 
 ```bash
 cd sensor-bridge
@@ -112,7 +80,7 @@ mock でパイプラインが動くことを確認できたら、次は実機の
 
 ## Phase 1: 実機 serial モードで同じ流れを試す
 
-## 2. 実機（serial）
+### 2. 実機（serial）
 
 ```bash
 python3 huskylens_bridge.py \
@@ -123,7 +91,7 @@ python3 huskylens_bridge.py \
   --output-dir ../mediator-owner/raw_data/output
 ```
 
-## 3. 確認ポイント
+### 3. 確認ポイント
 
 - `raw_data/output` に `301_huskylens_*.txt` が作成される
 - `mediator-owner` ログに watcher event が出る
@@ -135,7 +103,7 @@ python3 huskylens_bridge.py \
 - 実機モードでは、検出対象に応じて継続的にイベントが出力される
 - フロントエンドに商品が現れ、購入操作まで進める
 
-## 4. トラブル時
+### 4. トラブル時
 
 - 症状: `pyserial` が見つからない
   - 対応: `pip install pyserial`

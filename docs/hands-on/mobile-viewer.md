@@ -1,4 +1,4 @@
-# スマホ閲覧アプリ (v1)
+# スマホで購入データを見る (v1)
 
 v1 マーケットプレイス (現行 + MetaMask + 暗号化 IPFS) の閲覧をスマホブラウザから確認します。VC 連携 (v2) の動線は別ページです。
 
@@ -78,44 +78,9 @@ homepage `/` をスマホで開く形に読み替えてください。
   に進み、`/purchased/[txHash]` および `/seller` ページを使います
 - 接続で止まる場合: 先に [トラブル時](#トラブル時) を確認してください
 
-## 工程別の目次
-
-<details class="iw3ip-toc-details" open>
-  <summary>準備: PC 側の公開設定と LAN IP を確認する</summary>
-  <p>最初にフロントの接続先 (.env.local) を設定し、PC 側のフロントエンドを LAN 公開で起動して、スマホからアクセスするための IP アドレスを確認します。</p>
-  <ol>
-    <li><a href="#env-local">フロントの接続先を設定 (.env.local)</a></li>
-    <li><a href="#1-pc側をlan公開で起動">PC側をLAN公開で起動</a></li>
-    <li><a href="#2-pcのlan-ipを確認">PCのLAN IPを確認</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 1: スマホから閲覧画面を開く</summary>
-  <p>次に、スマホから iot-market-ui ホーム (`/`) または個別 Merchandise ページを開き、UI が表示されることを確認します。</p>
-  <ol>
-    <li><a href="#3-スマホでアクセス">スマホでアクセス</a></li>
-    <li><a href="#5-確認ポイント">確認ポイント</a></li>
-    <li><a href="#成功例">成功例</a></li>
-  </ol>
-</details>
-
-<details class="iw3ip-toc-details">
-  <summary>確認 2: 購入操作と接続トラブルを確認する</summary>
-  <p>最後に、必要ならウォレット経由の購入操作を試し、つながらない場合の代表的な確認ポイントを整理します。</p>
-  <ol>
-    <li><a href="#4-購入時の注意">購入時の注意</a></li>
-    <li><a href="#トラブル時">トラブル時</a></li>
-  </ol>
-</details>
-
-## 読み進め方
-
-Phase 1 で共有された結果をスマホから確認する手順です。短時間で済ませる場合は、URL を開いて一覧を見るだけで構いません。時間があれば、同じ LAN 上のスマホから開けることと、ウォレット経由で購入画面まで進めることを確認してください。
-
 ## 接続の前提を整える
 
-## 0. フロントの接続先を設定 (.env.local) { #env-local }
+### 0. フロントの接続先を設定 (.env.local) { #env-local }
 
 `iot-market-ui` は、ブロックチェーン (RPC) と publisher の接続先を `iot-market-ui/.env.local` から読み込みます。このファイルが無い、または接続先が間違っていると、商品ページが **HTTP 500** になります。まず雛形をコピーして自分の環境に合わせます。
 
@@ -148,14 +113,14 @@ cp .env.example .env.local
 
 `.env.local` を変更したら、フロント (`npm run dev`) を再起動して反映します。
 
-## 1. PC側をLAN公開で起動
+### 1. PC側をLAN公開で起動
 
 ```bash
 cd iot-market-ui
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
-## 2. PCのLAN IPを確認
+### 2. PCのLAN IPを確認
 
 ```bash
 ipconfig getifaddr en0
@@ -165,7 +130,7 @@ ipconfig getifaddr en0
 
 ## スマホで閲覧画面を確認する
 
-## 3. スマホでアクセス
+### 3. スマホでアクセス
 
 ```txt
 http://<PCのLAN_IP>:5173/
@@ -183,7 +148,7 @@ http://192.168.1.20:5173/
 http://<PCのLAN_IP>:5173/merchandise/<merchandise_address>
 ```
 
-## 4. 購入時の注意
+### 4. 購入時の注意
 
 - スマホで購入する場合は MetaMaskモバイル内ブラウザを推奨
 - MetaMask モバイルにローカルチェーンのネットワークを追加しておく:
@@ -191,7 +156,7 @@ http://<PCのLAN_IP>:5173/merchandise/<merchandise_address>
     - チェーン ID: `31337` / 通貨記号: `ETH`
 - ネットワーク追加が拒否される場合は、ノードを `--hostname 0.0.0.0` で起動しているか、`.env.local` と MetaMask の RPC が **127.0.0.1 ではなく PC の LAN IP** になっているかを確認
 
-## 5. 確認ポイント
+### 5. 確認ポイント
 
 - iot-market-ui の検索 UI または商品ページがスマホで開ける
 - 個別 Merchandise ページで購入操作が走る

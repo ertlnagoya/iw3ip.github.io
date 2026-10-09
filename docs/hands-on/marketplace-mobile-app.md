@@ -1,4 +1,4 @@
-# データマーケット モバイルアプリ (Stage A: PWA 版)
+# スマホアプリで購入から閲覧まで (Stage A)
 
 Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホーム画面アプリ (PWA: Progressive Web App) として使います。コマンドラインなしで購入から VC 受領、閲覧までタップで進められます。
 

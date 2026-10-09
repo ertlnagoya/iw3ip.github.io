@@ -1,4 +1,4 @@
-# DataUserVC × 段階アクセス制御 仕様
+# 段階アクセスの設計仕様
 
 データ受信者（buyer/recipient）が保持する **DataUserVC** の信頼属性に応じて、
 Publisher が公開するカメラ視野を **イベント／画像／動画** の 3 段階に

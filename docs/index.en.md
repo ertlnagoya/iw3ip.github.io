@@ -1,3 +1,7 @@
+---
+title: IW3IP Documentation
+---
+
 # IoTxWeb3 Intelligence Platform (IW3IP) Documentation
 
 This documentation site brings together the IW3IP overview, implementation examples, and hands-on instructions.
@@ -24,24 +28,17 @@ You can work through the material in order, from foundational understanding to t
 
 External websites and papers are positioned as follow-up material for standards, deeper technical detail, and research background.
 
-## Documentation model
+## Site structure
 
-- **Workshop**: instructor/TA flow design (goals, timing, orchestration)
-- **Hands-on**: participant execution steps (commands, expected results)
-
-The relationship is that **Hands-on is carried out within a Workshop**.
+- **Learning Foundations**: basics of blockchain, Hardhat, and SSI / DID / VC, plus how to use the material in a course
+- **Environment Setup**: installing the tools and starting the hands-on environment
+- **Hands-on**: participant steps (commands, expected results, checkpoints)
+- **Design**: the overall picture of VCs and tokens, and design specs
+- **Operations**: troubleshooting, FAQ, and the facilitator guide
 
 ## Overall flow
 
 ![Overall image](assets/raspberryPi.jpg)
-
-## Start here
-
-1. [Workshop / Prerequisites](setup/prerequisites.md)
-2. [Learning Foundations / Learning Roadmap](foundations/roadmap.md)
-3. [Workshop / Quickstart](setup/quickstart.md)
-4. [Hands-on](hands-on/index.md)
-5. [Operations / Troubleshooting](operations/troubleshooting.md)
 
 ## If You Want To Run One Demo First
 
@@ -92,10 +89,13 @@ Open:
 3. [Blockchain Basics](foundations/blockchain-basics.md)
 4. [Hardhat Basics](foundations/hardhat-basics.md)
 5. [SSI/DID/VC Basics](foundations/ssi-did-vc-basics.md)
-6. [Home Assistant Demo Simulator sample](hands-on/ha-demo-simulator.md)
-7. [Quickstart](setup/quickstart.md)
-8. [Hands-on](hands-on/index.md)
-9. [References](foundations/references.md)
+6. [Prerequisites](setup/prerequisites.md)
+7. [HA Demo Simulator](hands-on/ha-demo-simulator.md) (run the whole flow without hardware)
+8. [Quickstart](setup/quickstart.md)
+9. [Hands-on](hands-on/index.md)
+10. [References](foundations/references.md)
+
+If you get stuck, see [Troubleshooting](operations/troubleshooting.md).
 
 ## Run docs locally
 
