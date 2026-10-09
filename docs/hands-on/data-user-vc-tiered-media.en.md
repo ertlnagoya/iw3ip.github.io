@@ -59,9 +59,9 @@ python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 
 ### 8.3 Limitations of Option B
 
-- ✅ Coexists with `image_cid` / `video_cid` (Option A / coming-up Option C).
-- ❌ Not content-addressed — anyone with the URL can GET the blob.
-- ❌ Single replica, no pinning.
+- Coexists with `image_cid` / `video_cid` (Option A / coming-up Option C).
+- Limitation: not content-addressed — anyone with the URL can GET the blob.
+- Limitation: single replica, no pinning.
 
 When content-addressing + distributed storage matter, move on to
 **Option C (IPFS)**. The `/media/upload` response
@@ -160,12 +160,12 @@ CID is enough to fetch the asset from any cooperating peer.
 
 ### 9.4 Pros, caveats, and follow-ups
 
-- ✅ **Content-addressed**: CID is a hash of the bytes — tamper-evident, multi-gateway.
-- ✅ **Publisher outage tolerant**: any peer with a replica can serve.
-- ✅ **Option-B compatible**: response gains `cid` + `ipfs_gateway_url`; existing fields are unchanged.
-- ⚠️ If the kubo daemon is unreachable, `/media/upload` still returns 200 but with `cid: null` — graceful fallback to Option B.
-- ⚠️ Public-gateway resolution depends on IPFS network propagation (can take minutes).
-- 🔜 Pair with a pinning service (Web3.Storage / Pinata) for cross-network durability — follow-up TODO.
+- **Content-addressed**: CID is a hash of the bytes — tamper-evident, multi-gateway.
+- **Publisher outage tolerant**: any peer with a replica can serve.
+- **Option-B compatible**: response gains `cid` + `ipfs_gateway_url`; existing fields are unchanged.
+- Note: if the kubo daemon is unreachable, `/media/upload` still returns 200 but with `cid: null` — graceful fallback to Option B.
+- Note: public-gateway resolution depends on IPFS network propagation (can take minutes).
+- Pairing with a pinning service (Web3.Storage / Pinata) would improve cross-network durability (not supported yet; future work).
 
 ### 9.5 Troubleshooting
 
@@ -270,7 +270,7 @@ badge color and which media keys disappear tell the tier story at a glance.
 | Tier 3 (gov / Full) | Tier 2 (enterprise / Access) | Tier 1 (default / Event-only) |
 |---|---|---|
 | ![Tier 3 viewer](images/data-user-vc-tiered/viewer-tier-3-full.png) | ![Tier 2 viewer](images/data-user-vc-tiered/viewer-tier-2-access.png) | ![Tier 1 viewer](images/data-user-vc-tiered/viewer-tier-1-event.png) |
-| 🟢 `tier: event+image+video` | 🟠 `tier: event+image` | ⚪️ `tier: event` |
+| green badge `tier: event+image+video` | orange badge `tier: event+image` | gray badge `tier: event` |
 | inline image + video player | image only, video player gone | timestamp + raw payload only |
 | `image_cid` / `image_url` / `video_url` / `video_duration_sec` all present | `image_cid` / `image_url` only | every media key dropped |
 
@@ -505,10 +505,10 @@ environments. Screenshots live under
 
 | Scenario | Environment | Status | Observation |
 |---|---|---|---|
-| **A** iPhone camera capture (`capture="environment"`) | iPhone Safari (iOS 18.x) | ✅ verified (2026-04-30) | upload `video/quicktime` 273KB → Publish `status=allowed` → receiver `/viewer` plays the `.MOV` inline (macOS Safari) |
-| **B** PC browser recording (MediaRecorder) | macOS Chrome 147 | ⚠️ codec confirmed (2026-04-30) | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9**. Recording + Publish pending wallet rebuild |
-| **C** Firefox VP8 fallback | macOS Firefox 139 | ✅ **verified (2026-04-30)** | Supports 2: `vp8,opus` / `webm` (no VP9 — Firefox MediaRecorder lacks VP9 support) → **VP8 selected**. Recording → upload → Publish round-trip completed: `media_uploaded ext=.webm bytes=89909` (WebM/VP8, 89KB) + `POST /provider/publish 200 OK`. The `pickRecorderMime()` VP8 fallback path is exercised end-to-end |
-| **D** ~~macOS Safari MP4 fallback~~ macOS Safari WebM/VP9 | macOS Safari 17+ | ✅ **verified (2026-04-30)** | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9** (not MP4). Recording → upload → Publish round-trip completed: `seller_token_issued ertl-bcd-final` + `POST /provider/publish 200 OK`. **Safari 17+ has native WebM/VP9 support**; the original "Safari falls back to MP4" assumption applies only to Safari 16 and earlier |
+| **A** iPhone camera capture (`capture="environment"`) | iPhone Safari (iOS 18.x) | verified (2026-04-30) | upload `video/quicktime` 273KB → Publish `status=allowed` → receiver `/viewer` plays the `.MOV` inline (macOS Safari) |
+| **B** PC browser recording (MediaRecorder) | macOS Chrome 147 | codec confirmed (2026-04-30) | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9**. Recording + Publish pending wallet rebuild |
+| **C** Firefox VP8 fallback | macOS Firefox 139 | **verified (2026-04-30)** | Supports 2: `vp8,opus` / `webm` (no VP9 — Firefox MediaRecorder lacks VP9 support) → **VP8 selected**. Recording → upload → Publish round-trip completed: `media_uploaded ext=.webm bytes=89909` (WebM/VP8, 89KB) + `POST /provider/publish 200 OK`. The `pickRecorderMime()` VP8 fallback path is exercised end-to-end |
+| **D** ~~macOS Safari MP4 fallback~~ macOS Safari WebM/VP9 | macOS Safari 17+ | **verified (2026-04-30)** | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9** (not MP4). Recording → upload → Publish round-trip completed: `seller_token_issued ertl-bcd-final` + `POST /provider/publish 200 OK`. **Safari 17+ has native WebM/VP9 support**; the original "Safari falls back to MP4" assumption applies only to Safari 16 and earlier |
 
 #### Bugs surfaced during the first real-device run (scenario A)
 
@@ -526,7 +526,7 @@ are fixed in the latest `main`.
 
 Reproduction steps and verification points for each scenario are
 below. Walk each subsection end-to-end, flip the `status` column to
-✅, and append the observed values + screenshots to this page (PR
+"verified", and append the observed values + screenshots to this page (PR
 welcome).
 
 #### Common preconditions
@@ -560,12 +560,12 @@ opens the camera directly in iOS Safari.
 
 **Observed (2026-04-30, iPhone Safari, iOS 18.x)**:
 
-- [x] Tap "📷 カメラで撮影" (Capture with camera) → "ファイルを選択" (Choose file) → iOS sheet shows "Take Video / Photo Library / Choose File" → pick "Take Video" → camera opens ✅
+- [x] Tap "📷 カメラで撮影" (Capture with camera) → "ファイルを選択" (Choose file) → iOS sheet shows "Take Video / Photo Library / Choose File" → pick "Take Video" → camera opens
   - **Note**: the sheet does **not** open the camera directly. `accept="image/*,video/*"` + `capture` is a *hint*, not a hard switch.
-- [x] Upload result: `content_type: video/quicktime` / `byte_size: 273897` / `sha256=11367cf4cb1b...` ✅
+- [x] Upload result: `content_type: video/quicktime` / `byte_size: 273897` / `sha256=11367cf4cb1b...`
   - Expected `video/mp4`, but iPhone Safari saves recordings as **QuickTime (`.MOV`)**.
-- [x] Publish response: `status: allowed`, `dataset_id=home/event/possible_littering`, `seller_token_jti=49bf45c467a65ddc`, `register_count=1` ✅
-- [x] Receiver `/viewer` (macOS Safari, Tier 3 PurchaseViewerVC.full): green badge `tier: event+image+video` and the `<video>` tag plays the clip inline ✅
+- [x] Publish response: `status: allowed`, `dataset_id=home/event/possible_littering`, `seller_token_jti=49bf45c467a65ddc`, `register_count=1`
+- [x] Receiver `/viewer` (macOS Safari, Tier 3 PurchaseViewerVC.full): green badge `tier: event+image+video` and the `<video>` tag plays the clip inline
   - **macOS Safari natively plays `video/quicktime`** — important data point: Stage T option B handles QuickTime end-to-end.
 
 **Screenshots**:
@@ -617,7 +617,7 @@ In DevTools console:
 Expected: `["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]`
 (first entry = the one actually picked).
 
-**Screenshots (TBD)**:
+**Screenshots (not yet added)**:
 
 ```
 images/data-user-vc-tiered/provider/B-chrome-permission.png         # camera permission
@@ -638,7 +638,7 @@ VP8 when VP9 is unavailable.
 `vp9,opus` returns `false` while `vp8,opus` (or bare `webm`) returns
 `true`. Upload should still produce `content_type: video/webm`.
 
-**Screenshots (TBD)**:
+**Screenshots (not yet added)**:
 
 ```
 images/data-user-vc-tiered/provider/C-firefox-permission.png
@@ -678,7 +678,7 @@ Run the codec list in DevTools console to make the branch visible.
 - Camera/mic permission may need to be granted via the **address-bar
   Safari settings icon** in some setups.
 
-**Screenshots (TBD)**:
+**Screenshots (not yet added)**:
 
 ```
 images/data-user-vc-tiered/provider/D-safari-permission.png
@@ -693,7 +693,7 @@ After all four scenarios:
 
 - [ ] Screenshots placed in
       `docs/hands-on/images/data-user-vc-tiered/provider/` at the paths above
-- [ ] §11.8 status table updated ⏳ → ✅
+- [ ] §11.8 status table updated to "verified"
 - [ ] Observed codec values, OS versions, and any unusual behavior
       appended to the relevant subsection
 - [ ] §11.7 troubleshooting extended with any new symptoms found during validation
