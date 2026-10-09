@@ -1034,7 +1034,7 @@ Tier 2 で受信した `image_url_redacted` の URL をブラウザで開くと�
 
 | 元 (`image_url`, Tier 3 のみ) | ブラー後 (`image_url_redacted`, Tier 2+) |
 |---|---|
-| <img src="../images/data-user-vc-tiered/vlm/V4-original.jpg" alt="pre-redaction" width="300"> | <img src="../images/data-user-vc-tiered/vlm/V4-redacted.jpg" alt="post-redaction" width="300"> |
+| ![pre-redaction](images/data-user-vc-tiered/vlm/V4-original.jpg){ width="300" } | ![post-redaction](images/data-user-vc-tiered/vlm/V4-redacted.jpg){ width="300" } |
 
 publisher は内部で次の順に処理します。
 
@@ -1183,7 +1183,7 @@ ollama に **`moondream`**（1.7 GB。llava の約 1/3 のサイズ）を入れ�
 
 | 元画像（合成） | OpenCV Haar cascade ブラー後 |
 |---|---|
-| <img src="../images/data-user-vc-tiered/vlm/V4-original.jpg" alt="original" width="300"> | <img src="../images/data-user-vc-tiered/vlm/V4-redacted.jpg" alt="redacted" width="300"> |
+| ![original](images/data-user-vc-tiered/vlm/V4-original.jpg){ width="300" } | ![redacted](images/data-user-vc-tiered/vlm/V4-redacted.jpg){ width="300" } |
 | 顔の細部（目・鼻・口）を判別できる | 顔の中央の矩形領域が Gaussian blur で判別できない。背景・髪・耳・あごは元のまま |
 
 合成画像（StyleGAN2 出力）を使ったので、**実在の人物の PII は含まれていません**。

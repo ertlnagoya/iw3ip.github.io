@@ -18,7 +18,7 @@ Receive a VC into a smartphone SSI wallet (Sphereon Wallet), then present it to 
     The examples on this page use `home/env/temperature`. The same steps
     work with `home/event/possible_littering`, the webcam event from Stage 0
     ([webcam-event-sharing](webcam-event-sharing.md)); substitute the dataset
-    and purpose in that case.
+    and purpose in that case. The `home/event/...` datasets are provided on the `feat/event-namespace-consistency` branch of the source repository and are not yet merged into `main`. On `main`, follow the examples with `home/env/temperature`.
 
 ## Goal
 
@@ -57,7 +57,7 @@ Pipeline:
 - `@sphereon/pex` (Presentation Exchange): <https://github.com/Sphereon-Opensource/pex>
 - OpenID for Verifiable Presentations: <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html>
 - OpenID for Verifiable Credential Issuance: <https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html>
-- SD-JWT VC: <https://www.ietf.org/archive/id/draft-ietf-oauth-sd-jwt-vc-latest.html>
+- SD-JWT VC: <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
 
 ## Prerequisites
 

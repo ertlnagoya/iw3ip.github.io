@@ -18,7 +18,7 @@
     本ハンズオンの例は `home/env/temperature` で書かれています。Stage 0
     ([webcam-event-sharing](webcam-event-sharing.md)) と同じカメライベント
     `home/event/possible_littering` でも同じ手順で動作するので、その場合は
-    dataset と purpose を読み替えてください。Stage の番号は
+    dataset と purpose を読み替えてください。ただし、`home/event/...` の dataset を使う構成は、教材リポジトリの `feat/event-namespace-consistency` ブランチの内容で、`main` には未反映です。`main` を使う場合は、例のとおり `home/env/temperature` で進めてください。Stage の番号は
     [ハンズオン概要](index.md#part-phase-stage) で説明しています。
 
 ## 目的
@@ -68,7 +68,7 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 - `@sphereon/pex`（Presentation Exchange）: <https://github.com/Sphereon-Opensource/pex>
 - OpenID for Verifiable Presentations 仕様: <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html>
 - OpenID for Verifiable Credential Issuance 仕様: <https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html>
-- SD-JWT VC: <https://www.ietf.org/archive/id/draft-ietf-oauth-sd-jwt-vc-latest.html>
+- SD-JWT VC: <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
 
 ## 前提
 

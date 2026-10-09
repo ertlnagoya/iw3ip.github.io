@@ -83,7 +83,7 @@ A container for the VCs (digital credentials) you receive.
 
 | Credential list | Offer dialog |
 |---|---|
-| <img src="../hands-on/images/ha-ssi-wallet/01-credential-list.png" alt="credential list" width="220"> | <img src="../hands-on/images/ha-ssi-wallet/02-credential-offer.png" alt="credential offer" width="220"> |
+| ![credential list](../hands-on/images/ha-ssi-wallet/01-credential-list.png){ width="220" } | ![credential offer](../hands-on/images/ha-ssi-wallet/02-credential-offer.png){ width="220" } |
 
 ### VS Code + Dev Containers (recommended)
 

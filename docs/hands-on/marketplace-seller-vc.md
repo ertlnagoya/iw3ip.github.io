@@ -18,7 +18,7 @@
 !!! tip "licensed_datasets の選択"
     例は `home/env/temperature,home/env/humidity` ですが、Stage 0 と
     一貫性を持たせるなら `home/event/possible_littering,home/event/flood_risk_high`
-    でも構いません (publisher の `DEFAULT_ALLOWED_PURPOSES` に登録済)。
+    でも構いません (publisher の `DEFAULT_ALLOWED_PURPOSES` に登録済)。ただし、`home/event/...` の dataset を使う構成は、教材リポジトリの `feat/event-namespace-consistency` ブランチの内容で、`main` には未反映です。`main` を使う場合は、例のとおり `home/env/temperature` で進めてください。
     SellerVC の `licensed_datasets` は配列なので、両方を載せても構いません。
 
 ## 目的

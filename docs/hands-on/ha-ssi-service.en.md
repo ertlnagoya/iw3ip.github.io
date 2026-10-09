@@ -18,8 +18,8 @@ Covers the M2M (machine-to-machine) case where a service (a program), not a pers
 !!! tip "Choosing a dataset"
     The example uses `home/env/temperature`, but the same steps work
     with `home/event/possible_littering` (the same as Stage 0;
-    [service-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/service-possible-littering.json)
-    is already registered).
+    [service-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/feat/event-namespace-consistency/examples/ssi_wallet/service-possible-littering.json)
+    is already registered). The `home/event/...` datasets are provided on the `feat/event-namespace-consistency` branch of the source repository and are not yet merged into `main`. On `main`, follow the examples with `home/env/temperature`.
 
 ## Goal
 

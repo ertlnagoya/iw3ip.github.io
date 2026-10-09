@@ -21,7 +21,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
     `home/event/possible_littering` と `home/event/flood_risk_high` の
     Merchandise も同時に作られているため、Stage 0 と同じイベント形式で
     Service ingest → Purchase → Viewer 取得を通すこともできます
-    (各 dataset 用の ServiceVC / PurchaseViewerVC PD が登録済)。
+    (各 dataset 用の ServiceVC / PurchaseViewerVC PD が登録済)。ただし、`home/event/...` の dataset を使う構成は、教材リポジトリの `feat/event-namespace-consistency` ブランチの内容で、`main` には未反映です。`main` を使う場合は、例のとおり `home/env/temperature` で進めてください。`main` の deploy script が作る Merchandise は Step E2 の表のとおりです。
 
 ## 目的
 

@@ -83,7 +83,7 @@ Part 2 (機能拡張) で、VC (デジタル証明書) を受け取り、保管�
 
 | クレデンシャル一覧 | 受け取り画面 |
 |---|---|
-| <img src="../hands-on/images/ha-ssi-wallet/01-credential-list.png" alt="credential list" width="220"> | <img src="../hands-on/images/ha-ssi-wallet/02-credential-offer.png" alt="credential offer" width="220"> |
+| ![credential list](../hands-on/images/ha-ssi-wallet/01-credential-list.png){ width="220" } | ![credential offer](../hands-on/images/ha-ssi-wallet/02-credential-offer.png){ width="220" } |
 
 ### VS Code + Dev Containers (推奨)
 

@@ -329,6 +329,9 @@ The [Mobile SSI wallet hands-on](ha-ssi-wallet.md) takes a different
 route: the participant's phone wallet holds a VC and presents it via
 OID4VP.
 
+!!! warning "Not yet available on main"
+    This appendix needs the ConsentVC Presentation Definition for `home/event/possible_littering`, which lives on the `feat/event-namespace-consistency` branch of the source repository and is not yet merged into `main`. On `main`, use the `home/env/temperature` flow in the [Mobile SSI wallet hands-on](ha-ssi-wallet.md).
+
 ### What's the same, what's different
 
 | Aspect | Main flow (`/consents` JSON) | Wallet mode (Stage 1: ConsentVC) |
@@ -372,7 +375,7 @@ flow:
 ### Limits of this appendix
 
 - A ConsentVC PD for `home/event/possible_littering`
-  ([consent-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-possible-littering.json))
+  ([consent-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/feat/event-namespace-consistency/examples/ssi_wallet/consent-possible-littering.json))
   is registered on the publisher, so the wallet flow ingests the
   same event shape (camera_id / location / object_class) that the
   main flow uses

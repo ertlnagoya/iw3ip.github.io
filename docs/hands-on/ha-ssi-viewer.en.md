@@ -18,9 +18,9 @@
     The example here is written for `home/env/temperature`, but it also
     works with `home/event/possible_littering`, the same as Stage 0
     [webcam-event-sharing](webcam-event-sharing.md) (the PD in
-    [viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/viewer-possible-littering.json)
+    [viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/feat/event-namespace-consistency/examples/ssi_wallet/viewer-possible-littering.json)
     is already registered). Choose that if you want to use the same
-    dataset throughout the hands-on series.
+    dataset throughout the hands-on series. The `home/event/...` datasets are provided on the `feat/event-namespace-consistency` branch of the source repository and are not yet merged into `main`. On `main`, follow the examples with `home/env/temperature`.
 
 ## Goal
 
@@ -50,7 +50,7 @@ Pipeline:
 
 - OpenID for Verifiable Presentations: <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html>
 - DCQL: <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-digital-credentials-query-l>
-- SD-JWT VC: <https://www.ietf.org/archive/id/draft-ietf-oauth-sd-jwt-vc-latest.html>
+- SD-JWT VC: <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
 
 ## Prerequisites
 
