@@ -97,12 +97,14 @@ The mapping between VCs and tokens is summarized in [VC Architecture Overview](.
 
 | Goal | Path |
 |---|---|
-| See it run first | [HA Demo Simulator](ha-demo-simulator.md) only (approx. 15 min) |
-| Cover all of Basic | All of Part 1 (60–90 min) |
-| Reach safe / conditional sharing | Part 1 → Part 2 §2.1–§2.3 (+60 min) |
-| Reach v2 marketplace integration | Part 1 → Part 2 §2.4 (+30 min) |
-| Reach tiered access / semantic | Through Part 2 §2.5 (+30 min) |
-| Reach AI integration | Through Part 3 (+30 min) |
+| See it run first | [HA Demo Simulator](ha-demo-simulator.md) only (approx. 20 min) |
+| Cover all of Basic | All of Part 1 (approx. 2 hours; pick one device in §1.2) |
+| Reach safe / conditional sharing | Part 1 → Part 2 §2.1–§2.3 (+ approx. 4 hours) |
+| Reach v2 marketplace integration | Part 1 → Part 2 §2.4 (+ approx. 4 hours) |
+| Reach tiered access | Through Part 2 §2.5 (+ approx. 1 hour; about 3 more hours to cover image/video delivery and semantic-level tiering) |
+| Reach AI integration | Through Part 3 (+ approx. 3 hours) |
+
+The times are sums of the estimates at the top of each page.
 
 Each hands-on page opens with a "What you'll learn / Prerequisites / What you need / Time required" block. If you get stuck partway, see [Troubleshooting](../operations/troubleshooting.md).
 

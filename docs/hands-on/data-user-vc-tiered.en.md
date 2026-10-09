@@ -8,7 +8,7 @@ Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC).
 >
 > **What you need**: PC + smartphone (iw3ip-wallet)
 >
-> **Time**: ~90 min
+> **Time**: ~60 min (the two follow-up pages take about 90 min and 60–90 min more)
 
 This walk-through builds on the
 [Mobile SSI Wallet sample](ha-ssi-wallet.md) and the

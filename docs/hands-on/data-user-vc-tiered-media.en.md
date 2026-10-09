@@ -7,6 +7,8 @@ This page continues [Tier the response by trust](data-user-vc-tiered.md) (§0–
 > **Prerequisites**: §0–§7 of [Tier the response by trust](data-user-vc-tiered.md)
 >
 > **What you need**: PC + smartphone (iw3ip-wallet)
+>
+> **Time**: ~90 min
 
 As on the first page, the command examples assume that the PC's LAN IP is
 `192.168.68.53` and that the course repository is cloned to
@@ -378,7 +380,7 @@ PC shows a QR. Scan it from the iPhone wallet and present a **SellerVC**
 
 On success the page swaps to a result panel:
 
-- Green banner "SellerVC 提示が承認されました" / "Presentation accepted"
+- Green banner "SellerVC 提示が承認されました" (Presentation accepted)
 - The full **licensed_datasets** list straight from the SellerVC claims
 - `seller_id` and the SellerToken expiry (default 24 h)
 - A "Continue to upload →" button next to a radio list
@@ -402,7 +404,7 @@ receiver side at `/viewer` cannot tell which one was used.
 |---|---|---|
 | 📁 File picker | OS file dialog, pick an existing file | PC + phone |
 | 📷 Camera capture | `<input capture="environment">` — iPhone Safari opens the rear camera directly; PC falls back to file picker | iPhone (capture-on-the-spot) |
-| 🔴 Browser recorder | `MediaRecorder` against `getUserMedia({video,audio})`. Click 録画開始, see live preview, click 停止 to auto-upload as WebM/VP9. Firefox falls back to VP8. Only Safari 16 and earlier fall back to MP4 — Safari 17+ has native WebM/VP9 support | PC webcam |
+| 🔴 Browser recorder | `MediaRecorder` against `getUserMedia({video,audio})`. Click 録画開始 (Start recording), see live preview, click 停止 (Stop) to auto-upload as WebM/VP9. Firefox falls back to VP8. Only Safari 16 and earlier fall back to MP4 — Safari 17+ has native WebM/VP9 support | PC webcam |
 
 All three call the same `uploadBlob()` pipeline: preview →
 `POST /media/upload` → result panel → enable the Publish button.
@@ -551,14 +553,14 @@ opens the camera directly in iOS Safari.
 
 1. iPhone Safari → `http://<publisher-host>:8080/provider/start?ds=home/event/possible_littering`
 2. Present a SellerVC from the wallet → land on `/provider?pt=...&ds=...`
-3. Tap the **"📷 カメラで撮影"** input
+3. Tap the **"📷 カメラで撮影"** (Capture with camera) input
 4. Confirm whether iOS shows "Take Video" as the **default**, or jumps straight to the camera
 5. Record 5–10 s → return → page auto-POSTs to `/media/upload`
 6. Press "Publish event" and confirm 200
 
 **Observed (2026-04-30, iPhone Safari, iOS 18.x)**:
 
-- [x] Tap "📷 カメラで撮影" → "ファイルを選択" → iOS sheet shows "Take Video / Photo Library / Choose File" → pick "Take Video" → camera opens ✅
+- [x] Tap "📷 カメラで撮影" (Capture with camera) → "ファイルを選択" (Choose file) → iOS sheet shows "Take Video / Photo Library / Choose File" → pick "Take Video" → camera opens ✅
   - **Note**: the sheet does **not** open the camera directly. `accept="image/*,video/*"` + `capture` is a *hint*, not a hard switch.
 - [x] Upload result: `content_type: video/quicktime` / `byte_size: 273897` / `sha256=11367cf4cb1b...` ✅
   - Expected `video/mp4`, but iPhone Safari saves recordings as **QuickTime (`.MOV`)**.
@@ -594,11 +596,11 @@ pick VP9.
 1. Same machine running publisher; Chrome → `http://localhost:8080/provider/start?ds=home/event/possible_littering`
 2. Present SellerVC from the iPhone wallet (scan QR; same LAN)
 3. Pick a dataset on the success panel → `/provider`
-4. In the **"🔴 ブラウザで録画"** section, click 録画開始
+4. In the **"🔴 ブラウザで録画"** (Record in browser) section, click 録画開始 (Start recording)
 5. Allow camera/mic in the browser permission dialog
 6. Confirm the live `<video>` preview shows the webcam
-7. Wait 5–10 s, click 停止 & アップロード
-8. `recStatus` transitions through "録画完了 (Ns) — アップロード中…" → "録画完了 (Ns)"
+7. Wait 5–10 s, click 停止 & アップロード (Stop & upload)
+8. `recStatus` transitions through "録画完了 (Ns) — アップロード中…" (Recorded — uploading) → "録画完了 (Ns)" (Recorded)
 9. Upload result shows `content_type: video/webm`
 10. `video_duration_sec` form is **auto-filled** with the measured length
 11. Publish succeeds

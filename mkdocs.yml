@@ -78,6 +78,10 @@ plugins:
             "Deliver images and video with tiered access (DataUserVC / Stage T)": 画像・動画を段階アクセスで配信する (DataUserVC / Stage T)
             "Tier by semantic level (VLM and semantic representation / Stage T)": 意味レベルで段階化する (VLM と意味的中間表現 / Stage T)
             "Tiered access design spec": 段階アクセスの設計仕様
+            Design: 設計
+            "VC Architecture Overview (Phase 2)": VC アーキテクチャ全体像 (Phase 2)
+            "Marketplace VC Bridge (v1/v2 spec)": Marketplace VC Bridge 設計仕様 (v1/v2)
+            "SellerVC (Stage 7 spec)": SellerVC 設計仕様 (Stage 7)
             "Part 3: Intelligence Integration — Let an AI act on requests": Part 3 知能統合 — AI に要求を解釈させてみよう
             "Enrich camera data with a local VLM": ローカル VLM でカメラデータを意味づけ
             "Run the regional safety assistant": 地域安全アシスタントを動かす

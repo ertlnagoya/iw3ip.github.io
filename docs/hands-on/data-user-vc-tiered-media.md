@@ -7,6 +7,8 @@
 > **前提**: [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) の §0〜§7 を済ませていること
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet)
+>
+> **所要時間**: 90 分くらい
 
 コマンド例は 1 ページ目と同じく、PC の LAN IP を `192.168.68.53`、教材リポジトリを
 `~/program/Blockchain_IoT_Marketplace` に clone した前提で示します。案 A / 案 B / 案 C の違いは

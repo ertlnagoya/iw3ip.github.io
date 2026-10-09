@@ -92,6 +92,7 @@ http://192.168.68.53:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temper
 Send the deeplink to the wallet via AirDrop and store the credential.
 
 Claims:
+
 - `dataset_id`: `home/env/temperature`
 - `allowed_actions`: `["write_continuous"]`
 

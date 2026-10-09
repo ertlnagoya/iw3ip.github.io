@@ -178,6 +178,7 @@ Accepts `vc_kind=DataUserVC` and asks DCQL for the five claims.
 ### `POST /verifier/*` (presentation endpoints)
 
 When a `DataUserVC` is presented:
+
 - post-PEX checks the five claims are present
 - **no token is minted**
 - response: `{trust_score, access_level, allowed_views, holder_did}`

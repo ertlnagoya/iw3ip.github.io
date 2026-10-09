@@ -1,4 +1,4 @@
-# VC アーキテクチャ全体像 (Phase 2 / Stage 1〜7)
+# VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7)
 
 !!! abstract "このドキュメントの位置付け"
     Phase 2 で構築した **5 種類の VC × 4 種類のトークン × 7 ステージ
@@ -100,7 +100,7 @@ Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ
 
 ## 7. 監査ログのチェーン
 
-1 つの購入から最大 8 種類の audit log 行が連鎖する (Stage 4-prep+5+7 すべて経由した場合):
+1 つの購入から最大 8 行の audit log が連鎖する (Stage 4-prep+5+7 すべて経由した場合):
 
 | # | raw_topic | reason | 主体 (subject_did) |
 | --- | --- | --- | --- |
@@ -114,6 +114,7 @@ Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ
 | 8 | `platform/data` | `viewer_token_used:<jti>:<n>` | buyer did:jwk |
 
 注目すべき点:
+
 - `marketplace/claim` (eth) と `marketplace/issued` (did:jwk) が **`claim_id` でリンク**して同一人物 ↔ 異なる鍵を結ぶ
 - `marketplace/seller_registered` の `seller_did` が `/platform/data` レスポンスの `seller_did` と一致 (出品から閲覧までの追跡可能性)
 
@@ -140,11 +141,11 @@ Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ
 | **wallet の did:jwk** | iw3ip-wallet | OID4VCI/OID4VP の subject、VC の `cnf` |
 | **publisher issuer 鍵** (did:jwk) | publisher コンテナ | VC 発行の署名 |
 
-Stage 5/7 の `eth_did_bound` audit row が、**Ethereum 鍵 ↔ did:jwk** のリンクを記録する。これは off-chain (publisher の audit log) で **「ETH 支払い者」と「VC 提示者」が同一人物**を主張する仕組み (現状は bridge を信用するだけの MVP; 将来は EIP-712 署名で強化する予定 = Stage 8)。
+Stage 5 の `eth_did_bound` audit row が、**Ethereum 鍵 ↔ did:jwk** のリンクを記録する。これは off-chain (publisher の audit log) で **「ETH 支払い者」と「VC 提示者」が同一人物**を主張する仕組み (現状は bridge を信用するだけの MVP; 将来は EIP-712 署名で強化する予定 = Stage 8)。
 
 ## 10. 既知の限界 (Stage 8+ の検討事項)
 
-以下は Phase 2 の Stage 1〜7 では **意図的にスコープ外**:
+以下は Phase 2 の Stage 0〜7 では **意図的にスコープ外**:
 
 - **EIP-712 署名による身元バインド** (eth ↔ did:jwk のなりすまし対策)
 - **on-chain ガード** (Merchandise 登録時に SellerToken proof を Solidity 側で要求)

@@ -7,6 +7,8 @@ This page continues [Tier the response by trust](data-user-vc-tiered.md) (§0–
 > **Prerequisites**: §0–§7 of [Tier the response by trust](data-user-vc-tiered.md) and §8–§11 of [Deliver images and video with tiered access](data-user-vc-tiered-media.md)
 >
 > **What you need**: PC + smartphone (iw3ip-wallet), and a publisher started with `--profile vlm` (Ollama)
+>
+> **Time**: 60–90 min (the first run takes longer because the VLM model has to be downloaded)
 
 ## 12. Semantic-level redaction (VLM + face blur)
 

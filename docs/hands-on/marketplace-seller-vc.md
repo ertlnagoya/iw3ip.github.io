@@ -259,6 +259,7 @@ curl -s -X POST http://192.168.68.53:8080/marketplace/register \
 ```
 
 `owner_verify` の値:
+
 - `skipped`: `MARKETPLACE_HARDHAT_RPC` 未設定 (テスト/開発用)
 - `verified`: on-chain で getOwner() が seller_eth_addr と一致
 

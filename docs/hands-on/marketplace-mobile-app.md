@@ -283,6 +283,7 @@ iw3ip-wallet が起動して「IW3IP 購入閲覧クレデンシャル」確認�
 **原因**: Safari でないブラウザを使っている、または manifest 取得失敗。
 
 **対処**:
+
 - Safari (iOS 標準) で開いていることを確認
 - `http://192.168.68.53:5173/manifest.webmanifest` を直接開いて JSON が
   表示されるか確認
@@ -300,6 +301,7 @@ Safari のキャッシュ。
 **原因**: `openid-credential-offer://` scheme が wallet で登録されていない。
 
 **対処**:
+
 - iw3ip-wallet が起動済か確認
 - Stage 5 のトラブルシューティング C (wallet キャッシュ、Metro bundler)
   を確認
@@ -310,6 +312,7 @@ Safari のキャッシュ。
 失敗した (private browsing モード等)。
 
 **対処**:
+
 - Safari の private browsing をオフ
 - 別の購入を実行して再度 `/my-data` を確認
 

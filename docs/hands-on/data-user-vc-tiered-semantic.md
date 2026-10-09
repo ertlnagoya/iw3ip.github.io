@@ -7,6 +7,8 @@
 > **前提**: [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) の §0〜§7 と、[画像・動画を段階アクセスで配信する](data-user-vc-tiered-media.md) の §8〜§11 を済ませていること
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet)、`--profile vlm` で起動する publisher（Ollama）
+>
+> **所要時間**: 60〜90 分（初回は VLM のモデル取得に時間がかかります）
 
 ## 12. 意味レベルの段階化（VLM + 顔ブラー）
 

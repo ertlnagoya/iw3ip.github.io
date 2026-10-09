@@ -3,6 +3,7 @@
 ## Session goal
 
 Participants should complete:
+
 1. Event generation
 2. Auto productization
 3. Purchase
