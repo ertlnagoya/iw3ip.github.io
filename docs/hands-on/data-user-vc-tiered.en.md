@@ -95,31 +95,31 @@ curl -s localhost:8080/.well-known/openid-credential-issuer \
 
 ## 2. Mint three DataUserVC offers
 
+Open the DataUserVC issuance page in a PC browser, scan the QR code with the phone wallet, and store the DataUserVC. Do this for each of the three profiles.
+
 ### 2a. Tier 3 (full) — government + crime search + ISO27001
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=GovernmentOrganization&purpose=CrimeSearch&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=GovernmentOrganization&purpose=CrimeSearch&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false
 ```
 
 ### 2b. Tier 2 (access) — enterprise + research + ISO27001
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false
 ```
 
 ### 2c. Tier 1 (denied) — enterprise + research + no policy + misuse
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true' | jq .
 ```
-
-Scan each `credential_offer_uri` from your iPhone wallet and store the
-DataUserVC.
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true
+```
 
 ## 3. Three `/marketplace/claim` calls
 
-Reuse a `merchandise_id` already listed via webcam-event-sharing (list
-one beforehand), and replace `M-0001` in the examples with it.
+`/marketplace/claim` is the API that tells the publisher a purchase has happened. Normally the bridge calls it when it detects a purchase event; here we call it directly with curl to see only the tier differences. When `data_user_attrs` carries the same attributes as a DataUserVC, the publisher computes the trustScore and decides what that purchase may view.
+
+`merchandise_address`, `buyer_eth_addr`, `tx_hash`, and `dataset_id` are required. No real purchase is involved here, so use any string for `tx_hash`, different for each call (calling again with the same `tx_hash` returns the same claim).
 
 ### 3a. Tier 3 — opens up to video
 
@@ -127,8 +127,10 @@ one beforehand), and replace `M-0001` in the examples with it.
 curl -s -X POST localhost:8080/marketplace/claim \
   -H 'content-type: application/json' \
   -d '{
-    "merchandise_id": "M-0001",
-    "buyer_did": "did:jwk:GOV_USER_DID",
+    "merchandise_address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "buyer_eth_addr": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "tx_hash": "0xdemo-tier3",
+    "dataset_id": "home/event/possible_littering",
     "data_user_attrs": {
       "entityType": "GovernmentOrganization",
       "purpose": "CrimeSearch",
@@ -136,37 +138,45 @@ curl -s -X POST localhost:8080/marketplace/claim \
       "dataHandlingPolicy": "ISO27001",
       "misuseRecord": false
     }
-  }' | jq '.allowed_views, .access_level, .trust_score'
-# -> ["event","image","video"]
-#    "full"
-#    80
+  }' | tee /tmp/claim.json | jq '{claim_id, offer_url}'
 ```
+
+The response contains `claim_id`, `offer_url` (the PurchaseViewerVC issuance page), and `deeplink`. The tier that was decided is carried in the deeplink as the kind of PurchaseViewerVC to be issued. Extract it with:
+
+```bash
+jq -r .deeplink /tmp/claim.json \
+  | python3 -c "import sys,json,urllib.parse; print(json.loads(urllib.parse.unquote(sys.stdin.read().split('credential_offer=',1)[1]))['credential_configuration_ids'])"
+# -> ['PurchaseViewerVC.full']
+```
+
+| Kind | What can be viewed (`allowed_views`) | trustScore |
+|---|---|---|
+| `PurchaseViewerVC.full` | `event` / `image` / `video` | 80 or more, and a government organization etc. |
+| `PurchaseViewerVC.access` | `event` / `image` | 60 or more |
+| `PurchaseViewerVC.event` | `event` only | otherwise, or no `data_user_attrs` |
 
 ### 3b. Tier 2 — image only
 
-Run the 3a command with `entityType` set to `Enterprise` and `purpose`
-set to `Research` in `data_user_attrs`. Expected result:
-
-```bash
-# data_user_attrs.entityType: "Enterprise", purpose: "Research"
-# allowed_views: ["event", "image"], access_level: "access", score: 75
-```
+Run the 3a command with `entityType` set to `Enterprise`, `purpose` set to `Research`, and `tx_hash` set to `0xdemo-tier2`. The trustScore is 75 and the kind in the deeplink is `['PurchaseViewerVC.access']`.
 
 ### 3c. Tier 1 — defaults when `data_user_attrs` is omitted
 
 ```bash
 curl -s -X POST localhost:8080/marketplace/claim \
   -H 'content-type: application/json' \
-  -d '{"merchandise_id":"M-0001","buyer_did":"did:jwk:LOW_USER_DID"}' | jq .
-# allowed_views: ["event"]
+  -d '{
+    "merchandise_address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "buyer_eth_addr": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "tx_hash": "0xdemo-tier1",
+    "dataset_id": "home/event/possible_littering"
+  }' | tee /tmp/claim.json | jq '{claim_id, offer_url}'
 ```
+
+The kind in the deeplink is `['PurchaseViewerVC.event']`.
 
 ## 4. Issue PurchaseViewerVC, present, fetch `/platform/data`
 
-Issue a PurchaseViewerVC per buyer with
-`/issuer/offer?vc_kind=PurchaseViewerVC&claim_id=...`, store it in the
-wallet, then present it.
-
+Open the `offer_url` from the §3 response in a PC browser (replace its host part with `<HOST_IP>`), scan the QR code with the wallet, and receive the PurchaseViewerVC of each claim. The wallet shows a separate card per tier. Then present it in the same way as Step 8 of [Stage 5](marketplace-vc-bridge.md).
 Once the resulting ViewerToken is in hand, hit `/platform/data`:
 
 | Profile | `event` | `image_cid` | `video_cid` |

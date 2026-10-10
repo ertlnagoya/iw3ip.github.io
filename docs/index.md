@@ -74,7 +74,7 @@ flowchart TB
 - **マーケット側**: ブロックチェーン (Hardhat)、商品一覧の画面、データ保管、仲介プロセスです。[最短起動](setup/quickstart.md) の手順で、ターミナルを 7 つ使って起動します。データの出品と購入 (Part 1 の後半、Part 2 のマーケット連携) で使います。
 - **publisher 側**: MQTT ブローカーと publisher です。教材リポジトリで `docker compose -f infra/docker-compose.yml up` を実行して起動します。データの取り込み、同意や VC による共有可否の判定、監査ログ (Part 1 の前半、Part 2、Part 3) で使います。
 
-2 つの系統は独立して動きます。Part 2 のマーケット連携では、bridge が購入のイベントを publisher に伝えて両者をつなぎます。各ハンズオンがどちらを使うかは、[ハンズオンの概要の早見表](hands-on/index.md#使う技術要素の早見表) にまとめています。
+2 つの系統は独立して動きます。なお、マーケット側の IPFS (ゲートウェイ) と publisher は、どちらもポート 8080 を使うため、同時には起動できません。publisher を使うハンズオンの前に、`ipfs` ディレクトリで `docker compose down` を実行して IPFS を止めてください。 Part 2 のマーケット連携では、bridge が購入のイベントを publisher に伝えて両者をつなぎます。各ハンズオンがどちらを使うかは、[ハンズオンの概要の早見表](hands-on/index.md#使う技術要素の早見表) にまとめています。
 
 データの発生源には、Raspberry Pi とカメラのような小型の機器も使えます。
 

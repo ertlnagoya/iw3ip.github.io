@@ -159,7 +159,10 @@ Example expected output:
     "intent": "monitor_public_safety",
     "target_area": "park-north",
     "watch_events": ["possible_littering", "suspicious_activity"],
-    "actions": ["light_on", "send_notification"]
+    "actions": [
+      {"action_type": "light_on", "target": "park-north-light-1", "parameters": {"brightness": 80}},
+      {"action_type": "send_notification", "target": "park-north-manager", "parameters": {"channel": "mobile_push"}}
+    ]
   }
 }
 ```
@@ -192,11 +195,13 @@ Example expected output:
   "execution": {
     "request_text": "If littering or risky behavior is increasing on the north side of the park, tell me. If needed, turn on the lights and notify the manager.",
     "evaluation": {
-      "triggered": true
+      "triggered": true,
+      "matched_counts": {"possible_littering": 3, "suspicious_activity": 0},
+      "reason": "possible_littering=3 >= 3"
     },
     "actions_executed": [
-      {"action": "light_on", "status": "executed"},
-      {"action": "send_notification", "status": "executed"}
+      {"action_type": "light_on", "target": "park-north-light-1", "parameters": {"brightness": 80}},
+      {"action_type": "send_notification", "target": "park-north-manager", "parameters": {"channel": "mobile_push"}}
     ]
   }
 }
@@ -252,7 +257,7 @@ This hands-on is successful if you can confirm the following:
 
 - `/assistant/plan` converts the human request into a plan
 - `/assistant/execute` returns `triggered: true`
-- `light_on` and `send_notification` appear as `executed`
+- `light_on` and `send_notification` appear in `actions_executed`
 - `/assistant/executions` shows the recorded history
 
 ### 7. Common issues

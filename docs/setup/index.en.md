@@ -55,7 +55,7 @@ Two groups of processes are started.
 - **Marketplace side**: the blockchain (Hardhat), the merchandise UI, data storage, and the mediators. Start them in 7 terminals by following [Quickstart](quickstart.md). Used for listing and purchasing data (the second half of Part 1 and the marketplace integration in Part 2).
 - **Publisher side**: the MQTT broker and the publisher. Start them with `docker compose -f infra/docker-compose.yml up` in the course repository. Used for ingesting data, deciding whether sharing is allowed by consent or VC, and the audit log (the first half of Part 1, Part 2, and Part 3).
 
-The two groups run independently. In the Part 2 marketplace integration, the bridge reports purchase events to the publisher and connects them. The [tech stack table in the Hands-on overview](../hands-on/index.md#tech-stack-at-a-glance) shows which hands-on uses which.
+The two groups run independently. Note that the IPFS gateway on the marketplace side and the publisher both use port 8080, so they cannot run at the same time. Before a hands-on that uses the publisher, stop IPFS with `docker compose down` in the `ipfs` directory. In the Part 2 marketplace integration, the bridge reports purchase events to the publisher and connects them. The [tech stack table in the Hands-on overview](../hands-on/index.md#tech-stack-at-a-glance) shows which hands-on uses which.
 
 ## Overall structure
 

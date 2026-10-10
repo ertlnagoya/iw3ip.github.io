@@ -159,7 +159,10 @@ curl -X POST http://localhost:8090/assistant/plan \
     "intent": "monitor_public_safety",
     "target_area": "park-north",
     "watch_events": ["possible_littering", "suspicious_activity"],
-    "actions": ["light_on", "send_notification"]
+    "actions": [
+      {"action_type": "light_on", "target": "park-north-light-1", "parameters": {"brightness": 80}},
+      {"action_type": "send_notification", "target": "park-north-manager", "parameters": {"channel": "mobile_push"}}
+    ]
   }
 }
 ```
@@ -192,11 +195,13 @@ curl -X POST http://localhost:8090/assistant/execute \
   "execution": {
     "request_text": "公園北側でポイ捨てや危険行動が増えていたら教えて。必要なら照明をつけて管理者に通知して。",
     "evaluation": {
-      "triggered": true
+      "triggered": true,
+      "matched_counts": {"possible_littering": 3, "suspicious_activity": 0},
+      "reason": "possible_littering=3 >= 3"
     },
     "actions_executed": [
-      {"action": "light_on", "status": "executed"},
-      {"action": "send_notification", "status": "executed"}
+      {"action_type": "light_on", "target": "park-north-light-1", "parameters": {"brightness": 80}},
+      {"action_type": "send_notification", "target": "park-north-manager", "parameters": {"channel": "mobile_push"}}
     ]
   }
 }
@@ -252,7 +257,7 @@ Phase 3 は **「イベント共有」から「要求に応じた判断・行動
 
 - `/assistant/plan` が自然言語要求を計画へ変換する
 - `/assistant/execute` が `triggered: true` を返す
-- `light_on` と `send_notification` が `executed` になる
+- `actions_executed` に `light_on` と `send_notification` が入る
 - `/assistant/executions` で履歴を確認できる
 
 ### 7. よくある問題

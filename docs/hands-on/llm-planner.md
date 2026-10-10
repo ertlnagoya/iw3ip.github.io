@@ -547,7 +547,7 @@ LLM の出力はそのまま採用せず、次を必ず検証します。
 
 ## よくある問題
 
-### `source examples/phase3_llm.env.example` で値がそのまま残っている
+### `.env.local` に値がそのまま残っている
 
 - `REPLACE_WITH_YOUR_API_KEY` のままでは実 API は使えません
 

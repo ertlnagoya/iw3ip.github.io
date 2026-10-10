@@ -93,32 +93,31 @@ curl -s localhost:8080/.well-known/openid-credential-issuer \
 
 ## 2. 3 種類の DataUserVC オファーを作る
 
+DataUserVC の発行ページを PC のブラウザで開きます。表示された QR コードをスマホのウォレットで読み取り、DataUserVC として保存します。3 つのプロファイルそれぞれについて行います。
+
 ### 2a. Tier 3（full）プロファイル — 政府機関 + 犯罪捜査 + ISO27001
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=GovernmentOrganization&purpose=CrimeSearch&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=GovernmentOrganization&purpose=CrimeSearch&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false
 ```
 
 ### 2b. Tier 2（access）プロファイル — 企業 + 研究 + ISO27001
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false
 ```
 
 ### 2c. Tier 1（denied）プロファイル — 企業 + 研究 + ポリシーなし + 濫用記録あり
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true' | jq .
 ```
-
-返ってくる `credential_offer_uri` を iPhone のウォレットで読み取り、それぞれ
-ウォレット内に DataUserVC として保存します。
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true
+```
 
 ## 3. /marketplace/claim を 3 通り呼び出す
 
-`merchandise_id` には、[USBウェブカメライベント共有サンプル](webcam-event-sharing.md) で
-出品したものを使います。あらかじめ 1 件出品しておき、コマンド例の `M-0001` を
-その `merchandise_id` に読み替えてください。
+`/marketplace/claim` は、購入が成立したことを publisher に伝える API です。通常は bridge が購入のイベントを検知して呼び出しますが、ここでは tier の違いだけを確認するため、curl で直接呼び出します。`data_user_attrs` に DataUserVC と同じ属性を渡すと、publisher が trustScore を計算し、その購入で閲覧できる範囲を決めます。
+
+`merchandise_address`、`buyer_eth_addr`、`tx_hash`、`dataset_id` の 4 つは必須です。ここでは実際の購入を伴わないので、`tx_hash` には呼び出しごとに異なる任意の文字列を入れます (同じ `tx_hash` で再度呼ぶと、前回と同じ claim が返ります)。
 
 ### 3a. Tier 3 — 動画まで開く
 
@@ -126,8 +125,10 @@ curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Ente
 curl -s -X POST localhost:8080/marketplace/claim \
   -H 'content-type: application/json' \
   -d '{
-    "merchandise_id": "M-0001",
-    "buyer_did": "did:jwk:GOV_USER_DID",
+    "merchandise_address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "buyer_eth_addr": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "tx_hash": "0xdemo-tier3",
+    "dataset_id": "home/event/possible_littering",
     "data_user_attrs": {
       "entityType": "GovernmentOrganization",
       "purpose": "CrimeSearch",
@@ -135,36 +136,45 @@ curl -s -X POST localhost:8080/marketplace/claim \
       "dataHandlingPolicy": "ISO27001",
       "misuseRecord": false
     }
-  }' | jq '.allowed_views, .access_level, .trust_score'
-# -> ["event","image","video"]
-#    "full"
-#    80
+  }' | tee /tmp/claim.json | jq '{claim_id, offer_url}'
 ```
+
+応答には `claim_id`、`offer_url` (PurchaseViewerVC の発行ページ)、`deeplink` が含まれます。決まった tier は、発行される PurchaseViewerVC の種類として deeplink に入っています。次のコマンドで取り出せます。
+
+```bash
+jq -r .deeplink /tmp/claim.json \
+  | python3 -c "import sys,json,urllib.parse; print(json.loads(urllib.parse.unquote(sys.stdin.read().split('credential_offer=',1)[1]))['credential_configuration_ids'])"
+# -> ['PurchaseViewerVC.full']
+```
+
+| 種類 | 閲覧できる範囲 (`allowed_views`) | trustScore |
+|---|---|---|
+| `PurchaseViewerVC.full` | `event` / `image` / `video` | 80 以上で、政府機関など |
+| `PurchaseViewerVC.access` | `event` / `image` | 60 以上 |
+| `PurchaseViewerVC.event` | `event` のみ | 上記以外、または `data_user_attrs` なし |
 
 ### 3b. Tier 2 — 画像まで
 
-3a のコマンドの `data_user_attrs` で、`entityType` を `Enterprise`、`purpose` を
-`Research` に変えて実行します。期待する結果は次のとおりです。
-
-```bash
-# data_user_attrs.entityType: "Enterprise", purpose: "Research"
-# allowed_views: ["event", "image"], access_level: "access", score: 75
-```
+3a のコマンドの `data_user_attrs` で、`entityType` を `Enterprise`、`purpose` を `Research` に、`tx_hash` を `0xdemo-tier2` に変えて実行します。trustScore は 75 で、deeplink の種類は `['PurchaseViewerVC.access']` になります。
 
 ### 3c. Tier 1 — `data_user_attrs` を省く既定値
 
 ```bash
 curl -s -X POST localhost:8080/marketplace/claim \
   -H 'content-type: application/json' \
-  -d '{"merchandise_id":"M-0001","buyer_did":"did:jwk:LOW_USER_DID"}' | jq .
-# allowed_views: ["event"]
+  -d '{
+    "merchandise_address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "buyer_eth_addr": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "tx_hash": "0xdemo-tier1",
+    "dataset_id": "home/event/possible_littering"
+  }' | tee /tmp/claim.json | jq '{claim_id, offer_url}'
 ```
+
+deeplink の種類は `['PurchaseViewerVC.event']` になります。
 
 ## 4. PurchaseViewerVC を発行 → 提示 → /platform/data
 
-`/issuer/offer?vc_kind=PurchaseViewerVC&claim_id=...` で各 buyer 用の
-PurchaseViewerVC を発行し、ウォレットで取得してから提示します。
-
+§3 の応答の `offer_url` (ホスト名の部分を `<HOST_IP>` に置き換えます) を PC のブラウザで開き、QR コードをウォレットで読み取って、各 claim の PurchaseViewerVC を受け取ります。ウォレットには tier ごとに別のカードとして表示されます。その後、[Stage 5](marketplace-vc-bridge.md) の Step 8 と同じ手順で提示します。
 提示が受理されると ViewerToken が発行されます。この ViewerToken で `/platform/data` を
 呼び出すと、プロファイルごとに次の差が出ます。
 

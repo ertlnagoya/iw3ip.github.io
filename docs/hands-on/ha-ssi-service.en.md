@@ -73,8 +73,8 @@ every `/platform/ingest` call.
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 PUB=$(docker ps -qf name=publisher)
 
-# Confirm ServiceVC is registered (the current release exposes 5:
-# ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC)
+# Confirm ServiceVC is registered (the current release exposes 6:
+# ConsentVC / ViewerVC / ServiceVC / DataUserVC / SellerVC / PurchaseViewerVC)
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ServiceVC
 ```
 
