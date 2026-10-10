@@ -27,7 +27,7 @@ Design rationale: see [DataUserVC × Tiered Access Spec § "Tier extension"](dat
 | **3** Full | `full` | gov + crime + ISO27001 (80) | raw image / video + redacted image + full text + summary text |
 | **2** Access | `access` | enterprise + research + ISO27001 (75) | **face/PII-blurred image** + **detailed text** (named entities) + summary |
 | **1** Summary | `summary` (new) | enterprise + unknown purpose + legalCompliance only (50–59) | **summary text only** (PII-redacted, no image) |
-| 0 Denied | `denied` | unqualified (<50) | claim is rejected |
+| 0 Denied | `denied` | unqualified (<50) | events only (no image, video, or description) |
 
 A new `summary` value joins the `access_level` enum: with the VLM
 profile on, scores 50–59 map to `summary` (with the profile off,
@@ -76,29 +76,34 @@ Toggling profile off vs on against the same dataset shows that the
 
 The [§2](data-user-vc-tiered.md#2-mint-three-datauservc-offers) set extended with a **summary-tier** profile.
 
+Open each URL in a PC browser and scan the QR code with the wallet.
+
 #### 12.3.a Tier 3 (full) — same as §2a
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=GovernmentOrganization&purpose=CrimeSearch&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=GovernmentOrganization&purpose=CrimeSearch&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false
 ```
 
 #### 12.3.b Tier 2 (access) — same as §2b
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false
 ```
 
 #### 12.3.c Tier 1 (summary, new) — enterprise + unknown purpose + legal compliance only
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=unknown&legal_compliance=true&data_handling_policy=other&misuse_record=false' | jq .
-# score = 20 + 5 + 15 + 0 + 10 = 50 -> summary (only when VLM profile is on)
 ```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=unknown&legal_compliance=true&data_handling_policy=other&misuse_record=false
+```
+
+score = 20 + 5 + 15 + 0 + 10 = 50 -> summary (only when VLM profile is on)
 
 #### 12.3.d Tier 0 (denied) — same as §2c
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true' | jq .
+With the VLM extension on there are four tiers: summary is Tier 1 and denied is Tier 0. "Tier 1 (denied)" in §2c is the name used with three tiers (extension off) and refers to the same profile. `denied` is the name of the trustScore verdict. In the current implementation a `denied` verdict does not reject the purchase report (`/marketplace/claim`). A PurchaseViewerVC that can view events only (`PurchaseViewerVC.event`) is issued, and images, video, and descriptions are left out of the response.
+
+```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true
 ```
 
 ### 12.4 Four `/marketplace/claim` calls + `/platform/data` comparison
@@ -111,7 +116,7 @@ With VLM profile on:
 | 12.3.a Tier 3 (full) | yes | yes | yes | yes | yes | yes |
 | 12.3.b Tier 2 (access) | yes | **no** | **no** | yes | yes | yes |
 | 12.3.c Tier 1 (summary) | yes | **no** | **no** | **no** | **no** | yes |
-| 12.3.d Tier 0 (denied) | the claim itself returns `access_level: "denied"` |
+| 12.3.d Tier 0 (denied) | yes (events only) | **no** | **no** | **no** | **no** | **no** |
 
 With profile **off** the legacy 3-tier projection runs (no derivative
 keys appear). Claim 12.3.c then resolves to `denied` since `summary`

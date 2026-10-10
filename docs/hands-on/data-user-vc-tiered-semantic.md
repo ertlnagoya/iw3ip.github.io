@@ -29,7 +29,7 @@ VLM（Vision Language Model。画像を入力に取れる言語モデル）に�
 | **3** Full | `full` | 政府機関 + crime + ISO27001 (80) | 生 image / video + 顔ブラー画像 + 詳細文 + 概要文 |
 | **2** Access | `access` | 企業 + research + ISO27001 (75) | **顔ブラー済 image** + **詳細文**（人名・物体名あり）+ 概要文 |
 | **1** Summary | `summary`（新） | 企業 + 不明な purpose + legalCompliance のみ (50〜59) | **概要文のみ**（PII redact 済、image 無し） |
-| 0 Denied | `denied` | 不適格 (<50) | claim 自体を拒否 |
+| 0 Denied | `denied` | 不適格 (<50) | イベントのみ (画像・動画・説明文なし) |
 
 `access` と `denied` の間に、新しい `summary` tier が加わります。VLM profile が有効なときだけ、
 score 50〜59 が `summary` になります（profile が無効なら、従来どおり 60 未満は `denied` です）。
@@ -88,31 +88,34 @@ profile を無効にした場合と有効にした場合で同じデータセッ
 
 [§2](data-user-vc-tiered.md#2-3-種類の-datauservc-オファーを作る) の 3 種類に **summary tier 用**を追加します。
 
+それぞれの URL を PC のブラウザで開き、表示された QR コードをウォレットで読み取ります。
+
 #### 12.3.a Tier 3（full）— §2a と同じ
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=GovernmentOrganization&purpose=CrimeSearch&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=GovernmentOrganization&purpose=CrimeSearch&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false
 ```
 
 #### 12.3.b Tier 2（access）— §2b と同じ
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false' | jq .
+```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=true&data_handling_policy=ISO27001&misuse_record=false
 ```
 
 #### 12.3.c Tier 1（summary, 新）— 企業 + 不明な purpose + legal compliance のみ
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=unknown&legal_compliance=true&data_handling_policy=other&misuse_record=false' | jq .
-# score = 20 + 5 + 15 + 0 + 10 = 50 -> summary (VLM profile ON のときのみ)
 ```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=unknown&legal_compliance=true&data_handling_policy=other&misuse_record=false
+```
+
+score = 20 + 5 + 15 + 0 + 10 = 50 -> summary (VLM profile ON のときのみ)
 
 #### 12.3.d Tier 0（denied）— §2c と同じ
 
-VLM 拡張を有効にすると tier は 4 段階になり、summary が Tier 1、denied が Tier 0 になります。[§2c](data-user-vc-tiered.md#2c-tier-1deniedプロファイル--企業--研究--ポリシーなし--濫用記録あり) の「Tier 1（denied）」は、VLM 拡張を使わない 3 段階の場合の呼び方で、同じプロファイルを指します。
+VLM 拡張を有効にすると tier は 4 段階になり、summary が Tier 1、denied が Tier 0 になります。[§2c](data-user-vc-tiered.md#2c-tier-1deniedプロファイル--企業--研究--ポリシーなし--濫用記録あり) の「Tier 1（denied）」は、VLM 拡張を使わない 3 段階の場合の呼び方で、同じプロファイルを指します。`denied` は trustScore による判定の名前です。現在の実装では、判定が `denied` でも購入の申告 (`/marketplace/claim`) は拒否されません。イベントだけを閲覧できる PurchaseViewerVC (`PurchaseViewerVC.event`) が発行され、画像・動画・説明文は応答に含まれません。
 
-```bash
-curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true' | jq .
+```
+http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true
 ```
 
 ### 12.4 4 通りの `/marketplace/claim` と `/platform/data` 比較
@@ -125,7 +128,7 @@ curl -s -X POST 'localhost:8080/issuer/offer?vc_kind=DataUserVC&entity_type=Ente
 | 12.3.a Tier 3 (full) | あり | あり | あり | あり | あり | あり |
 | 12.3.b Tier 2 (access) | あり | **なし** | **なし** | あり | あり | あり |
 | 12.3.c Tier 1 (summary) | あり | **なし** | **なし** | **なし** | **なし** | あり |
-| 12.3.d Tier 0 (denied) | claim 自体が `access_level: "denied"` で拒否 |
+| 12.3.d Tier 0 (denied) | あり (イベントのみ) | **なし** | **なし** | **なし** | **なし** | **なし** |
 
 profile が無効なら従来どおり（[§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) と同じ）3 段階の tier 投影になり、新しいキーは応答に含まれません。
 この状態で 12.3.c の claim を送ると `denied` になります（summary tier は profile が有効なときだけ

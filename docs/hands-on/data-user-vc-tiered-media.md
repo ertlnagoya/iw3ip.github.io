@@ -318,7 +318,7 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 6. 同時に `docker compose logs publisher` 側で `_write_audit(action="presentation", reason="dataset_mismatch", verified="false")` の監査ログ行が出る
 
 実機で確認する場合は、§10.5 と同じ環境で、**別のデータセットに対する claim** から
-`/issuer/offer?vc_kind=PurchaseViewerVC&claim_id=<別 claim>` を発行し、ウォレットに 4 枚目の
+`/issuer/offer?type=PurchaseViewerVC&claim_id=<別 claim>` を発行し、ウォレットに 4 枚目の
 カードを入れます。その状態で QR を読み、4 枚目のカードを提示すると再現します。
 
 ## 11. PWA Provider（データ提供者向け PWA）
@@ -476,7 +476,7 @@ POST します。
 
 | 症状 | 対処 |
 |---|---|
-| `/provider/start` で「SellerVC のオファーを受け取っていない」 | 先に `POST /issuer/offer?vc_kind=SellerVC&seller_id=...&licensed_datasets=...` でウォレットに SellerVC を入れる必要があります |
+| `/provider/start` で「SellerVC のオファーを受け取っていない」 | 先に `/issuer/offer?type=SellerVC&seller_id=...&licensed_datasets=...` でウォレットに SellerVC を入れる必要があります |
 | iPhone Safari で「📷 カメラで撮影」がファイルピッカーになる | iOS のバージョンによっては `accept="image/*,video/*" capture="environment"` が組み合わせで効かないことがあります。`accept="video/*"` だけにすると、カメラが直接起動します |
 | 「🔴 ブラウザで録画」のボタンが反応しない | `getUserMedia` は HTTPS / `localhost` でしか動きません。LAN の IP（`http://192.168.x.x`）で開いた場合はブラウザがマイク/カメラ権限を拒否します。`localhost:8080` か HTTPS 経由でアクセスしてください |
 | `/provider/publish` が 403 `seller_token_dataset_not_licensed` | SellerVC の `licensed_datasets[]` に `topic` から導出される dataset_id が含まれていません。例: `topic=homeassistant/event/possible_littering` → dataset_id は `home/event/possible_littering` |

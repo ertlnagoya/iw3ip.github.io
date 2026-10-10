@@ -115,6 +115,8 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true
 ```
 
+This profile scores 25 and the verdict is `denied`. `denied` is the name of the trustScore verdict. In the current implementation a `denied` verdict does not reject the purchase report (`/marketplace/claim`). A PurchaseViewerVC that can view events only (`PurchaseViewerVC.event`) is issued, and images, video, and descriptions are left out of the response.
+
 ## 3. Three `/marketplace/claim` calls
 
 `/marketplace/claim` is the API that tells the publisher a purchase has happened. Normally the bridge calls it when it detects a purchase event; here we call it directly with curl to see only the tier differences. When `data_user_attrs` carries the same attributes as a DataUserVC, the publisher computes the trustScore and decides what that purchase may view.
@@ -153,7 +155,7 @@ jq -r .deeplink /tmp/claim.json \
 |---|---|---|
 | `PurchaseViewerVC.full` | `event` / `image` / `video` | 80 or more, and a government organization etc. |
 | `PurchaseViewerVC.access` | `event` / `image` | 60 or more |
-| `PurchaseViewerVC.event` | `event` only | otherwise, or no `data_user_attrs` |
+| `PurchaseViewerVC.event` | `event` only | otherwise (verdict `denied`), or no `data_user_attrs` |
 
 ### 3b. Tier 2 — image only
 

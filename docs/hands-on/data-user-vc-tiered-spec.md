@@ -151,8 +151,10 @@ score >= 60                               -> "access"
 ```
 "full"   -> ["event", "image", "video"]
 "access" -> ["event", "image"]
-"denied" -> []     # 閲覧不可（claim 自体を拒否）
+"denied" -> []     # 画像・動画は閲覧不可
 ```
+
+当初の設計では、判定が `denied` のときは claim 自体を拒否する想定でした。現在の実装では claim は拒否されず、`allowed_views` が空の場合は `event` だけを閲覧できる扱いになります (`PurchaseViewerVC.event` が発行されます)。
 
 ## API 仕様（差分のみ）
 
@@ -242,7 +244,7 @@ score >= 60                               -> "access"
    - score>=80 でも entity が gov/police でなければ full にならない
 2. `evaluate_from_claims()` のラッパテスト（1）
 3. issuer metadata に `DataUserVC` が含まれる（1）
-4. `/issuer/offer?vc_kind=DataUserVC` が 5 属性を必須化（1）
+4. `/issuer/offer?type=DataUserVC` が 5 属性を必須化（1）
 5. `/marketplace/claim` の trust 昇格 / 既定 event のみ（2）
 6. `PurchaseViewerVC` が claim の `allowed_views` を継承（1）
 7. `/platform/data` の Tier 1/2/3 投影（3）
@@ -273,10 +275,10 @@ score >= 60                               -> "access"
 | **3** Full | `full` | 政府機関 + crime + ISO27001 (80) | 生の image / video + 全テキスト派生 |
 | **2** Access | `access` | 企業 + research + ISO27001 (75) | **顔/PII ブラー済 image** + **詳細テキスト**（人名・物体名あり） |
 | **1** Summary | `summary`（新） | 企業 + 不明な purpose + legalCompliance のみ (50〜59) | **概要テキストのみ**（PII redact 済、image 無し） |
-| 0 Denied | `denied` | 不適格 (<50) | claim 自体を拒否 |
+| 0 Denied | `denied` | 不適格 (<50) | イベントのみ (現在の実装では claim は拒否されない) |
 
 `access_level` の値域に **`summary`** を追加します。VLM profile が有効なときだけ、score 50〜59 が
-`summary` になります。profile が無効な場合の `denied` の扱いは変わらず、score 60 未満は claim を拒否します。
+`summary` になります。profile が無効な場合の `denied` の扱いは変わらず、score 60 未満は `denied` と判定され、イベントのみ閲覧できます。
 
 ### 派生データの schema
 
@@ -407,7 +409,7 @@ generated_at で区別します。
    - Tier 3: 生キー + 派生キー全部
    - Tier 2: image_redacted + description_full + description_summary、生 image/video なし
    - Tier 1: description_summary のみ
-   - Tier 0 (denied): claim 自体が 403
+   - Tier 0 (denied): イベントのみ (当初の設計は claim を 403 で拒否。現在の実装は拒否しない)
 4. VLM 呼び出し失敗時の degrade（2）
    - VLM 失敗 → 顔ブラー成功 → description キー無しで Tier 2 が image_redacted のみ
    - 両方失敗 → Tier 1/2 両方とも description_summary 無し（純粋に degraded）

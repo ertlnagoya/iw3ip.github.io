@@ -153,8 +153,10 @@ otherwise                                 -> "denied"
 ```
 "full"   -> ["event", "image", "video"]
 "access" -> ["event", "image"]
-"denied" -> []   # claim itself is rejected
+"denied" -> []   # no image or video
 ```
+
+The original design rejected the claim itself on a `denied` verdict. The current implementation does not reject the claim; an empty `allowed_views` is treated as events only (`PurchaseViewerVC.event` is issued).
 
 ## API surface (deltas only)
 
@@ -245,7 +247,7 @@ the Phase 2 wallet (`iw3ip-wallet`) + Publisher.
    - even with score ≥ 80, non-gov/police never reaches full
 2. `evaluate_from_claims()` wrapper (1)
 3. Issuer metadata lists `DataUserVC` (1)
-4. `/issuer/offer?vc_kind=DataUserVC` requires the five attributes (1)
+4. `/issuer/offer?type=DataUserVC` requires the five attributes (1)
 5. `/marketplace/claim` trust promotion / default to event-only (2)
 6. `PurchaseViewerVC` inherits `allowed_views` from the claim (1)
 7. `/platform/data` projects Tier 1 / 2 / 3 (3)
@@ -275,11 +277,11 @@ recipient can know *what happened* without learning *who did it*.
 | **3** Full | `full` | gov + crime + ISO27001 (80) | raw image / video + every text derivative |
 | **2** Access | `access` | enterprise + research + ISO27001 (75) | **face/PII-blurred image** + **detailed text** (named entities present) |
 | **1** Summary | `summary` (new) | enterprise + unknown purpose + legalCompliance only (50–59) | **summary text only** (PII-redacted, no image) |
-| 0 Denied | `denied` | unqualified (<50) | claim is rejected |
+| 0 Denied | `denied` | unqualified (<50) | events only (the current implementation does not reject the claim) |
 
 A new `summary` value is added to `access_level`: with the VLM profile
 on, scores 50–59 map to `summary`. With the profile off, the `denied`
-semantics are unchanged — `score < 60` still rejects the claim.
+semantics are unchanged — `score < 60` is still judged `denied` and can view events only.
 
 ### Derivative schema
 
@@ -411,7 +413,7 @@ A new file `tests/test_data_user_vc_tiered_vlm.py` covers:
    - Tier 3: raw + derivative keys
    - Tier 2: image_redacted + description_full + description_summary; no raw image/video
    - Tier 1: description_summary only
-   - Tier 0 (denied): claim itself returns 403
+   - Tier 0 (denied): events only (the original design rejected the claim with 403; the current implementation does not)
 4. Degrade matrix when VLM call fails (2)
 5. `processing_warnings` propagation (2)
 

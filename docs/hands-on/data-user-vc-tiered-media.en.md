@@ -326,7 +326,7 @@ Main reason codes and their banner copy:
 6. `docker compose logs publisher` shows the audit row `_write_audit(action="presentation", reason="dataset_mismatch", verified="false")`.
 
 To reproduce on a real device, reuse the §10.5 setup but issue an extra
-`POST /issuer/offer?vc_kind=PurchaseViewerVC&claim_id=<other-claim>` so the
+`/issuer/offer?type=PurchaseViewerVC&claim_id=<other-claim>` so the
 wallet ends up holding a 4th card bound to a different dataset, then scan
 the QR with that card selected.
 
@@ -488,7 +488,7 @@ a **two-tab** experience in the browser.
 
 | Symptom | Fix |
 |---|---|
-| `/provider/start` says no SellerVC offer received | Issue one first: `POST /issuer/offer?vc_kind=SellerVC&seller_id=...&licensed_datasets=...` and scan the offer URI from the wallet |
+| `/provider/start` says no SellerVC offer received | Issue one first: `/issuer/offer?type=SellerVC&seller_id=...&licensed_datasets=...` and scan the offer URI from the wallet |
 | 📷 Camera capture opens the file picker on iPhone Safari | Some iOS versions don't honor the combination `accept="image/*,video/*" capture="environment"`. Switching `accept` to `video/*` only forces the camera reliably |
 | 🔴 Browser recorder button does nothing | `getUserMedia` only works on HTTPS or `localhost`. Opening over a LAN IP (`http://192.168.x.x`) makes the browser deny camera/mic permission. Use `localhost:8080` or run behind HTTPS |
 | `/provider/publish` returns 403 `seller_token_dataset_not_licensed` | The dataset_id derived from `topic` isn't in your SellerVC's `licensed_datasets[]`. Example: `topic=homeassistant/event/possible_littering` → dataset_id is `home/event/possible_littering` |

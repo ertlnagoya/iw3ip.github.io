@@ -32,7 +32,7 @@
 
 - DataUserVC を発行・提示する OID4VCI（VC の発行プロトコル）/ OID4VP（VC の提示プロトコル）の流れ
 - `entityType / purpose / legalCompliance / dataHandlingPolicy / misuseRecord`
-  の組み合わせで `full / access / denied` がどう変わるか
+  の組み合わせで、判定 (`full / access / denied`) がどう変わるか
 - `/platform/data` の出力に `image_cid` / `video_cid` が現れる / 消える条件
 
 ## つまずきやすい点
@@ -113,6 +113,8 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true
 ```
 
+このプロファイルの trustScore は 25 で、判定は `denied` です。`denied` は trustScore による判定の名前です。現在の実装では、判定が `denied` でも購入の申告 (`/marketplace/claim`) は拒否されません。イベントだけを閲覧できる PurchaseViewerVC (`PurchaseViewerVC.event`) が発行され、画像・動画・説明文は応答に含まれません。
+
 ## 3. /marketplace/claim を 3 通り呼び出す
 
 `/marketplace/claim` は、購入が成立したことを publisher に伝える API です。通常は bridge が購入のイベントを検知して呼び出しますが、ここでは tier の違いだけを確認するため、curl で直接呼び出します。`data_user_attrs` に DataUserVC と同じ属性を渡すと、publisher が trustScore を計算し、その購入で閲覧できる範囲を決めます。
@@ -151,7 +153,7 @@ jq -r .deeplink /tmp/claim.json \
 |---|---|---|
 | `PurchaseViewerVC.full` | `event` / `image` / `video` | 80 以上で、政府機関など |
 | `PurchaseViewerVC.access` | `event` / `image` | 60 以上 |
-| `PurchaseViewerVC.event` | `event` のみ | 上記以外、または `data_user_attrs` なし |
+| `PurchaseViewerVC.event` | `event` のみ | 上記以外 (判定は `denied`)、または `data_user_attrs` なし |
 
 ### 3b. Tier 2 — 画像まで
 
