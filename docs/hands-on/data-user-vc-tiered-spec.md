@@ -187,8 +187,10 @@ score >= 60                               -> "access"
 
 ```json
 {
-  "merchandise_id": "...",
-  "buyer_did": "...",
+  "merchandise_address": "0x...",
+  "buyer_eth_addr": "0x...",
+  "tx_hash": "0x...",
+  "dataset_id": "home/event/possible_littering",
   "data_user_attrs": {
     "entityType": "GovernmentOrganization",
     "purpose": "CrimeSearch",
@@ -198,6 +200,8 @@ score >= 60                               -> "access"
   }
 }
 ```
+
+`merchandise_address`、`buyer_eth_addr`、`tx_hash`、`dataset_id` は必須です。応答は `claim_id`、`offer_url`、`deeplink` で、判定結果 (`allowed_views` など) は応答には含まれません。発行される PurchaseViewerVC の種類 (`PurchaseViewerVC.full` / `.access` / `.event`) に反映されます。
 
 `data_user_attrs` を省略した場合は、`allowed_views=["event"]` の最小権限で claim します。
 

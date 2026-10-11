@@ -189,8 +189,10 @@ When a `DataUserVC` is presented:
 
 ```json
 {
-  "merchandise_id": "...",
-  "buyer_did": "...",
+  "merchandise_address": "0x...",
+  "buyer_eth_addr": "0x...",
+  "tx_hash": "0x...",
+  "dataset_id": "home/event/possible_littering",
   "data_user_attrs": {
     "entityType": "GovernmentOrganization",
     "purpose": "CrimeSearch",
@@ -200,6 +202,8 @@ When a `DataUserVC` is presented:
   }
 }
 ```
+
+`merchandise_address`, `buyer_eth_addr`, `tx_hash`, and `dataset_id` are required. The response carries `claim_id`, `offer_url`, and `deeplink`; the verdict (`allowed_views` etc.) is not in the response. It is reflected in the kind of PurchaseViewerVC that gets issued (`PurchaseViewerVC.full` / `.access` / `.event`).
 
 If `data_user_attrs` is omitted, we claim with the minimum
 `allowed_views=["event"]`.
