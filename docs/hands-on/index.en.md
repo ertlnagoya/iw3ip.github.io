@@ -107,6 +107,7 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
     <p>An AI interprets free-form requests and uses Part 1/2 data as material to plan and act.</p>
     <p class="iw3ip-phase-links">
       <a href="local-vlm-distribution/">Enrich camera data with a local VLM</a> /
+      <a href="privacy-compare/">Protect camera images before handing them to AI</a> /
       <a href="regional-safety-assistant/">Regional Safety Assistant</a> /
       <a href="llm-planner/">LLM Planner</a>
     </p>
@@ -122,7 +123,7 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
 | Reach safe / conditional sharing | Part 1 → Part 2 §2.1–§2.3 (+ approx. 4 hours) |
 | Reach v2 marketplace integration | Part 1 → Part 2 §2.4 (+ approx. 4 hours) |
 | Reach tiered access | Through Part 2 §2.5 (+ approx. 1 hour; about 3 more hours to cover image/video delivery and semantic-level tiering) |
-| Reach AI integration | Through Part 3 (+ approx. 3 hours) |
+| Reach AI integration | Through Part 3 (+ approx. 5 hours) |
 
 The times are sums of the estimates at the top of each page.
 
@@ -302,13 +303,19 @@ Analyze laptop + USB-camera frames with a local model and distribute the semanti
 
 - [Enrich camera data with a local VLM and distribute it](local-vlm-distribution.md)
 
-### 3.2 Regional Safety Assistant
+### 3.2 Protect camera images before handing them to AI
+
+Hand the same camera image to AI in four ways (raw to the cloud, on the PC only, faces blurred before the cloud, text only to the cloud) and compare what left the PC and what the descriptions say. The cloud is replaced by a mock server.
+
+- [Protect camera images before handing them to AI (local vs cloud)](privacy-compare.md)
+
+### 3.3 Regional Safety Assistant
 
 Uses the "when / where / what happened" event stream from Part 1/2 to answer free-form requests.
 
 - [Regional Safety Assistant](regional-safety-assistant.md)
 
-### 3.3 LLM Planner
+### 3.4 LLM Planner
 
 The "request → plan → execute → UI" decomposition pattern.
 

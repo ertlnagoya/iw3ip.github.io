@@ -107,6 +107,7 @@ export HOST_IP=192.168.1.20
     <p>人の要求を AI が解釈し、Part 1/2 で集めたデータを材料に判断・処理する応用段階です。</p>
     <p class="iw3ip-phase-links">
       <a href="local-vlm-distribution/">ローカル VLM でカメラデータを意味づけ</a> /
+      <a href="privacy-compare/">AI に渡す前にカメラ画像を守る</a> /
       <a href="regional-safety-assistant/">Regional Safety Assistant</a> /
       <a href="llm-planner/">LLM Planner</a>
     </p>
@@ -122,7 +123,7 @@ export HOST_IP=192.168.1.20
 | 安全な共有まで | Part 1 → Part 2 の 2.1〜2.3 (+ 約 4 時間) |
 | マーケット連携の v2 まで | Part 1 → Part 2 の 2.4 まで (+ 約 4 時間) |
 | 段階アクセスまで | Part 2 の 2.5 まで (+ 約 1 時間。画像・動画の配信と意味レベルの段階化まで進む場合は、さらに約 3 時間) |
-| AI 統合まで | Part 3 まで (+ 約 3 時間) |
+| AI 統合まで | Part 3 まで (+ 約 5 時間) |
 
 時間は、各ページの冒頭にある所要時間を合計した目安です。
 
@@ -306,13 +307,19 @@ export HOST_IP=192.168.1.20
 
 - [ローカル VLM でカメラデータを意味づけして流通する](local-vlm-distribution.md)
 
-### 3.2 地域安全アシスタント
+### 3.2 AI に渡す前にカメラ画像を守る
+
+同じカメラ画像を、生のままクラウドへ、PC 内だけで、顔をぼかしてからクラウドへ、文字にしてからクラウドへ、の 4 通りで AI に渡し、何が PC の外に出たかと説明の内容を比べます。クラウドは模擬サーバで代用します。
+
+- [AI に渡す前にカメラ画像を守る (ローカルとクラウドの比較)](privacy-compare.md)
+
+### 3.3 地域安全アシスタント
 
 Part 1/2 で蓄積された「いつ・どこで・何が起きた」イベントをもとに、自由文の要求に応答するデモです。
 
 - [Regional Safety Assistant サンプル](regional-safety-assistant.md)
 
-### 3.3 LLM Planner
+### 3.4 LLM Planner
 
 要求を **plan → execute → UI** に分解する設計を確認します。
 

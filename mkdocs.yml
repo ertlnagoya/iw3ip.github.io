@@ -84,6 +84,7 @@ plugins:
             "SellerVC (Stage 7 spec)": SellerVC 設計仕様 (Stage 7)
             "Part 3: Intelligence Integration — Let an AI act on requests": Part 3 知能統合 — AI に要求を解釈させてみよう
             "Enrich camera data with a local VLM": ローカル VLM でカメラデータを意味づけ
+            "Protect camera images before handing them to AI (local vs cloud)": AI に渡す前にカメラ画像を守る (ローカルとクラウドの比較)
             "Run the regional safety assistant": 地域安全アシスタントを動かす
             "Let an AI plan the steps (LLM Planner)": AI に手順を考えさせる (LLM Planner)
             "LLM Planner replacement spec": LLM Planner 置き換え仕様
@@ -163,6 +164,7 @@ nav:
               - "Tiered access design spec": hands-on/data-user-vc-tiered-spec.md
       - "Part 3: Intelligence Integration — Let an AI act on requests":
           - "Enrich camera data with a local VLM": hands-on/local-vlm-distribution.md
+          - "Protect camera images before handing them to AI (local vs cloud)": hands-on/privacy-compare.md
           - "Run the regional safety assistant": hands-on/regional-safety-assistant.md
           - "Let an AI plan the steps (LLM Planner)": hands-on/llm-planner.md
           - "LLM Planner replacement spec": hands-on/llm-planner-spec.md
