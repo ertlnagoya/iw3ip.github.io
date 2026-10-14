@@ -20,10 +20,11 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 !!! tip "dataset の選択"
     例は `home/env/temperature` で書かれていますが、Stage 6 case B 以降の
     deploy script では Merchandise #2 (`home/event/possible_littering`) と
-    Merchandise #4 (`home/event/flood_risk_high`) も登録されており、
-    Stage 0 と同じイベントで購入動線を試せます
-    ([purchase-viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/purchase-viewer-possible-littering.json)
-    の Presentation Definition が登録済)。
+    Merchandise #4 (`home/event/flood_risk_high`) も登録されています。
+    PurchaseViewerVC の Presentation Definition
+    ([purchase-viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/purchase-viewer-possible-littering.json))
+    が登録されているのは `possible_littering` だけなので、Stage 0 と同じイベントで
+    購入動線を試すときは Merchandise #2 を使ってください。
 
 ## 目的
 
@@ -265,7 +266,7 @@ bridge: started rpc=http://host.docker.internal:8545 market=0xe7f1725... publish
 
 !!! warning "BRIDGE_PUBLIC_PUBLISHER_URL の設定は必須"
     これがないと、後の Step 6 で発行される deeplink 内の
-    `credential_issuer` が Docker 内部ホスト名 `http://publisher:8080` になり、
+    `credential_issuer` が既定値の `http://host.docker.internal:8080` になり、
     iPhone wallet が deeplink を開いたときにメタデータを取得できず、失敗します。
 
 ---
@@ -417,7 +418,7 @@ open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 
 `open` は macOS のコマンドです。Linux では `xdg-open`、Windows (WSL) では `explorer.exe` に読み替えるか、表示された URL をブラウザに貼り付けてください。
 
-iPhone のカメラで QR を読み取ると wallet が起動し、「IW3IP Purchase Viewer Credential」の承認画面が出るので承認します。
+iPhone のカメラで QR を読み取ると wallet が起動し、「IW3IP Purchase Viewer (Event-only)」の承認画面が出るので承認します。
 
 !!! warning "QR 生成に外部サービスを使います"
     上のコマンドは deeplink の内容を外部の QR 生成サービス (api.qrserver.com) に送ります。deeplink には VC 発行用のコードが含まれるため、ローカルのハンズオン環境以外では使わないでください。
@@ -514,6 +515,8 @@ curl -s -H "Authorization: Bearer $TOKEN" \
   "dataset_id": "home/env/temperature",
   "count": 0,
   "read_count": 1,
+  "seller_did": "unknown",
+  "allowed_views": ["event"],
   "rows": []
 }
 ```
@@ -554,7 +557,7 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool
 
 | id | raw_topic | reason | subject |
 | --- | --- | --- | --- |
-| (最新) | `platform/data` | `viewer_token_used:cc38f06e...:1` | `did:jwk:...` |
+| (最新) | `platform/data` | `viewer_token_used:cc38f06e...:1:views=event` | `did:jwk:...` |
 | -1 | `oid4vp/response` | `ok` | `did:jwk:...` |
 | -2 | `marketplace/issued` | **`eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c...`** | `did:jwk:...` |
 | -3 | `marketplace/claim` | `claim_received:2b417b32...:tx=0x4e7c...` | `eth:0x3C44...` |
@@ -631,7 +634,7 @@ Error: VM Exception while processing transaction: reverted with an unrecognized 
 ### C. iPhone wallet が deeplink を開いた瞬間に落ちる / 何も表示されない
 
 **原因 1**: bridge から発行された deeplink 内の `credential_issuer` が
-`http://publisher:8080` (Docker 内部ホスト名) になっており、iPhone から到達不能。
+既定値の `http://host.docker.internal:8080` になっており、iPhone から到達不能。
 
 **対処**: `infra/.env` に `BRIDGE_PUBLIC_PUBLISHER_URL=http://<HOST_IP>:8080` を設定して
 bridge を再起動 (Step 4)。deeplink を再取得して、内部にある `credential_issuer` が
@@ -640,7 +643,7 @@ LAN IP になっていることを確認:
 ```bash
 DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1 | sed -E 's/.*deeplink=//')
 echo "$DEEPLINK" | python3 -c "import sys,urllib.parse,json; d=urllib.parse.unquote(sys.stdin.read().split('credential_offer=',1)[1]); print(json.loads(d)['credential_issuer'])"
-# → http://<HOST_IP>:8080  (publisher:8080 ではなく)
+# → http://<HOST_IP>:8080  (host.docker.internal:8080 ではなく)
 ```
 
 **原因 2**: wallet が `No script URL provided` エラー画面を出している = Metro bundler 未起動。

@@ -223,15 +223,28 @@ Focus points:
 - `/platform/ingest` contains both `home/event/possible_littering` and `home/event/suspicious_activity`
 - `/audit/logs` shows `action: allow` with the expected `raw_topic`
 
-At this point, some events may not appear in `/platform/ingest`. If so, work through the exercise below to find and fix the cause.
+So far you have confirmed that events matching a registered consent are shared. The next exercise checks what happens when a consent expires.
 
-### Exercise: when some events are rejected (fix the consent expiry)
+### Exercise: an expired consent causes denials
 
-When you run step 5, `suspicious_activity` may appear in `/platform/ingest` while other datasets such as `possible_littering` do not. In that case `audit/logs` shows `action: deny` / `reason: no_matching_consent`. The usual cause is an **expired consent VC**. This is a good way to learn about a VC's validity period (`valid_from`–`valid_to`), so **diagnose and fix it yourself**.
+The bundled `examples/ha_demo/consent_*.json` files have `valid_to` set to `2030-12-31T23:59:59Z`, so nothing expires as shipped. Here you deliberately register an expired `possible_littering` consent, confirm that events are denied, and then fix it. This shows how a VC's validity period (`valid_from`–`valid_to`) works.
 
-#### Step 1. Confirm the denial in the audit log
+#### Step 1. Register an expired consent
 
-Read the audit log first. In zsh, quote the URL because `?` is treated as a glob.
+Send the consent to `/consents` with `valid_to` rewritten to a past date. The file itself is not changed. Consents are overwritten per `vc_id`, so this replaces the one you registered in step 3.
+
+```bash
+sed 's/"valid_to": "2030-12-31T23:59:59Z"/"valid_to": "2026-05-01T00:00:00Z"/' examples/ha_demo/consent_possible_littering.json \
+  | curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @-
+```
+
+Confirm the response has `"status":"stored"` and `valid_to` is `2026-05-01T00:00:00Z`.
+
+Then run `script.iw3ip_publish_demo_possible_littering` and `script.iw3ip_publish_demo_suspicious_activity` from step 4.
+
+#### Step 2. Confirm the denial in the audit log
+
+Read the audit log. In zsh, quote the URL because `?` is treated as a glob.
 
 ```bash
 curl 'http://localhost:8080/audit/logs?limit=20'
@@ -240,30 +253,32 @@ curl 'http://localhost:8080/audit/logs?limit=20'
 Look at `action` / `dataset_id` / `reason` / `subject_did`.
 
 ??? question "What should you be able to read off?"
-    - Rejected events have `action: "deny"`, `reason: "no_matching_consent"`, and `subject_did: "unknown"`.
-    - Allowed events have `action: "allow"`, `reason: "sent"`, and the issuer DID in `subject_did`.
-    - So the problem is not that a consent is missing, but that no *matching* consent is found. That is the clue.
+    - `possible_littering` has `action: "deny"`, `reason: "no_matching_consent"`, and `subject_did: "unknown"`.
+    - `suspicious_activity` has `action: "allow"`, `reason: "sent"`, and the issuer DID in `subject_did`.
+    - So the problem is not that a consent is missing, but that no *matching* consent is found.
 
-#### Step 2. Form a hypothesis
+#### Step 3. Find the cause
 
-Compare the consent files (`examples/ha_demo/consent_*.json`) for an allowed dataset versus a denied one. Pay attention to `valid_from` and `valid_to`.
-
-??? tip "Hint"
-    `valid_from`–`valid_to` is the VC's validity period. If **today's date falls outside this range**, the consent does not match. Check whether the `valid_to` of a denied dataset's consent is in the past.
-
-#### Step 3. Fix and re-register
-
-Change the expired consent's `valid_to` to a future date. You can edit the file in an editor, or extend them all at once (macOS `sed` needs `-i ''`).
+List the registered consents and compare `valid_from` and `valid_to` for `possible_littering` and `suspicious_activity`.
 
 ```bash
-sed -i '' 's/"valid_to": "2026-05-01T00:00:00Z"/"valid_to": "2027-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
+curl http://localhost:8080/consents
 ```
 
-Then re-register the consents as in step 3 and confirm each response contains `"status":"stored"`.
+??? tip "Hint"
+    `valid_from`–`valid_to` is the VC's validity period. If **today's date falls outside this range**, the consent does not match.
 
-#### Step 4. Re-send the events and verify
+#### Step 4. Fix and re-register
 
-Re-run the step 4 scripts (or the direct publish from step 7), then confirm the events now appear in `/platform/ingest`.
+Re-register the original file (`valid_to` in 2030) and confirm the response contains `"status":"stored"`.
+
+```bash
+curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/ha_demo/consent_possible_littering.json
+```
+
+#### Step 5. Re-send the event and verify
+
+Run `script.iw3ip_publish_demo_possible_littering` again, then confirm the event now appears in `/platform/ingest`.
 
 ```bash
 curl 'http://localhost:8080/platform/ingest'
@@ -326,7 +341,7 @@ You can also publish directly to the same topic without Home Assistant.
 docker exec -i iw3ip-mosquitto mosquitto_pub \
   -h localhost -p 1883 \
   -t homeassistant/event/possible_littering \
-  -m @examples/ha_demo/payload_possible_littering.json
+  -m "$(cat examples/ha_demo/payload_possible_littering.json)"
 ```
 
 Related files:
@@ -411,8 +426,10 @@ Example output:
 Focus points in `execute`:
 
 - `evaluation.triggered` is `true`
-- `matched_counts.possible_littering = 3`
-- `matched_counts.suspicious_activity = 1`
+- `matched_counts.possible_littering` is 3 or more
+- `matched_counts.suspicious_activity` is 1 or more
+
+`/platform/ingest` still holds the events sent in earlier steps, so any `park-north` events from step 4 or the exercise that are still inside the time window are counted too. To see exactly 3 and 1, restart the publisher with `docker compose -f infra/docker-compose.yml restart publisher` before running the script (the stored events are in memory and are cleared; registered consents are kept).
 - `actions_executed` contains two actions
 
 ## Additional notes

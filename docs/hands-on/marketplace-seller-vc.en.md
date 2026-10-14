@@ -323,6 +323,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
   "count": N,
   "read_count": 1,
   "seller_did": "did:jwk:...(the seller's DID)",
+  "allowed_views": ["event"],
   "rows": [...]
 }
 ```

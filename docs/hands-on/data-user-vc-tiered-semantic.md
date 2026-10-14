@@ -214,9 +214,15 @@ docker compose -f infra/docker-compose.yml stop vlm
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
 # 加えて publisher の IMAGE_REDACTION_BACKEND を空にして再起動
-# /platform/data で processing_warnings: ["vlm_unavailable", "redaction_unavailable"]
-# Tier 2 / Tier 1 受信者は派生キー無し、生キーのみ (= profile OFF と等価)
+# /platform/data で processing_warnings: ["vlm_unavailable"]
+# Tier 2 / Tier 1 受信者は画像キーも description_* も受け取らず、event だけになる
 ```
+
+`IMAGE_REDACTION_BACKEND` を空にすると、顔ブラー処理そのものが無効になります。
+処理を試みて失敗したわけではないので、`redaction_unavailable` は出ません
+（`redaction_unavailable` は、opencv などの backend を指定したうえでブラーに失敗したときにだけ出ます）。
+また `VLM_BACKEND` は設定されたままなので、tier の対応は §12.1 の 4 段階のままです。
+profile を無効にしたときの 3 段階の投影には戻りません。
 
 degrade 時も `image_url` / `video_url` は **そのまま残る**ので、
 受信側は Tier に応じた投影で、生のキーか派生キーのどちらかを必ず受け取ります。
@@ -237,12 +243,12 @@ degrade 時も `image_url` / `video_url` は **そのまま残る**ので、
 
 | 症状 | 対処 |
 |---|---|
-| `vlm-pull` が `Error: pull model manifest: file does not exist` | ネットワーク（image registry）に到達できていません。コンテナ内から `curl https://registry.ollama.ai` で確認してください。または `VLM_MODEL` を別の名前（`llava:7b` 等）に変更します |
+| `vlm-pull` が `Error: pull model manifest: file does not exist` | 指定したモデル名またはタグが Ollama のレジストリに存在しません。`VLM_MODEL` の綴りを確認してください（例: `llava`、`llava:7b`、`moondream`）。ネットワークに到達できない場合は、このメッセージではなく `dial tcp ... lookup registry.ollama.ai` や connection refused が出ます。疎通はホストから `curl -I https://registry.ollama.ai` で確認できます（何らかの HTTP 応答が返れば到達できています） |
 | 1 回目の `/provider/publish` がタイムアウト | LLaVA の初回起動（cold start。モデルを VRAM にロードする処理）に 30〜60 秒かかります。`vlm-pull` のログに model ready が出ているか確認してください。出ていれば 2 回目以降は速くなります |
 | `description_full` / `description_summary` が同じ内容 | LLaVA が prompt を区別していない可能性があります。`docker compose logs vlm` で `/api/generate` の呼び出しが 2 回別々に来ているかを確認してください。同じ画像でも prompt が違うので、戻り値は別々になるはずです |
 | `image_url_redacted` の画像で顔がぼけていない | Haar cascade が検出するのは正面顔だけです。横顔・斜め顔にはブラーがかかりません。必要なら DNN 系の検出器に差し替えます |
 | Profile OFF でも `description_*` キーが出る | 不具合です。profile が無効なのに従来の tier 投影になっていない可能性があります。`tests/test_data_user_vc_tiered_vlm.py::test_pipeline_no_injectors_keeps_legacy_envelope` が pass することを確認し、再現する場合は issue を立ててください |
-| `processing_warnings: ["vlm_unavailable"]` が常時出る | Ollama が応答していないか、`VLM_API_URL` が間違っています。`docker compose exec publisher curl http://vlm:11434/api/version` で疎通を確認してください |
+| `processing_warnings: ["vlm_unavailable"]` が常時出る | Ollama が応答していないか、`VLM_API_URL` が間違っています。publisher のイメージには curl が入っていないので、`docker compose -f infra/docker-compose.yml exec publisher python -c "import httpx;print(httpx.get('http://vlm:11434/api/version').text)"` で疎通を確認してください |
 
 ### 12.10 実機検証ログ
 
@@ -284,7 +290,9 @@ ollama に **`moondream`**（1.7 GB。llava の約 1/3 のサイズ）を入れ�
 全モデル共通の短いプロンプトに統一する必要があります。
 
 **短いプロンプトに統一**すると、redact の強さを細かく指定できなくなります。そのため、**モデルごとに調整した
-プロンプトの dict を `vlm_client.py` に持つ**方針とし、今後の課題として記録します。
+プロンプトの表を `vlm_client.py` に持つ**方針としました。現在の実装では `publisher/app/vlm_client.py` の
+`_PROMPT_TABLE` がモデル名の先頭一致で短いプロンプト（`moondream`、`bakllava`）と長いプロンプト（`llava`）を
+切り替えます。表に無いモデルは長いプロンプトを使います。
 
 #### V4 視覚比較
 
@@ -367,8 +375,12 @@ ollama に **`moondream`**（1.7 GB。llava の約 1/3 のサイズ）を入れ�
 VLM tier (§12) を有効にした publisher に **`SEMANTIC_ANALYZER_BACKEND` 環境変数**
 を加えます:
 
+§12.2 の `vlm-pull` が取得するのは `VLM_MODEL` の既定値 `llava` だけです。ここでは `moondream` を使うので、
+先に取得しておきます。
+
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile vlm exec vlm ollama pull moondream
 SEMANTIC_ANALYZER_BACKEND=vision \
   VLM_BACKEND=ollama VLM_MODEL=moondream IMAGE_REDACTION_BACKEND=opencv \
   docker compose -f infra/docker-compose.yml --profile vlm up -d publisher

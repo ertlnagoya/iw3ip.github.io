@@ -20,12 +20,13 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 
 !!! tip "Same data as Stage 0"
     In Stage A, you choose what to purchase from the list of Merchandise registered by the
-    deploy script of Stage 6 case B and later. If you choose `home/event/possible_littering` or
-    `home/event/flood_risk_high`, you can confirm that the same camera and sensor
-    events as in Stage 0 (see the [Hands-on overview](index.md#part-phase-stage) for the list of Stages)
-    ([webcam-event-sharing](webcam-event-sharing.md) /
-    [environment-disaster](environment-disaster.md))
+    deploy script of Stage 6 case B and later. If you choose `home/event/possible_littering`
+    (Merchandise #2), you can confirm that the same camera events as in Stage 0
+    (see the [Hands-on overview](index.md#part-phase-stage) for the list of Stages)
+    ([webcam-event-sharing](webcam-event-sharing.md))
     can be read through a purchase (PurchaseViewerVC).
+    `home/event/flood_risk_high` (Merchandise #4) has no PurchaseViewerVC
+    Presentation Definition registered, so you cannot get as far as viewing it.
 
 ## Goals
 
@@ -197,8 +198,8 @@ tapping "もう入っています" (Already installed) twice takes you to `/`.
 ### Steps (iPhone, MetaMask Mobile)
 
 1. Open MetaMask Mobile → in the built-in browser (the globe icon at the bottom right), open
-   `http://<HOST_IP>:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9`
-   (Merchandise #1, created by the deploy script)
+   `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
+   (Merchandise #0, created by the deploy script. Do not use #1, which may already have been purchased in Stage 5)
 2. Tap "Connect your wallet!" to connect MetaMask
 3. Press the "Purchase" button and **Confirm** on the MetaMask side
 4. After a few seconds, the page moves automatically to `/purchased/<txHash>`, and a QR code and the
@@ -223,7 +224,7 @@ tapping "もう入っています" (Already installed) twice takes you to `/`.
 
 On `/purchased/<txHash>`, tap **"ウォレットで開く" (Open in wallet)**.
 
-iw3ip-wallet launches and shows the "IW3IP 購入閲覧クレデンシャル" (IW3IP purchase viewer credential) confirmation screen → approve.
+iw3ip-wallet launches and shows the "IW3IP Purchase Viewer (Event-only)" confirmation screen (shown as "IW3IP 購入閲覧（Tier 1 / イベントのみ）" in a Japanese-language wallet) → approve.
 
 ### Expected result
 
@@ -248,7 +249,7 @@ iw3ip-wallet launches and shows the "IW3IP 購入閲覧クレデンシャル" (I
 2. Hamburger menu → **"購入履歴 / データを見る" (Purchase history / View data)**
 3. The purchase from Step M3 is shown (dataset_id, merchandise, tx, date and time)
 4. Tap **"閲覧チケットを取得" (Get viewing ticket)** → present in the wallet
-5. On the PC, check the token with `docker logs publisher | grep viewer_token_issued`
+5. On the PC, check the token with `docker logs iw3ip-publisher | grep viewer_token_issued`
 6. Paste that token into the "ViewerToken (Bearer)" field on `/my-data`
 7. **"取得実行" (Fetch)** shows the JSON
 
@@ -259,10 +260,14 @@ iw3ip-wallet launches and shows the "IW3IP 購入閲覧クレデンシャル" (I
   "dataset_id": "home/env/temperature",
   "count": ...,
   "read_count": 1,
-  "seller_did": "did:jwk:...",
+  "seller_did": "unknown",
+  "allowed_views": ["event"],
   "rows": [...]
 }
 ```
+
+If you purchased a Merchandise registered with `/marketplace/register` in Stage 7,
+`seller_did` contains the seller's `did:jwk:...`.
 
 !!! note "Current limitation (to be resolved in Stage 9)"
     Having to paste the ViewerToken manually is the current usability

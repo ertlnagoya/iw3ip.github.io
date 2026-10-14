@@ -8,7 +8,7 @@ A. To go through Phase 1 onward without hardware, start from the [HA Demo Simula
 
 ## Q. Can I proceed without real devices or a smartphone?
 
-A. Part 1 needs only a PC. The [HA Demo Simulator](../hands-on/ha-demo-simulator.md) runs without hardware, and the HUSKYLENS2 and USB webcam pages have a mock mode. The Part 2 hands-on pages that use the wallet need a smartphone.
+A. Part 1 needs only a PC, except for the phone viewing step (§1.4). The [HA Demo Simulator](../hands-on/ha-demo-simulator.md) runs without hardware, and the HUSKYLENS2 and USB webcam pages have a mock mode. The Part 2 hands-on pages that use the wallet need a smartphone.
 
 ## Q. Do I need real money or cryptocurrency?
 

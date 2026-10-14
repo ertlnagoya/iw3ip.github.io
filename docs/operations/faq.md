@@ -8,7 +8,7 @@ A. 実機なしで Phase 1 から順に確認する場合は [HA Demo Simulator]
 
 ## Q. 実機やスマホが無くても進められますか？
 
-A. Part 1 は PC だけで進められます。[HA Demo Simulator](../hands-on/ha-demo-simulator.md) は実機なしで動き、HUSKYLENS2 と USB ウェブカメラのページにも mock モードがあります。Part 2 のうちウォレットを使うハンズオンでは、スマホが必要です。
+A. Part 1 は、スマホで見る手順 (1.4) を除いて PC だけで進められます。[HA Demo Simulator](../hands-on/ha-demo-simulator.md) は実機なしで動き、HUSKYLENS2 と USB ウェブカメラのページにも mock モードがあります。Part 2 のうちウォレットを使うハンズオンでは、スマホが必要です。
 
 ## Q. 実際のお金や暗号資産は必要ですか？
 

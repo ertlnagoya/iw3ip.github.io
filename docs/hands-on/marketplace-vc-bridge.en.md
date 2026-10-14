@@ -20,11 +20,10 @@ This is the core v2 hands-on. A marketplace purchase triggers the issuance of a 
     The example uses `home/env/temperature`, but the deploy script from
     Stage 6 case B onward also registers Merchandise #2
     (`home/event/possible_littering`) and Merchandise #4
-    (`home/event/flood_risk_high`), so you can try the purchase flow with
-    the same events as Stage 0
-    (the Presentation Definition in
-    [purchase-viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/purchase-viewer-possible-littering.json)
-    is already registered).
+    (`home/event/flood_risk_high`). A PurchaseViewerVC Presentation Definition
+    ([purchase-viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/purchase-viewer-possible-littering.json))
+    is registered only for `possible_littering`, so use Merchandise #2 when you
+    try the purchase flow with the same events as Stage 0.
 
 ## Goal
 
@@ -276,7 +275,7 @@ bridge: started rpc=http://host.docker.internal:8545 market=0xe7f1725... publish
 
 !!! warning "Setting BRIDGE_PUBLIC_PUBLISHER_URL is required"
     Without it, the `credential_issuer` in the deeplink issued later in Step 6
-    becomes the Docker-internal host name `http://publisher:8080`, and
+    falls back to the default `http://host.docker.internal:8080`, and
     the iPhone wallet fails because it cannot fetch the metadata when it opens the deeplink.
 
 ---
@@ -436,7 +435,7 @@ open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 
 `open` is a macOS command. On Linux use `xdg-open`, on Windows (WSL) use `explorer.exe`, or paste the printed URL into a browser.
 
-Scan the QR code with the iPhone camera. The wallet starts and shows the approval screen for "IW3IP Purchase Viewer Credential", so approve it.
+Scan the QR code with the iPhone camera. The wallet starts and shows the approval screen for "IW3IP Purchase Viewer (Event-only)", so approve it.
 
 !!! warning "QR generation uses an external service"
     The command above sends the content of the deeplink to an external QR generation service (api.qrserver.com). The deeplink contains the code used for VC issuance, so do not use this outside a local hands-on environment.
@@ -537,6 +536,8 @@ curl -s -H "Authorization: Bearer $TOKEN" \
   "dataset_id": "home/env/temperature",
   "count": 0,
   "read_count": 1,
+  "seller_did": "unknown",
+  "allowed_views": ["event"],
   "rows": []
 }
 ```
@@ -580,7 +581,7 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool
 
 | id | raw_topic | reason | subject |
 | --- | --- | --- | --- |
-| (latest) | `platform/data` | `viewer_token_used:cc38f06e...:1` | `did:jwk:...` |
+| (latest) | `platform/data` | `viewer_token_used:cc38f06e...:1:views=event` | `did:jwk:...` |
 | -1 | `oid4vp/response` | `ok` | `did:jwk:...` |
 | -2 | `marketplace/issued` | **`eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c...`** | `did:jwk:...` |
 | -3 | `marketplace/claim` | `claim_received:2b417b32...:tx=0x4e7c...` | `eth:0x3C44...` |
@@ -657,7 +658,7 @@ Error: VM Exception while processing transaction: reverted with an unrecognized 
 ### C. The iPhone wallet crashes as soon as it opens the deeplink / shows nothing
 
 **Cause 1**: The `credential_issuer` in the deeplink issued by the bridge is
-`http://publisher:8080` (the Docker-internal host name), which the iPhone cannot reach.
+the default `http://host.docker.internal:8080`, which the iPhone cannot reach.
 
 **Fix**: Set `BRIDGE_PUBLIC_PUBLISHER_URL=http://<HOST_IP>:8080` in `infra/.env` and
 restart the bridge (Step 4). Fetch the deeplink again and confirm that the `credential_issuer` inside it
@@ -666,7 +667,7 @@ is the LAN IP:
 ```bash
 DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1 | sed -E 's/.*deeplink=//')
 echo "$DEEPLINK" | python3 -c "import sys,urllib.parse,json; d=urllib.parse.unquote(sys.stdin.read().split('credential_offer=',1)[1]); print(json.loads(d)['credential_issuer'])"
-# → http://<HOST_IP>:8080  (not publisher:8080)
+# → http://<HOST_IP>:8080  (not host.docker.internal:8080)
 ```
 
 **Cause 2**: The wallet shows the `No script URL provided` error screen, which means the Metro bundler is not running.

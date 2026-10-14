@@ -42,10 +42,7 @@ plugins:
             SSI DID VC Basics: SSI/DID/VC基礎
             References: 参考文献
             Docs: ドキュメント
-            Workshop: ワークショップ
             Environment Setup: 環境構築
-            Before Class: 事前準備と起動
-            Facilitation: 進行と運営
             Setup Overview: 環境構築の概要
             Hands-on Overview: ハンズオンの概要
             Operations Overview: 運用の概要
@@ -148,10 +145,10 @@ nav:
       - "Part 2: Feature Extensions — Add auth, marketplace integration, and processing":
           - "Add authentication (SSI wallet)":
               - "Authenticate the data provider (Consent VC / Stage 1)": hands-on/ha-ssi-wallet.md
-              - "Authenticate the viewer (Viewer VC / Stage 3)": hands-on/ha-ssi-viewer.md
-              - "Authenticate machines (Service VC / Stage 4 prep)": hands-on/ha-ssi-service.md
               - "Share detections, not raw frames": hands-on/webcam-event-sharing.md
               - "Share disaster events": hands-on/environment-disaster.md
+              - "Authenticate the viewer (Viewer VC / Stage 3)": hands-on/ha-ssi-viewer.md
+              - "Authenticate machines (Service VC / Stage 4 prep)": hands-on/ha-ssi-service.md
           - "Wire wallet to the marketplace (v2)":
               - "Hand a credential to the buyer's wallet (Bridge / Stage 5)": hands-on/marketplace-vc-bridge.md
               - "Tie four credentials together end-to-end (Stage 6)": hands-on/marketplace-vc-end-to-end.md

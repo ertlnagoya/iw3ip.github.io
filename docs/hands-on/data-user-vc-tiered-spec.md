@@ -158,10 +158,10 @@ score >= 60                               -> "access"
 
 ## API 仕様（差分のみ）
 
-### `POST /issuer/offer`（拡張）
+### `GET /issuer/offer`（拡張）
 
 ```
-?vc_kind=DataUserVC
+?type=DataUserVC
 &entity_type=GovernmentOrganization
 &purpose=CrimeSearch
 &legal_compliance=true
@@ -169,11 +169,13 @@ score >= 60                               -> "access"
 &misuse_record=false
 ```
 
-`DataUserVC` のときは 5 属性すべてが必須です。欠けている場合は 400 を返します。
+`DataUserVC` のときは `entity_type`・`legal_compliance`・`data_handling_policy`・`misuse_record` の
+4 つが必須で、欠けている場合は 400 を返します。`purpose` は省略すると `read` になります。
 
-### `POST /verifier/request_object`
+### `GET /verifier/request` / `GET /verifier/request_object`
 
-`vc_kind=DataUserVC` を受け付けます。DCQL の `claims` で上記の 5 属性を要求します。
+`GET /verifier/request?vc_kind=DataUserVC` で提示要求を作ります。ウォレットが取得する
+`/verifier/request_object` の DCQL の `claims` で、上記の 5 属性（と `subject_id`）を要求します。
 
 ### `POST /verifier/*`（提示エンドポイント）
 
@@ -398,10 +400,13 @@ VLM は、`description_summary` から PII を完全には除けない場合が�
 
 ### 監査 (audit log) への影響
 
-`audit/logs` に `description_model` と `description_generated_at` が
-記録されるので、**どの VLM 出力が誰にいつ何の tier で届いたか**を後から追跡できます。
+`description_model` と `description_generated_at` は、`/audit/logs` ではなく
+`/platform/data` の各行に付きます（tier に関係なく受信者に渡ります）。監査ログの行
+（`audit/models.py` の `AuditLogRecord`）にはこれらの項目はありません。
+**どの VLM 出力が誰にいつ何の tier で届いたか**を追跡するには、`/audit/logs` の行と
+`/platform/data` の行を突き合わせます。
 VLM のアップグレード前後で同じ画像から異なる説明が生成された場合は、
-generated_at で区別します。
+`description_generated_at` で区別します。
 
 ### テスト方針（追加分）
 

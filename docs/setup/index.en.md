@@ -89,7 +89,7 @@ The hands-on is split into three Parts: **Basic**, **Feature Extensions**, and *
 
 | Goal | Path |
 |---|---|
-| Just see something running | [Quickstart](quickstart.md) → first section of Part 1 |
+| Just see something running | [HA Demo Simulator](../hands-on/ha-demo-simulator.md) only (approx. 20 min) |
 | Walk through the basic flow | Setup → all of Part 1 |
 | Reach safe / conditional sharing | Setup → Part 1 → Part 2 |
 | Full intelligence-integrated demo | Setup → Part 1 → Part 2 → Part 3 |
@@ -149,11 +149,11 @@ Bare minimum:
 
 - **A PC** (macOS / Windows / Linux, 8 GB RAM or more recommended)
 - **Internet** (for the initial docker pull / npm install)
+- **MetaMask** browser extension — to buy data from the marketplace in Part 1
 
 Extra for feature-extension part:
 
 - **A smartphone** (Android / iPhone) — to install the SSI wallet
-- **MetaMask** browser extension — to buy data from the marketplace
 
 Optional hardware (everything works without it):
 

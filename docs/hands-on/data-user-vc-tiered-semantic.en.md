@@ -50,11 +50,15 @@ working under the legacy 3-tier projection.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
+# Turn profile vlm on. The Ollama service and vlm-pull (pre-pulls llava)
+# start together
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
   publisher bridge mosquitto vlm vlm-pull
 ```
 
-Switch the publisher backends on:
+Switch the publisher backends on. The compose file reads these
+environment variables, so either `export` them in your shell or
+write them in `.env`:
 
 ```bash
 export VLM_BACKEND=ollama
@@ -67,6 +71,13 @@ Wait for `vlm-pull` to finish pulling `llava` (first time only, multi-GB):
 ```bash
 docker compose -f infra/docker-compose.yml logs -f vlm-pull
 # wait for "vlm model llava ready" then exit
+```
+
+Check that the publisher is up:
+
+```bash
+curl -s http://localhost:8080/health | jq .
+# -> {"status": "ok", ...}
 ```
 
 Toggling profile off vs on against the same dataset shows that the
@@ -204,9 +215,15 @@ Stop both:
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
 # also clear IMAGE_REDACTION_BACKEND on the publisher and restart
-# /platform/data: processing_warnings: ["vlm_unavailable", "redaction_unavailable"]
-# Tier 2 / Tier 1 receivers get only the raw keys (= profile-OFF parity)
+# /platform/data: processing_warnings: ["vlm_unavailable"]
+# Tier 2 / Tier 1 receivers get no image keys and no description_*; only event
 ```
+
+Clearing `IMAGE_REDACTION_BACKEND` disables face blur entirely. Nothing
+is attempted, so no `redaction_unavailable` appears (that warning is
+emitted only when a backend such as opencv is set and the blur fails).
+`VLM_BACKEND` is still set, so the 4-tier mapping of §12.1 stays in
+effect; this is not the same as the 3-tier projection with the profile off.
 
 `image_url` / `video_url` always remain visible at Tier 3 even when
 derivatives are degraded — the receiver contract is "expected key
@@ -228,12 +245,12 @@ inline warning banner per row when `processing_warnings[]` is set
 
 | Symptom | Fix |
 |---|---|
-| `vlm-pull` returns "pull model manifest: file does not exist" | The container can't reach the image registry. From inside: `curl https://registry.ollama.ai`. Or change `VLM_MODEL` to a different name (e.g. `llava:7b`) |
+| `vlm-pull` returns "pull model manifest: file does not exist" | The model name or tag does not exist in the Ollama registry. Check the spelling of `VLM_MODEL` (e.g. `llava`, `llava:7b`, `moondream`). A network failure shows `dial tcp ... lookup registry.ollama.ai` or connection refused instead. To check reachability, run `curl -I https://registry.ollama.ai` on the host (any HTTP response means it is reachable) |
 | First `/provider/publish` times out | LLaVA cold start (loading into VRAM) takes 30–60s. Confirm `vlm-pull` reported "model ready"; subsequent calls are fast |
 | `description_full` and `description_summary` come back identical | LLaVA may have ignored the prompt difference. `docker compose logs vlm` should show two distinct `/api/generate` calls; if not, check the prompt strings in `vlm_client.py` |
 | `image_url_redacted` looks unblurred | Haar cascade catches only frontal faces. Side / occluded / small faces pass through — swap in a DNN detector if needed |
 | `description_*` keys appear with profile OFF | Bug — the legacy projection should never emit derivative keys. The regression test `test_pipeline_no_injectors_keeps_legacy_envelope` covers this; if you see it, file an issue |
-| `processing_warnings: ["vlm_unavailable"]` keeps firing | Ollama not responding or `VLM_API_URL` wrong. From the publisher: `docker compose exec publisher curl http://vlm:11434/api/version` |
+| `processing_warnings: ["vlm_unavailable"]` keeps firing | Ollama not responding or `VLM_API_URL` wrong. The publisher image has no curl, so check from the publisher with `docker compose -f infra/docker-compose.yml exec publisher python -c "import httpx;print(httpx.get('http://vlm:11434/api/version').text)"` |
 
 ### 12.10 Real-device validation log
 
@@ -270,7 +287,7 @@ Pulled `moondream` (1.7 GB, ~1/3 of llava) and re-ran the same pipeline:
 
 **Finding**: a small VLM (moondream) is dramatically faster but **does not respond well to the current long 2-stage prompts**. Either tune prompts per-backend (a `prompts: {model -> str}` dict in `vlm_client.py`) or unify all backends on shorter prompts.
 
-Short-prompt unification trades off redaction-strength expressiveness, so a per-backend prompt dict is the cleaner path. Tracked as a TODO for a follow-up PR.
+Short-prompt unification trades off redaction-strength expressiveness, so we chose a per-model prompt table. This is now implemented: `_PROMPT_TABLE` in `publisher/app/vlm_client.py` picks short prompts (`moondream`, `bakllava`) or the long ones (`llava`) by model-name prefix. Models not in the table use the long prompts.
 
 #### V4 visual comparison
 
@@ -344,9 +361,13 @@ cannot reach raw bytes by construction (fail-closed by design).
 
 ### 13.3 Bring up
 
-Add `SEMANTIC_ANALYZER_BACKEND` to the existing VLM-tier compose run:
+Add `SEMANTIC_ANALYZER_BACKEND` to the existing VLM-tier compose run.
+`vlm-pull` in §12.2 pulls only the `VLM_MODEL` default (`llava`). This
+step uses `moondream`, so pull it first:
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile vlm exec vlm ollama pull moondream
 SEMANTIC_ANALYZER_BACKEND=vision \
   VLM_BACKEND=ollama VLM_MODEL=moondream IMAGE_REDACTION_BACKEND=opencv \
   docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
@@ -393,7 +414,8 @@ On switches to the semantic pipeline:
 - `_coerce_trust_level()`: unknown / None → ANONYMOUS
 - `TrustPolicyEngine.evaluate()`: `privacy_risk_score >= 0.9` strips image kinds
 - `TrustPolicyEngine.evaluate_safe()`: any internal exception → empty `allowed_outputs`
-- `_compute_mask_plan()`: face / text / screen / whiteboard / document / id_card / name_tag / `unknown_sensitive` always masked at HIGH and below
+- `_compute_mask_plan()`: face / text / screen / whiteboard / document / id_card / name_tag / `unknown_sensitive` always masked at HIGH and below (only `unknown_sensitive` at HIGH can be unmasked with `SEMANTIC_ALLOW_UNKNOWN_AT_HIGH=true`)
+- `/semantic/analyze`: on failure returns an `empty()` SIR (never returns raw bytes)
 - `TrustAwareRenderer.render()`: `ORIGINAL_FRAME` requires `trust_level in (OWNER, ADMIN)`
 - `_render_masked()`: cv2 / decode / encode failures → text fallback
 - `SemanticIntermediateRepresentation.empty()`: `privacy_risk_score=1.0` flags the analyzer-failure path
@@ -413,15 +435,22 @@ audit_required=...;rationale=...`, `message_hash` (sir.frame_id),
 `presentation_verified` (`owner_or_admin` or `policy_only`).
 
 We never log the source bytes, the base64-encoded rendered image,
-or any face encoding / extracted PII from the SIR.
+or any face encoding / person name derived from the SIR. `image_url`
+is recorded: it is always a publisher-internal `/media/<sha>.<ext>`
+path, and the URL alone does not let an unauthorized receiver fetch
+the image.
+
+Text-only calls at ANONYMOUS / LOW are left to the web access log and
+are not written to the audit table, so the audit table records only
+actual disclosures.
 
 ### 13.8 API reference
 
 | Endpoint | Input | Output | Notes |
 |---|---|---|---|
-| `POST /semantic/analyze` | multipart `file` + `source_device_id` | SIR JSON | Never echoes input bytes; analyzer error → `empty()` SIR |
-| `POST /semantic/render` | `{trust_level, sir, image_url?}` | `{trust_level, granted_kinds[], text_summary, event_list, image_b64?, ...}` | Unknown trust_level → ANONYMOUS |
-| `POST /semantic/render_url` | `{trust_level, image_url}` | same | One-shot fetch + analyze + render |
+| `POST /semantic/analyze` | multipart `file` + `source_device_id` form field | SIR JSON (`{frame_id, source_device_id, captured_at, scene_summary, objects, people, sensitive_regions, events, privacy_risk_score, analyzer_version}`) | Never echoes input bytes; analyzer error → `SemanticIntermediateRepresentation.empty()` |
+| `POST /semantic/render` | JSON `{trust_level?, sir, image_url?}` | `{trust_level, granted_kinds[], text_summary, event_list[], rationale, audit_required, image_b64?, image_content_type?}` | Unknown trust_level → ANONYMOUS. `image_url` is fetched only if it is a publisher-internal URL. Low-trust receivers never get `image_b64` |
+| `POST /semantic/render_url` | JSON `{trust_level?, image_url, source_device_id?}` | same as `/semantic/render` | Fetch + analyze + render in one call. A fetch or analyze failure falls back fail-closed to an `empty()` SIR |
 
 ### 13.9 Relation to §12 VLM tier
 

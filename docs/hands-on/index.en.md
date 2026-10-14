@@ -1,7 +1,7 @@
 # Hands-on
 
 This is the chapter where you run IW3IP yourself to understand it.
-**Basic** establishes the overall picture, **Feature Extensions** covers safe sharing and tiered access, and **Intelligence Integration** shows the AI integration.
+**Basic** establishes the overall picture, **Feature Extensions** covers safe sharing and tiered access, and **Intelligence Integration** covers AI that enriches data and interprets requests.
 
 > Finish the [Environment Setup](../setup/index.md) before moving on to this page.
 
@@ -38,7 +38,7 @@ This site uses three kinds of numbering.
 
 - **Part 1–3**: the learning order on this site (Basic, Feature Extensions, Intelligence Integration).
 - **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see [Platform Overview](../platform-overview.md)). Page titles carry the Phase.
-- **Stage 0–7, A, T**: sequence labels for the Part 2 hands-on pages that use VCs. Each page assumes the earlier Stages are done. There is no Stage 2.
+- **Stage 0–7, A, T**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0). Each page assumes the earlier Stages are done. There is no Stage 2.
 
 | Stage | Hands-on | VC |
 |---|---|---|
@@ -125,7 +125,7 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
 | Reach tiered access | Through Part 2 §2.5 (+ approx. 1 hour; about 3 more hours to cover image/video delivery and semantic-level tiering) |
 | Reach AI integration | Through Part 3 (+ approx. 5 hours) |
 
-The times are sums of the estimates at the top of each page.
+The times are sums of the estimates at the top of each page. A "+" means time needed on top of the row above.
 
 Each hands-on page opens with a "What you'll learn / Prerequisites / What you need / Time required" block. If you get stuck partway, see [Troubleshooting](../operations/troubleshooting.md).
 
@@ -140,7 +140,7 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 | **Part 2 / Add authentication** | ✓ | – | – | ✓ | – | – |
 | **Part 2 / Wire wallet to marketplace (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
 | **Part 2 / Process data before sharing** | ✓ | ✓ <small>(for Tier 3 e2e)</small> | ✓ <small>(same)</small> | ✓ | – | ✓ <small>(OpenCV / VLM optional)</small> |
-| **Part 3 / Intelligence integration** | ✓ | – | – | – | – | ✓ <small>(LLM)</small> |
+| **Part 3 / Intelligence integration** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
 
 ### VCs used
 
@@ -182,13 +182,7 @@ Build a path that pulls data off a camera or sensor and sends it to the publishe
 - [USB Webcam](webcam.md) — generic USB camera + OpenCV
 - [HA × SSI Publisher](ha-ssi-publisher.md) — Home Assistant integration
 
-### 1.3 View on a phone
-
-View the collected data in a phone browser.
-
-- [Mobile Viewer](mobile-viewer.md)
-
-### 1.4 Trade on the marketplace (v1 lane)
+### 1.3 Trade on the marketplace (v1 lane)
 
 The list → buy → decrypt-from-IPFS flow. This is the completion point of **Basic (v1)**.
 
@@ -226,6 +220,12 @@ The list → buy → decrypt-from-IPFS flow. This is the completion point of **B
 The 5 items registered by step 2 of Quickstart (deployment) were not listed by `mediator-owner`. They can be purchased, but no data is delivered.
 
 Detailed bring-up: [Quickstart](../setup/quickstart.md).
+
+### 1.4 View on a phone
+
+View the data you bought in §1.3 in a phone browser.
+
+- [Mobile Viewer](mobile-viewer.md)
 
 ### Done when…
 
@@ -294,7 +294,8 @@ Switch the response between Tier 3 (video + everything), Tier 2 (image + derived
 
 - Use a local AI model to enrich camera frames and distribute the derivatives over the platform
 - An AI breaks a free-form request ("show me recent anomalies") into a **plan**
-- That plan **executes** against Part 1/2 data and returns a response
+- Explain, configuration by configuration, what leaves the PC before the data reaches the AI
+- That plan **executes** against sample event data and returns a response
 - A frontend demo ties it all together
 
 ### 3.1 Enrich camera data with a local VLM
@@ -311,7 +312,7 @@ Hand the same camera image to AI in four ways (raw to the cloud, on the PC only,
 
 ### 3.3 Regional Safety Assistant
 
-Uses the "when / where / what happened" event stream from Part 1/2 to answer free-form requests.
+Loads a sample event file recording "when / where / what happened" (`examples/phase3_events_park_safety.json`) and answers free-form requests.
 
 - [Regional Safety Assistant](regional-safety-assistant.md)
 
@@ -324,6 +325,7 @@ The "request → plan → execute → UI" decomposition pattern.
 
 ### Done when…
 
+- You can compare and explain what left the PC in each of the four ways of handing the image to AI
 - A free-form request decomposes into plan steps that execute
 - Results show up in the frontend demo
 - `planner_diagnostics` lets you trace the decision
@@ -332,4 +334,4 @@ The "request → plan → execute → UI" decomposition pattern.
 
 ## When a term is unfamiliar
 
-See the [setup mini-glossary](../setup/index.en.md). It explains almost every term you'll encounter in one line.
+See the [setup mini-glossary](../setup/index.md#mini-glossary). It explains almost every term you'll encounter in one line.

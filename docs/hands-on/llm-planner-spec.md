@@ -17,7 +17,7 @@
 
 ## 目的
 
-現在の Phase 3 サンプルでは、`planner.py` は rule-based です。  
+現在の Phase 3 サンプルでは、`rule_based_planner.py` は rule-based です。  
 学習用としては分かりやすい一方、自然言語の表現ゆれに弱いという課題があります。
 
 次段階では LLM を使って以下を実現します。
@@ -148,21 +148,30 @@ flowchart LR
 
 LLM の呼び出しは本体に直接書かず、adapter、validator、fallback の 3 つに分けます。
 
-## 追加予定モジュール
+## 実装済みのモジュール
 
-想定する追加ファイル例:
+`assistant/app/` に次のファイルがあります。
 
+- `assistant/app/planner_interface.py`
+- `assistant/app/rule_based_planner.py`
 - `assistant/app/llm_planner.py`
+- `assistant/app/llm_provider.py`
 - `assistant/app/llm_prompt.py`
 - `assistant/app/plan_validator.py`
 - `assistant/app/planner_factory.py`
 
 役割:
 
+- `planner_interface.py`
+  - planner の共通インターフェース (`plan()` と診断情報の取得)
+- `rule_based_planner.py`
+  - キーワードで plan を作る rule-based planner (fallback にも使う)
 - `llm_planner.py`
-  - LLM 呼び出し
+  - LLM で plan を作り、失敗したら fallback する
+- `llm_provider.py`
+  - LLM の呼び出し (stub と OpenAI 互換 API)
 - `llm_prompt.py`
-  - system prompt / developer prompt 管理
+  - system prompt と user prompt の組み立て
 - `plan_validator.py`
   - 許可リストと pydantic 検証
 - `planner_factory.py`

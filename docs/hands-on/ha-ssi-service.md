@@ -74,7 +74,8 @@ docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 PUB=$(docker ps -qf name=publisher)
 
 # ServiceVC が含まれていることを確認 (現在のリリースでは ConsentVC /
-# ViewerVC / ServiceVC / DataUserVC / SellerVC / PurchaseViewerVC の 6 種が並ぶ)
+# ViewerVC / ServiceVC / DataUserVC / SellerVC / PurchaseViewerVC の 6 種類。
+# PurchaseViewerVC には Tier 別の .full / .access / .event もあり、項目は計 9 個並ぶ)
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ServiceVC
 ```
 

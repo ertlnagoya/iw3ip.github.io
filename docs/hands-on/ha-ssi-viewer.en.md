@@ -125,11 +125,20 @@ Expected response:
   "vc_kind": "ViewerVC",
   "viewer_token": "Xa9Hk...",
   "viewer_token_jti": "1f2c...",
-  "expires_in": 60
+  "expires_in": 60,
+  "allowed_views": ["event"]
 }
 ```
 
 ## 5. Read via /platform/data
+
+The `viewer_token` is returned to the wallet as the `/verifier/response` response, so you cannot see it from the shell where you run curl. After the presentation finishes, check the publisher log and copy the value after `token=` on the `viewer_token_issued` line.
+
+```bash
+docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep viewer_token_issued
+```
+
+The token's TTL is 60 seconds. Run the next curl within 60 seconds of the log line. If you miss it, present again from §4.
 
 ```bash
 TOKEN=<viewer_token>
@@ -145,6 +154,8 @@ Expected response:
   "dataset_id": "home/env/temperature",
   "count": 3,
   "read_count": 1,
+  "seller_did": null,
+  "allowed_views": ["event"],
   "rows": [
     {"dataset_id": "home/env/temperature", "value": 21.4, "purpose": "research"},
     {"dataset_id": "home/env/temperature", "value": 22.0, "purpose": "research"}
@@ -186,7 +197,7 @@ ViewerVC reads appear as:
 {
   "action": "allow",
   "raw_topic": "platform/data",
-  "reason": "viewer_token_used:1f2c...:1",
+  "reason": "viewer_token_used:1f2c...:1:views=event",
   "dataset_id": "home/env/temperature",
   "purpose": "read",
   "holder_did": "did:jwk:...",
@@ -194,8 +205,8 @@ ViewerVC reads appear as:
 }
 ```
 
-The trailing number in `reason` is `read_count`. Three reads with the same
-token produces three rows.
+`reason` has the form `viewer_token_used:<jti>:<read_count>:views=<allowed_views>`. Three reads with the same
+token produce three rows with `read_count` 1, 2, 3.
 
 ## Symmetry with ConsentVC
 

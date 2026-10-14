@@ -317,16 +317,29 @@ PolicyToken は 1 回使うと無効になるため、連続する MQTT イベ�
 wallet 経由で認可する使い方には向きません。ここでは **1 件のイベントだけ
 curl で送る**ことを勧めます。
 
+スマホのウォレットは PC の `localhost` に届かないため、以下の URL では `<HOST_IP>` を PC の LAN IP に置き換えて PC ブラウザで開きます (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。
+
+まず `ssi-wallet` プロファイルを付けて起動し直します。
+
+```bash
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
+```
+
 1. ConsentVC を発行 (本編と同じ dataset を直接使う):
    ```
-   http://localhost:8080/issuer/offer?type=ConsentVC&dataset_id=home/event/flood_risk_high&purpose=disaster_response
+   http://<HOST_IP>:8080/issuer/offer?type=ConsentVC&dataset_id=home/event/flood_risk_high&purpose=disaster_response
    ```
    (許可 purpose は `disaster_response` / `safety` / `emergency_planning`)
 2. ウォレットで受領 → 提示:
    ```
-   http://localhost:8080/verifier/request?dataset_id=home/event/flood_risk_high&purpose=disaster_response
+   http://<HOST_IP>:8080/verifier/request?dataset_id=home/event/flood_risk_high&purpose=disaster_response
    ```
-3. PolicyToken を取得し、本編と同じ形のイベントを 1 件 ingest:
+3. PolicyToken を取得し、本編と同じ形のイベントを 1 件 ingest。
+   PolicyToken は publisher のログの `policy_token_issued` 行にある `token=` の後ろの値です。コピーして `POLICY` に入れます (有効期限 5 分):
+   ```bash
+   docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued
+   POLICY=<token= の後ろの値>
+   ```
    ```bash
    curl -X POST http://localhost:8080/platform/ingest \
      -H "Authorization: Bearer $POLICY" \

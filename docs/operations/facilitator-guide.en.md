@@ -2,47 +2,44 @@
 
 ## Session goal
 
-Participants should complete:
+Participants should be able to complete the following.
 
 1. Event generation (mock mode is enough)
 2. Confirming registration as merchandise
 3. Purchase
 4. Data reception
 
-See §1.4 of the [Hands-on overview](../hands-on/index.md) for the steps.
+See §1.3 of the [Hands-on overview](../hands-on/index.md) for the steps.
 
-## Suggested flow (120 min)
+## Suggested flow
 
 ### 1. Introduction (10 min)
 
-- explain architecture and learning goals
-- clarify evaluation criteria (`run`, `explain`, `improve`)
+- Purpose of the data sharing platform
+- Division of roles between on-chain and off-chain
 
-### 2. Boot and checks (20 min)
+### 2. Boot (20 min)
 
-- run [Quickstart](../setup/quickstart.md) together
-- prioritize support for setup blockers
+- Run the [Quickstart](../setup/quickstart.md) together
+- Prioritize support for people who get stuck here
 
-### 3. Hands-on execution (40 min)
+### 3. Hands-on (40 min)
 
-- HUSKYLENS2 path: [hands-on/huskylens2.md](../hands-on/huskylens2.md)
-- Webcam path: [hands-on/webcam.md](../hands-on/webcam.md)
-- HA x SSI path: [hands-on/ha-ssi-publisher.md](../hands-on/ha-ssi-publisher.md)
+- HUSKYLENS2 group: [hands-on/huskylens2.md](../hands-on/huskylens2.md)
+- Webcam group: [hands-on/webcam.md](../hands-on/webcam.md)
 
-### 4. Validation (20 min)
+### 4. Phone check (15 min)
 
-- compare `allow` and `deny` outcomes
-- inspect logs and explain causes
+- [hands-on/mobile-viewer.md](../hands-on/mobile-viewer.md)
 
-### 5. Wrap-up (30 min)
+### 5. Wrap-up (15 min)
 
-- team presentations (what worked, what failed, why)
-- extension ideas for Phase 2/3
+- Share what worked and where people got stuck
+- Present extension exercises
 
-## Checklist
+## Facilitator checklist
 
 - [ ] All services started
-- [ ] MetaMask accounts ready
-- [ ] `raw_data/output` write path verified
-- [ ] `/mobile` page verified
-- [ ] report template distributed
+- [ ] MetaMask test accounts ready
+- [ ] Writing to `raw_data/output` verified
+- [ ] Confirmed that a phone can open `http://<HOST_IP>:5173/`

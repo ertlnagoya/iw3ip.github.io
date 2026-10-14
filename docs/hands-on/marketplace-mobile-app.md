@@ -20,12 +20,13 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 !!! tip "Stage 0 と同じデータ"
     Stage A の購入対象は Stage 6 case B 以降の deploy script で登録された
-    Merchandise リストから選びます。`home/event/possible_littering` や
-    `home/event/flood_risk_high` を選べば、Stage 0 (Stage の一覧は
+    Merchandise リストから選びます。`home/event/possible_littering` (Merchandise #2)
+    を選べば、Stage 0 (Stage の一覧は
     [ハンズオンの概要](index.md#part-phase-stage) を参照)
-    [webcam-event-sharing](webcam-event-sharing.md) /
-    [environment-disaster](environment-disaster.md) と同じカメラ・センサー
-    イベントが、購入経由 (PurchaseViewerVC) で読めるところまで確認できます。
+    [webcam-event-sharing](webcam-event-sharing.md) と同じカメライベントが、
+    購入経由 (PurchaseViewerVC) で読めるところまで確認できます。
+    `home/event/flood_risk_high` (Merchandise #4) は PurchaseViewerVC の
+    Presentation Definition が登録されていないため、閲覧まで進めません。
 
 ## 目的
 
@@ -192,8 +193,8 @@ STEP 3 / 3 - 準備完了
 ### 操作 (iPhone, MetaMask Mobile)
 
 1. MetaMask Mobile を開く → 内蔵ブラウザ (右下のグローブアイコン) で
-   `http://<HOST_IP>:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9`
-   を開く (deploy script が作る Merchandise #1)
+   `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
+   を開く (deploy script が作る Merchandise #0。#1 は Stage 5 で購入済みのことがあるため使わない)
 2. 「Connect your wallet!」をタップして MetaMask 接続
 3. 「Purchase」ボタンを押し、MetaMask 側で **Confirm**
 4. 数秒後、自動で `/purchased/<txHash>` に遷移し QR + 「ウォレットで開く」
@@ -217,7 +218,7 @@ STEP 3 / 3 - 準備完了
 
 `/purchased/<txHash>` で **「ウォレットで開く」** をタップ。
 
-iw3ip-wallet が起動して「IW3IP 購入閲覧クレデンシャル」確認画面 → 承認。
+iw3ip-wallet が起動して「IW3IP 購入閲覧（Tier 1 / イベントのみ）」確認画面 (英語表示では「IW3IP Purchase Viewer (Event-only)」) → 承認。
 
 ### 期待結果
 - wallet の VC 一覧に新しいエントリ
@@ -240,7 +241,7 @@ iw3ip-wallet が起動して「IW3IP 購入閲覧クレデンシャル」確認�
 2. ハンバーガーメニュー → **「購入履歴 / データを見る」**
 3. Step M3 の購入が表示されている (dataset_id, merchandise, tx, 日時)
 4. **「閲覧チケットを取得」** をタップ → wallet で提示
-5. PC 側 `docker logs publisher | grep viewer_token_issued` で token を確認
+5. PC 側 `docker logs iw3ip-publisher | grep viewer_token_issued` で token を確認
 6. その token を `/my-data` の「ViewerToken (Bearer)」欄に貼り付け
 7. **「取得実行」** で JSON が表示
 
@@ -251,10 +252,14 @@ iw3ip-wallet が起動して「IW3IP 購入閲覧クレデンシャル」確認�
   "dataset_id": "home/env/temperature",
   "count": ...,
   "read_count": 1,
-  "seller_did": "did:jwk:...",
+  "seller_did": "unknown",
+  "allowed_views": ["event"],
   "rows": [...]
 }
 ```
+
+Stage 7 で `/marketplace/register` した Merchandise を購入した場合は、
+`seller_did` に seller の `did:jwk:...` が入ります。
 
 !!! note "現状の限界 (Stage 9 で解消予定)"
     ViewerToken を手動で貼り付ける必要がある点が、現状の使い勝手の

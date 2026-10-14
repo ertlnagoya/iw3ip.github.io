@@ -73,6 +73,8 @@ docker run -d --name iw3ip-ollama -p 11434:11434 -v iw3ip_ollama:/root/.ollama o
 docker exec iw3ip-ollama ollama pull moondream
 ```
 
+The `vlm` service in docker-compose.yml does not publish port 11434 to the host, so Ollama runs as a separate container that programs on the PC can reach.
+
 **Terminal 2: the mock cloud AI**. With `--ollama-url`, it forwards each request to the local Ollama and returns a realistic description.
 
 ```bash
@@ -125,7 +127,7 @@ What it received is saved as-is under `received/`. With a real cloud service, th
 
 - `001_image1.jpg` (configuration A): the frame itself
 - `002_image1.jpg` (configuration C): the face is blurred, but hair, clothing, and background remain. Small text in a corner of the image also remains
-- `003.json` (configuration D): no image, only this text
+- `003.json` (configuration D): no image, only text. `003.json` is a record of the request (`id`, `received_at`, `tag`, `text`, and so on), and `text` holds the instruction to the AI followed by this JSON
 
 ```json
 {"people_count": 1, "objects": ["person"], "sensitive_region_types": ["face", "unknown_sensitive"], "privacy_risk_score": 0.9}
@@ -168,17 +170,18 @@ Things to think about:
 ## 6. Common issues
 
 - **`module 'cv2' has no attribute 'CascadeClassifier'`**: OpenCV 5 is installed. Reinstall with `pip install "opencv-python<5"`.
-- **D's semantic data is `(analysis unavailable; treat as private)`**: the publisher's analysis failed. Update the course repository (`git pull`) and restart the publisher with `--build`. Without `SEMANTIC_ANALYZER_BACKEND=vision`, a fixed mock result is returned.
+- **D's semantic data is `{"people_count": 0, "objects": [], "sensitive_region_types": [], "privacy_risk_score": 1.0}`**: the publisher's analysis failed. At the top of the course repository, run `docker compose -f infra/docker-compose.yml logs publisher | grep "semantic analyze failed"` to see why. Update the course repository (`git pull`) and restart the publisher with `--build`. Without `SEMANTIC_ANALYZER_BACKEND=vision`, a fixed mock result is returned.
 - **B says `skipped: local VLM not reachable`**: check that Ollama is running (`docker ps`) and listening on port 11434.
 - **It takes too long**: on a CPU-only PC one description takes from tens of seconds to a few minutes. Answers are capped at 120 tokens.
 - **The camera cannot be opened**: see the troubleshooting of [USB webcam](webcam.md), or pass an image with `--image`.
 
 ## 7. Clean up
 
-Delete the frames you took and the data the mock cloud received.
+Delete the frames you took and the data the mock cloud received. Run this in `examples/hands_on/privacy_compare`; it returns to the top of the course repository before stopping the containers.
 
 ```bash
 rm -rf results results_mine received
+cd ../../..
 docker rm -f iw3ip-ollama
 docker compose -f infra/docker-compose.yml down
 ```

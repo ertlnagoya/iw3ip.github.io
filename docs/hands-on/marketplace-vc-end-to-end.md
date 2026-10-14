@@ -19,9 +19,10 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 !!! tip "dataset の選択"
     例は `home/env/temperature` ですが、deploy script (Stage 6 case B) で
     `home/event/possible_littering` と `home/event/flood_risk_high` の
-    Merchandise も同時に作られているため、Stage 0 と同じイベント形式で
-    Service ingest → Purchase → Viewer 取得を通すこともできます
-    (各 dataset 用の ServiceVC / PurchaseViewerVC PD が登録済)。
+    Merchandise も同時に作られます。ServiceVC / PurchaseViewerVC の PD が
+    登録されているのは `possible_littering` だけなので、Stage 0 と同じイベント形式で
+    Service ingest → Purchase → Viewer 取得を通すときは `possible_littering`
+    (Merchandise #2) を使ってください。
 
 ## 目的
 
@@ -107,6 +108,10 @@ npx hardhat console --network localhost
 # publisher + bridge
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
+
+# Hardhat を起動し直したので、bridge を作り直して新しいチェーンを読み直させる
+# (bridge は起動時のブロック番号から監視するため、古いままだと購入を検知できない)
+docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 
 # bridge ログ確認
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
@@ -249,7 +254,7 @@ open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 
 `open` は macOS のコマンドです。Linux では `xdg-open`、Windows (WSL) では `explorer.exe` に読み替えるか、表示された URL をブラウザに貼り付けてください。
 
-iPhone wallet で QR を読み取り、「IW3IP Purchase Viewer Credential」を承認します。上のコマンドは deeplink を外部の QR 生成サービスに送るため、ローカルのハンズオン環境以外では使わないでください。
+iPhone wallet で QR を読み取り、「IW3IP Purchase Viewer (Event-only)」を承認します。上のコマンドは deeplink を外部の QR 生成サービスに送るため、ローカルのハンズオン環境以外では使わないでください。
 
 VC claims に `dataset_id: home/env/temperature` が入っていることを wallet で確認。
 
@@ -296,6 +301,8 @@ curl -s -H "Authorization: Bearer $TOKEN" \
   "dataset_id": "home/env/temperature",
   "count": 5,
   "read_count": 1,
+  "seller_did": "unknown",
+  "allowed_views": ["event"],
   "rows": [
     {"dataset_id": "home/env/temperature", "value": 31},
     {"dataset_id": "home/env/temperature", "value": 32},
@@ -326,7 +333,7 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=20" | python3 -m json.tool \
 
 | 段階 | raw_topic | reason | 主体 |
 | --- | --- | --- | --- |
-| 1. Buyer が読む | `platform/data` | `viewer_token_used:<jti>:1` | did:jwk:... (buyer) |
+| 1. Buyer が読む | `platform/data` | `viewer_token_used:<jti>:1:views=event` | did:jwk:... (buyer) |
 | 2. Buyer 提示 | `oid4vp/response` | `ok` | did:jwk:... (buyer) |
 | 3. Buyer 受領 | `marketplace/issued` | `eth_did_bound:claim=...:eth=0x3C44...:tx=...` | did:jwk:... (buyer) |
 | 4. bridge 連携 | `marketplace/claim` | `claim_received:<id>:tx=...` | eth:0x3C44... |
@@ -355,7 +362,7 @@ holder_did は同一になります。実運用では別端末・別 did:jwk に
 | E1 | 5 件の連続 ingest | iter 1〜5 すべて `status: received` |
 | E2 | bridge が dataset_id を on-chain 解決 | `dataset=home/env/temperature` |
 | E2 | bridge claim 発行 | `claim ok jti=...` |
-| E3 | PurchaseViewerVC 受領 | wallet に「IW3IP 購入閲覧クレデンシャル」 |
+| E3 | PurchaseViewerVC 受領 | wallet に「IW3IP 購入閲覧（Tier 1 / イベントのみ）」 |
 | E3 | eth_did_bound | audit `marketplace/issued` |
 | E4 | merchandise から逆引きで 5 件取得 | `count: 5, rows: [..., {value: 31}, ..., {value: 35}]` |
 | E5 | audit 連鎖が読める | `service_token_used` と `viewer_token_used` が同 dataset で連鎖 |

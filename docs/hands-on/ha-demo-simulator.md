@@ -223,15 +223,28 @@ curl 'http://localhost:8080/audit/logs?limit=10'
 - `/platform/ingest` に `home/event/possible_littering` と `home/event/suspicious_activity` が入っていること
 - `/audit/logs` で `action: allow` と `raw_topic` が対応していること
 
-ここで、一部のイベントだけ `/platform/ingest` に出てこないことがあります。その場合は、次のワークで原因を特定して直してください。
+ここまでで、登録した consent に一致するイベントが共有されることを確認しました。次のワークでは、consent の有効期限が切れたときにどうなるかを確かめます。
 
-### ワーク: 一部のイベントが拒否されるときは (consent の有効期限を直す)
+### ワーク: consent の有効期限が切れると拒否される
 
-手順5を実行すると、`suspicious_activity` は `/platform/ingest` に出るのに、`possible_littering` など他のデータセットが出てこないことがあります。このとき `audit/logs` には `action: deny` / `reason: no_matching_consent` が残ります。原因の多くは consent VC の **有効期限切れ** です。VC の有効期間 (`valid_from` 〜 `valid_to`) の働きを確認できるので、自分で原因を特定して直してください。
+配布している `examples/ha_demo/consent_*.json` の `valid_to` は `2030-12-31T23:59:59Z` なので、そのままでは期限切れは起きません。ここでは `possible_littering` の consent をわざと期限切れにして登録し、拒否が起きることを確かめてから直します。VC の有効期間 (`valid_from` 〜 `valid_to`) の働きを確認できます。
 
-#### Step 1. 監査ログで「拒否」を確認する
+#### Step 1. 期限切れの consent を登録する
 
-まず audit ログを読みます。zsh では `?` がワイルドカード扱いになるため、URL をクォートで囲みます。
+`valid_to` を過去の日付に書き換えた内容を、そのまま `/consents` に送ります。ファイルは書き換えません。consent は `vc_id` ごとに上書きされるので、手順3で登録したものが置き換わります。
+
+```bash
+sed 's/"valid_to": "2030-12-31T23:59:59Z"/"valid_to": "2026-05-01T00:00:00Z"/' examples/ha_demo/consent_possible_littering.json \
+  | curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @-
+```
+
+レスポンスが `"status":"stored"` で、`valid_to` が `2026-05-01T00:00:00Z` になっていることを確認します。
+
+続けて、手順4の `script.iw3ip_publish_demo_possible_littering` と `script.iw3ip_publish_demo_suspicious_activity` を実行します。
+
+#### Step 2. 監査ログで「拒否」を確認する
+
+audit ログを読みます。zsh では `?` がワイルドカード扱いになるため、URL をクォートで囲みます。
 
 ```bash
 curl 'http://localhost:8080/audit/logs?limit=20'
@@ -240,30 +253,32 @@ curl 'http://localhost:8080/audit/logs?limit=20'
 `action` / `dataset_id` / `reason` / `subject_did` に注目してください。
 
 ??? question "何が読み取れればよい?"
-    - 拒否されたイベントは `action: "deny"`、`reason: "no_matching_consent"`、`subject_did: "unknown"` になっています。
-    - 許可されたイベントは `action: "allow"`、`reason: "sent"` で、`subject_did` に発行者の DID が入っています。
+    - `possible_littering` は `action: "deny"`、`reason: "no_matching_consent"`、`subject_did: "unknown"` になっています。
+    - `suspicious_activity` は `action: "allow"`、`reason: "sent"` で、`subject_did` に発行者の DID が入っています。
     - consent は登録されているのに、一致するものが見つからない状態です。
 
-#### Step 2. 原因を推測する
+#### Step 3. 原因を確かめる
 
-許可されるデータセットと拒否されるデータセットで、対応する consent ファイル (`examples/ha_demo/consent_*.json`) の中身がどう違うかを見比べます。とくに `valid_from` と `valid_to` に注目してください。
-
-??? tip "ヒント"
-    `valid_from` 〜 `valid_to` が VC の有効期間です。**今日の日付がこの範囲の外**だと、その consent は一致しません。拒否されているデータセットの consent の `valid_to` が過去の日付になっていないか確認してください。
-
-#### Step 3. 直して登録し直す
-
-期限切れの consent の `valid_to` を、今日より先の日付に書き換えます。エディタで該当ファイルを開いて直しても構いませんし、まとめて延ばすこともできます (macOS の `sed` は `-i ''` が必要)。
+登録されている consent を一覧で見て、`possible_littering` と `suspicious_activity` の `valid_from` と `valid_to` を比べます。
 
 ```bash
-sed -i '' 's/"valid_to": "2026-05-01T00:00:00Z"/"valid_to": "2027-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
+curl http://localhost:8080/consents
 ```
 
-直したら、手順3と同じ要領で consent を登録し直し、各レスポンスに `"status":"stored"` が返ることを確認します。
+??? tip "ヒント"
+    `valid_from` 〜 `valid_to` が VC の有効期間です。**今日の日付がこの範囲の外**だと、その consent は一致しません。
 
-#### Step 4. もう一度イベントを送って確認する
+#### Step 4. 直して登録し直す
 
-手順4のスクリプト (または手順7の直接 publish) でイベントを送り直し、`/platform/ingest` に今度は入ることを確認します。
+元のファイル (`valid_to` が 2030 年) を登録し直し、`"status":"stored"` が返ることを確認します。
+
+```bash
+curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/ha_demo/consent_possible_littering.json
+```
+
+#### Step 5. もう一度イベントを送って確認する
+
+`script.iw3ip_publish_demo_possible_littering` をもう一度実行し、`/platform/ingest` に今度は入ることを確認します。
 
 ```bash
 curl 'http://localhost:8080/platform/ingest'
@@ -326,7 +341,7 @@ Home Assistant を使わず、同じ topic に直接 publish することもで�
 docker exec -i iw3ip-mosquitto mosquitto_pub \
   -h localhost -p 1883 \
   -t homeassistant/event/possible_littering \
-  -m @examples/ha_demo/payload_possible_littering.json
+  -m "$(cat examples/ha_demo/payload_possible_littering.json)"
 ```
 
 関連ファイル:
@@ -411,8 +426,10 @@ python3 examples/ha_demo/run_phase3_from_ingest.py \
 `execute` で特に見る点:
 
 - `evaluation.triggered` が `true`
-- `matched_counts.possible_littering = 3`
-- `matched_counts.suspicious_activity = 1`
+- `matched_counts.possible_littering` が 3 以上
+- `matched_counts.suspicious_activity` が 1 以上
+
+`/platform/ingest` はそれまでの手順で送ったイベントも保持しているため、手順4やワークで送った `park-north` のイベントが時間窓内に残っていると、その分も数えられます。ちょうど 3 と 1 で確かめたい場合は、script を実行する前に `docker compose -f infra/docker-compose.yml restart publisher` で publisher を再起動してください (蓄積はメモリ上にあるため消えます。登録した consent は残ります)。
 - `actions_executed` に 2 件の action が入る
 
 ## 補足

@@ -138,7 +138,7 @@ Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskyl
 http://localhost:5173/merchandise/<the address shown>
 ```
 
-For purchasing the item and receiving the data, see §1.4 of the [Hands-on overview](index.md). If nothing is printed, check that the course repository is up to date (`git pull`) and that `mediator-owner` was restarted.
+For purchasing the item and receiving the data, see §1.3 of the [Hands-on overview](index.md). If nothing is printed, check that the course repository is up to date (`git pull`) and that `mediator-owner` was restarted.
 
 Once event files are generated in mock mode, the next step is to try the physical serial input.
 

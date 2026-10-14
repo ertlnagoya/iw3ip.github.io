@@ -317,7 +317,12 @@ flow:
 
 1. Issue and present a ConsentVC for `dataset_id=home/event/possible_littering`
    per [SSI Wallet hands-on §1〜§5](ha-ssi-wallet.md) (allowed purposes are
-   `community_cleaning`, `research`, or `planning`) and obtain a PolicyToken
+   `community_cleaning`, `research`, or `planning`) and obtain a PolicyToken.
+   The PolicyToken is the value after `token=` on the `policy_token_issued` line in the publisher log. Copy it into `POLICY` (valid for 5 minutes):
+   ```bash
+   docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued
+   POLICY=<value after token=>
+   ```
 2. Pause MQTT if it's running
 3. POST a Stage-0-shaped event with the PolicyToken in the Bearer header:
    ```bash

@@ -121,7 +121,7 @@ git --version
 Docker version 25.0.x, build ...
 v20.x.x
 10.x.x
-cargo 1.7x.x (...)
+cargo 1.xx.x (...)
 git version 2.x.x
 ```
 

@@ -126,7 +126,7 @@ npm run dev
 Expected output:
 
 ```
-  VITE v4.x  ready in 500 ms
+  VITE v5.x  ready in 500 ms
   ➜  Local:   http://localhost:5173/
 ```
 

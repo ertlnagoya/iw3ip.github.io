@@ -90,7 +90,7 @@ flowchart TB
 
 | やってみたいこと | 進む順 |
 |---|---|
-| まず動くものを見たい | [最短起動](quickstart.md) → ハンズオン Part 1 の最初の節 |
+| まず動くものを見たい | [HA Demo Simulator](../hands-on/ha-demo-simulator.md) のみ (約 20 分) |
 | 基本の流れを一通り | 環境構築 → ハンズオン Part 1 すべて |
 | 安全な共有まで試したい | 環境構築 → Part 1 → Part 2 |
 | AI との統合まで試したい | 環境構築 → Part 1 → Part 2 → Part 3 |
@@ -150,11 +150,11 @@ flowchart TB
 
 - **PC** (macOS / Windows / Linux、メモリ 8 GB 以上推奨)
 - **インターネット接続** (初回の docker pull / npm install で必要)
+- **MetaMask** ブラウザ拡張機能 — Part 1 のマーケットプレイスでの購入操作
 
 機能拡張パートで追加で必要:
 
 - **スマートフォン** (Android / iPhone) — SSI ウォレットアプリのインストール
-- **MetaMask** ブラウザ拡張機能 — マーケットプレイスでの購入操作
 
 実機オプション (なくても可):
 

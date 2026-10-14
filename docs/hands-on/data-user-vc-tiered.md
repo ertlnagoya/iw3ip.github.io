@@ -86,7 +86,9 @@ docker compose -f infra/docker-compose.yml up -d publisher bridge mosquitto
 curl -s localhost:8080/health | jq .
 curl -s localhost:8080/.well-known/openid-credential-issuer \
   | jq '.credential_configurations_supported | keys'
-# -> ["ConsentVC", "DataUserVC", "PurchaseViewerVC", "SellerVC", "ServiceVC", "ViewerVC"]
+# -> ["ConsentVC", "DataUserVC", "PurchaseViewerVC",
+#     "PurchaseViewerVC.access", "PurchaseViewerVC.event", "PurchaseViewerVC.full",
+#     "SellerVC", "ServiceVC", "ViewerVC"]
 ```
 
 `DataUserVC` がリストに出ていれば、起動は完了です。
@@ -199,8 +201,10 @@ Tier 2 / Tier 1 では、`image_cid` / `video_cid` のキー自体が応答に�
 ## 5. 監査ログ
 
 ```bash
-curl -s localhost:8080/audit/logs | jq '.[-5:]'
+curl -s localhost:8080/audit/logs | jq '.[:5]'
 ```
+
+`/audit/logs` は新しい行から順に返すので、`.[:5]` で直近の 5 行を表示します。
 
 `vc_kind: "DataUserVC"` の verify 行と、続く `claim` / token mint /
 `/platform/data` 取得の一連が紐づくことを確認します。

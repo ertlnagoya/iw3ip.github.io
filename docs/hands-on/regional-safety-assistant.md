@@ -1,6 +1,6 @@
 # 地域安全アシスタントを動かす
 
-Phase 2 で集めたイベント (`possible_littering` など) を材料に、人の自由文の要求を AI が plan に分解して応答する、Phase 3 の基本になるサンプルです。
+Phase 2 で共有するようなイベント (`possible_littering` など) を収めたサンプルファイルを材料に、人の自由文の要求を AI が plan に分解して応答する、Phase 3 の基本になるサンプルです。
 
 > **やること**: 自由文の要求 → plan → execute の流れを通す
 >
@@ -60,7 +60,8 @@ Phase 3 では、その先として、次の流れを扱います。
 この Hands-on では、次のファイルを使います。
 
 - [assistant/app/main.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/main.py)
-- [assistant/app/planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner.py)
+- [assistant/app/rule_based_planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/rule_based_planner.py)
+- [assistant/app/planner_factory.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner_factory.py)
 - [assistant/app/evaluator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/evaluator.py)
 - [assistant/app/actuator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/actuator.py)
 - [examples/phase3_request_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_request_park_safety.json)

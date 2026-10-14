@@ -70,7 +70,7 @@ export VLM_BACKEND=ollama
 export VLM_MODEL=moondream
 export IMAGE_REDACTION_BACKEND=opencv
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
-  publisher bridge mosquitto vlm vlm-pull
+  publisher mosquitto vlm vlm-pull
 ```
 
 `vlm-pull` がモデルを取得し終わるまで待ちます（初回のみ、数 GB）。
@@ -95,7 +95,7 @@ curl -s http://localhost:8080/health | jq .
 
 ## 2. ウェブカメラから 1 枚撮る
 
-USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。OpenCV を使うので、未導入の場合は `pip install opencv-python` で入れてください。
+USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。OpenCV を使うので、未導入の場合は `pip install "opencv-python<5"` で入れてください（OpenCV 5 では `cv2.CascadeClassifier` が外れています）。
 
 ```python
 # capture_snapshot.py

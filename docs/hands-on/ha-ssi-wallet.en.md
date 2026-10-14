@@ -31,6 +31,16 @@ a Consent-VC-shaped policy JSON directly via `/consents`. This sample
 moves to the actual SSI model: **the wallet presents a VC -> verifier
 validates it -> allowed/denied**.
 
+Terms used on this page:
+
+- **OID4VCI** (OpenID for Verifiable Credential Issuance): the protocol for issuing a VC and handing it to a wallet
+- **OID4VP** (OpenID for Verifiable Presentations): the protocol for a wallet to present a VC
+- **Issuer / Verifier**: the side that issues a VC / the side that verifies a presented VC. In this hands-on, the publisher plays both roles
+- **Presentation Definition (PD)**: the verifier's request describing which VC and which fields it wants presented. Defined in the PEX (Presentation Exchange) spec
+- **SD-JWT VC**: a JWT-format VC that lets the holder disclose only selected fields
+- **did:jwk**: a DID whose identifier is the public key (JWK) itself
+- **PolicyToken**: a short-lived authorization token the publisher issues after the VC presentation is verified
+
 Pipeline:
 
 `Mobile wallet (holds VC) -> QR/Deeplink -> OID4VP Verifier -> Platform API -> Event sharing`
@@ -113,7 +123,7 @@ curl http://localhost:8080/verifier/presentation-definitions/consent-temperature
 
 Points to verify:
 
-- `input_descriptors` include constraints on `dataset_id` and `purpose`
+- `input_descriptors` include constraints on `dataset_id` and `allowed_purposes`
 - Format is `vc+sd-jwt`
 
 ## 3. Open the wallet
@@ -218,7 +228,7 @@ PolicyToken properties:
 Request:
 
 ```bash
-TOKEN=<policy_token>  # from the verifier response in §5
+TOKEN=<policy_token>  # value after token= in the publisher log line policy_token_issued (see end of this section)
 
 curl -X POST http://$HOST_IP:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \
@@ -263,13 +273,14 @@ Error cases:
 | Body `dataset_id` differs from token | 403 | `policy_token_dataset_mismatch` |
 | Unknown token | 401 | `policy_token_unknown` |
 
-To grab the token, either inspect the publisher container log when the wallet
-finishes the presentation (the `/verifier/response` body is logged), or read
-the completion screen on the phone. In a hands-on session, scraping the
-publisher log into curl is the quickest route.
+The token is returned to the wallet as the `/verifier/response` response,
+so you cannot see it from the shell where you run curl. After the presentation
+finishes, check the publisher log, find the line
+`policy_token_issued jti=... token=... dataset=... ttl=...s`, and copy the
+value after `token=` into `<policy_token>` above.
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ssi-wallet logs -f publisher | grep policy_token
+docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued
 ```
 
 ## Next steps

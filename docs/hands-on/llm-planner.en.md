@@ -50,6 +50,7 @@ Branches after that:
 
 - Docker / Docker Compose
 - `curl`
+- Python 3.11 or later (to run `uvicorn` in Stage 1 and 5.2 and `pytest` in 5.5 on the host). Run `pip install -e . pytest` at the repository top
 - the `main` branch of the `Blockchain_IoT_Marketplace` repository
 
 References:
@@ -105,11 +106,7 @@ ASSISTANT_LLM_PROVIDER=stub \
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
-Docker Compose example:
-
-```bash
-docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
-```
+`uvicorn` runs on the host Python (see "Python 3.11 or later" in the prerequisites). The Docker Compose `assistant` service starts with the rule-based planner and returns `planner_name` `rule-based-planner-v1`, so use the host for this stage.
 
 Reference screenshot:
 
@@ -154,47 +151,6 @@ Checkpoints:
 - `target_area` is `park-north`
 - `watch_events` is returned as JSON array
 
-At this point, the minimum path from natural-language request to `plan` is working. The next step is to inspect how the same planner output should be read from the frontend side.
-
-## Stage 2: Inspect the frontend demo and diagnostics
-
-### 2.5 Start the React frontend demo
-
-There is also a minimal React screen for calling the Phase 3 assistant from a browser.
-
-```bash
-docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
-docker compose -f infra/docker-compose.yml --profile assistant-ui up --build -d assistant-ui
-```
-
-Open:
-
-- `http://localhost:4173`
-
-This screen lets you check:
-
-- editing the natural-language request
-- `POST /assistant/plan`
-- `POST /assistant/execute`
-- `GET /assistant/executions`
-- badge / alert rendering for `planner_diagnostics`
-
-Screen image:
-
-![assistant-demo overview](../assets/assistant-demo-overview.svg)
-
-If you want a one-command path including the local mock LLM:
-
-```bash
-docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
-```
-
-This profile starts:
-
-- `assistant-demo`
-- `llm-mock`
-- `assistant-ui`
-
 ### 3. Inspect an English request
 
 ```bash
@@ -221,6 +177,50 @@ Example expected output:
 ```
 
 This confirms that the planner can also map an English request to `station-front`.
+
+At this point, the minimum path from natural-language request to `plan` is working. The next step is to inspect how the same planner output should be read from the frontend side.
+
+## Stage 2: Inspect the frontend demo and diagnostics
+
+### 3.5 Start the React frontend demo
+
+There is also a minimal React screen for calling the Phase 3 assistant from a browser.
+
+First stop the `uvicorn` from Stage 1 with Ctrl+C (it uses the same port 8090).
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
+docker compose -f infra/docker-compose.yml --profile assistant-ui up --build -d assistant-ui
+```
+
+Open:
+
+- `http://localhost:4173`
+
+This screen lets you check:
+
+- editing the natural-language request
+- `POST /assistant/plan`
+- `POST /assistant/execute`
+- `GET /assistant/executions`
+- badge / alert rendering for `planner_diagnostics`
+
+Screen image:
+
+![assistant-demo overview](../assets/assistant-demo-overview.svg)
+
+If you want a one-command path including the local mock LLM, stop the `assistant` and `assistant-ui` above first (`assistant-demo` also uses port 8090):
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant --profile assistant-ui down
+docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
+```
+
+This profile starts:
+
+- `assistant-demo`
+- `llm-mock`
+- `assistant-ui`
 
 ### 4. Inspect the real-API environment template
 
@@ -438,10 +438,11 @@ At this point, `planner_diagnostics` can be read from both the API and the UI. T
 
 ### 5. Switch to an OpenAI-compatible API
 
-If your API key and model are ready, start the server like this:
+Copy `.env.local.example`, set `ASSISTANT_LLM_API_KEY` (and, if needed, `ASSISTANT_LLM_MODEL` and `ASSISTANT_LLM_API_BASE_URL`) in `.env.local` to your own values, then start the server. Stop any other assistant on port 8090 first (`assistant`, `assistant-demo`, or the host `uvicorn`).
 
 ```bash
 cp .env.local.example .env.local
+# edit ASSISTANT_LLM_API_KEY etc. in .env.local
 docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
 ```
 
@@ -477,7 +478,7 @@ Docker Compose example:
 docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-mock
 ```
 
-In another terminal, start the assistant:
+In another terminal, start the assistant. Stop any other assistant on port 8090 first (the Docker `assistant`, `assistant-demo`, or `assistant-llm`):
 
 ```bash
 source examples/phase3_llm_mock.env.example
@@ -549,7 +550,7 @@ This hands-on is successful if you can confirm:
 
 ## Common issues
 
-### `source .env.local` leaves placeholder values
+### `.env.local` still has placeholder values
 
 - a real API call will not work while `REPLACE_WITH_YOUR_API_KEY` is still present
 

@@ -60,7 +60,7 @@ For a first pass, these four steps are enough.
 
 ## 1. Start the services with the VLM
 
-The VLM is opt-in. Adding `--profile vlm` also starts the Ollama service and `vlm-pull`, which pre-fetches the model.
+The VLM is opt-in. Adding `--profile vlm` also starts the Ollama service and `vlm-pull`, which pre-fetches the model. Run this at the top of the course repository (the example below assumes you cloned it under `~/program/`).
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -70,7 +70,7 @@ export VLM_BACKEND=ollama
 export VLM_MODEL=moondream
 export IMAGE_REDACTION_BACKEND=opencv
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
-  publisher bridge mosquitto vlm vlm-pull
+  publisher mosquitto vlm vlm-pull
 ```
 
 Wait until `vlm-pull` finishes fetching the model (first time only, several GB).
@@ -96,7 +96,7 @@ curl -s http://localhost:8080/health | jq .
 
 ## 2. Capture one frame from the webcam
 
-Grab a single still image from the USB webcam and save it as `snapshot.jpg`. The script uses OpenCV; install it with `pip install opencv-python` if needed.
+Grab a single still image from the USB webcam and save it as `snapshot.jpg`. The script uses OpenCV; install it with `pip install "opencv-python<5"` if needed (OpenCV 5 removed `cv2.CascadeClassifier`).
 
 ```python
 # capture_snapshot.py

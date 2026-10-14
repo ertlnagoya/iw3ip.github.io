@@ -17,7 +17,7 @@ It is not an implementation procedure but a design document that defines **what 
 
 ## Goal
 
-In the current Phase 3 sample, `planner.py` is rule-based.  
+In the current Phase 3 sample, `rule_based_planner.py` is rule-based.  
 For learning purposes it is easy to follow, but it is weak against variation in natural-language phrasing.
 
 The next step uses an LLM to:
@@ -148,21 +148,30 @@ flowchart LR
 
 Rather than embedding the LLM directly into the core, separate it into **adapter + validator + fallback**.
 
-## Planned Additional Modules
+## Implemented Modules
 
-Expected file examples:
+The following files are in `assistant/app/`.
 
+- `assistant/app/planner_interface.py`
+- `assistant/app/rule_based_planner.py`
 - `assistant/app/llm_planner.py`
+- `assistant/app/llm_provider.py`
 - `assistant/app/llm_prompt.py`
 - `assistant/app/plan_validator.py`
 - `assistant/app/planner_factory.py`
 
 Roles:
 
+- `planner_interface.py`
+  - common planner interface (`plan()` and diagnostics)
+- `rule_based_planner.py`
+  - rule-based planner that builds a plan from keywords (also used as the fallback)
 - `llm_planner.py`
-  - calls the LLM
+  - builds a plan with the LLM and falls back on failure
+- `llm_provider.py`
+  - calls the LLM (stub and OpenAI-compatible API)
 - `llm_prompt.py`
-  - manages the system prompt / developer prompt
+  - builds the system prompt and user prompt
 - `plan_validator.py`
   - checks allow lists and pydantic validation
 - `planner_factory.py`

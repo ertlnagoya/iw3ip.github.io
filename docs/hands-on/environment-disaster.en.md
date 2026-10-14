@@ -320,16 +320,29 @@ Gating every MQTT event through the wallet doesn't fit PolicyToken's
 single-use semantics. Instead, send **one event** by hand to feel the
 flow:
 
+A phone wallet cannot reach the PC's `localhost`, so open the URLs below in a PC browser with `<HOST_IP>` replaced by the PC's LAN IP (see the [Hands-on overview](index.md#host-ip) for how to find it).
+
+First, restart with the `ssi-wallet` profile.
+
+```bash
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
+```
+
 1. Issue a ConsentVC for the same dataset the main flow uses:
    ```
-   http://localhost:8080/issuer/offer?type=ConsentVC&dataset_id=home/event/flood_risk_high&purpose=disaster_response
+   http://<HOST_IP>:8080/issuer/offer?type=ConsentVC&dataset_id=home/event/flood_risk_high&purpose=disaster_response
    ```
    (allowed purposes: `disaster_response`, `safety`, `emergency_planning`)
 2. Receive in the wallet, then present:
    ```
-   http://localhost:8080/verifier/request?dataset_id=home/event/flood_risk_high&purpose=disaster_response
+   http://<HOST_IP>:8080/verifier/request?dataset_id=home/event/flood_risk_high&purpose=disaster_response
    ```
-3. Take the PolicyToken from the response and POST a Stage-0-shaped event:
+3. Take the PolicyToken and POST a Stage-0-shaped event.
+   The PolicyToken is the value after `token=` on the `policy_token_issued` line in the publisher log. Copy it into `POLICY` (valid for 5 minutes):
+   ```bash
+   docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued
+   POLICY=<value after token=>
+   ```
    ```bash
    curl -X POST http://localhost:8080/platform/ingest \
      -H "Authorization: Bearer $POLICY" \

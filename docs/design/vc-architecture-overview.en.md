@@ -1,16 +1,16 @@
-# VC architecture overview (Phase 2 / Stages 0–7)
+# VC architecture overview (Phase 2 / Stages 0–7, T, A)
 
 !!! abstract "Where this document fits"
-    A bird's-eye summary of what Phase 2 built: **5 VC kinds × 4 token
-    kinds × 7 hands-on stages**. See the individual pages for the details
-    of each spec. End-to-end behavior is verified with 75 publisher tests,
-    and all 7 stages were verified on a real iPhone.
+    A bird's-eye summary of what Phase 2 built: **6 VC kinds × 4 token
+    kinds × hands-on Stages 0–7 plus Stages T / A**. See the individual pages
+    for the details of each spec. End-to-end behavior is checked with the
+    publisher tests and on a real iPhone.
 
 ## 1. Overview
 
 **Writing data, reading data, and listing identity** are authorized by a human or a machine presenting a VC. Each VC records "who is allowed to do what" as claims, a presentation yields a short-lived token, and the APIs are gated by that token.
 
-## 2. Five VC kinds
+## 2. Six VC kinds
 
 | Kind | Role | Main claims | Expected holder |
 | --- | --- | --- | --- |
@@ -19,6 +19,7 @@
 | **ServiceVC** | M2M continuous write | `dataset_id`, `allowed_actions=["write_continuous"]` | Service (publisher etc.) |
 | **PurchaseViewerVC** | Purchase-bound read | `dataset_id`, `merchandise_address`, `tx_hash`, `buyer_eth_addr` | Human (buyer) |
 | **SellerVC** | Listing identity + dataset license | `seller_id`, `licensed_datasets[]` | Human / service (seller) |
+| **DataUserVC** | Trust attributes of the data receiver (Stage T) | `entityType`, `purpose`, `legalCompliance`, `dataHandlingPolicy`, `misuseRecord` | Human / organization (data receiver) |
 
 VCs are issued as SD-JWT VC (`vct: https://iw3ip.example/credentials/<Kind>/v1`) and held by the wallet. They are presented via OID4VP (DCQL).
 
@@ -32,6 +33,8 @@ VCs are issued as SD-JWT VC (`vct: https://iw3ip.example/credentials/<Kind>/v1`)
 | **SellerToken** | 24 h | Multiple within TTL | `POST /marketplace/register` | SellerVC |
 
 ViewerToken is issued from both ViewerVC and PurchaseViewerVC, but **the namespace is the same** (once issued, the two are treated identically). Otherwise each token kind has its own namespace and cannot be reused elsewhere (for example, using a SellerToken on ingest returns 401).
+
+DataUserVC does not issue a token on its own. At `/marketplace/claim` it is used to compute a trust score, and the result, `allowed_views` (how much of the content may be shown), is carried into the PurchaseViewerVC and the ViewerToken.
 
 ## 4. Authorization matrix (which VC gates which API)
 
@@ -50,7 +53,7 @@ Listing governance│ —               │ —              │ —          �
 
 **SellerVC does not gate the data APIs directly.** Instead, it leaves evidence of the seller's identity at listing time in the audit log, and that identity is included as `seller_did` in the buyer's `/platform/data?merchandise=` response.
 
-## 5. Seven hands-on stages
+## 5. Hands-on stages (Stages 0–7, T, A)
 
 ```
 Dependency graph of the Phase 2 hands-on
@@ -71,6 +74,9 @@ Dependency graph of the Phase 2 hands-on
                                    Service (write) × PurchaseViewer (read) combined
         ↓
   Stage 7 ── marketplace-seller-vc SellerVC (listing identity)
+
+  Stage 1 + Stage 0 ─→ Stage T ── data-user-vc-tiered  DataUserVC (content tiered by trust)
+  Stage 5 ─→ Stage A ── marketplace-mobile-app  purchase to viewing in a phone PWA
 ```
 
 Details of each stage:
@@ -84,6 +90,8 @@ Details of each stage:
 | 5 | [marketplace-vc-bridge](../hands-on/marketplace-vc-bridge.md) | bridge service + PurchaseViewerVC + `merchandise=<addr>` reverse lookup |
 | 6 | [marketplace-vc-end-to-end](../hands-on/marketplace-vc-end-to-end.md) | 4 VC kinds working together on one dataset + dataset_id obtained dynamically from `additionalInfo` |
 | 7 | [marketplace-seller-vc](../hands-on/marketplace-seller-vc.md) | SellerVC + `/marketplace/register` + on-chain `getOwner()` verification + `seller_did` included in the response |
+| T | [data-user-vc-tiered](../hands-on/data-user-vc-tiered.md) | DataUserVC + trust score + `allowed_views` to tier the `/platform/data` output |
+| A | [marketplace-mobile-app](../hands-on/marketplace-mobile-app.md) | Use `iot-market-ui` as a PWA on the phone, from purchase through VC receipt to viewing |
 
 ## 6. v1 / v2 marketplaces running side by side
 

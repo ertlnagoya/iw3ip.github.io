@@ -318,6 +318,11 @@ curl で送る**ことを勧めます。
    `dataset_id=home/event/possible_littering` を指定して ConsentVC を
    発行・提示し PolicyToken を取得 (許可 purpose は `community_cleaning` /
    `research` / `planning` のいずれか)
+   PolicyToken は publisher のログの `policy_token_issued` 行にある `token=` の後ろの値です。コピーして `POLICY` に入れます (有効期限 5 分):
+   ```bash
+   docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued
+   POLICY=<token= の後ろの値>
+   ```
 2. 本編で MQTT を回している場合は一旦止める
 3. PolicyToken を Bearer に付けて、本編と同じ形のイベントを 1 件 ingest:
    ```bash

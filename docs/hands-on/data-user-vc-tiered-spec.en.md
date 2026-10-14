@@ -160,10 +160,10 @@ The original design rejected the claim itself on a `denied` verdict. The current
 
 ## API surface (deltas only)
 
-### `POST /issuer/offer` (extended)
+### `GET /issuer/offer` (extended)
 
 ```
-?vc_kind=DataUserVC
+?type=DataUserVC
 &entity_type=GovernmentOrganization
 &purpose=CrimeSearch
 &legal_compliance=true
@@ -171,11 +171,15 @@ The original design rejected the claim itself on a `denied` verdict. The current
 &misuse_record=false
 ```
 
-For `DataUserVC`, all five attributes are required; missing → 400.
+For `DataUserVC`, `entity_type`, `legal_compliance`,
+`data_handling_policy` and `misuse_record` are required; missing → 400.
+`purpose` defaults to `read` when omitted.
 
-### `POST /verifier/request_object`
+### `GET /verifier/request` / `GET /verifier/request_object`
 
-Accepts `vc_kind=DataUserVC` and asks DCQL for the five claims.
+`GET /verifier/request?vc_kind=DataUserVC` creates the presentation
+request. The DCQL `claims` in `/verifier/request_object` (fetched by the
+wallet) ask for the five attributes above (plus `subject_id`).
 
 ### `POST /verifier/*` (presentation endpoints)
 
@@ -402,10 +406,13 @@ Sketch:
 
 ### Audit-log impact
 
-`audit/logs` now records `description_model` and `description_generated_at`
-so we can replay **which VLM output reached whom under which tier at
-which time**. If the VLM is upgraded, the same source image can produce
-different descriptions; `generated_at` separates them.
+`description_model` and `description_generated_at` are attached to
+each row of `/platform/data` (passed to receivers at every tier), not to
+`/audit/logs`. The audit row (`AuditLogRecord` in `audit/models.py`) has
+no such fields. To trace **which VLM output reached whom under which
+tier at which time**, correlate `/audit/logs` rows with `/platform/data`
+rows. If the VLM is upgraded, the same source image can produce
+different descriptions; `description_generated_at` separates them.
 
 ### Test plan (deltas)
 

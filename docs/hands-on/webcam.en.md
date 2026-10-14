@@ -120,7 +120,7 @@ Product deployed: 0xc6ba8c3233ecf65b761049ef63466945c362edd2 for file 401_webcam
 http://localhost:5173/merchandise/<the address shown>
 ```
 
-For purchasing the item and receiving the data, see §1.4 of the [Hands-on overview](index.md). If nothing is printed, check that the course repository is up to date (`git pull`) and that `mediator-owner` was restarted.
+For purchasing the item and receiving the data, see §1.3 of the [Hands-on overview](index.md). If nothing is printed, check that the course repository is up to date (`git pull`) and that `mediator-owner` was restarted.
 
 Once event files are generated in mock mode, the next step is to switch to the physical webcam and inspect the actual detections.
 
@@ -131,18 +131,29 @@ Once event files are generated in mock mode, the next step is to switch to the p
 Webcam mode uses an object-detection model (YOLO). Install the packages with `pip install ultralytics opencv-python`. On the first run the model file (`yolov8n.pt`, a few MB) is downloaded automatically.
 
 ```bash
-python3 webcam_litter_bridge.py --mode webcam --camera-index 0 --camera-id 401 --output-dir ../mediator-owner/raw_data/output
+python3 webcam_litter_bridge.py \
+  --mode webcam \
+  --camera-index 0 \
+  --camera-id 401 \
+  --output-dir ../mediator-owner/raw_data/output \
+  --litter-classes bottle,cup \
+  --linger-seconds 8 \
+  --person-away-seconds 5
 ```
 
-## Event types
+## Detection logic (simple)
 
-- `person_detected`
-- `possible_littering`
+- A person is detected -> `person_detected`
+- A `bottle/cup` stays for a certain time and no person is nearby -> `possible_littering`
 
 ## Success example
 
 - mock mode generates event files without camera hardware
 - webcam mode outputs `person_detected` or `possible_littering`
+
+## Note
+
+This detection is a simple rule of thumb (heuristic) for learning, not a strict judgment.
 
 ## Troubleshooting
 

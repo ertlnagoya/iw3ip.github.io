@@ -73,6 +73,8 @@ docker run -d --name iw3ip-ollama -p 11434:11434 -v iw3ip_ollama:/root/.ollama o
 docker exec iw3ip-ollama ollama pull moondream
 ```
 
+docker-compose.yml の `vlm` サービスはホストにポート 11434 を公開していないので、PC 上のプログラムから使えるように、別のコンテナとして起動します。
+
 **ターミナル 2: 模擬のクラウド AI**。`--ollama-url` を付けると、受け取った依頼を手元の Ollama に回して、本物らしい説明を返します。
 
 ```bash
@@ -125,7 +127,7 @@ python3 answer_program.py --out-dir results
 
 - `001_image1.jpg` (構成 A): 撮った画像そのもの
 - `002_image1.jpg` (構成 C): 顔はぼかされていますが、髪型、服、背景はそのままです。画像の隅に小さな文字があれば、それも残ります
-- `003.json` (構成 D): 画像は無く、次の文字だけです
+- `003.json` (構成 D): 画像は無く、文字だけです。`003.json` には受信の記録 (`id`、`received_at`、`tag`、`text` など) が入っていて、`text` には AI への指示文に続いて次の JSON が入っています
 
 ```json
 {"people_count": 1, "objects": ["person"], "sensitive_region_types": ["face", "unknown_sensitive"], "privacy_risk_score": 0.9}
@@ -168,17 +170,18 @@ python3 problem_program.py --out-dir results_mine
 ## 6. よくある問題
 
 - **`module 'cv2' has no attribute 'CascadeClassifier'`**: OpenCV 5 が入っています。`pip install "opencv-python<5"` で入れ直します。
-- **構成 D の意味データが `(analysis unavailable; treat as private)` になる**: publisher の解析が失敗しています。教材リポジトリを最新にして (`git pull`)、publisher を `--build` 付きで起動し直します。`SEMANTIC_ANALYZER_BACKEND=vision` を付け忘れた場合は、固定の模擬データが返ります。
+- **構成 D の意味データが `{"people_count": 0, "objects": [], "sensitive_region_types": [], "privacy_risk_score": 1.0}` になる**: publisher の解析が失敗しています。教材リポジトリのトップで `docker compose -f infra/docker-compose.yml logs publisher | grep "semantic analyze failed"` を実行し、失敗の理由を確認します。教材リポジトリを最新にして (`git pull`)、publisher を `--build` 付きで起動し直します。`SEMANTIC_ANALYZER_BACKEND=vision` を付け忘れた場合は、固定の模擬データが返ります。
 - **構成 B が `skipped: local VLM not reachable` になる**: Ollama が起動しているか (`docker ps`)、ポート 11434 で待ち受けているかを確認します。
 - **時間がかかりすぎる**: CPU だけの PC では、1 回の説明に数十秒から数分かかります。答えの長さは 120 トークンに制限しています。
 - **カメラが開けない**: [USB ウェブカメラ](webcam.md) のトラブル項目を参照するか、`--image` で画像を渡します。
 
 ## 7. 後片付け
 
-撮った画像と、模擬クラウドが受け取ったデータを削除します。
+撮った画像と、模擬クラウドが受け取ったデータを削除します。`examples/hands_on/privacy_compare` で実行し、教材リポジトリのトップに戻ってからコンテナを止めます。
 
 ```bash
 rm -rf results results_mine received
+cd ../../..
 docker rm -f iw3ip-ollama
 docker compose -f infra/docker-compose.yml down
 ```

@@ -138,7 +138,7 @@ Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskyl
 http://localhost:5173/merchandise/<表示されたアドレス>
 ```
 
-この商品を購入して受け取るまでの流れは、[ハンズオンの概要の 1.4](index.md) を参照してください。表示されない場合は、教材リポジトリが最新か (`git pull`)、`mediator-owner` を起動し直したかを確認します。
+この商品を購入して受け取るまでの流れは、[ハンズオンの概要の 1.3](index.md) を参照してください。表示されない場合は、教材リポジトリが最新か (`git pull`)、`mediator-owner` を起動し直したかを確認します。
 
 mock でイベントファイルが生成されることを確認できたら、次は実機の serial 入力を試します。
 

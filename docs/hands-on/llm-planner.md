@@ -48,6 +48,7 @@ Phase 3 の [地域安全アシスタント](regional-safety-assistant.md) の r
 
 - Docker / Docker Compose が使える
 - `curl` が使える
+- Python 3.11 以上 (段階 1 と 5.2 の `uvicorn`、5.5 の `pytest` をホストで動かすため)。リポジトリのトップで `pip install -e . pytest` を実行しておく
 - ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使う
 
 参考:
@@ -103,11 +104,7 @@ ASSISTANT_LLM_PROVIDER=stub \
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
-Docker Compose を使う場合は次を実行します。
-
-```bash
-docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
-```
+`uvicorn` はホストの Python で動かします (前提の「Python 3.11 以上」を参照)。Docker Compose の `assistant` サービスは rule-based planner で起動し、`planner_name` が `rule-based-planner-v1` になるため、この段階ではホストで起動します。
 
 参考スクリーンショット:
 
@@ -152,47 +149,6 @@ curl -X POST http://localhost:8090/assistant/plan \
 - `target_area` が `park-north`
 - `watch_events` が JSON 配列で返る
 
-ここまでで、自然言語の要求から `plan` を得る最小の経路を確認しました。次に、フロントエンドから確認する方法を見ます。
-
-## 段階 2: frontend demo と diagnostics を確認する
-
-### 2.5 React フロントデモを起動
-
-Phase 3 assistant の API をブラウザから操作する最小の React 画面もあります。
-
-```bash
-docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
-docker compose -f infra/docker-compose.yml --profile assistant-ui up --build -d assistant-ui
-```
-
-開く URL:
-
-- `http://localhost:4173`
-
-この画面で確認できること:
-
-- 自然言語要求の編集
-- `POST /assistant/plan`
-- `POST /assistant/execute`
-- `GET /assistant/executions`
-- `planner_diagnostics` の badge / alert 表示
-
-画面イメージ:
-
-![assistant-demo overview](../assets/assistant-demo-overview.svg)
-
-ローカルの mock LLM まで含めて 1 コマンドで起動する場合は、次を実行します。
-
-```bash
-docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
-```
-
-この profile で起動されるもの:
-
-- `assistant-demo`
-- `llm-mock`
-- `assistant-ui`
-
 ### 3. 英語要求で `plan` を確認
 
 ```bash
@@ -219,6 +175,50 @@ curl -X POST http://localhost:8090/assistant/plan \
 ```
 
 英語の要求でも `station-front` を読み取れることを確認します。
+
+ここまでで、自然言語の要求から `plan` を得る最小の経路を確認しました。次に、フロントエンドから確認する方法を見ます。
+
+## 段階 2: frontend demo と diagnostics を確認する
+
+### 3.5 React フロントデモを起動
+
+Phase 3 assistant の API をブラウザから操作する最小の React 画面もあります。
+
+先に、段階 1 で起動した `uvicorn` を Ctrl+C で止めます (同じ 8090 番ポートを使うため)。
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
+docker compose -f infra/docker-compose.yml --profile assistant-ui up --build -d assistant-ui
+```
+
+開く URL:
+
+- `http://localhost:4173`
+
+この画面で確認できること:
+
+- 自然言語要求の編集
+- `POST /assistant/plan`
+- `POST /assistant/execute`
+- `GET /assistant/executions`
+- `planner_diagnostics` の badge / alert 表示
+
+画面イメージ:
+
+![assistant-demo overview](../assets/assistant-demo-overview.svg)
+
+ローカルの mock LLM まで含めて 1 コマンドで起動する場合は、上の `assistant` と `assistant-ui` を止めてから次を実行します (`assistant-demo` も 8090 番ポートを使います)。
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant --profile assistant-ui down
+docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
+```
+
+この profile で起動されるもの:
+
+- `assistant-demo`
+- `llm-mock`
+- `assistant-ui`
 
 ### 4. 実 API 用の環境変数を確認
 
@@ -436,10 +436,11 @@ defineProps<{
 
 ### 5. OpenAI 互換 API に切り替える
 
-API キーや model を設定済みなら、次のように起動できます。
+`.env.local.example` をコピーし、`.env.local` の `ASSISTANT_LLM_API_KEY` (必要なら `ASSISTANT_LLM_MODEL` と `ASSISTANT_LLM_API_BASE_URL` も) を自分の値に書き換えてから起動します。8090 番ポートを使うほかの assistant (`assistant`、`assistant-demo`、ホストの `uvicorn`) は先に止めておきます。
 
 ```bash
 cp .env.local.example .env.local
+# エディタで .env.local の ASSISTANT_LLM_API_KEY などを書き換える
 docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
 ```
 
@@ -475,7 +476,7 @@ Docker Compose を使う場合は次を実行します。
 docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-mock
 ```
 
-別ターミナルで assistant を起動します。
+別ターミナルで assistant を起動します。8090 番ポートを使うほかの assistant (Docker の `assistant`、`assistant-demo`、`assistant-llm`) は先に止めておきます。
 
 ```bash
 source examples/phase3_llm_mock.env.example

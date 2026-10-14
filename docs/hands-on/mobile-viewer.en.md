@@ -112,57 +112,60 @@ Edit `.env.local` and set the host for your scenario.
 
 Restart the frontend (`npm run dev`) after editing `.env.local`.
 
-## Serve frontend on LAN
+### 1. Start the PC side on the LAN
 
 ```bash
 cd iot-market-ui
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
-## Check the PC LAN IP
+### 2. Check the PC LAN IP
 
 ```bash
 ipconfig getifaddr en0
 ```
 
-`ipconfig getifaddr en0` is a macOS command. On Windows use `ipconfig`; on Linux use `ip addr` (see also the [Hands-on overview](index.md#host-ip)). Replace `<HOST_IP>` in the following steps with the IP address you found here.
+`ipconfig getifaddr en0` is a macOS command. On Windows use `ipconfig`; on Linux use `ip addr`. Replace `<HOST_IP>` in the following steps with the IP address you found here (the [Hands-on overview](index.md#host-ip) also lists how to check it on each OS).
 
-## Confirm the mobile viewer from the smartphone
+## Check the viewer screen from the smartphone
 
-## Open from smartphone
+### 3. Open from the smartphone
 
 ```txt
 http://<HOST_IP>:5173/
 ```
 
-For an individual item (Merchandise contract address from the
-Hardhat deploy):
-
-```txt
-http://<HOST_IP>:5173/merchandise/<merchandise_address>
-```
-
-Use MetaMask mobile in-app browser for purchase actions. Add the local chain
-network to MetaMask Mobile beforehand:
-
-- RPC URL: `http://<HOST_IP>:8545` (e.g. `http://192.168.1.20:8545`)
-- Chain ID: `31337` / Currency symbol: `ETH`
-
-If MetaMask rejects the network, confirm the node was started with
-`--hostname 0.0.0.0` and that both `.env.local` and the MetaMask RPC use the
-**PC's LAN IP, not 127.0.0.1**.
-
-Example:
+Example (homepage):
 
 ```txt
 http://192.168.1.20:5173/
 ```
 
+To open an individual item directly (specify a Merchandise address deployed to Hardhat):
+
+```txt
+http://<HOST_IP>:5173/merchandise/<merchandise_address>
+```
+
+### 4. Notes on purchasing
+
+- To purchase from the smartphone, use the MetaMask Mobile in-app browser
+- Add the local chain network to MetaMask Mobile beforehand:
+    - RPC URL: `http://<HOST_IP>:8545` (e.g. `http://192.168.1.20:8545`)
+    - Chain ID: `31337` / Currency symbol: `ETH`
+- If MetaMask rejects the network, confirm the node was started with `--hostname 0.0.0.0` and that both `.env.local` and the MetaMask RPC use the **PC's LAN IP, not 127.0.0.1**
+
+### 5. What to check
+
+- The iot-market-ui search UI or a merchandise page opens on the smartphone
+- The purchase action runs on an individual Merchandise page
+- After purchase, the page moves to `/purchased/[txHash]` and shows the QR code for receiving the VC (v2)
+
 ## Success example
 
-- the iot-market-ui homepage opens from the smartphone
-- event feed and merchandise list are visible
-- purchase flow can proceed through MetaMask Mobile
+- The iot-market-ui homepage opens from the smartphone
+- You can proceed from a merchandise page to the purchase flow
+- You can reach the purchase confirmation screen through MetaMask Mobile
 
 The connection to the viewer UI is confirmed. If needed, try the purchase action; if you cannot connect, check the troubleshooting items below.
 

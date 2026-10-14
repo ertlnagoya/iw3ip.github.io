@@ -88,7 +88,9 @@ Sanity check:
 curl -s localhost:8080/health | jq .
 curl -s localhost:8080/.well-known/openid-credential-issuer \
   | jq '.credential_configurations_supported | keys'
-# -> ["ConsentVC", "DataUserVC", "PurchaseViewerVC", "SellerVC", "ServiceVC", "ViewerVC"]
+# -> ["ConsentVC", "DataUserVC", "PurchaseViewerVC",
+#     "PurchaseViewerVC.access", "PurchaseViewerVC.event", "PurchaseViewerVC.full",
+#     "SellerVC", "ServiceVC", "ViewerVC"]
 ```
 
 `DataUserVC` must appear in the list.
@@ -201,8 +203,10 @@ are dropped, not nulled).
 ## 5. Audit log
 
 ```bash
-curl -s localhost:8080/audit/logs | jq '.[-5:]'
+curl -s localhost:8080/audit/logs | jq '.[:5]'
 ```
+
+`/audit/logs` returns the newest rows first, so `.[:5]` shows the latest five.
 
 You should see a `vc_kind: "DataUserVC"` verify line, followed by the
 `claim`, the token mint, and the `/platform/data` fetch — all stitched

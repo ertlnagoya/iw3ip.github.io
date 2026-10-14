@@ -1,6 +1,6 @@
 # Run the regional safety assistant
 
-Step into Part 3: feed the events you gathered in Part 2 (`possible_littering` etc.) to an AI, let it break a free-form request into a plan, and run it.
+The basic Phase 3 sample: using a sample file of events like those shared in Phase 2 (`possible_littering` etc.), an AI breaks a person's free-form request into a plan and responds.
 
 > **What you'll do**: Free-form request → plan → execute
 >
@@ -60,7 +60,8 @@ References:
 This hands-on uses the following files.
 
 - [assistant/app/main.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/main.py)
-- [assistant/app/planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner.py)
+- [assistant/app/rule_based_planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/rule_based_planner.py)
+- [assistant/app/planner_factory.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner_factory.py)
 - [assistant/app/evaluator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/evaluator.py)
 - [assistant/app/actuator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/actuator.py)
 - [examples/phase3_request_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_request_park_safety.json)

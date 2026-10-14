@@ -124,7 +124,7 @@ curl http://localhost:8080/verifier/presentation-definitions/consent-temperature
 
 確認ポイント:
 
-- `input_descriptors` に `dataset_id` と `purpose` の制約が含まれる
+- `input_descriptors` に `dataset_id` と `allowed_purposes` の制約が含まれる
 - 形式が `vc+sd-jwt` であること
 
 ## 3. ウォレットを起動
@@ -229,7 +229,7 @@ PolicyToken の性質:
 リクエスト例:
 
 ```bash
-TOKEN=<policy_token>  # §5 の verifier レスポンスから取得
+TOKEN=<policy_token>  # publisher ログの policy_token_issued 行の token= の値 (この節の最後を参照)
 
 curl -X POST http://$HOST_IP:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \
@@ -274,13 +274,13 @@ curl "http://$HOST_IP:8080/audit/logs?limit=5"
 | body の `dataset_id` がトークンと一致しない | 403 | `policy_token_dataset_mismatch` |
 | 未知のトークン | 401 | `policy_token_unknown` |
 
-トークンを取り出すには、ウォレットからの提示完了時に
-publisher コンテナのログ（`/verifier/response` のレスポンスボディ）を確認するか、
-スマホ側で表示される完了画面を読み取ります。
-ハンズオンでは publisher ログから JSON を取得して curl に渡すのが簡便です。
+トークンは `/verifier/response` のレスポンスとしてウォレットに返るため、
+curl を打つ側からは見えません。提示が終わったら publisher のログを確認し、
+`policy_token_issued jti=... token=... dataset=... ttl=...s` の行にある
+`token=` の後ろの値をコピーして、上の `<policy_token>` に使います。
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ssi-wallet logs -f publisher | grep policy_token
+docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued
 ```
 
 ## 次のステップ

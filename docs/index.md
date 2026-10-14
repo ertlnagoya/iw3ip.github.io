@@ -82,7 +82,7 @@ flowchart TB
 
 ## まず 1 つ動かしたい場合
 
-実機なしで Phase 1 / Phase 2 の基本経路を確認したい場合は、`ha-demo-simulator` から始めてください。Phase 1〜3 は基盤の発展段階を表す区分で、[プロジェクト概要のフェーズ構成](platform-overview.md#フェーズ構成) で説明しています。
+実機なしで Phase 1 / Phase 2 の基本経路を確認したい場合は、`ha-demo-simulator` から始めてください。Phase 1〜3 は基盤の発展段階を表す区分で、[プラットフォーム概要のフェーズ構成](platform-overview.md#フェーズ構成) で説明しています。
 
 - 対応ページ: [Home Assistant Demo Simulator サンプル](hands-on/ha-demo-simulator.md)
 - 確認できること:

@@ -19,9 +19,10 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 !!! tip "Choosing a dataset"
     The example uses `home/env/temperature`, but the deploy script (Stage 6 case B)
     also creates Merchandise contracts for `home/event/possible_littering` and
-    `home/event/flood_risk_high` at the same time, so you can also run
-    Service ingest → Purchase → Viewer fetch with the same event format as Stage 0
-    (the ServiceVC / PurchaseViewerVC PDs for each dataset are already registered).
+    `home/event/flood_risk_high` at the same time. The ServiceVC / PurchaseViewerVC PDs
+    are registered only for `possible_littering`, so use `possible_littering`
+    (Merchandise #2) when you run Service ingest → Purchase → Viewer fetch with the
+    same event format as Stage 0.
 
 ## Goal
 
@@ -106,6 +107,10 @@ npx hardhat console --network localhost
 # publisher + bridge
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
+
+# Hardhat was restarted, so recreate the bridge to make it read the new chain
+# (the bridge watches from the block number at its startup, so a stale bridge misses purchases)
+docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 
 # Check the bridge log
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
@@ -252,7 +257,7 @@ open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 
 `open` is a macOS command. On Linux use `xdg-open`, on Windows (WSL) use `explorer.exe`, or paste the printed URL into a browser.
 
-Scan the QR code with the iPhone wallet and approve "IW3IP Purchase Viewer Credential". The command above sends the deeplink to an external QR generation service, so do not use it outside a local hands-on environment.
+Scan the QR code with the iPhone wallet and approve "IW3IP Purchase Viewer (Event-only)". The command above sends the deeplink to an external QR generation service, so do not use it outside a local hands-on environment.
 
 Confirm in the wallet that the VC claims contain `dataset_id: home/env/temperature`.
 
@@ -302,6 +307,8 @@ curl -s -H "Authorization: Bearer $TOKEN" \
   "dataset_id": "home/env/temperature",
   "count": 5,
   "read_count": 1,
+  "seller_did": "unknown",
+  "allowed_views": ["event"],
   "rows": [
     {"dataset_id": "home/env/temperature", "value": 31},
     {"dataset_id": "home/env/temperature", "value": 32},
@@ -333,7 +340,7 @@ Expected chain (newest first, excerpt):
 
 | Stage | raw_topic | reason | Subject |
 | --- | --- | --- | --- |
-| 1. Buyer reads | `platform/data` | `viewer_token_used:<jti>:1` | did:jwk:... (buyer) |
+| 1. Buyer reads | `platform/data` | `viewer_token_used:<jti>:1:views=event` | did:jwk:... (buyer) |
 | 2. Buyer presents | `oid4vp/response` | `ok` | did:jwk:... (buyer) |
 | 3. Buyer receives | `marketplace/issued` | `eth_did_bound:claim=...:eth=0x3C44...:tx=...` | did:jwk:... (buyer) |
 | 4. Bridge hand-off | `marketplace/claim` | `claim_received:<id>:tx=...` | eth:0x3C44... |
@@ -362,7 +369,7 @@ the holder_did is identical. In real operation they are separate devices and sep
 | E1 | Five consecutive ingests | iter 1–5 all `status: received` |
 | E2 | Bridge resolves the dataset_id on-chain | `dataset=home/env/temperature` |
 | E2 | Bridge claim issued | `claim ok jti=...` |
-| E3 | PurchaseViewerVC received | "IW3IP Purchase Viewer Credential" in the wallet |
+| E3 | PurchaseViewerVC received | "IW3IP Purchase Viewer (Event-only)" in the wallet |
 | E3 | eth_did_bound | audit `marketplace/issued` |
 | E4 | Five rows fetched by reverse lookup from the merchandise | `count: 5, rows: [..., {value: 31}, ..., {value: 35}]` |
 | E5 | The audit chain can be read | `service_token_used` and `viewer_token_used` are chained on the same dataset |

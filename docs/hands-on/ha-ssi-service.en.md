@@ -73,8 +73,9 @@ every `/platform/ingest` call.
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 PUB=$(docker ps -qf name=publisher)
 
-# Confirm ServiceVC is registered (the current release exposes 6:
-# ConsentVC / ViewerVC / ServiceVC / DataUserVC / SellerVC / PurchaseViewerVC)
+# Confirm ServiceVC is registered (the current release has 6 VC types:
+# ConsentVC / ViewerVC / ServiceVC / DataUserVC / SellerVC / PurchaseViewerVC.
+# PurchaseViewerVC also has tier entries .full / .access / .event, so 9 entries in total)
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ServiceVC
 ```
 
@@ -104,7 +105,7 @@ http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=S
 
 `vc_kind=ServiceVC` is required; without it the ConsentVC PD is selected.
 
-Right after presentation, the publisher log shows:
+Right after presentation, the publisher log (`docker logs $PUB`) shows:
 
 ```
 service_token_issued jti=... token=... dataset=home/env/temperature ttl=3600s
