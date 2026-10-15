@@ -51,11 +51,12 @@ Branches after that:
 - Python 3.11 or later (to run `uvicorn` in Stage 1 and 5.2 and `pytest` in 5.5 on the host). Create a virtual environment (venv) at the top of the `Blockchain_IoT_Marketplace` repository and install the packages into it. With Homebrew Python and similar setups, `pip install` outside a venv fails with an `externally-managed-environment` error. If `python3 --version` is older than 3.11, run the `python3 -m venv` line below with a specific version, such as `python3.11 -m venv`
 
     ```bash
+    cd ~/program/Blockchain_IoT_Marketplace
     python3 -m venv .venv && source .venv/bin/activate
     pip install fastapi uvicorn pydantic pydantic-settings httpx pytest
     ```
 
-    `pip install -e . pytest` also installs the required packages (along with the publisher's). In every newly opened terminal ("another terminal"), run `source .venv/bin/activate` before using `uvicorn`, `python`, or `pytest`. With the venv active, `python` points to the venv's Python 3
+    `pip install -e . pytest` also installs the required packages (along with the publisher's). In every newly opened terminal ("another terminal"), run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` before using `uvicorn`, `python`, or `pytest`. With the venv active, `python` points to the venv's Python 3
 - the `main` branch of the `Blockchain_IoT_Marketplace` repository
 
 References:
@@ -105,6 +106,8 @@ Rather than embedding the LLM directly in `main.py`, the replacement is isolated
 Run the following in the `Blockchain_IoT_Marketplace` repository.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 ASSISTANT_PLANNER_MODE=llm \
 ASSISTANT_PLANNER_NAME=llm-planner-stub-v1 \
 ASSISTANT_LLM_PROVIDER=stub \
@@ -116,6 +119,8 @@ uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 In another terminal:
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 curl http://localhost:8090/health
 ```
 
@@ -486,6 +491,8 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo down
 Start the mock server:
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 uvicorn examples.phase3_llm_mock_server:app --host 127.0.0.1 --port 18000
 ```
 
@@ -498,6 +505,8 @@ docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-
 In another terminal, start the assistant. In the new terminal, run `source .venv/bin/activate` at the top of the repository first. Stop any other assistant on port 8090 first (the Docker `assistant`, `assistant-demo`, or `assistant-llm`):
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 source examples/phase3_llm_mock.env.example
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```

@@ -50,7 +50,7 @@ Branches after that:
 
 - Docker / Docker Compose
 - `curl`
-- if IPFS started in [Quickstart](../setup/quickstart.en.md) is still running, stop it first from the source repository with `cd ipfs && docker compose down` (IPFS and the publisher both use port 8080)
+- if IPFS started in [Quickstart](../setup/quickstart.en.md) is still running, stop it first from the source repository with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` (IPFS and the publisher both use port 8080)
 
 Matching sample files:
 
@@ -81,6 +81,7 @@ The problem program focuses on how `topic`, `payload`, and `purpose` are combine
 `PLATFORM_INGEST_READ_ENABLED=true` enables `GET /platform/ingest`, which you use in step 6 to check the delivered data (it is a demo-only API that returns everything without authentication, so it is off by default).
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
 ```
 

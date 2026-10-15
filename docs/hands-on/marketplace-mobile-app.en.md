@@ -349,7 +349,7 @@ Safari's cache.
 **Fix**:
 
 - Turn off private browsing in Safari
-- After `git pull`, rebuild the publisher with `docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d`
+- After `git pull`, rebuild the publisher with `cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d`
 - Make another purchase and check `/my-data` again
 
 ### E. Other

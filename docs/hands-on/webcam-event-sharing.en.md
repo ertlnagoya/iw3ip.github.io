@@ -50,7 +50,7 @@ Branches after that:
 - you understand [Detect with a USB webcam (OpenCV)](webcam.md)
 - you can run [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
 - Docker / Docker Compose is available
-- If the IPFS from the [Quickstart](../setup/quickstart.en.md) is still running, stop it first (`cd ipfs && docker compose down`); IPFS and the publisher both use port 8080
+- If the IPFS from the [Quickstart](../setup/quickstart.en.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - `curl` is available
 
 Matching sample files:
@@ -104,6 +104,7 @@ The same event content is also available in `examples/payload_possible_littering
 Run the following in the source-code repository. `PLATFORM_INGEST_READ_ENABLED=true` enables `GET /platform/ingest`, which this page uses to inspect ingested data. It is a demo-only API that returns every row without authentication and is disabled (404) unless set. From Part 2 onward, reads use a token obtained by presenting a VC.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
 ```
 

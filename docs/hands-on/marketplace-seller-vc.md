@@ -389,7 +389,7 @@ SellerVC を別途発行する。
 
 **対処**: Hardhat ノードを `npx hardhat node --hostname 0.0.0.0` で起動しているか、
 `infra/.env` に `MARKETPLACE_HARDHAT_RPC=http://host.docker.internal:8545` があるかを確認し、
-`docker compose -f infra/docker-compose.yml up -d --build publisher` を再実行します。
+`cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml up -d --build publisher` を再実行します。
 publisher の `extra_hosts` は `infra/docker-compose.yml` に設定済みなので、追加は不要です。
 
 ### C. `owner_mismatch` (403)
@@ -474,6 +474,7 @@ publisher 側で consumed 扱いになり 400 を返す。
 **対処**: bridge コンテナを強制再作成して cursor をリセット:
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 sleep 5
 docker logs iw3ip-mv-bridge 2>&1 | tail -5

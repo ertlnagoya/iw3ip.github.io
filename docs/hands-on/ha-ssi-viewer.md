@@ -74,6 +74,7 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 ## 1. 起動
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 curl http://$HOST_IP:8080/health
 ```

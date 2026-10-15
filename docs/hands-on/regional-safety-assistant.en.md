@@ -120,6 +120,7 @@ Note that `plan` and `execute` are separated, and that if the request has no `ob
 Run the following in the `Blockchain_IoT_Marketplace` repository.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
 ```
 

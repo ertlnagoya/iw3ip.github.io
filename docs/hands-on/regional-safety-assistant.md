@@ -120,6 +120,7 @@ sequenceDiagram
 `Blockchain_IoT_Marketplace` リポジトリで次を実行します。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile assistant up --build -d assistant
 ```
 

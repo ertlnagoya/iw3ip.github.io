@@ -342,7 +342,7 @@ Safari のキャッシュ。
 **対処**:
 
 - Safari の private browsing をオフ
-- `git pull` 後に `docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d` で publisher を作り直す
+- `git pull` 後に `cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d` で publisher を作り直す
 - 別の購入を実行して再度 `/my-data` を確認
 
 ### E. その他

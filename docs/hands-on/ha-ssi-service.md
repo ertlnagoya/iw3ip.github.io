@@ -69,6 +69,7 @@ Bearer ヘッダで添えて `/platform/ingest` を呼び出す想定です。
 ## 1. 起動とメタデータ確認
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 PUB=$(docker ps -qf name=publisher)
 

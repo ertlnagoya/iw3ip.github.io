@@ -70,6 +70,7 @@ every `/platform/ingest` call.
 ## 1. Start and inspect metadata
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 PUB=$(docker ps -qf name=publisher)
 

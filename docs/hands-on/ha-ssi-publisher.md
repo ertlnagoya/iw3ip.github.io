@@ -50,7 +50,7 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 
 - Docker / Docker Compose が使える
 - `curl` が使える
-- [最短起動](../setup/quickstart.md) で起動した IPFS が動いたままの場合は、教材リポジトリで先に `cd ipfs && docker compose down` を実行して止めておく (IPFS と publisher がどちらもポート 8080 を使うため)
+- [最短起動](../setup/quickstart.md) で起動した IPFS が動いたままの場合は、教材リポジトリで先に `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` を実行して止めておく (IPFS と publisher がどちらもポート 8080 を使うため)
 
 対応するサンプルファイル:
 
@@ -81,6 +81,7 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 `PLATFORM_INGEST_READ_ENABLED=true` は、手順 6 で届いたデータを確かめる `GET /platform/ingest` を有効にする指定です (認証なしで全件を返すデモ用の機能のため、既定では無効です)。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
 ```
 

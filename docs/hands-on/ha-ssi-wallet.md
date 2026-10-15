@@ -106,6 +106,7 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 ## 1. 起動
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 ```
 

@@ -57,7 +57,7 @@ Branches:
 - Docker / Docker Compose
 - a browser that can open `http://localhost:8123`
 - `curl`
-- if IPFS started in [Quickstart](../setup/quickstart.en.md) is still running, stop it first from the source repository with `cd ipfs && docker compose down` (IPFS and the publisher both use port 8080)
+- if IPFS started in [Quickstart](../setup/quickstart.en.md) is still running, stop it first from the source repository with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` (IPFS and the publisher both use port 8080)
 
 This hands-on assumes the source-code repository `Blockchain_IoT_Marketplace` on the `main` branch.
 
@@ -79,6 +79,7 @@ In Phase 1, the goal is to confirm that the basic path from Home Assistant to th
 Start the simulation environment. `PLATFORM_INGEST_READ_ENABLED=true` enables `GET /platform/ingest`, which this page uses to inspect ingested data. It is a demo-only API that returns every row without authentication and is disabled (404) unless set. From Part 2 onward, reads use a token obtained by presenting a VC.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d
 ```
 

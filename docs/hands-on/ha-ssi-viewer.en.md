@@ -75,6 +75,7 @@ Pipeline:
 ## 1. Start
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 curl http://$HOST_IP:8080/health
 ```

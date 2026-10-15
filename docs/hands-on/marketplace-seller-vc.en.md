@@ -398,7 +398,7 @@ SellerVC for the target dataset.
 
 **Fix**: Check that the Hardhat node is running with `npx hardhat node --hostname 0.0.0.0`
 and that `infra/.env` contains `MARKETPLACE_HARDHAT_RPC=http://host.docker.internal:8545`,
-then run `docker compose -f infra/docker-compose.yml up -d --build publisher` again.
+then run `cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml up -d --build publisher` again.
 The publisher's `extra_hosts` is already set in `infra/docker-compose.yml`, so you do not need to add it.
 
 ### C. `owner_mismatch` (403)
@@ -480,6 +480,7 @@ the publisher treats it as consumed and returns 400.
 **Fix**: Force-recreate the bridge container to reset the cursor:
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 sleep 5
 docker logs iw3ip-mv-bridge 2>&1 | tail -5

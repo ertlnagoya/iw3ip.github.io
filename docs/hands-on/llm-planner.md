@@ -51,11 +51,12 @@ Phase 3 の [地域安全アシスタントを動かす](regional-safety-assista
 - Python 3.11 以上 (段階 1 と 5.2 の `uvicorn`、5.5 の `pytest` をホストで動かすため)。`Blockchain_IoT_Marketplace` リポジトリのトップで仮想環境 (venv) を作り、その中に必要なパッケージを入れておく。Homebrew の Python などでは、venv の外で `pip install` すると `externally-managed-environment` エラーになります。`python3 --version` が 3.11 より古い場合は、下の `python3 -m venv` を `python3.11 -m venv` のようにバージョンを指定して実行します
 
     ```bash
+    cd ~/program/Blockchain_IoT_Marketplace
     python3 -m venv .venv && source .venv/bin/activate
     pip install fastapi uvicorn pydantic pydantic-settings httpx pytest
     ```
 
-    `pip install -e . pytest` でも必要なパッケージが入ります (publisher 用のパッケージも一緒に入ります)。新しく開いたターミナル (「別ターミナル」) でも、`uvicorn`・`python`・`pytest` を使う前に `source .venv/bin/activate` を実行します。venv を有効にすると、`python` は venv の Python 3 を指します
+    `pip install -e . pytest` でも必要なパッケージが入ります (publisher 用のパッケージも一緒に入ります)。新しく開いたターミナル (「別ターミナル」) でも、`uvicorn`・`python`・`pytest` を使う前に `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を実行します。venv を有効にすると、`python` は venv の Python 3 を指します
 - ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使う
 
 参考:
@@ -105,6 +106,8 @@ LLM の呼び出しは `main.py` に直接書かず、planner の差し替えは
 `Blockchain_IoT_Marketplace` リポジトリで次を実行します。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 ASSISTANT_PLANNER_MODE=llm \
 ASSISTANT_PLANNER_NAME=llm-planner-stub-v1 \
 ASSISTANT_LLM_PROVIDER=stub \
@@ -116,6 +119,8 @@ uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 別ターミナルで起動を確認します。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 curl http://localhost:8090/health
 ```
 
@@ -486,6 +491,8 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo down
 まず mock server を起動します。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 uvicorn examples.phase3_llm_mock_server:app --host 127.0.0.1 --port 18000
 ```
 
@@ -498,6 +505,8 @@ docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-
 別ターミナルで assistant を起動します。新しいターミナルでは、リポジトリのトップで `source .venv/bin/activate` を先に実行します。8090 番ポートを使うほかの assistant (Docker の `assistant`、`assistant-demo`、`assistant-llm`) は先に止めておきます。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 source examples/phase3_llm_mock.env.example
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
