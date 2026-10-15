@@ -510,7 +510,7 @@ echo "TOKEN=$TOKEN"
 TOKEN=oJVsNtb5Un1NginSyyCcJavThu9WkTxRT6b8uhmWjRc
 ```
 
-(The full log line is also emitted: `viewer_token_issued vc_kind=PurchaseViewerVC jti=cc38f06e... token=... dataset=home/env/temperature ttl=60s`)
+(The full log line is also emitted: `viewer_token_issued vc_kind=PurchaseViewerVC jti=cc38f06e... token=... dataset=home/env/temperature ttl=60s views=event`)
 
 ---
 

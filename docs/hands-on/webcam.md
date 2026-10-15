@@ -38,7 +38,7 @@ USB ウェブカメラの画像から人物とポイ捨ての可能性を検知�
 - `webcam-bridge` が利用できる
 - 出力先のフォルダ `mediator-owner/raw_data/output` がある (無ければ手順の中で作ります)
 - 実機モードでは、PCからカメラデバイスが認識されている
-- Python 3 が使える（webcam モードでは `ultralytics` と `opencv-python` も必要。教材リポジトリのトップで仮想環境 (venv) を作り、その中に入れます (`python3 -m venv .venv && source .venv/bin/activate && pip install ultralytics "opencv-python<5"`)。新しく開いたターミナルでは `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を先に実行します。macOS では `pip` コマンドが無かったり、Homebrew の Python では venv の外で `pip install` するとエラーになったりするためです）
+- Python 3 が使える（webcam モードでは `ultralytics` と `opencv-python` も必要。教材リポジトリのトップで仮想環境 (venv) を作り、その中に入れます (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install ultralytics "opencv-python<5"`)。新しく開いたターミナルでは `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を先に実行します。macOS では `pip` コマンドが無かったり、Homebrew の Python では venv の外で `pip install` するとエラーになったりするためです）
 
 ## 演習用プログラム
 
@@ -129,7 +129,7 @@ mock でイベントファイルが生成されることを確認できたら、
 
 ### 2. 実機（USB webcam）
 
-実機モードでは、物体検出のモデル (YOLO) を使います。前提のとおり venv に `ultralytics` と `opencv-python` を入れ、その venv を有効にしたターミナルで実行します。初回の実行時に、モデルのファイル (`yolov8n.pt`、数 MB) が自動でダウンロードされます。
+実機モードでは、物体検出のモデル (YOLO) を使います。前提のとおり venv に `ultralytics` と `opencv-python` を入れ、その venv を有効にしたターミナルで、`webcam-bridge` フォルダに戻ってから (`cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge`) 実行します。初回の実行時に、モデルのファイル (`yolov8n.pt`、数 MB) が自動でダウンロードされます。
 
 ```bash
 python3 webcam_litter_bridge.py \

@@ -38,7 +38,7 @@ HUSKYLENS2（または mock の入力）の検知結果を数秒ごとにまと�
 - `sensor-bridge` が利用できる
 - 出力先のフォルダ `mediator-owner/raw_data/output` がある (無ければ手順の中で作ります)
 - シリアル接続時は、PCからデバイスのポート名が見えている
-- Python 3 が使える（serial モードでは `pyserial` も必要。教材リポジトリのトップで仮想環境 (venv) を作り、その中に入れます (`python3 -m venv .venv && source .venv/bin/activate && pip install pyserial`)。新しく開いたターミナルでは `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を先に実行します。macOS では `pip` コマンドが無かったり、Homebrew の Python では venv の外で `pip install` するとエラーになったりするためです）
+- Python 3 が使える（serial モードでは `pyserial` も必要。教材リポジトリのトップで仮想環境 (venv) を作り、その中に入れます (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install pyserial`)。新しく開いたターミナルでは `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を先に実行します。macOS では `pip` コマンドが無かったり、Homebrew の Python では venv の外で `pip install` するとエラーになったりするためです）
 
 ## 演習用プログラム
 
@@ -146,10 +146,12 @@ mock でイベントファイルが生成されることを確認できたら、
 
 ### 2. 実機（serial）
 
+`--serial-port` には、HUSKYLENS2 をつないだポートの名前を指定します。macOS では `ls /dev/tty.usbserial-* /dev/tty.usbmodem*` で確かめた名前に置き換えます (Linux では `/dev/ttyUSB0` などです)。serial モードは、前提で作った venv (`pyserial` 入り) を有効にした `sensor-bridge` フォルダで実行します。
+
 ```bash
 python3 huskylens_bridge.py \
   --mode serial \
-  --serial-port /dev/ttyUSB0 \
+  --serial-port /dev/tty.usbserial-XXXX \
   --baudrate 115200 \
   --camera-id 301 \
   --output-dir ../mediator-owner/raw_data/output

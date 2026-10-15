@@ -182,6 +182,8 @@ publisher は内部で次の順に処理します。
 Tier 2 / 3 で取得した `description_full` と Tier 1 の `description_summary` を
 並べると、**人名・固有名詞が除かれているか**を確認できます。
 
+先に、§12.4 と同じ手順で Tier 3 (12.3.a) の PurchaseViewerVC を提示し、publisher のログの `viewer_token_issued` 行 (`docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`) にある `token=` の値を `export VIEWER_TOKEN_TIER3=<token= の値>` で入れます。ViewerToken の有効期限は 60 秒なので、入れたらすぐに次を実行します。
+
 ```bash
 # Tier 3 でフルキー取得
 curl -s -H "authorization: Bearer $VIEWER_TOKEN_TIER3" \

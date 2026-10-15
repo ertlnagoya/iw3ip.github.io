@@ -44,7 +44,8 @@ flowchart LR
 ## 前提
 
 - Docker が使える
-- Python 3 と OpenCV が使える。教材リポジトリのトップで venv を作って入れます (`python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`。OpenCV 5 では、この演習で使う顔検出の機能が外れています)。`answer_program.py` / `problem_program.py` を動かすターミナルでは、`source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を先に実行します
+- [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
+- Python 3 と OpenCV が使える。教材リポジトリのトップで venv を作って入れます (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`。OpenCV 5 では、この演習で使う顔検出の機能が外れています)。`answer_program.py` / `problem_program.py` を動かすターミナルでは、`source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を先に実行します
 - 教材リポジトリが最新 (`git pull`)
 - USB ウェブカメラ (無い場合は、手元の JPEG 画像を `--image` で渡します)
 

@@ -202,7 +202,7 @@ sha256 dedup hits.
 ### 12.6 Inspecting VLM output
 
 Compare `description_full` (Tier 2/3) against `description_summary`
-(Tier 1+) to confirm proper-noun stripping:
+(Tier 1+) to confirm proper-noun stripping. First present the Tier 3 (12.3.a) PurchaseViewerVC as in §12.4, then set the `token=` value from the publisher's `viewer_token_issued` log line (`docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`) with `export VIEWER_TOKEN_TIER3=<token value>`. The ViewerToken expires after 60 seconds, so run the commands right away:
 
 ```bash
 curl -s -H "authorization: Bearer $VIEWER_TOKEN_TIER3" \

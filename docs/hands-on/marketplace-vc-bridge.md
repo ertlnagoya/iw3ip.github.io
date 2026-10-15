@@ -490,7 +490,7 @@ echo "TOKEN=$TOKEN"
 TOKEN=oJVsNtb5Un1NginSyyCcJavThu9WkTxRT6b8uhmWjRc
 ```
 
-(JSON 形式のログ全文も出ます: `viewer_token_issued vc_kind=PurchaseViewerVC jti=cc38f06e... token=... dataset=home/env/temperature ttl=60s`)
+(ログの行全体は次の形です: `viewer_token_issued vc_kind=PurchaseViewerVC jti=cc38f06e... token=... dataset=home/env/temperature ttl=60s views=event`)
 
 ---
 

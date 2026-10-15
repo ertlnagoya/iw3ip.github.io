@@ -48,7 +48,7 @@
 - [最短起動](../setup/quickstart.md) の v1 スタックを起動できる
 - [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 - USB ウェブカメラが PC から認識されている（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を一度試していると理解が早い）
-- 教材リポジトリのトップで Python 3 の仮想環境を作り、OpenCV を入れておく (`python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`)。新しく開いたターミナルでも `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を実行します。Homebrew の Python などでは、venv の外で `pip install` するとエラーになります
+- 教材リポジトリのトップで Python 3 の仮想環境を作り、OpenCV を入れておく (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`)。新しく開いたターミナルでも `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を実行します。Homebrew の Python などでは、venv の外で `pip install` するとエラーになります
 - Docker で `--profile vlm` が使える（初回はモデル pull で数 GB のダウンロード）
 
 ## 最短ルート

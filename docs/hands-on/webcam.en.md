@@ -37,7 +37,7 @@ Generate `person_detected` / `possible_littering` events with only a USB webcam,
 - `webcam-bridge` available
 - the output folder `mediator-owner/raw_data/output` exists (the steps create it if missing)
 - in webcam mode, the camera device is recognized by the PC
-- Python 3 (webcam mode also needs `ultralytics` and `opencv-python`. Install them in a virtual environment (venv) at the top of the course repository (`python3 -m venv .venv && source .venv/bin/activate && pip install ultralytics "opencv-python<5"`). In a newly opened terminal, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` first. On macOS there may be no `pip` command, and Homebrew Python rejects `pip install` outside a venv)
+- Python 3 (webcam mode also needs `ultralytics` and `opencv-python`. Install them in a virtual environment (venv) at the top of the course repository (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install ultralytics "opencv-python<5"`). In a newly opened terminal, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` first. On macOS there may be no `pip` command, and Homebrew Python rejects `pip install` outside a venv)
 
 ## Exercise Programs
 
@@ -128,7 +128,7 @@ Once event files are generated in mock mode, the next step is to switch to the p
 
 ### 2. USB webcam
 
-Webcam mode uses an object-detection model (YOLO). Install `ultralytics` and `opencv-python` into the venv as described in the prerequisites, and run the command in a terminal with that venv active. On the first run the model file (`yolov8n.pt`, a few MB) is downloaded automatically.
+Webcam mode uses an object-detection model (YOLO). Install `ultralytics` and `opencv-python` into the venv as described in the prerequisites, then, in a terminal with that venv active, go back to the `webcam-bridge` folder (`cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge`) and run the command. On the first run the model file (`yolov8n.pt`, a few MB) is downloaded automatically.
 
 ```bash
 python3 webcam_litter_bridge.py \
