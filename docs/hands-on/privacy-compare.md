@@ -63,6 +63,7 @@ flowchart LR
 **ターミナル 1: publisher** (構成 D の意味データ化に使います)。`SEMANTIC_ANALYZER_BACKEND=vision` を付けると、OpenCV で顔や文字らしい領域を検出します。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 SEMANTIC_ANALYZER_BACKEND=vision docker compose -f infra/docker-compose.yml up --build -d publisher
 curl http://localhost:8080/health
 ```
@@ -179,7 +180,7 @@ python3 problem_program.py --out-dir results_mine
 
 ## 7. 後片付け
 
-撮った画像と、模擬クラウドが受け取ったデータを削除します。`examples/hands_on/privacy_compare` で実行し、教材リポジトリのトップに戻ってからコンテナを止めます。
+ターミナル 2 の模擬クラウドを Ctrl+C で止めてから、撮った画像と、模擬クラウドが受け取ったデータを削除します。`examples/hands_on/privacy_compare` で実行し、教材リポジトリのトップに戻ってからコンテナを止めます。
 
 ```bash
 rm -rf results results_mine received

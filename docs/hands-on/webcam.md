@@ -71,7 +71,7 @@ USB ウェブカメラの画像から人物とポイ捨ての可能性を検知�
 教材リポジトリのトップ (`Blockchain_IoT_Marketplace/`) から実行します。mock モードは、カメラの代わりに疑似的なイベントを生成します (追加のパッケージは不要です)。
 
 ```bash
-cd webcam-bridge
+cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge
 mkdir -p ../mediator-owner/raw_data/output
 python3 webcam_litter_bridge.py \
   --mode mock \

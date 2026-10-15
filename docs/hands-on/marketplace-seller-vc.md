@@ -296,6 +296,7 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 bridge は、起動時に IoTMarket に登録されていた Merchandise だけを監視します。Step S3 で追加した Merchandise を購入する前に、bridge を再作成して認識させます。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 ```
 

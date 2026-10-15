@@ -304,6 +304,7 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 The bridge watches only the Merchandise that were registered in IoTMarket when it started. Before purchasing the Merchandise added in Step S3, recreate the bridge so that it picks it up.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 ```
 

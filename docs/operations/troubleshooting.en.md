@@ -112,7 +112,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 - Open `iot-market-ui/.env.local` and confirm `VITE_RPC_URL` points at the running node (default `http://127.0.0.1:8545`). If the file is missing, copy the template.
 
   ```bash
-  cd iot-market-ui
+  cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
   cp .env.example .env.local
   ```
 

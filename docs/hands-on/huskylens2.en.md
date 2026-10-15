@@ -71,7 +71,7 @@ Branches after that:
 Run from the top of the course repository (`Blockchain_IoT_Marketplace/`). Mock mode generates simulated detections in place of a device.
 
 ```bash
-cd sensor-bridge
+cd ~/program/Blockchain_IoT_Marketplace/sensor-bridge
 mkdir -p ../mediator-owner/raw_data/output
 python3 huskylens_bridge.py \
   --mode mock \

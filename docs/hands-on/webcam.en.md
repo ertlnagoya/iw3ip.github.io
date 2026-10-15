@@ -70,7 +70,7 @@ Branches after that:
 Run from the top of the course repository (`Blockchain_IoT_Marketplace/`). Mock mode generates simulated events in place of a camera (no extra packages needed).
 
 ```bash
-cd webcam-bridge
+cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge
 mkdir -p ../mediator-owner/raw_data/output
 python3 webcam_litter_bridge.py \
   --mode mock \

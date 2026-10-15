@@ -46,10 +46,10 @@
 
 ### 0. 教材リポジトリに移動
 
-すべての作業は教材リポジトリのトップ (`Blockchain_IoT_Marketplace/`) で行います。
+教材リポジトリは `~/program/Blockchain_IoT_Marketplace` にある前提です ([前提条件](prerequisites.md) で clone した場所)。新しいターミナルは別のフォルダで開くことがあるので、各ターミナルでは絶対パスで移動します。
 
 ```bash
-cd Blockchain_IoT_Marketplace
+cd ~/program/Blockchain_IoT_Marketplace
 ```
 
 ### 0.5 ホスト名 `host.docker.internal` を確認
@@ -76,7 +76,7 @@ ping -c 1 host.docker.internal
 ターミナル 1:
 
 ```bash
-cd iot-market
+cd ~/program/Blockchain_IoT_Marketplace/iot-market
 npm install   # 初回のみ
 npx hardhat node
 ```
@@ -108,7 +108,7 @@ Private Key: 0x5de4...
 ターミナル 2 (別の窓):
 
 ```bash
-cd iot-market
+cd ~/program/Blockchain_IoT_Marketplace/iot-market
 npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
 ```
 
@@ -119,7 +119,7 @@ npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
 ターミナル 3:
 
 ```bash
-cd iot-market-ui
+cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
 npm install   # 初回のみ
 npm run dev
 ```
@@ -138,7 +138,7 @@ npm run dev
 ターミナル 4:
 
 ```bash
-cd simple-storage
+cd ~/program/Blockchain_IoT_Marketplace/simple-storage
 cargo run
 ```
 
@@ -150,7 +150,7 @@ cargo run
 ターミナル 5:
 
 ```bash
-cd ipfs
+cd ~/program/Blockchain_IoT_Marketplace/ipfs
 docker compose up -d
 ```
 
@@ -168,14 +168,14 @@ docker compose ps
 ターミナル 6 (オーナー側):
 
 ```bash
-cd mediator-owner
+cd ~/program/Blockchain_IoT_Marketplace/mediator-owner
 cargo run -- settings/owner_1.yaml
 ```
 
 ターミナル 7 (購入者側):
 
 ```bash
-cd mediator-buyer
+cd ~/program/Blockchain_IoT_Marketplace/mediator-buyer
 cargo run --bin mediator-b
 ```
 

@@ -71,7 +71,7 @@ HUSKYLENS2（または mock の入力）の検知結果を数秒ごとにまと�
 教材リポジトリのトップ (`Blockchain_IoT_Marketplace/`) から実行します。mock モードは、機器の代わりに疑似的な検知結果を生成します。
 
 ```bash
-cd sensor-bridge
+cd ~/program/Blockchain_IoT_Marketplace/sensor-bridge
 mkdir -p ../mediator-owner/raw_data/output
 python3 huskylens_bridge.py \
   --mode mock \

@@ -83,7 +83,7 @@ Branches after that:
 `iot-market-ui` reads the blockchain (RPC) and publisher endpoints from `iot-market-ui/.env.local`. If it points at the wrong host, the merchandise page returns **HTTP 500** (if the file is missing, `127.0.0.1` is used for RPC and `localhost` for the publisher, so the phone cannot connect). Copy the template first and match it to your setup.
 
 ```bash
-cd iot-market-ui
+cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
 cp .env.example .env.local
 ```
 
@@ -116,7 +116,7 @@ Restart the frontend (`npm run dev`) after editing `.env.local`.
 
 ### 1. Start the PC side on the LAN
 
-Run this in the terminal that is still in `iot-market-ui` from step 0.
+First stop the `npm run dev` running in Terminal 3 of the [Quickstart](../setup/quickstart.en.md) with Ctrl+C (it uses the same port 5173; otherwise the new server starts on another port). Then run this in the terminal you moved into `iot-market-ui` in step 0.
 
 ```bash
 npm run dev -- --host 0.0.0.0 --port 5173

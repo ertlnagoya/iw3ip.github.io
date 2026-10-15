@@ -46,10 +46,10 @@ Estimated time: **approx. 15–30 min** (the first run pulls Docker images and r
 
 ### 0. Move into the lesson repo
 
-All commands run from the repo root (`Blockchain_IoT_Marketplace/`).
+The course repository is assumed to be at `~/program/Blockchain_IoT_Marketplace` (where you cloned it in [Prerequisites](prerequisites.md)). A new terminal may open in a different folder, so each terminal moves there with an absolute path.
 
 ```bash
-cd Blockchain_IoT_Marketplace
+cd ~/program/Blockchain_IoT_Marketplace
 ```
 
 ### 0.5 Check the host name `host.docker.internal`
@@ -76,7 +76,7 @@ After adding it, confirm that `ping` now gets a reply.
 Terminal 1:
 
 ```bash
-cd iot-market
+cd ~/program/Blockchain_IoT_Marketplace/iot-market
 npm install   # first time only
 npx hardhat node
 ```
@@ -108,7 +108,7 @@ Private Key: 0x5de4...
 Terminal 2:
 
 ```bash
-cd iot-market
+cd ~/program/Blockchain_IoT_Marketplace/iot-market
 npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
 ```
 
@@ -119,7 +119,7 @@ On success, contract addresses are printed.
 Terminal 3:
 
 ```bash
-cd iot-market-ui
+cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
 npm install   # first time only
 npm run dev
 ```
@@ -138,7 +138,7 @@ Open <http://localhost:5173> in a browser. If the search screen titled "IoT デ�
 Terminal 4:
 
 ```bash
-cd simple-storage
+cd ~/program/Blockchain_IoT_Marketplace/simple-storage
 cargo run
 ```
 
@@ -150,7 +150,7 @@ When `listening on 0.0.0.0:3000` appears, it has started.
 Terminal 5:
 
 ```bash
-cd ipfs
+cd ~/program/Blockchain_IoT_Marketplace/ipfs
 docker compose up -d
 ```
 
@@ -167,14 +167,14 @@ If the STATUS column of the rows whose SERVICE is `ipfs` and `postgres` starts w
 Terminal 6 (owner):
 
 ```bash
-cd mediator-owner
+cd ~/program/Blockchain_IoT_Marketplace/mediator-owner
 cargo run -- settings/owner_1.yaml
 ```
 
 Terminal 7 (buyer):
 
 ```bash
-cd mediator-buyer
+cd ~/program/Blockchain_IoT_Marketplace/mediator-buyer
 cargo run --bin mediator-b
 ```
 

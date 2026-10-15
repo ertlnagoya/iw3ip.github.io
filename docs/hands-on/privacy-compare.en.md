@@ -63,6 +63,7 @@ Run from the top of the course repository. Use three terminals.
 **Terminal 1: the publisher** (used for the semantic analysis in configuration D). With `SEMANTIC_ANALYZER_BACKEND=vision`, OpenCV detects faces and text-like regions.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 SEMANTIC_ANALYZER_BACKEND=vision docker compose -f infra/docker-compose.yml up --build -d publisher
 curl http://localhost:8080/health
 ```
@@ -179,7 +180,7 @@ Things to think about:
 
 ## 7. Clean up
 
-Delete the frames you took and the data the mock cloud received. Run this in `examples/hands_on/privacy_compare`; it returns to the top of the course repository before stopping the containers.
+Stop the mock cloud in Terminal 2 with Ctrl+C, then delete the frames you took and the data the mock cloud received. Run this in `examples/hands_on/privacy_compare`; it returns to the top of the course repository before stopping the containers.
 
 ```bash
 rm -rf results results_mine received

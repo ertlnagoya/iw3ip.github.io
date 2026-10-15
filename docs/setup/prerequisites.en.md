@@ -137,7 +137,10 @@ If you see the "Hello from Docker!" message, it is working.
 
 ### Clone the lesson repo
 
+The hands-on pages assume the course repository is at `~/program/Blockchain_IoT_Marketplace`. Clone it under `~/program` as follows.
+
 ```bash
+mkdir -p ~/program && cd ~/program
 git clone https://github.com/ertlnagoya/Blockchain_IoT_Marketplace.git
 cd Blockchain_IoT_Marketplace
 ```
@@ -148,7 +151,7 @@ The initial clone takes a few minutes (the repo is large).
 
 - [ ] All five `--version` commands print a version
 - [ ] `docker run hello-world` succeeds
-- [ ] You have a `Blockchain_IoT_Marketplace` directory
+- [ ] You have a `~/program/Blockchain_IoT_Marketplace` directory
 - [ ] (Part 1) MetaMask shows up in your browser's extensions list
 - [ ] (Part 2) iw3ip-wallet is installed on your phone
 

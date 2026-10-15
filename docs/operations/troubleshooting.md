@@ -110,7 +110,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 - `iot-market-ui/.env.local` を開き、`VITE_RPC_URL` が起動中のノード (既定は `http://127.0.0.1:8545`) を指しているか確認します。ファイルが無ければ雛形からコピーします。
 
   ```bash
-  cd iot-market-ui
+  cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
   cp .env.example .env.local
   ```
 

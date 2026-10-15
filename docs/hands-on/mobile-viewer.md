@@ -85,7 +85,7 @@ homepage `/` をスマホで開く形に読み替えてください。
 `iot-market-ui` は、ブロックチェーン (RPC) と publisher の接続先を `iot-market-ui/.env.local` から読み込みます。接続先が間違っていると、商品ページが **HTTP 500** になります (ファイルが無い場合は RPC に `127.0.0.1`、publisher に `localhost` が使われるため、スマホからは接続できません)。まず雛形をコピーして自分の環境に合わせます。
 
 ```bash
-cd iot-market-ui
+cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
 cp .env.example .env.local
 ```
 
@@ -119,7 +119,7 @@ cp .env.example .env.local
 
 ### 1. PC側をLAN公開で起動
 
-手順 0 で `iot-market-ui` に移動したままのターミナルで実行します。
+先に、[最短起動](../setup/quickstart.md) のターミナル 3 で動いている `npm run dev` を Ctrl+C で止めます (同じポート 5173 を使うため。止めないと新しいサーバーが別のポートで起動します)。そのあと、手順 0 で `iot-market-ui` に移動したターミナルで実行します。
 
 ```bash
 npm run dev -- --host 0.0.0.0 --port 5173

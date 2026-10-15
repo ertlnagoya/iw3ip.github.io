@@ -137,7 +137,10 @@ docker run --rm hello-world
 
 ### 教材リポジトリを取得
 
+ハンズオンの各ページは、教材リポジトリが `~/program/Blockchain_IoT_Marketplace` にある前提で書いています。次のとおり `~/program` の下に clone します。
+
 ```bash
+mkdir -p ~/program && cd ~/program
 git clone https://github.com/ertlnagoya/Blockchain_IoT_Marketplace.git
 cd Blockchain_IoT_Marketplace
 ```
@@ -148,7 +151,7 @@ cd Blockchain_IoT_Marketplace
 
 - [ ] 上記 5 コマンドが全部バージョン番号を返す
 - [ ] `docker run hello-world` が成功する
-- [ ] `Blockchain_IoT_Marketplace` ディレクトリができている
+- [ ] `~/program/Blockchain_IoT_Marketplace` ディレクトリができている
 - [ ] (Part 1 を進める人) MetaMask が拡張機能としてブラウザに表示されている
 - [ ] (Part 2 を進める人) スマホに iw3ip-wallet が入っている
 
