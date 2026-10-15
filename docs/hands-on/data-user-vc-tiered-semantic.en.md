@@ -53,7 +53,7 @@ cd ~/program/Blockchain_IoT_Marketplace
 # Turn profile vlm on. The Ollama service and vlm-pull (pre-pulls llava)
 # start together
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
-  publisher bridge mosquitto vlm vlm-pull
+  publisher mosquitto vlm vlm-pull
 ```
 
 Switch the publisher backends on. The compose file reads these
@@ -436,20 +436,19 @@ audit_required=...;rationale=...`, `message_hash` (sir.frame_id),
 
 We never log the source bytes, the base64-encoded rendered image,
 or any face encoding / person name derived from the SIR. `image_url`
-is recorded: it is always a publisher-internal `/media/<sha>.<ext>`
-path, and the URL alone does not let an unauthorized receiver fetch
-the image.
+is recorded (in this walkthrough you only pass the publisher's own
+`/media/<sha>.<ext>` URLs).
 
-Text-only calls at ANONYMOUS / LOW are left to the web access log and
-are not written to the audit table, so the audit table records only
-actual disclosures.
+Calls with `audit_required` false that return no image are not written
+to the audit table, whatever the trust level, so the audit table records
+only actual disclosures.
 
 ### 13.8 API reference
 
 | Endpoint | Input | Output | Notes |
 |---|---|---|---|
 | `POST /semantic/analyze` | multipart `file` + `source_device_id` form field | SIR JSON (`{frame_id, source_device_id, captured_at, scene_summary, objects, people, sensitive_regions, events, privacy_risk_score, analyzer_version}`) | Never echoes input bytes; analyzer error → `SemanticIntermediateRepresentation.empty()` |
-| `POST /semantic/render` | JSON `{trust_level?, sir, image_url?}` | `{trust_level, granted_kinds[], text_summary, event_list[], rationale, audit_required, image_b64?, image_content_type?}` | Unknown trust_level → ANONYMOUS. `image_url` is fetched only if it is a publisher-internal URL. Low-trust receivers never get `image_b64` |
+| `POST /semantic/render` | JSON `{trust_level?, sir, image_url?}` | `{trust_level, granted_kinds[], text_summary, event_list[], rationale, audit_required, image_b64?, image_content_type?}` | Unknown trust_level → ANONYMOUS. The publisher fetches `image_url` as given, with no check; pass only the publisher's own `/media/…` URLs. Low-trust receivers never get `image_b64` |
 | `POST /semantic/render_url` | JSON `{trust_level?, image_url, source_device_id?}` | same as `/semantic/render` | Fetch + analyze + render in one call. A fetch or analyze failure falls back fail-closed to an `empty()` SIR |
 
 ### 13.9 Relation to §12 VLM tier

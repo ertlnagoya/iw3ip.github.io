@@ -252,7 +252,7 @@ MetaMask をローカル Hardhat に接続します。
 
 - [Home Assistant Demo Simulator サンプル](../hands-on/ha-demo-simulator.md)
 
-これだけでも Part 1 の最初の節は試せます。
+これだけでも Part 1 の最初の節は試せます。手順 5 の IPFS を起動したままの場合は、先に `ipfs` ディレクトリで `docker compose down` を実行して止めてください。IPFS と publisher がどちらもポート 8080 を使うためです。
 
 ## よくあるつまずき
 

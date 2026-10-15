@@ -43,7 +43,7 @@
 | 使えるコマ数 | 取り上げるページ | ねらい |
 |---|---|---|
 | 1 コマ | [HA Demo Simulator](../hands-on/ha-demo-simulator.md)（20 分）→ [HA × SSI Publisher](../hands-on/ha-ssi-publisher.md)（45 分）→ ふりかえり | 同意にもとづく `allow` / `deny` と監査ログを確認する |
-| 3 コマ（上の表の 7〜9 回） | 1 回目: 上の 1 コマ分。2 回目: [最短起動](../setup/quickstart.md)（30 分）→ [USB ウェブカメラ](../hands-on/webcam.md)（30 分。mock モードで可）→ [スマホ閲覧](../hands-on/mobile-viewer.md)（20 分）。3 回目: [USB ウェブカメライベント共有](../hands-on/webcam-event-sharing.md)（45 分）→ [環境・防災イベント共有](../hands-on/environment-disaster.md)（30 分） | 取り込みから売買、イベント共有までを通す。スマホのウォレットは使わない |
+| 3 コマ（上の表の 7〜9 回） | 1 回目: 上の 1 コマ分。2 回目: [最短起動](../setup/quickstart.md)（30 分）→ [USB ウェブカメラ](../hands-on/webcam.md)（30 分。mock モードで可）→ [スマホ閲覧](../hands-on/mobile-viewer.md)（20 分）。3 回目: [USB ウェブカメライベント共有](../hands-on/webcam-event-sharing.md)（45 分）→ [環境・防災イベント共有](../hands-on/environment-disaster.md)（30 分） | 取り込みから売買、イベント共有までを通す。SSI ウォレットは使わない (スマホでの購入には MetaMask モバイルを使う) |
 | 5 コマ | 3 コマの内容に加えて、4 回目: [Consent VC](../hands-on/ha-ssi-wallet.md)（60 分）。5 回目: [Viewer VC](../hands-on/ha-ssi-viewer.md)（45 分）→ [Service VC](../hands-on/ha-ssi-service.md)（45 分） | VC の発行・提示と、書き込み・読み出し・機器間の認可の違いを確認する |
 | 発展（集中講義、卒業研究） | マーケット連携（[Stage 5](../hands-on/marketplace-vc-bridge.md)〜[Stage 7](../hands-on/marketplace-seller-vc.md)、約 4 時間）、[段階アクセス](../hands-on/data-user-vc-tiered.md)（約 4 時間）、Part 3（約 5 時間）から選ぶ | 支払いと認可の連携、信頼度に応じた出し分け、AI による判断 |
 

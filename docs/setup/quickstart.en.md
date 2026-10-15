@@ -251,7 +251,7 @@ For the shortest path focused on ingesting and observing data without physical d
 
 - [Home Assistant Demo Simulator sample](../hands-on/ha-demo-simulator.md)
 
-This alone is enough to try the first section of Part 1.
+This alone is enough to try the first section of Part 1. If IPFS from step 5 is still running, stop it first with `docker compose down` in the `ipfs` directory, because IPFS and the publisher both use port 8080.
 
 ## Common stumbles
 

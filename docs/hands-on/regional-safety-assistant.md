@@ -42,7 +42,7 @@ Phase 3 では、その先として、次の流れを扱います。
 
 - `plan` が作れたことと、`execute` で条件成立したことは別
 - イベント件数の評価と機器操作を 1 つの処理だと思うと流れが見えにくい
-- Phase 3 では問題用プログラムではなく最小実装そのものを読むため、モジュール境界に注目する必要がある
+- このページでは問題用プログラムではなく、最小実装そのものを読むため、モジュール境界に注目する必要がある
 
 ## 前提
 
@@ -67,8 +67,8 @@ Phase 3 では、その先として、次の流れを扱います。
 - [examples/phase3_request_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_request_park_safety.json)
 - [examples/phase3_events_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_events_park_safety.json)
 
-今回は Phase 3 用の `問題用プログラム / 解答用プログラム` ではなく、**最小実装そのもの**を読む形にしています。  
-理由は、Phase 3 では「planner」「evaluator」「actuator」のモジュール境界自体が学習対象だからです。
+このページでは `問題用プログラム / 解答用プログラム` ではなく、**最小実装そのもの**を読む形にしています。  
+理由は、このページでは「planner」「evaluator」「actuator」のモジュール境界自体が学習対象だからです。
 
 ## 想定シナリオ
 
@@ -111,7 +111,7 @@ sequenceDiagram
   API-->>User: execution result
 ```
 
-`plan` と `execute` が分かれている点、判定前に必要なイベントをまとめて取得する点に注目してください。
+`plan` と `execute` が分かれている点と、`execute` では要求に `observed_events` が無ければサンプルイベントファイルを読み込んで評価する点に注目してください。
 
 ## Phase 3: planner が要求をどう解釈するかを見る
 

@@ -136,7 +136,7 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 | Sub-group | publisher (Docker) | Blockchain (Hardhat) | MetaMask | SSI wallet (phone) | IPFS (encrypted) | Image proc. / LLM |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
 | **Part 1 / Capture data** | ✓ | – | – | – | – | – |
-| **Part 1 / Trade (v1)** | ✓ | ✓ | ✓ | – | ✓ | – |
+| **Part 1 / Trade (v1)** | – | ✓ | ✓ | – | ✓ | – |
 | **Part 2 / Add authentication** | ✓ | – | – | ✓ | – | – |
 | **Part 2 / Wire wallet to marketplace (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
 | **Part 2 / Process data before sharing** | ✓ | ✓ <small>(for Tier 3 e2e)</small> | ✓ <small>(same)</small> | ✓ | – | ✓ <small>(OpenCV / VLM optional)</small> |
@@ -152,7 +152,7 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 
 ### Reading the tables
 
-- **publisher**: the hands-on server. Every sub-group brings it up with `docker compose up`.
+- **publisher**: the hands-on server, started with `docker compose up`. Part 1 / Trade (v1) does not use it. v1 uses IPFS instead, and IPFS and the publisher both use port 8080, so they cannot run at the same time.
 - **Blockchain**: a local Hardhat chain plus deployed contracts. Required when the marketplace purchase is the entry point.
 - **MetaMask**: signs / sends transactions on the local chain.
 - **SSI wallet**: iw3ip-wallet (a fork of Sphereon Wallet) on a phone — receives and presents VCs.
@@ -223,7 +223,7 @@ Detailed bring-up: [Quickstart](../setup/quickstart.md).
 
 ### 1.4 View on a phone
 
-View the data you bought in §1.3 in a phone browser.
+Open the §1.3 marketplace screen in a phone browser and walk through a purchase.
 
 - [Mobile Viewer](mobile-viewer.md)
 

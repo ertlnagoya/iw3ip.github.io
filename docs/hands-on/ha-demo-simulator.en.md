@@ -57,6 +57,7 @@ Branches:
 - Docker / Docker Compose
 - a browser that can open `http://localhost:8123`
 - `curl`
+- if IPFS started in [Quickstart](../setup/quickstart.en.md) is still running, stop it first from the source repository with `cd ipfs && docker compose down` (IPFS and the publisher both use port 8080)
 
 This hands-on assumes the source-code repository `Blockchain_IoT_Marketplace` on the `main` branch.
 
@@ -428,9 +429,9 @@ Focus points in `execute`:
 - `evaluation.triggered` is `true`
 - `matched_counts.possible_littering` is 3 or more
 - `matched_counts.suspicious_activity` is 1 or more
+- `actions_executed` contains two actions
 
 `/platform/ingest` still holds the events sent in earlier steps, so any `park-north` events from step 4 or the exercise that are still inside the time window are counted too. To see exactly 3 and 1, restart the publisher with `docker compose -f infra/docker-compose.yml restart publisher` before running the script (the stored events are in memory and are cleared; registered consents are kept).
-- `actions_executed` contains two actions
 
 ## Additional notes
 

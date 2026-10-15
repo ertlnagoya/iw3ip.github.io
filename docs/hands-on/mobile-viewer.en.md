@@ -1,8 +1,8 @@
-# View purchases on a phone (v1)
+# Open the marketplace and buy on a phone (v1)
 
 Browse v1-marketplace data (current + MetaMask + encrypted IPFS) from a phone browser. The v2 VC flow is a separate page.
 
-> **What you'll do**: Open purchased data on a phone browser
+> **What you'll do**: Open the marketplace screen in a phone browser and walk through a purchase
 >
 > **Prerequisites**: v1 stack running ([Quickstart](../setup/quickstart.en.md))
 >

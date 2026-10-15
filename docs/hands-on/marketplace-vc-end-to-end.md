@@ -20,7 +20,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
     例は `home/env/temperature` ですが、deploy script (Stage 6 case B) で
     `home/event/possible_littering` と `home/event/flood_risk_high` の
     Merchandise も同時に作られます。ServiceVC / PurchaseViewerVC の PD が
-    登録されているのは `possible_littering` だけなので、Stage 0 と同じイベント形式で
+    あるのは、Stage 0 の 2 つのイベントのうち `possible_littering` だけなので、Stage 0 と同じイベント形式で
     Service ingest → Purchase → Viewer 取得を通すときは `possible_littering`
     (Merchandise #2) を使ってください。
 
@@ -79,8 +79,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 - [Stage 1](ha-ssi-wallet.md) / [Stage 3](ha-ssi-viewer.md) /
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)
   を一通り通している
-- 既存の publisher + bridge + Hardhat + iot-market-ui を稼働させたまま、
-  そのまま使う想定
+- Stage 5 の Hardhat ノードは Step E0 で起動し直す (publisher / bridge / iot-market-ui は E0 で起動・再作成する)
 - コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 - このハンズオンでは **同一 iPhone wallet が 1 人で 2 役 (seller + buyer)**
@@ -89,6 +88,8 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 ---
 
 ## Step E0. 前提環境の起動 (Stage 5 と共通)
+
+Stage 5 の Hardhat ノードが動いていれば、先にターミナル A の Hardhat ノード (と mediator) を Ctrl+C で止めてください。古いノードが 8545 番を使ったままだと新しいノードが起動できず、デプロイが古いチェーンに入って、Step E2 の表とアドレスが合わなくなります。
 
 ```bash
 # Hardhat + デプロイ (Merchandise が dataset_id を additionalInfo に持つ最新版)
@@ -121,6 +122,8 @@ docker logs iw3ip-mv-bridge 2>&1 | tail -5
 cd iot-market-ui
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
+
+Hardhat を起動し直したので、MetaMask を使う場合は Settings → Advanced → **「Clear activity tab data」** (または **「Reset Account」**) で、古いチェーンの nonce を消しておいてください。
 
 詰まったら [Stage 5 ハンズオンのトラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング) を参照してください。
 

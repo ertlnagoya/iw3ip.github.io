@@ -57,7 +57,7 @@ plugins:
             "Detect with a USB webcam (OpenCV)": USB カメラでポイ捨てを検知する (OpenCV)
             "Pull from Home Assistant (HA SSI Publisher)": Home Assistant のデータを取り込む (HA SSI Publisher)
             "Trade on the marketplace (MetaMask)": マーケットで売買する (MetaMask = ETH ウォレット)
-            "View purchases on a phone (v1)": スマホで購入データを見る (v1)
+            "Open the marketplace and buy on a phone (v1)": スマホでマーケットを開いて購入する (v1)
             "Part 2: Feature Extensions — Add auth, marketplace integration, and processing": Part 2 機能拡張 — 認証・連携・データ処理を加える
             "Add authentication (SSI wallet)": 認証してみよう (SSI ウォレット)
             "Authenticate the data provider (Consent VC / Stage 1)": データ提供者の認証 (Consent VC / Stage 1)
@@ -141,7 +141,7 @@ nav:
               - "Detect with a USB webcam (OpenCV)": hands-on/webcam.md
               - "Pull from Home Assistant (HA SSI Publisher)": hands-on/ha-ssi-publisher.md
           - "Trade on the marketplace (MetaMask)":
-              - "View purchases on a phone (v1)": hands-on/mobile-viewer.md
+              - "Open the marketplace and buy on a phone (v1)": hands-on/mobile-viewer.md
       - "Part 2: Feature Extensions — Add auth, marketplace integration, and processing":
           - "Add authentication (SSI wallet)":
               - "Authenticate the data provider (Consent VC / Stage 1)": hands-on/ha-ssi-wallet.md

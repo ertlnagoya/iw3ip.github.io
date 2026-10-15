@@ -19,8 +19,8 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 !!! tip "Choosing a dataset"
     The example uses `home/env/temperature`, but the deploy script (Stage 6 case B)
     also creates Merchandise contracts for `home/event/possible_littering` and
-    `home/event/flood_risk_high` at the same time. The ServiceVC / PurchaseViewerVC PDs
-    are registered only for `possible_littering`, so use `possible_littering`
+    `home/event/flood_risk_high` at the same time. Of the two Stage 0 event datasets,
+    only `possible_littering` has ServiceVC / PurchaseViewerVC PDs, so use `possible_littering`
     (Merchandise #2) when you run Service ingest → Purchase → Viewer fetch with the
     same event format as Stage 0.
 
@@ -78,8 +78,7 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 
 - You have gone through [Stage 1](ha-ssi-wallet.md) / [Stage 3](ha-ssi-viewer.md) /
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)
-- The existing publisher + bridge + Hardhat + iot-market-ui are assumed to stay running
-  and to be used as they are
+- The Stage 5 Hardhat node is restarted in Step E0 (publisher / bridge / iot-market-ui are started or recreated in E0)
 - `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet cloned to `~/program/iw3ip-wallet`
 - In this hands-on, **one iPhone wallet plays two roles (seller + buyer)**
@@ -88,6 +87,8 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 ---
 
 ## Step E0. Start the prerequisite environment (same as Stage 5)
+
+If the Stage 5 Hardhat node is still running, first stop the Hardhat node (and the mediator) in Terminal A with Ctrl+C. If the old node keeps port 8545, the new node cannot start, the deploy lands on the old chain, and the addresses do not match the table in Step E2.
 
 ```bash
 # Hardhat + deploy (latest version, in which Merchandise holds dataset_id in additionalInfo)
@@ -120,6 +121,8 @@ docker logs iw3ip-mv-bridge 2>&1 | tail -5
 cd iot-market-ui
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
+
+Because Hardhat was restarted, if you use MetaMask, clear the old chain's nonce with Settings → Advanced → **"Clear activity tab data"** (or **"Reset Account"**).
 
 If you get stuck, see [Troubleshooting in the Stage 5 hands-on](marketplace-vc-bridge.md#troubleshooting).
 

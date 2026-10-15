@@ -48,7 +48,7 @@ Phase 3 の [地域安全アシスタント](regional-safety-assistant.md) の r
 
 - Docker / Docker Compose が使える
 - `curl` が使える
-- Python 3.11 以上 (段階 1 と 5.2 の `uvicorn`、5.5 の `pytest` をホストで動かすため)。リポジトリのトップで `pip install -e . pytest` を実行しておく
+- Python 3.11 以上 (段階 1 と 5.2 の `uvicorn`、5.5 の `pytest` をホストで動かすため)。`pip install fastapi uvicorn pydantic pydantic-settings httpx pytest` で必要なパッケージを入れておく
 - ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使う
 
 参考:
@@ -106,10 +106,6 @@ uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 
 `uvicorn` はホストの Python で動かします (前提の「Python 3.11 以上」を参照)。Docker Compose の `assistant` サービスは rule-based planner で起動し、`planner_name` が `rule-based-planner-v1` になるため、この段階ではホストで起動します。
 
-参考スクリーンショット:
-
-![assistant-llm startup](../assets/llm-planner-compose.svg)
-
 別ターミナルで起動を確認します。
 
 ```bash
@@ -148,6 +144,12 @@ curl -X POST http://localhost:8090/assistant/plan \
 - `planner_name` が `llm-planner-stub-v1`
 - `target_area` が `park-north`
 - `watch_events` が JSON 配列で返る
+
+同じ要求を演習プログラム (解答用) から送ると、`plan` と `planner_diagnostics` の要点だけを表示します。
+
+```bash
+python examples/hands_on/phase3_llm_planner/answer_program.py --base-url http://localhost:8090
+```
 
 ### 3. 英語要求で `plan` を確認
 
@@ -207,10 +209,10 @@ docker compose -f infra/docker-compose.yml --profile assistant-ui up --build -d 
 
 ![assistant-demo overview](../assets/assistant-demo-overview.svg)
 
-ローカルの mock LLM まで含めて 1 コマンドで起動する場合は、上の `assistant` と `assistant-ui` を止めてから次を実行します (`assistant-demo` も 8090 番ポートを使います)。
+ローカルの mock LLM まで含めて 1 コマンドで起動する場合は、上の `assistant` を止めてから次を実行します (`assistant-demo` も 8090 番ポートを使います)。
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile assistant --profile assistant-ui down
+docker compose -f infra/docker-compose.yml stop assistant
 docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
 ```
 
@@ -444,6 +446,10 @@ cp .env.local.example .env.local
 docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
 ```
 
+参考スクリーンショット:
+
+![assistant-llm startup](../assets/llm-planner-compose.svg)
+
 その後は同じ `curl` を使えます。
 
 ```bash
@@ -505,7 +511,7 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 ### 5.5 演習用 pytest を使う
 
-このハンズオンには、問題用プログラムと解答用プログラムの両方に使える pytest もあります。
+このハンズオンには、問題用プログラムと解答用プログラムの両方に使える pytest もあります。問題用プログラム (`problem_program.py`) では、送る JSON を作る `build_plan_request()` (TODO 1) と、応答を要約する `summarize_plan()` (TODO 2) を実装します。
 
 まず、解答用プログラムで確認します。
 

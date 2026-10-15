@@ -88,6 +88,7 @@ git checkout main && git pull --ff-only
 # (任意) on-chain owner verify を有効にする場合のみ
 echo "MARKETPLACE_HARDHAT_RPC=http://host.docker.internal:8545" >> infra/.env
 
+# git pull 後は --build で publisher を作り直す (古いままだと owner verify が skipped のまま)
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 sleep 5
 
@@ -385,9 +386,10 @@ SellerVC を別途発行する。
 
 **原因**: publisher コンテナから host.docker.internal:8545 に到達できない。
 
-**対処**: Hardhat ノードが host で `--hostname 0.0.0.0` で起動しているか確認。
-`infra/docker-compose.yml` の publisher service に `extra_hosts` 設定を加えた
-状態で `docker compose up -d --build publisher` を再実行。
+**対処**: Hardhat ノードを `npx hardhat node --hostname 0.0.0.0` で起動しているか、
+`infra/.env` に `MARKETPLACE_HARDHAT_RPC=http://host.docker.internal:8545` があるかを確認し、
+`docker compose -f infra/docker-compose.yml up -d --build publisher` を再実行します。
+publisher の `extra_hosts` は `infra/docker-compose.yml` に設定済みなので、追加は不要です。
 
 ### C. `owner_mismatch` (403)
 

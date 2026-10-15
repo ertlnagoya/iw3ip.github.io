@@ -50,6 +50,7 @@ Branches after that:
 
 - Docker / Docker Compose
 - `curl`
+- if IPFS started in [Quickstart](../setup/quickstart.en.md) is still running, stop it first from the source repository with `cd ipfs && docker compose down` (IPFS and the publisher both use port 8080)
 
 Matching sample files:
 

@@ -106,6 +106,8 @@ Terminal D (iot-market-ui):
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
+# Rebuild the publisher and bridge from the pulled code (calls from iot-market-ui need the publisher's CORS support)
+docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 
 cd iot-market-ui
 cat > .env.local <<EOF
@@ -320,12 +322,15 @@ Safari's cache.
 
 ### D. The history in `/my-data` is empty
 
-**Cause**: Writing to `localStorage` on `/purchased/[txHash]` failed at purchase time
-(private browsing mode, for example).
+**Cause**: One of the following.
+
+- Writing to `localStorage` on `/purchased/[txHash]` failed at purchase time (private browsing mode, for example)
+- The publisher is old and lacks CORS support, so `/marketplace/claim` from `/purchased/[txHash]` failed (the history is saved only when the claim succeeds)
 
 **Fix**:
 
 - Turn off private browsing in Safari
+- After `git pull`, rebuild the publisher with `docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d`
 - Make another purchase and check `/my-data` again
 
 ### E. Other

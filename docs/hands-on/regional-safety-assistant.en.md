@@ -42,7 +42,7 @@ Branches after that:
 
 - being able to build a `plan` is different from having the conditions met at `execute`
 - treating event-count evaluation and device control as one process makes the flow hard to see
-- in Phase 3 you read the minimum implementation itself rather than a problem program, so the module boundaries deserve attention
+- this page has you read the minimum implementation itself rather than a problem program, so the module boundaries deserve attention
 
 ## Prerequisites
 
@@ -68,7 +68,7 @@ This hands-on uses the following files.
 - [examples/phase3_events_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_events_park_safety.json)
 
 Unlike the earlier workshop samples, this page points directly to the **minimum implementation itself** rather than a separate problem/answer pair.  
-That is intentional, because in Phase 3 the module boundaries between planner, evaluator, and actuator are part of what learners should understand.
+That is intentional, because on this page the module boundaries between planner, evaluator, and actuator are part of what learners should understand.
 
 ## Scenario
 
@@ -111,7 +111,7 @@ sequenceDiagram
   API-->>User: execution result
 ```
 
-Note that `plan` and `execute` are separated, and that the relevant events are gathered together before the decision.
+Note that `plan` and `execute` are separated, and that if the request has no `observed_events`, `execute` loads the sample events file and evaluates that.
 
 ## Phase 3: Inspect how the planner interprets the request
 

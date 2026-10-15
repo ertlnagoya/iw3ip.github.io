@@ -351,7 +351,9 @@ e2e (end-to-end) テストには、ハンズオンの手順をそのまま用い
    `credential_ttl_days` (既定 365 日) とした (§6 参照)
 4. 既存の `mobile-viewer.md` は v1 ベース (= 動作未実装の `/mobile`) のまま更新
    されていない。本仕様で `/purchased/[txHash]` を新設するなら、`mobile-viewer.md`
-   の刷新を M6 に含める
+   の刷新を M6 に含める。→ `mobile-viewer.md` は `/mobile` を使わず、現在の UI
+   (トップと商品ページ) で購入まで確かめる手順に改めた。`/purchased/[txHash]` 以降は
+   [Stage A](../hands-on/marketplace-mobile-app.md) で扱う
 
 ## 13. 関連ドキュメント
 

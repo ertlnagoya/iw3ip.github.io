@@ -116,7 +116,7 @@ http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=V
 `vc_kind=ViewerVC` selects `viewer-temperature.json` instead of the
 ConsentVC-side PD. Send the QR to the wallet, present the credential.
 
-Expected response:
+Response the wallet receives (for reference; it is not shown in the shell where you run curl):
 
 ```json
 {

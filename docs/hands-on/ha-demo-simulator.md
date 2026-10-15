@@ -57,6 +57,7 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 - Docker / Docker Compose が使える
 - ブラウザで `http://localhost:8123` を開ける
 - `curl` が使える
+- [最短起動](../setup/quickstart.md) で起動した IPFS が動いたままの場合は、教材リポジトリで先に `cd ipfs && docker compose down` を実行して止めておく (IPFS と publisher がどちらもポート 8080 を使うため)
 
 この Hands-on は、ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使います。
 
@@ -428,9 +429,9 @@ python3 examples/ha_demo/run_phase3_from_ingest.py \
 - `evaluation.triggered` が `true`
 - `matched_counts.possible_littering` が 3 以上
 - `matched_counts.suspicious_activity` が 1 以上
+- `actions_executed` に 2 件の action が入る
 
 `/platform/ingest` はそれまでの手順で送ったイベントも保持しているため、手順4やワークで送った `park-north` のイベントが時間窓内に残っていると、その分も数えられます。ちょうど 3 と 1 で確かめたい場合は、script を実行する前に `docker compose -f infra/docker-compose.yml restart publisher` で publisher を再起動してください (蓄積はメモリ上にあるため消えます。登録した consent は残ります)。
-- `actions_executed` に 2 件の action が入る
 
 ## 補足
 

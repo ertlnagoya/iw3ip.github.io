@@ -353,7 +353,9 @@ The e2e (end-to-end) test uses the hands-on procedure as is.
    it follows `credential_ttl_days` (default 365 days), as for the other VCs (see §6)
 4. The existing `mobile-viewer.md` is still based on v1 (= the unimplemented `/mobile`) and has not been
    updated. If this spec adds `/purchased/[txHash]`, include the rewrite of `mobile-viewer.md`
-   in M6
+   in M6. → `mobile-viewer.md` no longer uses `/mobile`; it now checks the purchase flow on the current UI
+   (home and merchandise pages). `/purchased/[txHash]` onward is covered in
+   [Stage A](../hands-on/marketplace-mobile-app.md)
 
 ## 13. Related documents
 

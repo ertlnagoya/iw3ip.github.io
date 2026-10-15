@@ -105,6 +105,8 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
+# pull したコードで publisher と bridge を作り直す (iot-market-ui からの呼び出しには publisher の CORS 対応が必要)
+docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 
 cd iot-market-ui
 cat > .env.local <<EOF
@@ -313,12 +315,15 @@ Safari のキャッシュ。
 
 ### D. `/my-data` の履歴が空になる
 
-**原因**: 購入時に `/purchased/[txHash]` で `localStorage` 書き込みが
-失敗した (private browsing モード等)。
+**原因**: 次のどちらかです。
+
+- 購入時に `/purchased/[txHash]` で `localStorage` 書き込みが失敗した (private browsing モード等)
+- publisher が古く CORS 未対応のため、`/purchased/[txHash]` からの `/marketplace/claim` が失敗した (履歴は claim が成功したときだけ保存される)
 
 **対処**:
 
 - Safari の private browsing をオフ
+- `git pull` 後に `docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d` で publisher を作り直す
 - 別の購入を実行して再度 `/my-data` を確認
 
 ### E. その他

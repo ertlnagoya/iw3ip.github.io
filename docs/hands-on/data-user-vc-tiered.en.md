@@ -208,15 +208,18 @@ curl -s localhost:8080/audit/logs | jq '.[:5]'
 
 `/audit/logs` returns the newest rows first, so `.[:5]` shows the latest five.
 
-You should see a `vc_kind: "DataUserVC"` verify line, followed by the
-`claim`, the token mint, and the `/platform/data` fetch — all stitched
-together by `holder_did` / `claim_id`.
+Reading from the bottom up, you should see the verify row with
+`raw_topic` `oid4vp/response`, then the `marketplace/claim` row, then the
+`platform/data` row.
 
 ## 6. Cross-check with tests
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
-uv run pytest tests/test_data_user_vc_tiered.py -v
+python3 -m venv .venv && source .venv/bin/activate
+pip install fastapi uvicorn pydantic pydantic-settings httpx paho-mqtt \
+  cryptography python-multipart "qrcode[pil]" pytest
+python -m pytest tests/test_data_user_vc_tiered.py -v
 ```
 
 The four pure-function tests

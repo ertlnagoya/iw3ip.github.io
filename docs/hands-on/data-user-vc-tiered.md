@@ -206,14 +206,17 @@ curl -s localhost:8080/audit/logs | jq '.[:5]'
 
 `/audit/logs` は新しい行から順に返すので、`.[:5]` で直近の 5 行を表示します。
 
-`vc_kind: "DataUserVC"` の verify 行と、続く `claim` / token mint /
-`/platform/data` 取得の一連が紐づくことを確認します。
+下から順に、`raw_topic` が `oid4vp/response` の verify 行、
+`marketplace/claim` の行、`platform/data` の行が並ぶことを確認します。
 
 ## 6. テストで突き合わせ
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
-uv run pytest tests/test_data_user_vc_tiered.py -v
+python3 -m venv .venv && source .venv/bin/activate
+pip install fastapi uvicorn pydantic pydantic-settings httpx paho-mqtt \
+  cryptography python-multipart "qrcode[pil]" pytest
+python -m pytest tests/test_data_user_vc_tiered.py -v
 ```
 
 スマートコントラクト `DataUserVerifier.sol` の重みと、`trust_score.py` の

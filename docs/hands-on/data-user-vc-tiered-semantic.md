@@ -55,7 +55,7 @@ cd ~/program/Blockchain_IoT_Marketplace
 # profile vlm を ON にする。Ollama service と vlm-pull (llava の事前 pull)
 # が一緒に立ち上がる
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
-  publisher bridge mosquitto vlm vlm-pull
+  publisher mosquitto vlm vlm-pull
 ```
 
 publisher の環境変数を VLM 用に切り替えます（compose ファイルが受け取る環境変数を
@@ -372,11 +372,9 @@ ollama に **`moondream`**（1.7 GB。llava の約 1/3 のサイズ）を入れ�
 
 ### 13.3 起動
 
-VLM tier (§12) を有効にした publisher に **`SEMANTIC_ANALYZER_BACKEND` 環境変数**
-を加えます:
-
 §12.2 の `vlm-pull` が取得するのは `VLM_MODEL` の既定値 `llava` だけです。ここでは `moondream` を使うので、
-先に取得しておきます。
+先に取得しておきます。そのうえで、VLM tier (§12) を有効にした publisher に
+**`SEMANTIC_ANALYZER_BACKEND` 環境変数**を加えて起動し直します。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -464,12 +462,11 @@ Publish ボタンとは独立して動くので、確認だけして Publish せ
 | `presentation_verified` | `owner_or_admin` または `policy_only` |
 
 **記録しないもの**: 原フレームのバイト列、base64 化されたレンダリング画像、SIR から
-派生する顔エンコーディング・人名等。`image_url` は記録します（publisher 内
-`/media/<sha>.<ext>` のみで、URL 単独では権限のない受信者が画像を取得できない設計
-のため）。
+派生する顔エンコーディング・人名等。`image_url` は記録します（この手順では publisher 自身の
+`/media/<sha>.<ext>` だけを渡します）。
 
-ANONYMOUS / LOW での text-only 呼び出しは web access log の範囲とし、audit テーブルには
-記録しません（audit テーブルの記録を「実際の開示」に絞るためです）。
+`audit_required` が False で、画像も返さなかった呼び出しは、信頼度にかかわらず
+audit テーブルに記録しません（audit テーブルの記録を「実際の開示」に絞るためです）。
 
 ### 13.8 API リファレンス
 
@@ -486,8 +483,8 @@ ANONYMOUS / LOW での text-only 呼び出しは web access log の範囲とし�
 - 入力: JSON `{trust_level?: string, sir: object, image_url?: string}`
 - 出力: `{trust_level, granted_kinds[], text_summary, event_list[], rationale,
   audit_required, image_b64?, image_content_type?}`
-- セキュリティ: `trust_level` が不明な場合は ANONYMOUS として扱います。`image_url` は publisher 内の
-  URL だけを fetch します。低信頼ユーザには image_b64 を付与しません。
+- セキュリティ: `trust_level` が不明な場合は ANONYMOUS として扱います。`image_url` は渡された
+  URL をそのまま取得します（チェックはしません）。publisher 自身の `/media/…` URL だけを渡してください。低信頼ユーザには image_b64 を付与しません。
 
 #### `POST /semantic/render_url`
 

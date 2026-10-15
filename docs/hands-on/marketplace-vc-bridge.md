@@ -23,7 +23,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
     Merchandise #4 (`home/event/flood_risk_high`) も登録されています。
     PurchaseViewerVC の Presentation Definition
     ([purchase-viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/purchase-viewer-possible-littering.json))
-    が登録されているのは `possible_littering` だけなので、Stage 0 と同じイベントで
+    があるのは、Stage 0 の 2 つのイベントのうち `possible_littering` だけなので、Stage 0 と同じイベントで
     購入動線を試すときは Merchandise #2 を使ってください。
 
 ## 目的
@@ -96,6 +96,8 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 - buyer 用に Account #2 の秘密鍵をメモする (後で MetaMask に取り込む)
 
 ### 操作
+
+[クイックスタート](../setup/quickstart.md) の Hardhat ノードと mediator (mediator-owner / mediator-buyer) が動いていれば、先にそれぞれ Ctrl+C で止めてください。古いノードが 8545 番を使ったままだと、次のコマンドが起動に失敗します。
 
 ターミナル A (起動したまま):
 

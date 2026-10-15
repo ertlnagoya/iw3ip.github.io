@@ -317,7 +317,7 @@ curl で送る**ことを勧めます。
 1. [スマホSSIウォレットサンプル §1〜§5](ha-ssi-wallet.md#1-起動) で
    `dataset_id=home/event/possible_littering` を指定して ConsentVC を
    発行・提示し PolicyToken を取得 (許可 purpose は `community_cleaning` /
-   `research` / `planning` のいずれか)
+   `research` / `planning` のいずれか)。
    PolicyToken は publisher のログの `policy_token_issued` 行にある `token=` の後ろの値です。コピーして `POLICY` に入れます (有効期限 5 分):
    ```bash
    docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued

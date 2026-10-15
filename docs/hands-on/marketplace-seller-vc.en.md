@@ -88,6 +88,7 @@ git checkout main && git pull --ff-only
 # (Optional) only when enabling on-chain owner verify
 echo "MARKETPLACE_HARDHAT_RPC=http://host.docker.internal:8545" >> infra/.env
 
+# After git pull, rebuild the publisher with --build (otherwise owner verify stays skipped)
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 sleep 5
 
@@ -394,9 +395,10 @@ SellerVC for the target dataset.
 
 **Cause**: The publisher container cannot reach host.docker.internal:8545.
 
-**Fix**: Check that the Hardhat node is running on the host with `--hostname 0.0.0.0`.
-Add the `extra_hosts` setting to the publisher service in `infra/docker-compose.yml`,
-and then run `docker compose up -d --build publisher` again.
+**Fix**: Check that the Hardhat node is running with `npx hardhat node --hostname 0.0.0.0`
+and that `infra/.env` contains `MARKETPLACE_HARDHAT_RPC=http://host.docker.internal:8545`,
+then run `docker compose -f infra/docker-compose.yml up -d --build publisher` again.
+The publisher's `extra_hosts` is already set in `infra/docker-compose.yml`, so you do not need to add it.
 
 ### C. `owner_mismatch` (403)
 

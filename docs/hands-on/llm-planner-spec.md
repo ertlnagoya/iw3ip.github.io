@@ -17,7 +17,7 @@
 
 ## 目的
 
-現在の Phase 3 サンプルでは、`rule_based_planner.py` は rule-based です。  
+現在の Phase 3 サンプルの planner (`rule_based_planner.py`) は、キーワードで場所・イベント・操作を決める rule-based 方式です。  
 学習用としては分かりやすい一方、自然言語の表現ゆれに弱いという課題があります。
 
 次段階では LLM を使って以下を実現します。

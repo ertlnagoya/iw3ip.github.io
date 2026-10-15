@@ -65,7 +65,7 @@ Branches after that:
 
 ## Phase 1: Confirm the pipeline in mock mode
 
-## Mock first
+### 1. Mock first
 
 Run from the top of the course repository (`Blockchain_IoT_Marketplace/`). Mock mode generates simulated events in place of a camera (no extra packages needed).
 
@@ -126,7 +126,7 @@ Once event files are generated in mock mode, the next step is to switch to the p
 
 ## Phase 1: Inspect detections in webcam mode
 
-## USB webcam
+### 2. USB webcam
 
 Webcam mode uses an object-detection model (YOLO). Install the packages with `pip install ultralytics opencv-python`. On the first run the model file (`yolov8n.pt`, a few MB) is downloaded automatically.
 
@@ -141,17 +141,23 @@ python3 webcam_litter_bridge.py \
   --person-away-seconds 5
 ```
 
-## Detection logic (simple)
+### 3. Detection logic (simple)
 
 - A person is detected -> `person_detected`
 - A `bottle/cup` stays for a certain time and no person is nearby -> `possible_littering`
+
+### 4. Check points
+
+- `*_webcam_event_*.txt` files are generated
+- The `event_type` in the file is `person_detected` or `possible_littering`
+- The `mediator-owner` terminal prints `Product deployed: 0x... for file 401_webcam_event_...txt`
 
 ## Success example
 
 - mock mode generates event files without camera hardware
 - webcam mode outputs `person_detected` or `possible_littering`
 
-## Note
+### 5. Note
 
 This detection is a simple rule of thumb (heuristic) for learning, not a strict judgment.
 

@@ -20,9 +20,9 @@ This is the core v2 hands-on. A marketplace purchase triggers the issuance of a 
     The example uses `home/env/temperature`, but the deploy script from
     Stage 6 case B onward also registers Merchandise #2
     (`home/event/possible_littering`) and Merchandise #4
-    (`home/event/flood_risk_high`). A PurchaseViewerVC Presentation Definition
-    ([purchase-viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/purchase-viewer-possible-littering.json))
-    is registered only for `possible_littering`, so use Merchandise #2 when you
+    (`home/event/flood_risk_high`). Of the two Stage 0 event datasets, only
+    `possible_littering` has a PurchaseViewerVC Presentation Definition
+    ([purchase-viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/purchase-viewer-possible-littering.json)), so use Merchandise #2 when you
     try the purchase flow with the same events as Stage 0.
 
 ## Goal
@@ -97,6 +97,8 @@ is added to **v1 (the current marketplace + MetaMask + encrypted IPFS delivery)*
 - Note the private key of Account #2 for the buyer (you import it into MetaMask later)
 
 ### Steps
+
+If the Hardhat node and the mediators (mediator-owner / mediator-buyer) from the [Quickstart](../setup/quickstart.md) are still running, first stop each of them with Ctrl+C. If the old node keeps port 8545, the next command fails to start.
 
 Terminal A (leave it running):
 

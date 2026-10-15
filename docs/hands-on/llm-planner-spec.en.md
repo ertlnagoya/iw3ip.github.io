@@ -17,7 +17,7 @@ It is not an implementation procedure but a design document that defines **what 
 
 ## Goal
 
-In the current Phase 3 sample, `rule_based_planner.py` is rule-based.  
+The planner in the current Phase 3 sample (`rule_based_planner.py`) is rule-based: it picks the location, event, and actions by keyword matching.  
 For learning purposes it is easy to follow, but it is weak against variation in natural-language phrasing.
 
 The next step uses an LLM to:

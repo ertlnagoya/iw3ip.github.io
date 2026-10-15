@@ -10,8 +10,6 @@ Replace the rule-based planner in the [regional safety assistant](regional-safet
 >
 > **Time**: ~60 min
 
-This hands-on extends the Phase 3 [Regional Safety Assistant sample](regional-safety-assistant.md) and demonstrates the minimum path for **replacing the rule-based planner with an LLM planner**.
-
 This page is organized in three stages:
 
 1. reproduce the flow locally with the `stub` provider
@@ -50,7 +48,7 @@ Branches after that:
 
 - Docker / Docker Compose
 - `curl`
-- Python 3.11 or later (to run `uvicorn` in Stage 1 and 5.2 and `pytest` in 5.5 on the host). Run `pip install -e . pytest` at the repository top
+- Python 3.11 or later (to run `uvicorn` in Stage 1 and 5.2 and `pytest` in 5.5 on the host). Install the packages with `pip install fastapi uvicorn pydantic pydantic-settings httpx pytest`
 - the `main` branch of the `Blockchain_IoT_Marketplace` repository
 
 References:
@@ -108,10 +106,6 @@ uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 
 `uvicorn` runs on the host Python (see "Python 3.11 or later" in the prerequisites). The Docker Compose `assistant` service starts with the rule-based planner and returns `planner_name` `rule-based-planner-v1`, so use the host for this stage.
 
-Reference screenshot:
-
-![assistant-llm startup](../assets/llm-planner-compose.svg)
-
 In another terminal:
 
 ```bash
@@ -150,6 +144,12 @@ Checkpoints:
 - `planner_name` is `llm-planner-stub-v1`
 - `target_area` is `park-north`
 - `watch_events` is returned as JSON array
+
+Sending the same request from the exercise program (answer version) prints only the key parts of `plan` and `planner_diagnostics`:
+
+```bash
+python examples/hands_on/phase3_llm_planner/answer_program.py --base-url http://localhost:8090
+```
 
 ### 3. Inspect an English request
 
@@ -209,10 +209,10 @@ Screen image:
 
 ![assistant-demo overview](../assets/assistant-demo-overview.svg)
 
-If you want a one-command path including the local mock LLM, stop the `assistant` and `assistant-ui` above first (`assistant-demo` also uses port 8090):
+If you want a one-command path including the local mock LLM, stop the `assistant` above first (`assistant-demo` also uses port 8090):
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile assistant --profile assistant-ui down
+docker compose -f infra/docker-compose.yml stop assistant
 docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
 ```
 
@@ -446,6 +446,10 @@ cp .env.local.example .env.local
 docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
 ```
 
+Reference screenshot:
+
+![assistant-llm startup](../assets/llm-planner-compose.svg)
+
 Then call the same endpoint:
 
 ```bash
@@ -507,7 +511,7 @@ Checkpoints:
 
 ### 5.5 Use the exercise pytest
 
-This hands-on also includes a reusable pytest file for both the problem and answer programs.
+This hands-on also includes a reusable pytest file for both the problem and answer programs. In the problem program (`problem_program.py`) you implement `build_plan_request()` (TODO 1), which builds the JSON to send, and `summarize_plan()` (TODO 2), which summarizes the response.
 
 First, validate the answer program:
 

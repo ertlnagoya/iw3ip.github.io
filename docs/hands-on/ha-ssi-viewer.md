@@ -119,7 +119,7 @@ http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=V
 
 QR または deeplink でウォレットを開き、ViewerVC を選んで提示します。
 
-期待結果:
+ウォレットが受け取るレスポンス (参考。curl を打つ側には表示されません):
 
 ```json
 {
