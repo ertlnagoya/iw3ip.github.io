@@ -146,7 +146,7 @@ mock でイベントファイルが生成されることを確認できたら、
 
 ### 2. 実機（serial）
 
-`--serial-port` には、HUSKYLENS2 をつないだポートの名前を指定します。macOS では `ls /dev/tty.usbserial-* /dev/tty.usbmodem*` で確かめた名前に置き換えます (Linux では `/dev/ttyUSB0` などです)。serial モードは、前提で作った venv (`pyserial` 入り) を有効にした `sensor-bridge` フォルダで実行します。
+`--serial-port` には、HUSKYLENS2 をつないだポートの名前を指定します。macOS では `ls /dev/tty.usb*` で確かめた名前に置き換えます (Linux では `/dev/ttyUSB0` などです)。serial モードは、前提で作った venv (`pyserial` 入り) を有効にした `sensor-bridge` フォルダで実行します。
 
 ```bash
 python3 huskylens_bridge.py \
@@ -174,7 +174,7 @@ python3 huskylens_bridge.py \
 - 症状: `pyserial` が見つからない
   - 対応: venv を有効にして (`source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate`) `pip install pyserial` を実行し、同じターミナルで実行し直す
 - 症状: シリアルポート名が分からない
-  - 確認: `/dev/tty.usbserial-*` などのデバイス名を確認
+  - 確認: macOS では `ls /dev/tty.usb*` で `/dev/tty.usbserial-…` や `/dev/tty.usbmodem…` のデバイス名を確認
 - 症状: デバイスが読めない
   - 確認: ケーブルが給電専用でなく通信対応か
   - 確認: macOS / Linux の権限やポート名が正しいか

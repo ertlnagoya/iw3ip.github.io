@@ -79,7 +79,7 @@ The `vlm` service in docker-compose.yml does not publish port 11434 to the host,
 **Terminal 2: the mock cloud AI**. With `--ollama-url`, it forwards each request to the local Ollama and returns a realistic description.
 
 ```bash
-cd examples/hands_on/privacy_compare
+cd ~/program/Blockchain_IoT_Marketplace/examples/hands_on/privacy_compare
 python3 mock_cloud_server.py --port 18080 --ollama-url http://localhost:11434 --ollama-model moondream
 ```
 
@@ -93,7 +93,8 @@ python3 mock_cloud_server.py --port 18080 --ollama-url http://localhost:11434 --
 Run the comparison in **terminal 3**. It takes one frame from the webcam and hands it to AI in the four configurations in turn. Without a camera, add `--image picture.jpg`.
 
 ```bash
-cd examples/hands_on/privacy_compare
+cd ~/program/Blockchain_IoT_Marketplace/examples/hands_on/privacy_compare
+source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate
 python3 answer_program.py --out-dir results
 ```
 

@@ -146,7 +146,7 @@ Once event files are generated in mock mode, the next step is to try the physica
 
 ## Real device (serial)
 
-For `--serial-port`, give the name of the port the HUSKYLENS2 is connected to. On macOS, replace it with the name you find with `ls /dev/tty.usbserial-* /dev/tty.usbmodem*` (on Linux it is something like `/dev/ttyUSB0`). Run serial mode in the `sensor-bridge` folder with the venv from the prerequisites (with `pyserial`) active.
+For `--serial-port`, give the name of the port the HUSKYLENS2 is connected to. On macOS, replace it with the name you find with `ls /dev/tty.usb*` (on Linux it is something like `/dev/ttyUSB0`). Run serial mode in the `sensor-bridge` folder with the venv from the prerequisites (with `pyserial`) active.
 
 ```bash
 python3 huskylens_bridge.py --mode serial --serial-port /dev/tty.usbserial-XXXX --output-dir ../mediator-owner/raw_data/output
@@ -168,7 +168,7 @@ python3 huskylens_bridge.py --mode serial --serial-port /dev/tty.usbserial-XXXX 
 - Symptom: `pyserial` is missing
   - Action: activate the venv (`source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate`), run `pip install pyserial`, and rerun in the same terminal
 - Symptom: the serial port is unknown
-  - Check: `/dev/ttyUSB0`, `/dev/tty.usbserial-*`, or the OS device manager
+  - Check: on macOS, run `ls /dev/tty.usb*` to find `/dev/tty.usbserial-…` or `/dev/tty.usbmodem…`; on Linux, `/dev/ttyUSB0`; or the OS device manager
 - Symptom: no event file is created
   - Check: the output folder (`../mediator-owner/raw_data/output`) exists. If not, create it with `mkdir -p ../mediator-owner/raw_data/output`
 - Symptom: events are not registered as merchandise (`Product deployed` is not printed)

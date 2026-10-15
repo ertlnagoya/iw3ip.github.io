@@ -79,7 +79,7 @@ docker-compose.yml の `vlm` サービスはホストにポート 11434 を公�
 **ターミナル 2: 模擬のクラウド AI**。`--ollama-url` を付けると、受け取った依頼を手元の Ollama に回して、本物らしい説明を返します。
 
 ```bash
-cd examples/hands_on/privacy_compare
+cd ~/program/Blockchain_IoT_Marketplace/examples/hands_on/privacy_compare
 python3 mock_cloud_server.py --port 18080 --ollama-url http://localhost:11434 --ollama-model moondream
 ```
 
@@ -93,7 +93,8 @@ python3 mock_cloud_server.py --port 18080 --ollama-url http://localhost:11434 --
 **ターミナル 3** で比較を実行します。ウェブカメラから 1 枚撮って、4 つの構成で順に AI に渡します。カメラが無い場合は `--image 画像.jpg` を付けます。
 
 ```bash
-cd examples/hands_on/privacy_compare
+cd ~/program/Blockchain_IoT_Marketplace/examples/hands_on/privacy_compare
+source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate
 python3 answer_program.py --out-dir results
 ```
 
