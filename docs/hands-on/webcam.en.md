@@ -4,11 +4,11 @@ Without a HUSKYLENS2, a generic USB webcam plus OpenCV is enough to emit `person
 
 > **What you'll do**: Detect a person and littering candidates from a USB webcam, emit events
 >
-> **Prerequisites**: [Setup](../setup/index.en.md) + [Quickstart](../setup/quickstart.en.md)
+> **Prerequisites**: [Environment Setup](../setup/index.en.md) + [Quickstart](../setup/quickstart.en.md)
 >
 > **What you need**: PC + USB webcam
 >
-> **Time**: ~30 min
+> **Time required**: approx. 30 min
 
 ## Goal
 

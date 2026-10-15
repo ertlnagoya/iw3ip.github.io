@@ -294,7 +294,7 @@ curl 'http://localhost:8080/platform/ingest'
 
 VC になぜ有効期限があるのでしょうか。期限の無い同意と比べて何が安全になるのか、また実運用で期限が切れたときにどう運用すべきかを考えてみてください。
 
-Home Assistant → publisher の基本共有経路が動いていることを確認できました。次は Consent VC による拒否ケースを確認します。
+Home Assistant → publisher の基本共有経路が動いていることを確認できました。次は purpose の不一致による拒否を確認します。
 
 ## Phase 2: イベント共有と拒否を確認する
 
@@ -461,26 +461,16 @@ Node-RED は必須ではありません。まず Home Assistant demo だけで�
 
 このページの後は、次の Hands-on に進めます。
 
-- [HA x SSI Publisherサンプル（Phase 1）](ha-ssi-publisher.md)
-- [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
-- [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
+- [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) (Phase 1)
+- [防災イベントを共有する](environment-disaster.md) (Phase 2)
+- [地域安全アシスタントを動かす](regional-safety-assistant.md) (Phase 3)
 
 ### 11. 停止
 
-```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo down
-```
-
-Node-RED も含めて止める場合:
+Node-RED や Phase 3 を起動したかどうかに関係なく、次の 1 行でまとめて止められます。
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo --profile nodered down
-```
-
-Phase 3 を含めて止める場合:
-
-```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 down
+docker compose -f infra/docker-compose.yml --profile ha-demo --profile ha-demo-phase3 --profile nodered down
 ```
 
 ## 将来の発展

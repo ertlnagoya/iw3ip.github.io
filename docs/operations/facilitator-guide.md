@@ -15,27 +15,27 @@
 
 このテンプレートは、デバイスからマーケットでの売買、スマホでの確認までを通す構成です (ハンズオンの 1.2〜1.4)。[コース設計ガイド](../foundations/course-guide.md) の「1 コマ」の構成 (HA Demo Simulator と HA × SSI Publisher) とは別のものです。1 コマを 90 分とすると収まらないため、2 コマに分けて行います。各枠の時間は、各ページ冒頭の所要時間をもとにしています。
 
-### 1. 導入（10分）
+### 1. 導入（約 10 分）
 
 - データ共有基盤の目的
 - オンチェーン/オフチェーンの役割分担
 
-### 2. 起動（30分）
+### 2. 起動（約 30 分）
 
 - [最短起動](../setup/quickstart.md) を全員で実施
 - ここで詰まる人を優先サポート
 
-### 3. 実習（50分）
+### 3. 実習（約 50 分）
 
-- HUSKYLENS2班: [hands-on/huskylens2.md](../hands-on/huskylens2.md) (45 分)
-- Webcam班: [hands-on/webcam.md](../hands-on/webcam.md) (30 分)
+- HUSKYLENS2班: [hands-on/huskylens2.md](../hands-on/huskylens2.md) (約 45 分)
+- Webcam班: [hands-on/webcam.md](../hands-on/webcam.md) (約 30 分)
 - 終わった班から [ハンズオンの概要の 1.3](../hands-on/index.md) の購入と受け取りに進む
 
-### 4. スマホ確認（20分）
+### 4. スマホ確認（約 20 分）
 
 - [hands-on/mobile-viewer.md](../hands-on/mobile-viewer.md)
 
-### 5. まとめ（10分）
+### 5. まとめ（約 10 分）
 
 - うまくいった点/詰まった点の共有
 - 発展課題提示

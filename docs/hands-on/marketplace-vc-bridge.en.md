@@ -28,7 +28,7 @@ This is the core v2 hands-on. A marketplace purchase triggers the issuance of a 
 ## Goal
 
 In this hands-on, you check how authorization changes when **v2 (VC integration)**
-is added to **v1 (the current marketplace + MetaMask + encrypted IPFS delivery)**.
+is added to **v1 (the current marketplace + MetaMask + delivery via an encrypted URI)**.
 
 - What it means for one person to handle **two identities** (an ETH key and a did:jwk)
 - The **separation of roles** between ETH payment and VC authorization
@@ -98,7 +98,7 @@ is added to **v1 (the current marketplace + MetaMask + encrypted IPFS delivery)*
 
 ### Steps
 
-If the Hardhat node and the mediators (mediator-owner / mediator-buyer) from the [Quickstart](../setup/quickstart.md) are still running, first stop each of them with Ctrl+C. If the old node keeps port 8545, the next command fails to start.
+If the Hardhat node and the mediators (mediator-owner / mediator-buyer) from the [Quickstart](../setup/quickstart.md) are still running, first stop each of them with Ctrl+C. If the old node keeps port 8545, the next command fails to start. Also stop the Quickstart IPFS with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`. IPFS and the publisher you start later both use port 8080.
 
 Terminal A (leave it running):
 
@@ -212,7 +212,7 @@ is enough here because this hands-on checks only the v2 path.
 
 ### What to check
 
-- The publisher can issue the VC types including PurchaseViewerVC (if you have gone through Stage 7, all five types are available)
+- The publisher can issue the VC types including PurchaseViewerVC
 - The bridge subscribes to Hardhat Purchase events and watches Merchandise×5
 
 ### Steps
@@ -271,7 +271,7 @@ docker logs iw3ip-mv-bridge 2>&1 | tail -5
 
 ```
 bridge: listening to 5 merchandise(s)
-bridge: starting poll from block 14
+bridge: starting poll from block <current block number>
 bridge: started rpc=http://host.docker.internal:8545 market=0xe7f1725... publisher=http://publisher:8080
 ```
 
@@ -376,7 +376,7 @@ docker logs iw3ip-mv-bridge 2>&1 | tail -5
 →
 
 ```
-bridge: Purchase event from 0xDc64a140... buyer=0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC tx=0x4e7c3e0a...
+bridge: Purchase event from 0xDc64a140... buyer=0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC dataset=home/env/temperature tx=0x4e7c3e0a...
 bridge: claim ok jti=2b417b32e6566830 deeplink=openid-credential-offer://?credential_offer=...
 ```
 
@@ -437,7 +437,7 @@ open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 
 `open` is a macOS command. On Linux use `xdg-open`, on Windows (WSL) use `explorer.exe`, or paste the printed URL into a browser.
 
-Scan the QR code with the iPhone camera. The wallet starts and shows the approval screen for "IW3IP Purchase Viewer (Event-only)", so approve it.
+Scan the QR code with the iPhone camera. The wallet starts and shows the approval screen for "IW3IP Purchase Viewer (Event-only)" (shown as "IW3IP 購入閲覧（Tier 1 / イベントのみ）" in a Japanese-language wallet), so approve it.
 
 !!! warning "QR generation uses an external service"
     The command above sends the content of the deeplink to an external QR generation service (api.qrserver.com). The deeplink contains the code used for VC issuance, so do not use this outside a local hands-on environment.
@@ -547,6 +547,8 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 `count: 0` is not a problem, because authorization has passed. You can load actual data separately with
 `POST /platform/ingest` (Stage 1), but the purpose of this hands-on is to check the authorization logic.
 
+`count` is 0 only if nothing has been written to this dataset yet. The publisher keeps written data in memory, so if you wrote to the same dataset in an earlier hands-on and have not recreated the publisher since, those rows are returned and counted. That is also normal.
+
 ### Checking expiry (after 60 seconds)
 
 ```bash
@@ -583,10 +585,13 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool
 
 | id | raw_topic | reason | subject |
 | --- | --- | --- | --- |
-| (latest) | `platform/data` | `viewer_token_used:cc38f06e...:1:views=event` | `did:jwk:...` |
-| -1 | `oid4vp/response` | `ok` | `did:jwk:...` |
-| -2 | `marketplace/issued` | **`eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c...`** | `did:jwk:...` |
-| -3 | `marketplace/claim` | `claim_received:2b417b32...:tx=0x4e7c...` | `eth:0x3C44...` |
+| (latest) | `platform/data` (action=`deny`) | `viewer_token_expired` | `unknown` |
+| -1 | `platform/data` | `viewer_token_used:cc38f06e...:1:views=event` | `did:jwk:...` |
+| -2 | `oid4vp/response` | `ok` | `did:jwk:...` |
+| -3 | `marketplace/issued` | **`eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c...`** | `did:jwk:...` |
+| -4 | `marketplace/claim` | `claim_received:2b417b32...:tx=0x4e7c...` | `eth:0x3C44...` |
+
+The newest row records the denial from the expiry check in Step 9. If you skipped that check, this row is absent.
 
 Confirm that `marketplace/claim` (subject: eth_addr) and `marketplace/issued` (subject: did:jwk) are **linked by the same claim_id**. This is the record that ties the ETH address that paid to the DID that presented the VC.
 

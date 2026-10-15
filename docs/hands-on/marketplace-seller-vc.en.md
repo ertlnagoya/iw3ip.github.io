@@ -356,7 +356,7 @@ Procedure in the UI:
 2. **Step 2**: "Open /verifier/request" → present the SellerVC in the wallet →
    copy the `SellerToken` from the publisher log
 3. **Step 3**: paste the token obtained above and the merchandise/eth/tx from Step S3,
-   select the `dataset_id`, and press "Register"
+   enter the `dataset_id`, and press "Register"
 
 On success, the same JSON response as in Step S4 is shown at the bottom of the screen.
 

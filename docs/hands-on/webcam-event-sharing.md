@@ -1,16 +1,16 @@
 # 検知イベントだけを共有する
 
-[USB ウェブカメラサンプル](webcam.md) で作ったイベントを、Consent VC を介して共有可否を制御しながら送信します。
+[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) で作ったイベントを、Consent VC を介して共有可否を制御しながら送信します。
 
 > **やること**: 検知イベントを共有基盤に送る + purpose に応じた allow/deny を見る
 >
-> **前提**: [USB ウェブカメラサンプル](webcam.md) を済ませてあること
+> **前提**: [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を済ませてあること
 >
 > **使うもの**: PC、できれば USB ウェブカメラ (なくても疑似データで可)
 >
-> **所要時間**: 45 分くらい
+> **所要時間**: 約 45 分
 
-この Hands-on は、既存の [USBウェブカメラサンプル](webcam.md) を発展させた **Phase 2: Event / Intelligence Sharing** の例です。  
+この Hands-on は、既存の [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を発展させた **Phase 2: Event / Intelligence Sharing** の例です。  
 Phase 1 では、USBウェブカメラで `person_detected` や `possible_littering` を検知し、イベントファイルを生成して、商品として登録されるところまで確認しました。  
 このページでは、その次の段階として、**検知イベントをデータ共有基盤へ送って、Consent VC に基づいて共有可否を制御する**流れを試します。
 
@@ -29,7 +29,7 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 
 その後の分岐:
 
-- 許可されるケースだけ確認したい場合: `allowed` のケースまでで止めてよいです
+- 許可されるケースだけ確認したい場合: `allowed` を確認したところで終えて構いません
 - Consent VC による制御まで理解したい場合: `advertising` を送って `denied` も確認します
 - MQTT 経路まで見たい場合: 最後に `mosquitto_pub` を使います
 
@@ -47,9 +47,10 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 
 ## 前提
 
-- [USBウェブカメラサンプル](webcam.md) の内容を理解している
-- [HA x SSI Publisherサンプル](ha-ssi-publisher.md) を起動できる
+- [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) の内容を理解している
+- [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) を起動できる
 - Docker / Docker Compose が使える
+- [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 - `curl` が使える
 
 対応するサンプルファイル:
@@ -135,7 +136,7 @@ curl -X POST http://localhost:8080/consents \
     "retention_days": 14,
     "reshare_allowed": false,
     "valid_from": "2026-02-01T00:00:00Z",
-    "valid_to": "2027-12-31T23:59:59Z",
+    "valid_to": "2030-12-31T23:59:59Z",
     "signature": "PLACEHOLDER"
   }'
 ```
@@ -292,7 +293,7 @@ Phase 2 では、検知したイベントを条件付きで共有することが
 本編では `consent_possible_littering.json` を `/consents` に POST して
 ポリシーを登録しました。これは「同意の記録を平文 JSON でサーバに置く」
 方式です。**同じ認可を、参加者がスマホで保持する VC を提示する形**
-で扱う発展が、[スマホSSIウォレットサンプル](ha-ssi-wallet.md) です。
+で扱う発展が、[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) です。
 
 ### 何が等価で何が違うのか
 
@@ -301,7 +302,7 @@ Phase 2 では、検知したイベントを条件付きで共有することが
 | 認可の保持者 | publisher サーバ | スマホウォレット |
 | 認可の伝達 | JSON POST | OID4VP 提示 (QR/Deeplink) |
 | 期間 | `valid_to` の TTL | 提示ごとに短命 PolicyToken (5 分・単回) |
-| 撤回 | `/consents` から削除 | VC を revoke / wallet で破棄 |
+| 撤回 | `/consents` から削除 | wallet で破棄 (revoke は未実装) |
 | 監査 | `purpose` / `dataset_id` を記録 | `holder_did` / `vc_hash` も記録 |
 
 **判定ロジックそのものは共通** で、`dataset_id` と `purpose` の
@@ -314,13 +315,21 @@ PolicyToken は 1 回使うと無効になるため、連続する MQTT イベ�
 wallet 経由で認可する使い方には向きません。ここでは **1 件のイベントだけ
 curl で送る**ことを勧めます。
 
-1. [スマホSSIウォレットサンプル §1〜§5](ha-ssi-wallet.md#1-起動) で
+スマホのウォレットは PC の `localhost` に届かないため、以下の URL では `<HOST_IP>` を PC の LAN IP に置き換えて PC ブラウザで開きます (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。
+
+まず `ssi-wallet` プロファイルを付けて起動し直します。`PLATFORM_INGEST_READ_ENABLED=true` を付け忘れると、本編で書き込んだ行が消えるうえ、`GET /platform/ingest` が 404 になります。
+
+```bash
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
+```
+
+1. [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) の §4〜§5 と同じ手順で、
    `dataset_id=home/event/possible_littering` を指定して ConsentVC を
    発行・提示し PolicyToken を取得 (許可 purpose は `community_cleaning` /
    `research` / `planning` のいずれか)。
    PolicyToken は publisher のログの `policy_token_issued` 行にある `token=` の後ろの値です。コピーして `POLICY` に入れます (有効期限 5 分):
    ```bash
-   docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued
+   docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued
    POLICY=<token= の後ろの値>
    ```
 2. 本編で MQTT を回している場合は一旦止める
@@ -346,10 +355,10 @@ curl で送る**ことを勧めます。
   ([consent-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-possible-littering.json))
   が publisher に登録済で、本編と全く同じイベント形式 (camera_id /
   location / object_class) を wallet 経由で ingest できます
-- MQTT 連続フローを wallet で回すには **多回利用可の M2M トークン
-  (ServiceVC)** が必要で、これは [SSI Service ハンズオン](ha-ssi-service.md)
+- MQTT 連続フローを wallet で回すには **TTL 内は何度でも使える M2M トークン
+  (ServiceVC)** が必要で、これは [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md)
   で扱います
 
 ### 関連
 
-- 読み出し側を VC で保護するフロー: [SSI ビューワサンプル](ha-ssi-viewer.md)
+- 読み出し側を VC で保護するフロー: [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md)

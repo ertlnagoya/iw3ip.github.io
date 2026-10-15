@@ -8,12 +8,12 @@
 >
 > **使うもの**: ラップトップ PC + USB ウェブカメラ + Docker（VLM を含む）
 >
-> **所要時間**: 40〜60 分（初回はモデルの pull に時間がかかります）
+> **所要時間**: 約 40〜60 分（初回はモデルの pull に時間がかかります）
 
 !!! note "このページの位置付け"
     Part 3（知能統合）のハンズオンです。カメラ取り込みの基礎は
-    [USB ウェブカメラサンプル](webcam.md)、VLM による tier 別の出し分けは
-    [DataUserVC × 段階アクセス](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。
+    [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md)、VLM による tier 別の出し分けは
+    [意味レベルで段階化する](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。
     本ページは「**カメラ → ローカル VLM → 意味データ流通**」を 1 つの流れとして
     扱います。
 
@@ -46,7 +46,7 @@
 ## 前提
 
 - [最短起動](../setup/quickstart.md) の v1 スタックを起動できる
-- USB ウェブカメラが PC から認識されている（[USB ウェブカメラサンプル](webcam.md) を一度試していると理解が早い）
+- USB ウェブカメラが PC から認識されている（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を一度試していると理解が早い）
 - Docker で `--profile vlm` が使える（初回はモデル pull で数 GB のダウンロード）
 
 ## 最短ルート
@@ -116,7 +116,7 @@ python capture_snapshot.py
 
 !!! note "カメラが無い / 開けない場合"
     任意の JPEG 画像を `snapshot.jpg` として代用できます。カメラの index や占有で
-    失敗する場合は [USB ウェブカメラサンプル](webcam.md) の `mock` モードや
+    失敗する場合は [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) の `mock` モードや
     トラブル項目を参照してください。
 
 ## 3. ローカルモデルに解析させて「意味」を得る
@@ -144,27 +144,27 @@ curl -s -X POST http://localhost:8080/semantic/analyze \
 
 !!! note "アナライザの選択"
     既定は決定的なスタブです。実際の OpenCV 顔検出などを使うには、publisher 起動時に
-    `SEMANTIC_ANALYZER_BACKEND=vision` を設定します。`--profile vlm` を併用すると、
+    `SEMANTIC_ANALYZER_BACKEND=vision` を設定します。§1 のとおり `VLM_BACKEND` を設定して起動していると、
     次の配信ステップで VLM による説明文（`description_*`）も付与されます。
 
 ## 4. 意味データを基盤に流通させる
 
 画像を publisher に投入し、その画像を指すイベントを発行して、AI 由来の意味データを流通パイプラインに載せます。次節の演習プログラムが、consent 登録 → `/media/upload` → `/simulate/publish` を一括で行います。
 
-`--profile vlm` を有効にして起動していれば、publisher はこのとき VLM を呼び出し、行に `description_full` / `description_summary` / `description_model` / `processing_warnings` を付与します。
+§1 のとおり `VLM_BACKEND` を設定して起動していれば、publisher はこのとき VLM を呼び出し、行に `description_full` / `description_summary` / `description_model` / `processing_warnings` を付与します。
 
 !!! info "受信側での取得には ViewerToken が必要"
     付与された `description_*` を受信側で取り出すには、DataUserVC を提示して得た
     ViewerToken が必要です（`/platform/data` は素の GET では 401 になります）。信頼度
     ごとに `description_full` / `description_summary` を出し分ける流れは
-    [DataUserVC × 段階アクセス §12](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) で扱います。本ページで扱うのは
+    [意味レベルで段階化する](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。本ページで扱うのは
     「カメラ → ローカルモデルで意味づけ → 基盤へ流通」までです。
 
 ## 5. 確認ポイント
 
 - `/semantic/analyze` が生画像を返さず、構造化された意味データ（SIR）だけを返している
 - クラウドに画像を送らず、ローカルモデルだけで意味づけできている
-- `--profile vlm` 使用時、配信した行に `description_*`（説明文とモデル ID）が付与される
+- `VLM_BACKEND` を設定して起動したとき、配信した行に `description_*`（説明文とモデル ID）が付与される
 
 ## 考えてみよう
 
@@ -199,6 +199,14 @@ python examples/hands_on/local_vlm_distribution/problem_program.py \
 
 `answer_program.py` と見比べて確認します。`--distribute` を付けると流通まで実行します。
 
+!!! note "`--distribute` がタイムアウトしたとき"
+    `/simulate/publish` は VLM の推論が終わってから応答します。CPU だけの PC では推論に数十秒から数分かかるため、プログラム側の待ち時間を超えて `TimeoutError` などで終わることがあります (待ち時間は既定 600 秒で、環境変数 `HANDS_ON_HTTP_TIMEOUT` で変えられます。古い教材リポジトリでは 10 秒なので `git pull` します)。publisher 側の処理は続いているので、行は推論が終わったあとに記録されます。次のコマンドで、`raw_topic` が `homeassistant/event/possible_littering` で `action` が `allow` の行が増えたことを確認します（`/platform/data` で確かめるには ViewerToken が必要です）。
+
+    ```bash
+    curl -s localhost:8080/audit/logs \
+      | jq '[.[] | select(.raw_topic == "homeassistant/event/possible_littering")][0] | {ts, action, reason}'
+    ```
+
 ### Step C. ゼロから機能を足す（発展課題）
 
 雛形なしで、次のいずれかを自分で実装します。
@@ -210,7 +218,7 @@ python examples/hands_on/local_vlm_distribution/problem_program.py \
 
 ## さらに先へ（機能拡張の方向）
 
-- **自然言語での検索・加工**: 蓄積した意味データに対し、LLM で自然言語検索や要約を行う（[LLM Planner](llm-planner.md) / [地域安全アシスタント](regional-safety-assistant.md)）。
+- **自然言語での検索・加工**: 蓄積した意味データに対し、LLM で自然言語検索や要約を行う（[AI に手順を考えさせる (LLM Planner)](llm-planner.md) / [地域安全アシスタントを動かす](regional-safety-assistant.md)）。
 - **機器の遠隔操作**: 解析結果を条件に、`plan` と `execute` を分けて機器を操作する（同上 Part 3）。
 - **ラズベリーパイ + ラズパイカメラ**: 撮影はラズパイ、推論は PC / ホスト側、という分担で実機化する（本ページはまずラップトップで完結させる構成です）。
 
@@ -219,10 +227,10 @@ python examples/hands_on/local_vlm_distribution/problem_program.py \
 - 初回のモデル pull が重く時間がかかる → `vlm-pull` のログで取得完了を待つ。回線に余裕のあるときに実施する。
 - CPU で推論が遅い / タイムアウトする → 軽量な `VLM_MODEL=moondream` を使う、`VLM_TIMEOUT_SEC` を延ばす。
 - `processing_warnings` に `vlm_unavailable` が出る → `vlm` サービスが起動しているか、モデル pull が完了しているかを確認（`docker compose ... ps` / `logs`）。
-- カメラが開けない → カメラ index の変更や占有プロセスの停止（[USB ウェブカメラサンプル](webcam.md) を参照）。
+- カメラが開けない → カメラ index の変更や占有プロセスの停止（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を参照）。
 
 ## 関連ページ
 
-- 前提: [USB ウェブカメラサンプル](webcam.md) / [最短起動](../setup/quickstart.md)
-- 詳細: DataUserVC × 段階アクセス（[§8 メディア統合](data-user-vc-tiered-media.md#8-実データ統合案-bhttp-メディアゲートウェイ)・[§12 VLM tier](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー)） / [LLM Planner](llm-planner.md)
-- 設計: [DataUserVC × 段階アクセス制御 仕様（tier 拡張: 意味レベルの段階化）](data-user-vc-tiered-spec.md)
+- 前提: [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) / [最短起動](../setup/quickstart.md)
+- 詳細: DataUserVC × 段階アクセス（[§8 メディア統合](data-user-vc-tiered-media.md#8-実データ統合案-bhttp-メディアゲートウェイ)・[§12 VLM tier](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー)） / [AI に手順を考えさせる (LLM Planner)](llm-planner.md)
+- 設計: [段階アクセスの設計仕様（tier 拡張: 意味レベルの段階化）](data-user-vc-tiered-spec.md)

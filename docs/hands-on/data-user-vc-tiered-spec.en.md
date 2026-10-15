@@ -5,7 +5,7 @@ exposes — to **event / image / video** in three tiers — based on the
 trust attributes carried by the data recipient's **DataUserVC**.
 
 This is a design document, not a step-by-step. For the walk-through, see
-[DataUserVC × Tiered Access](data-user-vc-tiered.md).
+[Tier the response by trust](data-user-vc-tiered.md).
 
 ## What you'll learn
 
@@ -246,7 +246,7 @@ the Phase 2 wallet (`iw3ip-wallet`) + Publisher.
 
 ## Test plan
 
-`tests/test_data_user_vc_tiered.py` covers 13 cases:
+At the initial implementation, `tests/test_data_user_vc_tiered.py` covered 13 cases (case counts in parentheses). Later features have grown this file to 42 tests.
 
 1. `evaluate()` pure-function tests (4)
    - GovernmentOrganization × Research × ISO27001 → full
@@ -260,7 +260,7 @@ the Phase 2 wallet (`iw3ip-wallet`) + Publisher.
 6. `PurchaseViewerVC` inherits `allowed_views` from the claim (1)
 7. `/platform/data` projects Tier 1 / 2 / 3 (3)
 
-Total: 88 = 75 existing + 13 new. No regressions.
+At the initial implementation, the suite totalled 88 tests (75 existing + 13 new), and no existing test failed.
 
 ## Future work
 
@@ -287,8 +287,8 @@ recipient can know *what happened* without learning *who did it*.
 | **1** Summary | `summary` (new) | enterprise + unknown purpose + legalCompliance only (50–59) | **summary text only** (PII-redacted, no image) |
 | 0 Denied | `denied` | unqualified (<50) | events only (the current implementation does not reject the claim) |
 
-A new `summary` value is added to `access_level`: with the VLM profile
-on, scores 50–59 map to `summary`. With the profile off, the `denied`
+A new `summary` value is added to `access_level`: only when the publisher's
+`VLM_BACKEND` is non-empty (the VLM extension is on), scores 50–59 map to `summary`. With `VLM_BACKEND` empty, the `denied`
 semantics are unchanged — `score < 60` is still judged `denied` and can view events only.
 
 ### Derivative schema
@@ -341,8 +341,8 @@ only — no image at all, redacted or otherwise.
 
 ### VLM pipeline contract
 
-When the publisher is started with `--profile vlm`, `/provider/publish`
-gains two new steps:
+When the publisher's `VLM_BACKEND` (and `IMAGE_REDACTION_BACKEND`) are set, `/provider/publish`
+gains two new steps (`--profile vlm` only starts the Ollama containers):
 
 ```
 provider page
@@ -361,10 +361,10 @@ Degrade policy when VLM is missing or fails:
 
 | Condition | Publisher behaviour |
 |---|---|
-| `--profile vlm` off | derivative keys are **not generated** (legacy behaviour — Tier 1/2 fall back to the old "key drop" model) |
-| profile on, VLM call failed | description keys omitted; `image_url_redacted` is still attempted (face blur doesn't need the VLM) |
-| profile on, blur failed | redacted-image keys omitted; descriptions still ship. Tier 2 receivers get text without a redacted image |
-| profile on, both succeed | all keys generated |
+| VLM extension off (`VLM_BACKEND` empty) | derivative keys are **not generated** (legacy behaviour — Tier 1/2 fall back to the old "key drop" model) |
+| extension on, VLM call failed | description keys omitted; `image_url_redacted` is still attempted (face blur doesn't need the VLM) |
+| extension on, blur failed | redacted-image keys omitted; descriptions still ship. Tier 2 receivers get text without a redacted image |
+| extension on, both succeed | all keys generated |
 
 Degraded responses carry **`processing_warnings: ["vlm_unavailable", ...]`**
 so the receiver can tell what was skipped.
@@ -416,9 +416,9 @@ different descriptions; `description_generated_at` separates them.
 
 ### Test plan (deltas)
 
-A new file `tests/test_data_user_vc_tiered_vlm.py` covers:
+A new file `tests/test_data_user_vc_tiered_vlm.py` covers (case counts at the initial implementation in parentheses):
 
-1. `--profile vlm` off: existing tier projection regresses to nothing (5)
+1. VLM extension off: the existing tier projection does not regress (5)
 2. stub VLM backend produces the expected `description_*` shape (3)
 3. Per-tier `/platform/data` projection matrix (4)
    - Tier 3: raw + derivative keys
@@ -428,8 +428,7 @@ A new file `tests/test_data_user_vc_tiered_vlm.py` covers:
 4. Degrade matrix when VLM call fails (2)
 5. `processing_warnings` propagation (2)
 
-Total +16 cases, kept independent from the existing 88 (the
-profile-off regression test is the most important).
+At the initial implementation this added 16 cases, kept independent from the existing 88 (this file now has 29 tests). The most important check is that nothing changes when the VLM extension is off.
 
 ### Future work (recorded for the spec)
 

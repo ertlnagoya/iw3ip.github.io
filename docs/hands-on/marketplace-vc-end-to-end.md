@@ -8,7 +8,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 >
 > **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
-> **所要時間**: 90 分くらい
+> **所要時間**: 約 90 分
 
 !!! abstract "Stage 1〜5 の総合演習"
     Seller が **ServiceVC** で連続書き込みしたデータを、Buyer が
@@ -89,7 +89,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 
 ## Step E0. 前提環境の起動 (Stage 5 と共通)
 
-Stage 5 の Hardhat ノードが動いていれば、先にターミナル A の Hardhat ノード (と mediator) を Ctrl+C で止めてください。古いノードが 8545 番を使ったままだと新しいノードが起動できず、デプロイが古いチェーンに入って、Step E2 の表とアドレスが合わなくなります。
+Stage 5 の Hardhat ノードが動いていれば、先にターミナル A の Hardhat ノードを Ctrl+C で止めてください。古いノードが 8545 番を使ったままだと新しいノードが起動できず、デプロイが古いチェーンに入って、Step E2 の表とアドレスが合わなくなります。
 
 ```bash
 # Hardhat + デプロイ (Merchandise が dataset_id を additionalInfo に持つ最新版)
@@ -143,7 +143,7 @@ PC ブラウザ (Mac) で:
 http://<HOST_IP>:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temperature&purpose=write_continuous
 ```
 
-QR を表示 → iPhone wallet で読み取り → **「IW3IP Service Credential」承認**。
+QR を表示 → iPhone wallet で読み取り → **「IW3IP サービスクレデンシャル」(英語表示では「IW3IP Service Credential」) を承認**。
 
 そのまま提示:
 
@@ -257,13 +257,13 @@ open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 
 `open` は macOS のコマンドです。Linux では `xdg-open`、Windows (WSL) では `explorer.exe` に読み替えるか、表示された URL をブラウザに貼り付けてください。
 
-iPhone wallet で QR を読み取り、「IW3IP Purchase Viewer (Event-only)」を承認します。上のコマンドは deeplink を外部の QR 生成サービスに送るため、ローカルのハンズオン環境以外では使わないでください。
+iPhone wallet で QR を読み取り、「IW3IP 購入閲覧（Tier 1 / イベントのみ）」(英語表示では「IW3IP Purchase Viewer (Event-only)」) を承認します。上のコマンドは deeplink を外部の QR 生成サービスに送るため、ローカルのハンズオン環境以外では使わないでください。
 
 VC claims に `dataset_id: home/env/temperature` が入っていることを wallet で確認。
 
 audit:
 ```bash
-curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool | grep -A1 marketplace/issued
+curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool | grep eth_did_bound
 ```
 → `eth_did_bound:claim=...:eth=0x3C44...:tx=0x...`
 
@@ -360,12 +360,12 @@ holder_did は同一になります。実運用では別端末・別 did:jwk に
 | 工程 | 確認項目 | 出力例 |
 | --- | --- | --- |
 | E0 | 環境起動 | `bridge: listening to 5 merchandise(s)` |
-| E1 | ServiceVC 受領 | wallet に「IW3IP サービスクレデンシャル」 |
+| E1 | ServiceVC 受領 | wallet に「IW3IP サービスクレデンシャル」(英語表示では「IW3IP Service Credential」) |
 | E1 | ServiceToken 発行 | publisher ログ `service_token_issued ttl=3600s` |
 | E1 | 5 件の連続 ingest | iter 1〜5 すべて `status: received` |
 | E2 | bridge が dataset_id を on-chain 解決 | `dataset=home/env/temperature` |
 | E2 | bridge claim 発行 | `claim ok jti=...` |
-| E3 | PurchaseViewerVC 受領 | wallet に「IW3IP 購入閲覧（Tier 1 / イベントのみ）」 |
+| E3 | PurchaseViewerVC 受領 | wallet に「IW3IP 購入閲覧（Tier 1 / イベントのみ）」(英語表示では「IW3IP Purchase Viewer (Event-only)」) |
 | E3 | eth_did_bound | audit `marketplace/issued` |
 | E4 | merchandise から逆引きで 5 件取得 | `count: 5, rows: [..., {value: 31}, ..., {value: 35}]` |
 | E5 | audit 連鎖が読める | `service_token_used` と `viewer_token_used` が同 dataset で連鎖 |

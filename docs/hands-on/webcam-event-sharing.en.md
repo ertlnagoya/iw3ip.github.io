@@ -1,16 +1,16 @@
 # Share detections, not raw frames
 
-Take the events you built in the [USB webcam sample](webcam.en.md) and share them through a Consent VC gate.
+Take the events you built in [Detect with a USB webcam (OpenCV)](webcam.md) and share them through a Consent VC gate.
 
 > **What you'll do**: Send detection events to the platform and observe allow/deny by purpose
 >
-> **Prerequisites**: [USB webcam sample](webcam.en.md) finished
+> **Prerequisites**: [Detect with a USB webcam (OpenCV)](webcam.md) finished
 >
 > **What you need**: PC, ideally a USB webcam (mock data also works)
 >
-> **Time**: ~45 min
+> **Time required**: approx. 45 min
 
-This hands-on is a **Phase 2: Event / Intelligence Sharing** extension of the existing [USB Webcam sample](webcam.md).  
+This hands-on is a **Phase 2: Event / Intelligence Sharing** extension of the existing [Detect with a USB webcam (OpenCV)](webcam.md).  
 In Phase 1, the USB webcam sample detected `person_detected` and `possible_littering`, generated event files, and confirmed that they were registered as merchandise.  
 This page moves to the next step: **sending detected events into the data-sharing platform and controlling sharing based on Consent VC**.
 
@@ -29,7 +29,7 @@ For a first pass, these four steps are enough.
 
 Branches after that:
 
-- If you only want the allowed path: stop after the `allowed` case
+- If you only want the allowed path: you can finish once you have confirmed `allowed`
 - If you want to understand consent control properly: also send the `advertising` case and confirm `denied`
 - If you want to inspect the MQTT path too: finish with `mosquitto_pub`
 
@@ -47,9 +47,10 @@ Branches after that:
 
 ## Prerequisites
 
-- you understand the [USB Webcam sample](webcam.md)
-- you can run the [HA x SSI Publisher sample](ha-ssi-publisher.md)
+- you understand [Detect with a USB webcam (OpenCV)](webcam.md)
+- you can run [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
 - Docker / Docker Compose is available
+- If the IPFS from the [Quickstart](../setup/quickstart.en.md) is still running, stop it first (`cd ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - `curl` is available
 
 Matching sample files:
@@ -135,7 +136,7 @@ curl -X POST http://localhost:8080/consents \
     "retention_days": 14,
     "reshare_allowed": false,
     "valid_from": "2026-02-01T00:00:00Z",
-    "valid_to": "2027-12-31T23:59:59Z",
+    "valid_to": "2030-12-31T23:59:59Z",
     "signature": "PLACEHOLDER"
   }'
 ```
@@ -291,7 +292,7 @@ The key change is that the theme moves from **detection** to **condition-based s
 
 The main flow registers `consent_possible_littering.json` via POST to
 `/consents` — i.e. consent is stored as plaintext JSON on the publisher.
-The [Mobile SSI wallet hands-on](ha-ssi-wallet.md) takes a different
+The hands-on [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) takes a different
 route: the participant's phone wallet holds a VC and presents it via
 OID4VP.
 
@@ -302,7 +303,7 @@ OID4VP.
 | Consent storage | publisher server | mobile wallet |
 | Transport | JSON POST | OID4VP (QR / deeplink) |
 | Validity window | `valid_to` TTL | short-lived PolicyToken per presentation (5 min, single-use) |
-| Revocation | DELETE `/consents` | revoke VC / drop from wallet |
+| Revocation | DELETE `/consents` | drop from wallet (revoke is not implemented) |
 | Audit log | `purpose` / `dataset_id` | also `holder_did` / `vc_hash` |
 
 The **decision logic is identical**: `(dataset_id, purpose)` decides
@@ -315,12 +316,20 @@ Gating every MQTT event through the wallet doesn't fit PolicyToken's
 single-use semantics. Instead, send **one event** by hand to feel the
 flow:
 
+A phone wallet cannot reach the PC's `localhost`, so open the URLs below in a PC browser with `<HOST_IP>` replaced by the PC's LAN IP (see the [Hands-on overview](index.md#host-ip) for how to find it).
+
+First, restart with the `ssi-wallet` profile. If you forget `PLATFORM_INGEST_READ_ENABLED=true`, the rows you wrote in the main flow are lost and `GET /platform/ingest` returns 404.
+
+```bash
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
+```
+
 1. Issue and present a ConsentVC for `dataset_id=home/event/possible_littering`
-   per [SSI Wallet hands-on §1〜§5](ha-ssi-wallet.md) (allowed purposes are
+   following §4〜§5 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) (allowed purposes are
    `community_cleaning`, `research`, or `planning`) and obtain a PolicyToken.
    The PolicyToken is the value after `token=` on the `policy_token_issued` line in the publisher log. Copy it into `POLICY` (valid for 5 minutes):
    ```bash
-   docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued
+   docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued
    POLICY=<value after token=>
    ```
 2. Pause MQTT if it's running
@@ -347,9 +356,9 @@ flow:
   is registered on the publisher, so the wallet flow ingests the
   same event shape (camera_id / location / object_class) that the
   main flow uses
-- Continuous MQTT under wallet mode requires a **multi-use M2M token
-  (ServiceVC)**, covered by [SSI Service hands-on](ha-ssi-service.md).
+- Continuous MQTT under wallet mode requires an **M2M token usable any number of times within its TTL
+  (ServiceVC)**, covered by [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md).
 
 ### Related
 
-- Symmetric read-side gating: [SSI Viewer sample](ha-ssi-viewer.md)
+- Symmetric read-side gating: [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md)

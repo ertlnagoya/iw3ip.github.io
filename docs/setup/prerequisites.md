@@ -138,12 +138,9 @@ docker run --rm hello-world
 ### 教材リポジトリを取得
 
 ```bash
-git clone --recursive https://github.com/ertlnagoya/Blockchain_IoT_Marketplace.git
+git clone https://github.com/ertlnagoya/Blockchain_IoT_Marketplace.git
 cd Blockchain_IoT_Marketplace
 ```
-
-> **`--recursive` を忘れずに**: サブリポジトリ (submodule) を含むため、忘れると一部ファイルが空のディレクトリになります。
-> 既に clone 済みで submodule が空の場合は `git submodule update --init --recursive` で取得できます。
 
 リポジトリサイズが大きいため、初回 clone には数分かかります。
 
@@ -176,7 +173,7 @@ cd Blockchain_IoT_Marketplace
 
 ## うまくいかないとき
 
-- ポートが競合している → [トラブルシュート](../operations/troubleshooting.md) の「ポート」項
+- ポートが競合している → [トラブルシュート](../operations/troubleshooting.md#10-ポートが競合する) の「10. ポートが競合する」
 - Docker のメモリ不足で落ちる → Docker Desktop のメモリを 6 GB 以上に
 - それ以外 → [FAQ](../operations/faq.md) を確認
 
@@ -185,7 +182,6 @@ cd Blockchain_IoT_Marketplace
 | 用語 | 短い意味 |
 |---|---|
 | **ターミナル** | 文字でコマンドを打つアプリ (macOS: Terminal、Windows: PowerShell / WSL) |
-| **submodule** | リポジトリの中に別のリポジトリを埋め込む仕組み |
 | **コンテナ** | アプリと実行環境をひとまとめにして動かす単位。Docker が動かす |
 | **拡張機能** | ブラウザに追加できる小さなアプリ。MetaMask はこれ |
 

@@ -8,7 +8,7 @@ Hand the same webcam frame to AI in four ways, and each time compare **what left
 >
 > **What you need**: PC + USB webcam (or a JPEG image) + Docker + Python 3
 >
-> **Time**: 90–120 min (the first run takes longer because the VLM model has to be downloaded)
+> **Time required**: approx. 90–120 min (the first run takes longer because the VLM model has to be downloaded)
 
 ## Goal
 
@@ -173,7 +173,7 @@ Things to think about:
 - **D's semantic data is `{"people_count": 0, "objects": [], "sensitive_region_types": [], "privacy_risk_score": 1.0}`**: the publisher's analysis failed. At the top of the course repository, run `docker compose -f infra/docker-compose.yml logs publisher | grep "semantic analyze failed"` to see why. Update the course repository (`git pull`) and restart the publisher with `--build`. Without `SEMANTIC_ANALYZER_BACKEND=vision`, a fixed mock result is returned.
 - **B says `skipped: local VLM not reachable`**: check that Ollama is running (`docker ps`) and listening on port 11434.
 - **It takes too long**: on a CPU-only PC one description takes from tens of seconds to a few minutes. Answers are capped at 120 tokens.
-- **The camera cannot be opened**: see the troubleshooting of [USB webcam](webcam.md), or pass an image with `--image`.
+- **The camera cannot be opened**: see the troubleshooting of [Detect with a USB webcam (OpenCV)](webcam.md), or pass an image with `--image`.
 
 ## 7. Clean up
 
@@ -192,4 +192,4 @@ If you no longer need the downloaded VLM model (the `iw3ip_ollama` volume, about
 
 - [Enrich camera data with a local VLM](local-vlm-distribution.md) — distribute semantic data from a local VLM on the platform
 - [Tier by semantic level](data-user-vc-tiered-semantic.md) — vary face blurring and descriptions by the receiver's trust
-- [USB webcam](webcam.md) — basics of camera capture
+- [Detect with a USB webcam (OpenCV)](webcam.md) — basics of camera capture

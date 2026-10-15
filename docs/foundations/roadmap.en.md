@@ -9,11 +9,11 @@ The order is the same whether you go through it quickly or over several weeks.
 
 | Priority | Topic | Goal | Estimated Time |
 |---|---|---|---|
-| P0 | Understand site navigation | know what to read in what order | 30 min |
-| P0 | Hands-on reproduction | reproduce `allow/deny` and read audit logs | 2-3 hours |
-| P1 | Blockchain basics + Hardhat | explain the role of local chain | 3-4 hours |
-| P1 | SSI/DID/VC basics | explain consent-based policy meaning | 3-4 hours |
-| P2 | Advanced (events/PEP) | explain Phase 2/3 design direction | 2-3 hours |
+| P0 | Understand site navigation | know what to read in what order | approx. 30 min |
+| P0 | Hands-on reproduction | reproduce `allow/deny` and read audit logs | approx. 2–3 hours |
+| P1 | Blockchain basics + Hardhat | explain the role of local chain | approx. 3–4 hours |
+| P1 | SSI/DID/VC basics | explain consent-based policy meaning | approx. 3–4 hours |
+| P2 | Advanced (events/PEP) | explain Phase 2/3 design direction | approx. 2–3 hours |
 
 ## Short Learning Path
 

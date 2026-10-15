@@ -4,17 +4,17 @@
 
 > **やること**: 信頼度ごとに動画 / 画像 / 要約だけを出し分ける動作の確認
 >
-> **前提**: [HA SSI Wallet](ha-ssi-wallet.md) と [USB ウェブカメライベント共有](webcam-event-sharing.md)
+> **前提**: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) と [検知イベントだけを共有する](webcam-event-sharing.md)
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet)
 >
-> **所要時間**: 60 分くらい（続編の 2 ページは別に 90 分と 60〜90 分）
+> **所要時間**: 約 60 分（続編の 2 ページは別に約 90 分と約 60〜90 分）
 
-このハンズオンは、[スマホSSIウォレットサンプル](ha-ssi-wallet.md) と
-[USBウェブカメライベント共有サンプル](webcam-event-sharing.md) を踏まえ、
+このハンズオンは、[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) と
+[検知イベントだけを共有する](webcam-event-sharing.md) を踏まえ、
 **データ受信者の信頼属性に応じてカメラ視野を 3 段階に絞る**流れを確認します。
 
-設計の根拠は [DataUserVC × 段階アクセス制御 仕様](data-user-vc-tiered-spec.md) に
+設計の根拠は [段階アクセスの設計仕様](data-user-vc-tiered-spec.md) に
 まとめています。先に読むと理解しやすくなります。
 
 処理の流れは次のとおりです。
@@ -23,10 +23,10 @@
 
 ## 最短ルート
 
-1. publisher / hardhat / bridge を起動する
+1. publisher を起動する
 2. **DataUserVC** を 3 種類のプロファイルで発行する（gov-full / enterprise-access / low-deny）
 3. 各プロファイルで `/marketplace/claim` を呼び出して `allowed_views` を比較する
-4. PurchaseViewerVC を提示して `/platform/data` の出力差を見る
+4. 画像・動画つきのイベントを 1 件流し、PurchaseViewerVC を提示して `/platform/data` の出力差を見る
 
 ## このページで分かること
 
@@ -43,8 +43,8 @@
 
 ## 前提
 
-- [スマホSSIウォレットサンプル](ha-ssi-wallet.md) を一度動かしている
-- [USBウェブカメライベント共有サンプル](webcam-event-sharing.md) を理解している
+- [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) を一度動かしている
+- [検知イベントだけを共有する](webcam-event-sharing.md) を理解している
 - Docker / Docker Compose が使える
 - `curl`, `jq` が使える
 
@@ -77,8 +77,10 @@ provider 側スクリプトは変更せずに使えます。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
-docker compose -f infra/docker-compose.yml up -d publisher bridge mosquitto
+docker compose -f infra/docker-compose.yml up -d publisher mosquitto
 ```
+
+このページでは `/marketplace/claim` を curl で直接呼び出すので、bridge と Hardhat は起動しません。
 
 ヘルスチェック:
 
@@ -178,7 +180,40 @@ deeplink の種類は `['PurchaseViewerVC.event']` になります。
 
 ## 4. PurchaseViewerVC を発行 → 提示 → /platform/data
 
-§3 の応答の `offer_url` (ホスト名の部分を `<HOST_IP>` に置き換えます) を PC のブラウザで開き、QR コードをウォレットで読み取って、各 claim の PurchaseViewerVC を受け取ります。ウォレットには tier ごとに別のカードとして表示されます。その後、[Stage 5](marketplace-vc-bridge.md) の Step 8 と同じ手順で提示します。
+### 4a. 画像・動画つきのイベントを 1 件流す
+
+`/platform/data` が返すのは、publisher が受け取ったイベントの行です。まだ 1 件も流していないと、どの Tier でも `rows` が空になり、差が見えません。先に同意 (ConsentVC) を登録し、`image_cid` / `video_cid` を含むイベントを 1 件流します。ここでは案 A のとおり、CID はプレースホルダの文字列です。
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+curl -s -X POST localhost:8080/consents \
+  -H 'content-type: application/json' \
+  -d @examples/consent_possible_littering.json | jq .
+
+curl -s -X POST localhost:8080/simulate/publish \
+  -H 'content-type: application/json' \
+  -d '{
+    "topic": "homeassistant/event/possible_littering",
+    "purpose": "community_cleaning",
+    "payload": {
+      "event_type": "possible_littering",
+      "data": {"camera_id": "webcam-401", "object_class": "bottle", "confidence": 0.87},
+      "image_cid": "QmDemoImage",
+      "video_cid": "QmDemoVideo",
+      "video_duration_sec": 12,
+      "ts": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'",
+      "source": "edge_inference"
+    }
+  }' | jq .
+```
+
+2 つ目の応答が `"status": "allowed"` と `"dataset_id": "home/event/possible_littering"` なら成功です。`denied` の場合は、同意の登録を確認します。
+
+イベントの行は publisher のメモリにだけ保存されます。publisher を再起動すると消えるので、そのときはこの手順をやり直します。画像・動画の実体をアップロードして流す方法（`provider_with_media.py`）は [§8](data-user-vc-tiered-media.md#8-実データ統合案-bhttp-メディアゲートウェイ) で扱います。
+
+### 4b. PurchaseViewerVC を受け取って提示する
+
+§3 の応答の `offer_url` (ホスト名の部分を `<HOST_IP>` に置き換えます) を PC のブラウザで開き、QR コードをウォレットで読み取って、各 claim の PurchaseViewerVC を受け取ります。ウォレットには tier ごとに別のカードとして表示されます。その後、[購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) の Step 8 と同じ手順で提示します。
 提示が受理されると ViewerToken が発行されます。この ViewerToken で `/platform/data` を
 呼び出すと、プロファイルごとに次の差が出ます。
 
@@ -188,9 +223,17 @@ deeplink の種類は `['PurchaseViewerVC.event']` になります。
 | 3b Tier 2 (enterprise) | あり | あり | **なし** |
 | 3c Tier 1 (default) | あり | **なし** | **なし** |
 
-取得した ViewerToken をシェル変数 `VIEWER_TOKEN` に入れて、次を実行します。
+ViewerToken は publisher のログに出ます。提示の直後に次のコマンドで取り出します。
 
 ```bash
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1
+# -> ... viewer_token_issued vc_kind=PurchaseViewerVC jti=... token=<ViewerToken> dataset=home/event/possible_littering ttl=60s views=event+image+video
+```
+
+`token=` の値をシェル変数 `VIEWER_TOKEN` に入れて、次を実行します。ViewerToken の有効期間は 60 秒なので、取り出したらすぐに使います。期限が切れたら、もう一度提示します。
+
+```bash
+export VIEWER_TOKEN=<token= の値>
 curl -s -H "authorization: Bearer $VIEWER_TOKEN" \
      'localhost:8080/platform/data?dataset_id=home/event/possible_littering' | jq .
 ```
@@ -201,13 +244,14 @@ Tier 2 / Tier 1 では、`image_cid` / `video_cid` のキー自体が応答に�
 ## 5. 監査ログ
 
 ```bash
-curl -s localhost:8080/audit/logs | jq '.[:5]'
+curl -s 'localhost:8080/audit/logs?limit=100' \
+  | jq '[.[] | select(.raw_topic | IN("marketplace/claim", "marketplace/issued", "oid4vp/response", "platform/data"))]
+        | reverse | .[] | {ts, raw_topic, action, reason}'
 ```
 
-`/audit/logs` は新しい行から順に返すので、`.[:5]` で直近の 5 行を表示します。
+`/audit/logs` は新しい行から順に返します。このコマンドは、このページに関係する 4 種類の行だけを選び、古い順に並べ替えて表示します。
 
-下から順に、`raw_topic` が `oid4vp/response` の verify 行、
-`marketplace/claim` の行、`platform/data` の行が並ぶことを確認します。
+1 つの Tier について、上から `marketplace/claim`（claim の受付）、`marketplace/issued`（PurchaseViewerVC の発行）、`oid4vp/response`（提示の検証）、`platform/data`（データの読み出し）の順に並ぶことを確認します。
 
 ## 6. テストで突き合わせ
 
@@ -261,6 +305,6 @@ ViewerToken の発行ログ（`viewer_token_issued ... views=...`）と
 
 - [画像・動画を段階アクセスで配信する](data-user-vc-tiered-media.md) — 続きの §8〜§11（HTTP メディア・ゲートウェイ、IPFS、PWA Viewer、PWA Provider）
 - [意味レベルで段階化する](data-user-vc-tiered-semantic.md) — 続きの §12〜§13（VLM による意味レベルの段階化、意味的中間表現）
-- [スマホSSIウォレットサンプル](ha-ssi-wallet.md) — Phase 2 wallet を立ち上げる
-- [DataUserVC × 段階アクセス制御 仕様](data-user-vc-tiered-spec.md) — 設計根拠
-- [USBウェブカメライベント共有サンプル](webcam-event-sharing.md) — イベントを条件付きで共有する
+- [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) — Phase 2 wallet を立ち上げる
+- [段階アクセスの設計仕様](data-user-vc-tiered-spec.md) — 設計根拠
+- [検知イベントだけを共有する](webcam-event-sharing.md) — イベントを条件付きで共有する

@@ -4,7 +4,7 @@ Home Assistant の状態を MQTT で受け、Consent VC で共有可否を判定
 
 > **やること**: MQTT → publisher → Consent VC 判定 → 監査ログ までを一通り動かす
 >
-> **前提**: [最短起動](../setup/quickstart.md)、できれば [HA Demo Simulator](ha-demo-simulator.md)
+> **前提**: [最短起動](../setup/quickstart.md)、できれば [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)
 >
 > **使うもの**: PC (Home Assistant が動かせる構成)
 >
@@ -196,5 +196,5 @@ docker compose -f infra/docker-compose.yml down
 
 Phase 2 をすぐ試したい場合は、次の Hands-on を参照してください。
 
-- [環境・防災イベント共有サンプル（Phase 2）](environment-disaster.md)
-- [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md)
+- [防災イベントを共有する](environment-disaster.md) (Phase 2)
+- [検知イベントだけを共有する](webcam-event-sharing.md) (Phase 2)

@@ -13,7 +13,7 @@
 
 | Term | What it refers to |
 |---|---|
-| **v1** | The current "Marketplace + MetaMask + encrypted IPFS delivery" system |
+| **v1** | The current "Marketplace + MetaMask + delivery via an encrypted URI" system |
 | **v2** | The smartphone SSI wallet integration system, which adds a **bridge service + PurchaseViewerVC + publisher data API** to v1. VC stands for Verifiable Credential |
 | **bridge** | The service newly added in v2 that acts as an event listener and integrates with the publisher |
 | **buyer** | The data purchaser (a human). Assumed to have both MetaMask and iw3ip-wallet |
@@ -21,9 +21,11 @@
 
 ### 1.2 Coexistence policy
 
-v2 does not replace v1. The encrypted IPFS delivery of v1 is kept, and v2 runs in parallel with v1
+v2 does not replace v1. The v1 delivery via an encrypted URI is kept, and v2 runs in parallel with v1
 as an additional path (a "lane" in the figure below) that becomes available after the purchase completes. After purchasing, the buyer can choose
 to receive the data through the encrypted URI (v1) or through a VC (v2).
+
+→ In the implemented v1, the data itself is placed in the storage server (simple-storage), not IPFS. The seller-side `mediator-owner` puts the data in the storage server, encrypts its location (URI) with the buyer's public key, and writes it to the chain with `emitUpload`. IPFS and PostgreSQL (`ipfs_records`) hold video metadata and back the search screen.
 
 ```
 Purchase (common)
@@ -129,7 +131,7 @@ Identifier) method that derives the identifier from a public key (JWK); here it 
 | Component | Handling in v2 |
 |---|---|
 | `Merchandise.emitUpload(encryptURI)` + Upload event | **Kept**. Works as the v1 path. Both the v1 and v2 paths run from the same Purchase event |
-| `PubKey` contract (buyer public key registry) | **Kept**. Referenced only by the v1 path |
+| `PubKey` contract (buyer public key registry) | **Kept**. Also required in v2. `Merchandise.purchase()` calls `getPubKey(tx.origin)`, so a purchase reverts on the v2 path too when the buyer's public key is not registered |
 | Encrypt → decrypt flow | **Kept**. The hands-on treats it as a comparison between v1 and v2 |
 
 ### 3.4 **Absent from v1 and not built in v2 either**
@@ -274,12 +276,16 @@ Response:
 
 Polled by iot-market-ui. Returns `status: pending|delivered|expired`.
 
+→ In the implementation, `status` is only `pending` (VC not yet received) or `delivered` (received). There is no `expired`. When the claim does not exist, it returns 404 (`claim_not_found`).
+
 #### `GET /platform/data?merchandise=<addr>`
 
 A retrieval method alongside the existing `?dataset_id=`. The Bearer value is the ViewerToken obtained by presenting the PurchaseViewerVC.
 Internally, `dataset_id` is looked up from the Merchandise, and the data is retrieved by the same processing as the existing `?dataset_id=`.
 
-### 8.2 Bridge side (new)
+### 8.2 Bridge side (new, not implemented)
+
+→ The two endpoints below are not implemented. The implemented bridge only subscribes to Purchase events and calls `/marketplace/claim`; it has no HTTP server. iot-market-ui checks the state with the publisher's `GET /marketplace/claim/{claim_id}`.
 
 #### `POST /bridge/notify` (optional)
 
@@ -306,6 +312,14 @@ New recorded items:
 - `buyer_eth_addr`
 
 These are added to the existing audit_log table with `ALTER TABLE ... ADD COLUMN`.
+
+→ The implementation is as follows, matching §7 of the [VC architecture overview](vc-architecture-overview.md).
+
+- `marketplace/claim`: `reason=claim_received:<claim_id>:tx=<tx_hash>`
+- `marketplace/issued`: `reason=eth_did_bound:claim=<claim_id>:eth=<buyer_eth_addr>:tx=<tx_hash>`
+- The `raw_topic` for data reads is `platform/data`, not `marketplace/data` (`reason=viewer_token_used:<jti>:<read_count>:views=...`)
+
+No columns are added with `ALTER TABLE`. `buyer_eth_addr` and `tx_hash` are carried in the reason string as shown above.
 
 ## 10. Test strategy
 
@@ -347,7 +361,8 @@ The e2e (end-to-end) test uses the hands-on procedure as is.
 1. iot-market-ui is midway through its migration to SvelteKit + Svelte 5. Confirm the
    API version to use when adding new pages before starting M5
 2. Whether to place the bridge in the `ssi-wallet` profile or create a separate profile (`marketplace-vc`).
-   To be decided in M2
+   To be decided in M2. → A separate profile, `mv-bridge`, was chosen
+   (`infra/docker-compose.yml`)
 3. Whether a 24-hour TTL is right for the PurchaseViewerVC (7 days, if we assume the case where the buyer
    notices and views the data several days after the purchase?). → The implementation does not use a separate TTL;
    it follows `credential_ttl_days` (default 365 days), as for the other VCs (see §6)

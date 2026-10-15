@@ -41,15 +41,15 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 
 仲介プロセスやフロントを DevContainer / Docker 側で実行すれば、`host.docker.internal` がそのまま解決します。設定を変更したくない場合はこちらを選びます。
 
-## 2. IPFSコンテナが再起動ループ
+## 2. IPFS コンテナが再起動を繰り返す
 
-- 症状: IPFS コンテナが再起動を繰り返す
-  - 確認: `docker compose ps` で IPFS だけが継続的に再起動していないか
-  - 対応: `ipfs/docker-compose.yaml` の image を `ipfs/kubo:latest` にする
+- 症状: `ipfs` ディレクトリで `docker compose ps` を実行すると、`ipfs` の STATUS が `Restarting` のままになる
+  - 確認: `docker compose logs ipfs` でエラーの内容を見ます。ポート 8080 が使用中と出る場合は、publisher が動いていないか確認します ([10. ポートが競合する](#10-ポートが競合する))
+  - 対応: 保存データが壊れている場合は、`docker compose down -v` でボリュームごと削除し、`docker compose up -d` で作り直します。IPFS と PostgreSQL のデータは消えます。`ipfs/README.md` の手順で `ipfs_records` テーブルを作り直し、`mediator-owner` を起動し直して登録し直します
 
-## 3. スマホから `/mobile` が開けない
+## 3. スマホから `http://<HOST_IP>:5173/` が開けない
 
-- 症状: スマホから `/mobile` が開けない
+- 症状: スマホのブラウザで `http://<HOST_IP>:5173/` (`<HOST_IP>` は PC の LAN IP) を開けない
   - 確認: `npm run dev -- --host 0.0.0.0 --port 5173` で起動したか
   - 確認: PC とスマホが同一ネットワークか
   - 確認: PC のファイアウォールで `5173` が遮断されていないか
@@ -57,7 +57,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 ## 4. 商品が表示されない
 
 - 症状: <http://localhost:5173> を開いても商品が表示されない
-  - トップページは検索画面です。「Run Search」で一覧に出るのは、動画のメタデータとあわせて登録された商品だけです。イベントファイルの商品や、デプロイで登録した 5 件は、`http://localhost:5173/merchandise/<商品のアドレス>` を直接開いて確認します。
+  - トップページは検索画面です。「Run Search」で一覧に出るのは、`mediator-owner` が動画のメタデータを IPFS と PostgreSQL (`ipfs_records` テーブル) に登録した商品だけです。イベントファイルから作られた商品や、デプロイで登録した 5 件は検索に出ません。`http://localhost:5173/merchandise/<商品のアドレス>` を直接開いて確認します。
   - 確認: `mediator-owner` の実行引数が `cargo run -- settings/owner_1.yaml` になっているか
   - 確認: `mediator-owner` のターミナルに `Watching raw_data/output for new event files` と表示されているか。表示されない場合は、教材リポジトリを最新にして (`git pull`) 起動し直します
   - 確認: イベントファイルを出力したとき、`Product deployed: 0x... for file ...` と表示されるか。表示されたアドレスが商品ページの URL になります
@@ -77,7 +77,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
     {"action":"deny","subject_did":"unknown","dataset_id":"home/event/possible_littering","purpose":"research","reason":"no_matching_consent", ...}
     ```
 
-  - 原因の第一候補: **consent VC の有効期限切れ**。consent ファイル (`examples/ha_demo/consent_*.json`) の `valid_to` が過去日付だと、登録しても現在時刻が有効期間外となり、一致せず拒否されます。教材に含まれるサンプルは固定日付のため、時間が経つと期限切れになります。
+  - 原因の候補: consent を登録していない、または **consent の有効期限切れ**。consent ファイル (`examples/ha_demo/consent_*.json`) の `valid_to` が過去の日付だと、登録しても現在時刻が有効期間外になり、一致せず拒否されます。教材のサンプルは `2030-12-31T23:59:59Z` まで有効ですが、日付を書き換えたファイルや自分で作ったファイルでは期限切れが起こりえます。
 
 ### 確認
 
@@ -91,15 +91,14 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 
 ### 対処
 
-- consent ファイルの `valid_to` を十分先の日付に延ばし、登録し直します。期限切れの行をまとめて延長する例 (macOS の `sed` は `-i ''` が必要):
+- consent ファイルの `valid_to` を先の日付に延ばし、登録し直します。すべてのファイルの `valid_to` をまとめて書き換える例 (macOS の `sed` は `-i ''` が必要):
 
   ```bash
-  sed -i '' 's/"valid_to": "2026-05-01T00:00:00Z"/"valid_to": "2027-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
+  sed -i '' 's/"valid_to": "[^"]*"/"valid_to": "2035-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
   ```
 
 - 編集後、consent を登録し直し (各レスポンスが `"status":"stored"` になることを確認)、イベントを送り直してから `/platform/ingest` を再確認します。
 - 既存の `deny` ログは履歴として残ります。必ず **consent 登録後に送り直した新しいイベント** で結果を確認してください。
-- 恒久対応: 教材リポジトリ側で consent の `valid_to` を長期 (または生成時に「現在 + 1 年」など) に修正します。
 
 ## 7. 商品ページが 500 になる (iot-market-ui の接続先)
 
@@ -150,3 +149,24 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
     ```bash
     PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
     ```
+
+## 10. ポートが競合する
+
+- 症状: `address already in use` や `port is already allocated` と出て起動しない
+  - 確認: 使用中のプロセスを調べます (macOS / Linux)。
+
+    ```bash
+    lsof -i :8080
+    ```
+
+  - 教材で使う主なポートは次のとおりです。
+
+    | ポート | 使うもの | 注意 |
+    |---|---|---|
+    | 8080 | IPFS のゲートウェイ (`ipfs/docker-compose.yaml`) と publisher (`infra/docker-compose.yml`) | 同時には使えない。publisher を使う前に `ipfs` ディレクトリで `docker compose down` を実行する |
+    | 8545 | Hardhat ノード (`npx hardhat node`) | 2 つ目のノードを起動しない |
+    | 5173 | フロントエンド (`iot-market-ui`、`npm run dev`) | 別の Vite 開発サーバが動いていないか確認する |
+    | 8090 | assistant (`assistant` / `assistant-llm` / `assistant-demo` のプロファイル) | 3 つのプロファイルは同じポートを使うので、1 つずつ起動する |
+    | 11434 | Ollama (PC に直接入れた場合) | Ollama アプリが常駐していると、別の Ollama を起動できない |
+
+  - 対応: 競合しているプロセスを止めてから起動し直します。

@@ -4,9 +4,9 @@
 
 > **やること**: ServiceVC を持つサービスから連続書き込みを認可する
 >
-> **前提**: [HA SSI Wallet](ha-ssi-wallet.md) (Stage 1) と [HA SSI Viewer](ha-ssi-viewer.md) (Stage 3)
+> **前提**: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) と [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md)
 >
-> **使うもの**: PC のみ
+> **使うもの**: PC + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 約 45 分
 
@@ -29,14 +29,14 @@ ConsentVC の PolicyToken は **5 分・単回利用** で、人間が 1 件ず�
 PolicyToken は適しません。
 
 ServiceVC は「**サービスが継続的に書き込んでよい**」ことを表す M2M VC
-で、提示すると 1 時間有効・多回利用可能な ServiceToken が払い出されます。
+で、提示すると、1 時間有効で TTL 内は何度でも使える ServiceToken が払い出されます。
 publisher プロセスがこの ServiceToken を保持し、各 MQTT メッセージに
 Bearer ヘッダで添えて `/platform/ingest` を呼び出す想定です。
 
 ```
 [サービス] -- ServiceVC 提示 (1 回) ----> [Verifier]
                                               ↓
-                                         ServiceToken (1h, 多回)
+                                         ServiceToken (1h, 複数回)
 [サービス] <- ServiceToken --------------------┘
 [サービス] -- POST /platform/ingest x N -----> [Publisher]
                                                   認可は ServiceToken で
@@ -45,7 +45,7 @@ Bearer ヘッダで添えて `/platform/ingest` を呼び出す想定です。
 ## このページで分かること
 
 - 「人の VC (ConsentVC)」と「サービスの VC (ServiceVC)」を分ける理由
-- 単回の書き込み、多回の読み出し、多回の書き込みという、
+- 1 回だけの書き込み、複数回の読み出し、複数回の書き込みという、
   トークンの 3 通りの使われ方
 - ServiceToken の TTL 1 時間・write_count 増加の振る舞い
 - `/platform/ingest` が PolicyToken と ServiceToken の両方を受け付ける
@@ -61,10 +61,9 @@ Bearer ヘッダで添えて `/platform/ingest` を呼び出す想定です。
 
 ## 前提
 
-- [SSI Wallet ハンズオン](ha-ssi-wallet.md) (Stage 1) を通している
-- publisher が `feat/ssi-service-vc` 以降のコードで起動している
-- スマホ wallet で ServiceVC を保持する経路を試す場合、
-  iw3ip-wallet が利用可能
+- [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) を通している
+- publisher が `main` ブランチのコードで起動している
+- スマホで iw3ip-wallet が使える (§2・§3 で ServiceVC の受け取りと提示に使います)
 - コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 
 ## 1. 起動とメタデータ確認
@@ -129,7 +128,7 @@ done
 
 5 件すべてが HTTP 200 で `{"status":"received","count":N}` を返せば成功です。
 
-PolicyToken のように 2 回目で `403 already_consumed` にはなりません。
+PolicyToken のように 2 回目で `403 policy_token_already_consumed` にはなりません。
 
 ## 5. write_count を audit log で確認
 
@@ -173,7 +172,7 @@ Stage 1 ハンズオン (PolicyToken のみ知る参加者) のエラーメッ�
 | 想定保持者 | 人 (人間ユーザ) | 人 (閲覧者) | サービス (publisher 等) |
 | トークン | PolicyToken | ViewerToken | ServiceToken |
 | TTL | 5 分 | 60 秒 | 1 時間 |
-| 利用回数 | 単回 | TTL 内多回 | TTL 内多回 |
+| 利用回数 | 1 回 | TTL 内は何度でも | TTL 内は何度でも |
 | 対象 API | `POST /platform/ingest` | `GET /platform/data` | `POST /platform/ingest` |
 | VC claim | `allowed_purposes` | `allowed_actions=[read]` | `allowed_actions=[write_continuous]` |
 
@@ -194,7 +193,7 @@ Stage 1 ハンズオン (PolicyToken のみ知る参加者) のエラーメッ�
 
 ## 関連
 
-- [SSIウォレットサンプル (Stage 1)](ha-ssi-wallet.md): 人間の単回書き込み認可
-- [SSIビューワサンプル (Stage 3)](ha-ssi-viewer.md): 人間の多回読み出し認可
-- [既存 Phase 2 ハンズオンの補論](webcam-event-sharing.md#補論-ウォレットモードによる認可):
+- [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md): 人による 1 回だけの書き込みの認可
+- [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md): 人による複数回の読み出しの認可
+- [検知イベントだけを共有する](webcam-event-sharing.md#補論-ウォレットモードによる認可) の補論:
   ServiceVC 未実装時の 1 件単発 wallet モード

@@ -4,19 +4,19 @@ Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC).
 
 > **What you'll do**: Watch the response narrow from video → image → summary as the trust level drops
 >
-> **Prerequisites**: [HA SSI Wallet](ha-ssi-wallet.en.md) and [Webcam event sharing](webcam-event-sharing.en.md)
+> **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.en.md) and [Share detections, not raw frames](webcam-event-sharing.en.md)
 >
 > **What you need**: PC + smartphone (iw3ip-wallet)
 >
-> **Time**: ~60 min (the two follow-up pages take about 90 min and 60–90 min more)
+> **Time required**: approx. 60 min (the two follow-up pages take about 90 min and 60–90 min more)
 
-This walk-through builds on the
-[Mobile SSI Wallet sample](ha-ssi-wallet.md) and the
-[USB Webcam Event Sharing sample](webcam-event-sharing.md) and exercises
+This walk-through builds on
+[Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) and
+[Share detections, not raw frames](webcam-event-sharing.md) and exercises
 **narrowing the camera view to three tiers based on the recipient's
 trust attributes**.
 
-Read [DataUserVC × Tiered Access Spec](data-user-vc-tiered-spec.md) first
+Read [Tiered access design spec](data-user-vc-tiered-spec.md) first
 if you want the design rationale.
 
 Pipeline:
@@ -25,10 +25,10 @@ Pipeline:
 
 ## Quickest path
 
-1. Bring up publisher / hardhat / bridge
+1. Bring up the publisher
 2. Issue **DataUserVC** with three different profiles (gov-full, enterprise-access, low-deny)
 3. Hit `/marketplace/claim` for each and compare `allowed_views`
-4. Present PurchaseViewerVC and inspect `/platform/data` differences
+4. Publish one event with image / video, present PurchaseViewerVC, and inspect `/platform/data` differences
 
 ## What you'll learn
 
@@ -49,8 +49,8 @@ Pipeline:
 
 ## Prerequisites
 
-- You have run the [Mobile SSI Wallet sample](ha-ssi-wallet.md) once
-- You understand the [USB Webcam Event Sharing sample](webcam-event-sharing.md)
+- You have run [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) once
+- You understand [Share detections, not raw frames](webcam-event-sharing.md)
 - Docker / Docker Compose
 - `curl`, `jq`
 
@@ -79,8 +79,10 @@ just gains a `cid` field, so the provider script needs no changes.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
-docker compose -f infra/docker-compose.yml up -d publisher bridge mosquitto
+docker compose -f infra/docker-compose.yml up -d publisher mosquitto
 ```
+
+This page calls `/marketplace/claim` directly with curl, so the bridge and Hardhat are not started.
 
 Sanity check:
 
@@ -180,7 +182,40 @@ The kind in the deeplink is `['PurchaseViewerVC.event']`.
 
 ## 4. Issue PurchaseViewerVC, present, fetch `/platform/data`
 
-Open the `offer_url` from the §3 response in a PC browser (replace its host part with `<HOST_IP>`), scan the QR code with the wallet, and receive the PurchaseViewerVC of each claim. The wallet shows a separate card per tier. Then present it in the same way as Step 8 of [Stage 5](marketplace-vc-bridge.md).
+### 4a. Publish one event with image / video
+
+`/platform/data` returns the event rows the publisher has received. If nothing has been published yet, `rows` is empty for every tier and you see no difference. First register a consent (ConsentVC), then publish one event that carries `image_cid` / `video_cid`. As in option A, the CIDs here are placeholder strings.
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+curl -s -X POST localhost:8080/consents \
+  -H 'content-type: application/json' \
+  -d @examples/consent_possible_littering.json | jq .
+
+curl -s -X POST localhost:8080/simulate/publish \
+  -H 'content-type: application/json' \
+  -d '{
+    "topic": "homeassistant/event/possible_littering",
+    "purpose": "community_cleaning",
+    "payload": {
+      "event_type": "possible_littering",
+      "data": {"camera_id": "webcam-401", "object_class": "bottle", "confidence": 0.87},
+      "image_cid": "QmDemoImage",
+      "video_cid": "QmDemoVideo",
+      "video_duration_sec": 12,
+      "ts": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'",
+      "source": "edge_inference"
+    }
+  }' | jq .
+```
+
+The second response should show `"status": "allowed"` and `"dataset_id": "home/event/possible_littering"`. If it says `denied`, check the consent registration.
+
+Event rows are kept only in the publisher's memory. Restarting the publisher clears them, so redo this step after a restart. Uploading real image / video files and publishing them (`provider_with_media.py`) is covered in [§8](data-user-vc-tiered-media.md#8-real-data-integration-option-b--http-media-gateway).
+
+### 4b. Receive and present PurchaseViewerVC
+
+Open the `offer_url` from the §3 response in a PC browser (replace its host part with `<HOST_IP>`), scan the QR code with the wallet, and receive the PurchaseViewerVC of each claim. The wallet shows a separate card per tier. Then present it in the same way as Step 8 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md).
 Once the resulting ViewerToken is in hand, hit `/platform/data`:
 
 | Profile | `event` | `image_cid` | `video_cid` |
@@ -189,28 +224,36 @@ Once the resulting ViewerToken is in hand, hit `/platform/data`:
 | 3b Tier 2 (enterprise) | yes | yes | **no** |
 | 3c Tier 1 (default) | yes | **no** | **no** |
 
-Put the ViewerToken you obtained into the shell variable `VIEWER_TOKEN`,
-then run:
+The ViewerToken appears in the publisher log. Right after presenting, extract it with:
 
 ```bash
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1
+# -> ... viewer_token_issued vc_kind=PurchaseViewerVC jti=... token=<ViewerToken> dataset=home/event/possible_littering ttl=60s views=event+image+video
+```
+
+Put the `token=` value into the shell variable `VIEWER_TOKEN` and run the
+command below. A ViewerToken is valid for only 60 seconds, so use it right away. If it expires, present again.
+
+```bash
+export VIEWER_TOKEN=<value of token=>
 curl -s -H "authorization: Bearer $VIEWER_TOKEN" \
      'localhost:8080/platform/data?dataset_id=home/event/possible_littering' | jq .
 ```
 
-Confirm the `image_cid` / `video_cid` keys are **missing** (the keys
+For Tier 2 / Tier 1, confirm the `image_cid` / `video_cid` keys are **missing** (the keys
 are dropped, not nulled).
 
 ## 5. Audit log
 
 ```bash
-curl -s localhost:8080/audit/logs | jq '.[:5]'
+curl -s 'localhost:8080/audit/logs?limit=100' \
+  | jq '[.[] | select(.raw_topic | IN("marketplace/claim", "marketplace/issued", "oid4vp/response", "platform/data"))]
+        | reverse | .[] | {ts, raw_topic, action, reason}'
 ```
 
-`/audit/logs` returns the newest rows first, so `.[:5]` shows the latest five.
+`/audit/logs` returns the newest rows first. This command keeps only the four kinds of rows related to this page and prints them oldest first.
 
-Reading from the bottom up, you should see the verify row with
-`raw_topic` `oid4vp/response`, then the `marketplace/claim` row, then the
-`platform/data` row.
+For each tier, confirm the rows appear from top to bottom as `marketplace/claim` (claim accepted), `marketplace/issued` (PurchaseViewerVC issued), `oid4vp/response` (presentation verified), and `platform/data` (data read).
 
 ## 6. Cross-check with tests
 
@@ -266,6 +309,6 @@ share the same VCT.
 
 - [Deliver images and video with tiered access](data-user-vc-tiered-media.md) — continues with §8–§11 (HTTP media gateway, IPFS, PWA viewer, PWA Provider)
 - [Tier by semantic level](data-user-vc-tiered-semantic.md) — continues with §12–§13 (semantic-level tiering with a VLM, semantic intermediate representation)
-- [Mobile SSI Wallet sample](ha-ssi-wallet.md) — bring up the Phase 2 wallet
-- [DataUserVC × Tiered Access Spec](data-user-vc-tiered-spec.md) — design rationale
-- [USB Webcam Event Sharing sample](webcam-event-sharing.md) — listing comes from here
+- [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) — bring up the Phase 2 wallet
+- [Tiered access design spec](data-user-vc-tiered-spec.md) — design rationale
+- [Share detections, not raw frames](webcam-event-sharing.md) — listing comes from here

@@ -1,22 +1,22 @@
 # データ閲覧者の認証 (Viewer VC / Stage 3)
 
-[HA SSI Wallet](ha-ssi-wallet.md) では書き込み側を VC で保護しました。ここでは読み出し側を VC で保護します。
+[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) では書き込み側を VC で保護しました。ここでは読み出し側を VC で保護します。
 
 > **やること**: ViewerVC を提示して読み出しを許可してもらう
 >
-> **前提**: [HA SSI Wallet サンプル](ha-ssi-wallet.md) (Stage 1) を済ませていること
+> **前提**: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) を済ませていること
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 約 45 分
 
-!!! note "[SSI Wallet ハンズオン](ha-ssi-wallet.md) の続編です"
-    Stage 1 (PolicyToken による書き込み認可) を済ませた前提で進めます。
+!!! note "Stage 1 の続きです"
+    [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) (PolicyToken による書き込み認可) を済ませた前提で進めます。
     本ページでは **読み出し** を VC で保護する Stage 3 を扱います。
 
 !!! tip "dataset の選択"
     本ハンズオンの例は `home/env/temperature` で書かれていますが、Stage 0
-    [webcam-event-sharing](webcam-event-sharing.md) と同じ
+    [検知イベントだけを共有する](webcam-event-sharing.md) と同じ
     `home/event/possible_littering` でも動作します
     ([viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/viewer-possible-littering.json)
     の Presentation Definition (PD) が登録済み)。一連のハンズオンを通して同じ dataset を使いたい場合はそちらを選んでください。
@@ -36,7 +36,7 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 
 - 「書き込み VC」と「読み出し VC」を分ける理由
 - ViewerVC を OID4VCI で発行し、OID4VP で提示する
-- ViewerToken の TTL (有効期間) 60 秒 / 多回利用の扱い
+- ViewerToken の TTL (有効期間) は 60 秒で、TTL 内は何度でも使えること
 - `/platform/data` で取得した行が監査ログに残る様子
 
 ## よくある問題
@@ -53,8 +53,8 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 
 ## 前提
 
-- [SSI Wallet ハンズオン](ha-ssi-wallet.md) の §1〜§8 を一度通している
-- publisher が `feat/ssi-viewer-vc` 以降のコードで起動している
+- [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) の §1〜§8 を一度通している
+- publisher が `main` ブランチのコードで起動している
 - スマホで `iw3ip-wallet` が使える
 - コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 
@@ -86,7 +86,7 @@ curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m j
 
 ## 2. ConsentVC でデータを書き込む（おさらい）
 
-[SSI Wallet ハンズオン §5〜§8](ha-ssi-wallet.md#5-verifier-qr-で提示) と同じ手順で
+[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md#5-verifier-qr-で提示) の §5〜§8 と同じ手順で
 ConsentVC を提示 → PolicyToken 取得 → `/platform/ingest` でデータを書き込みます。
 書き込んだデータが §5 で読み出しの対象になります。
 
@@ -119,7 +119,7 @@ http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=V
 
 QR または deeplink でウォレットを開き、ViewerVC を選んで提示します。
 
-ウォレットが受け取るレスポンス (参考。curl を打つ側には表示されません):
+ウォレットが受け取るレスポンス (参考。PC のブラウザには表示されません):
 
 ```json
 {
@@ -135,10 +135,10 @@ QR または deeplink でウォレットを開き、ViewerVC を選んで提示�
 
 ## 5. /platform/data でデータを取得
 
-`viewer_token` は `/verifier/response` のレスポンスとしてウォレットに返るため、curl を打つ側からは見えません。提示が終わったら publisher のログを確認し、`viewer_token_issued` の行にある `token=` の後ろの値をコピーします。
+`viewer_token` は `/verifier/response` のレスポンスとしてウォレットに返るため、PC のブラウザには表示されません。提示が終わったら publisher のログを確認し、`viewer_token_issued` の行にある `token=` の後ろの値をコピーします。
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep viewer_token_issued
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued
 ```
 
 トークンの有効期限 (TTL) は 60 秒です。ログに出てから 60 秒以内に次の curl を実行してください。間に合わなかった場合は、§4 の提示からやり直します。
@@ -155,16 +155,17 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 ```json
 {
   "dataset_id": "home/env/temperature",
-  "count": 3,
+  "count": 1,
   "read_count": 1,
   "seller_did": null,
   "allowed_views": ["event"],
   "rows": [
-    {"dataset_id": "home/env/temperature", "value": 21.4, "purpose": "research"},
-    {"dataset_id": "home/env/temperature", "value": 22.0, "purpose": "research"}
+    {"dataset_id": "home/env/temperature", "value": 21.4, "purpose": "research"}
   ]
 }
 ```
+
+`rows` には、これまでに書き込んだ行が入ります。`count` は `rows` の件数なので、これまでに書き込んだ件数で変わります (§2 で 1 回書き込んだだけなら 1)。
 
 `read_count` は同じトークンで何回 read したかを示します。
 TTL (60 秒) 内であれば連続呼び出し可能で、各回 `read_count` がインクリメントされます。
@@ -225,19 +226,18 @@ ViewerVC 経由の read は次のように記録されます:
 
 ## 次のステップ
 
-ViewerVC は **任意の dataset を直接指定して読む** 形でしたが、シリーズの
-他のステージでは異なる認可形態を扱います:
+ViewerVC は **dataset を直接指定して読む** 形でした。ほかの認可の形は、次のページで扱います。
 
-- [Stage 4 prep: SSI サービスサンプル](ha-ssi-service.md) — M2M 連続書き込み (ServiceVC)
-- [Stage 5: マーケット連携 v2](marketplace-vc-bridge.md) — 購入連動 read (PurchaseViewerVC)
-- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — Stage 1〜5 の総合演習
-- [Stage 7: SellerVC](marketplace-seller-vc.md) — 出品身元のガバナンス
+- [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) — 機器からの連続書き込み (ServiceVC)
+- [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) — 購入と結びついた読み出し (PurchaseViewerVC)
+- [4 種類の証明書を 1 動線でつなぐ (Stage 6)](marketplace-vc-end-to-end.md) — Stage 1〜5 の総合演習
+- [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) — 出品者の身元の管理
 
 ## 拡張ヒント
 
-- **ViewerVC の有効期限**: VC 自体に短い `exp` を入れて期限管理 (revoke 機能と組み合わせる)
+- **ViewerVC の有効期限**: VC 自体に短い `exp` を入れて期限管理 (revoke は未実装。実装する場合は組み合わせる)
 - **dataset 横断 ViewerVC**: `allowed_actions: ["read"]` に加えて `dataset_ids: [...]` を持つ「複数 dataset 対応 VC」を発行する
-- **Phase 3 連携**: [LLM Planner](llm-planner.md) が plan 実行時に必要な dataset の ViewerToken を自動取得するフローへ拡張
+- **Phase 3 連携**: [AI に手順を考えさせる (LLM Planner)](llm-planner.md) が plan 実行時に必要な dataset の ViewerToken を自動取得するフローへ拡張
 
 ## トラブル時
 

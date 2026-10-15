@@ -1,10 +1,10 @@
 # Authenticate the data provider (Consent VC / Stage 1)
 
-Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to authorize a data action. This is the first hands-on in Part 2 (Feature Extensions).
+Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to authorize a data action. This is the first hands-on in Part 2 (Feature Extensions) that uses a VC. It replaces the JSON you registered at `/consents` in Stage 0 ([Share detections, not raw frames](webcam-event-sharing.md), [Share disaster events](environment-disaster.md)) with a VC presentation.
 
 > **What you'll do**: Receive a Consent VC on your phone and present it to allow a write
 >
-> **Prerequisites**: [HA SSI Publisher](ha-ssi-publisher.en.md) or [HA Demo Simulator](ha-demo-simulator.en.md) finished
+> **Prerequisites**: [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) or [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md) finished
 >
 > **What you need**: PC + smartphone with iw3ip-wallet
 >
@@ -17,7 +17,7 @@ Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to aut
 !!! tip "Dataset choice"
     The examples on this page use `home/env/temperature`. The same steps
     work with `home/event/possible_littering`, the webcam event from Stage 0
-    ([webcam-event-sharing](webcam-event-sharing.md)); substitute the dataset
+    ([Share detections, not raw frames](webcam-event-sharing.md)); substitute the dataset
     and purpose in that case.
 
 ## Goal
@@ -26,7 +26,7 @@ Try the flow where a smartphone SSI wallet presents a Consent VC,
 the IW3IP backend verifies it via OID4VP, and only verified requests
 receive shared event data.
 
-The existing [HA x SSI Publisher Sample](ha-ssi-publisher.md) registers
+The existing [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) registers
 a Consent-VC-shaped policy JSON directly via `/consents`. This sample
 moves to the actual SSI model: **the wallet presents a VC -> verifier
 validates it -> allowed/denied**.
@@ -59,7 +59,7 @@ Pipeline:
 - DID method mismatches between issuer / wallet / verifier cause signature failures
 - SD-JWT VC, W3C VC-JWT, and mdoc are not interchangeable; pin one format
 - QR redirect fails if the phone and PC are on different networks
-  (same prerequisite as [Mobile Viewer](mobile-viewer.md))
+  (same prerequisite as [Open the marketplace and buy on a phone (v1)](mobile-viewer.md))
 
 ## Official links
 
@@ -76,7 +76,7 @@ Pipeline:
 - `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - Installable `iw3ip-wallet` (fork) build on the phone
   (TestFlight / internal APK / Expo dev build)
-- You have completed the [HA x SSI Publisher Sample](ha-ssi-publisher.md) once
+- You have started the publisher once via [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) or [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
 
 ## Related repositories
 
@@ -93,12 +93,12 @@ The intended flow is 5 steps:
 2. Open `iw3ip-wallet` on the phone; scan the issuer QR to receive a Consent VC
 3. Scan the verifier QR shown on the PC screen
 4. The wallet selects the matching VC and presents it
-5. Confirm `allow` in the publisher's `/audit/logs`
+5. Confirm `allow` (with `reason` `ok`) in the publisher's `/audit/logs`
 
 Next branches:
 
 - To see a denial: change `purpose` to one not covered by the VC and re-present
-- To see revocation: revoke the VC; the same presentation should become `denied`
+- Revocation: not implemented yet; see [Extension ideas](#extension-ideas) for the idea
 - To compare with Phase 1: observe that audit logs now capture presentation
   events rather than direct `/consents` registration
 
@@ -167,12 +167,25 @@ Scan the QR with the wallet. It shows the request and the fields of the VC to be
 
 ![Presentation confirmation screen](images/ha-ssi-wallet/09-vp-information-request.png){ width="220" }
 
-Expected result:
+The result goes back to the wallet and is not shown in the PC browser. On the PC, check it in the audit log.
+
+```bash
+curl 'http://localhost:8080/audit/logs?limit=3'
+```
+
+If the top (newest) entry has `action` `allow` and `reason` `ok`, it worked. The publisher log also shows a line for the issued PolicyToken.
+
+```bash
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued
+```
+
+For reference, the response returned to the wallet looks like this:
 
 ```json
 {
   "status": "allowed",
   "dataset_id": "home/env/temperature",
+  "vc_kind": "ConsentVC",
   "policy_token": "VHA9X1d...",
   "policy_token_jti": "9b2fc3...",
   "expires_in": 300
@@ -187,10 +200,26 @@ consumes it.
 
 Change `purpose` to `marketing` and present again.
 
-Expected result:
+```txt
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&purpose=marketing
+```
+
+As in §5, check the audit log on the PC. The top entry has `action` `deny` and `reason` `purpose_mismatch`.
+
+```bash
+curl 'http://localhost:8080/audit/logs?limit=3'
+```
+
+For reference, the response returned to the wallet looks like this:
 
 ```json
-{"status":"denied","dataset_id":"home/env/temperature","reason":"purpose_mismatch"}
+{
+  "status": "denied",
+  "dataset_id": "home/env/temperature",
+  "reason": "purpose_mismatch",
+  "human_message_ja": "提示された VC の許可目的に、今回の用途が含まれていません。",
+  "human_message_en": "The presented VC's allowed_purposes does not cover this purpose."
+}
 ```
 
 Holding the VC is not enough; the verifier's constraints must also match.
@@ -205,17 +234,17 @@ Points to verify:
 
 - `presentation_verified` events are recorded with `allow` / `deny`
 - `holder_did`, `vc_hash`, `purpose` are preserved
-- Compared with HA x SSI Publisher, the log additionally records
+- Compared with HA SSI Publisher, the log additionally records
   "who presented which VC" rather than just the policy outcome
 
 The wallet keeps a history as well. Open the VC card to see when it was received and when it was presented to which party.
 
 ![Wallet activity history](images/ha-ssi-wallet/10-card-activity.png){ width="220" }
 
-## 8. Pull shared data
+## 8. Write data with the PolicyToken
 
 Pass the `policy_token` from §5 as a `Authorization: Bearer` header to
-`/platform/ingest` to actually share data backed by the verified VC.
+`/platform/ingest` to write data backed by the verified VC.
 The legacy `/consents` JSON registration path still works without a header.
 
 PolicyToken properties:
@@ -274,34 +303,34 @@ Error cases:
 | Unknown token | 401 | `policy_token_unknown` |
 
 The token is returned to the wallet as the `/verifier/response` response,
-so you cannot see it from the shell where you run curl. After the presentation
+so it is not shown in the PC browser. After the presentation
 finishes, check the publisher log, find the line
 `policy_token_issued jti=... token=... dataset=... ttl=...s`, and copy the
 value after `token=` into `<policy_token>` above.
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued
 ```
 
 ## Next steps
 
 This hands-on (Stage 1) only covers **single-use write authorization**
-(ConsentVC + PolicyToken). Other authorization shapes live in the
-following stages:
+(ConsentVC + PolicyToken). Other forms of authorization are covered on the following pages.
 
-- [Stage 3: SSI Viewer](ha-ssi-viewer.md) — multi-use read (ViewerVC)
-- [Stage 4 prep: SSI Service](ha-ssi-service.md) — M2M continuous write (ServiceVC)
-- [Stage 5: Marketplace integration v2](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
-- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
-- [Stage 7: SellerVC](marketplace-seller-vc.md) — marketplace seller identity
+- [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) — reads, any number of times within the TTL (ViewerVC)
+- [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) — continuous writes from a device (ServiceVC)
+- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
+- [Tie four credentials together end-to-end (Stage 6)](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
+- [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — seller identity
 
 ## Extension ideas
 
-- **Revocation**: expose Status List 2021 at `/verifier/status` and verify that
-  a revoked VC results in `denied`
+- **Revocation (not implemented)**: the current publisher has no revoke endpoint.
+  Extend it to publish a revocation list (e.g. Status List 2021) so that a
+  revoked VC results in `denied` for the same presentation
 - **SIOPv2 holder auth**: verify the holder's DID alongside the presentation
 - **Phase 3 integration**: require VC presentation before
-  [LLM Planner](llm-planner.md) `plan` execution, lifting the check into
+  [Let an AI plan the steps (LLM Planner)](llm-planner.md) `plan` execution, lifting the check into
   the intelligence layer
 
 ## Troubleshooting
@@ -312,4 +341,4 @@ following stages:
   - Check: DID methods align across issuer / verifier / wallet
   - Check: clock skew (`iat` / `exp`) is within tolerance
 - Symptom: QR does not open
-  - Check: phone and PC are on the same LAN (see [Mobile Viewer](mobile-viewer.md))
+  - Check: phone and PC are on the same LAN (see [Open the marketplace and buy on a phone (v1)](mobile-viewer.md))

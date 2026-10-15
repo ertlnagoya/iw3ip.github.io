@@ -4,15 +4,15 @@
 
 > **やること**: 疑似データで防災イベントを生成 → 共有 → 観察
 >
-> **前提**: [HA SSI Publisher サンプル](ha-ssi-publisher.md)
+> **前提**: [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md)
 >
 > **使うもの**: PC のみ
 >
-> **所要時間**: 30 分くらい
+> **所要時間**: 約 30 分
 
 この Hands-on では、**Phase 2: Event / Intelligence Sharing** を最小構成で試します。
 
-既存の `HA x SSI Publisher` サンプルをもとに、疑似データで次の流れを再現します。
+既存の HA SSI Publisher をもとに、疑似データで次の流れを再現します。
 
 `疑似センサ / エッジ推論 -> 防災イベント -> Consent VC 判定 -> 共有 / 拒否 -> 監査ログ`
 
@@ -27,7 +27,7 @@
 
 その後の分岐:
 
-- 許可だけ確認したい場合: `allowed` のケースまでで止めてよいです
+- 許可だけ確認したい場合: `allowed` を確認したところで終えて構いません
 - Consent の意味まで確認したい場合: `advertising` を送って `denied` も確認します
 - MQTT 経路まで見たい場合: 最後に `mosquitto_pub` で同じイベントを送ります
 
@@ -45,8 +45,9 @@
 
 ## 前提
 
-- [HA x SSI Publisherサンプル](ha-ssi-publisher.md) を起動できる
+- [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) を起動できる
 - Docker / Docker Compose が使える
+- [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 - `curl` が使える
 
 この Hands-on は、ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使います。
@@ -129,7 +130,7 @@ curl -X POST http://localhost:8080/consents \
     "retention_days": 30,
     "reshare_allowed": false,
     "valid_from": "2026-02-01T00:00:00Z",
-    "valid_to": "2027-12-31T23:59:59Z",
+    "valid_to": "2030-12-31T23:59:59Z",
     "signature": "PLACEHOLDER"
   }'
 ```
@@ -291,7 +292,7 @@ Phase 1 では、温度や電力のようなデータ共有を中心に見まし
 本編では `consent_flood_risk_high.json` を `/consents` に POST して
 ポリシー登録しました。これは「同意の記録を平文 JSON でサーバに置く」
 方式です。**同じ認可を、住民や観測者がスマホで保持する VC を提示する形**
-で扱う発展が、[スマホSSIウォレットサンプル](ha-ssi-wallet.md) です。
+で扱う発展が、[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) です。
 publisher 側には `home/event/flood_risk_high` (本編と同じ) と
 `home/env/flood_risk_high` の両方の ConsentVC PD が登録されており、
 本編と同じ `dataset_id` で災害イベントを wallet 経由で認可できます。
@@ -303,7 +304,7 @@ publisher 側には `home/event/flood_risk_high` (本編と同じ) と
 | 認可の保持者 | publisher サーバ | スマホウォレット |
 | 認可の伝達 | JSON POST | OID4VP 提示 (QR/Deeplink) |
 | 期間 | `valid_to` の TTL | 提示ごとに短命 PolicyToken (5 分・単回) |
-| 撤回 | `/consents` から削除 | VC を revoke / wallet で破棄 |
+| 撤回 | `/consents` から削除 | wallet で破棄 (revoke は未実装) |
 | 監査 | `purpose` / `dataset_id` を記録 | `holder_did` / `vc_hash` も記録 |
 
 **判定ロジックそのものは共通** で、`dataset_id` と `purpose` の
@@ -337,7 +338,7 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
 3. PolicyToken を取得し、本編と同じ形のイベントを 1 件 ingest。
    PolicyToken は publisher のログの `policy_token_issued` 行にある `token=` の後ろの値です。コピーして `POLICY` に入れます (有効期限 5 分):
    ```bash
-   docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued
+   docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued
    POLICY=<token= の後ろの値>
    ```
    ```bash
@@ -362,10 +363,10 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
   が publisher に登録されており、本編とまったく同じイベント形式
   (sensor_id / water_level_m / severity) を wallet 経由で
   ingest できます。
-- MQTT 連続フローを wallet で回すには **多回利用可の M2M トークン
-  (ServiceVC)** が必要で、これは [SSI Service ハンズオン](ha-ssi-service.md)
+- MQTT 連続フローを wallet で回すには **TTL 内は何度でも使える M2M トークン
+  (ServiceVC)** が必要で、これは [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md)
   で扱います。
 
 ### 関連
 
-- 読み出し側を VC で保護するフロー: [SSI ビューワサンプル](ha-ssi-viewer.md)
+- 読み出し側を VC で保護するフロー: [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md)

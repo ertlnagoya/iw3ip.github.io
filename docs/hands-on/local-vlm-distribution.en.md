@@ -8,12 +8,12 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
 >
 > **What you need**: laptop PC + USB webcam + Docker (including the VLM)
 >
-> **Time**: approx. 40–60 min (the first model pull takes a while)
+> **Time required**: approx. 40–60 min (the first model pull takes a while)
 
 !!! note "Where this page fits"
     This is a Part 3 (intelligence integration) hands-on. Camera capture basics
-    are covered in [USB webcam sample](webcam.md), and per-tier projection with a
-    VLM is in §12 of [DataUserVC × tiered access](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur). This
+    are covered in [Detect with a USB webcam (OpenCV)](webcam.md), and per-tier projection with a
+    VLM is in §12 of [Tier by semantic level](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur). This
     page focuses on experiencing "**camera → local VLM → distribute semantic
     data**" as a single flow.
 
@@ -46,7 +46,7 @@ Instead of distributing raw images, distribute the **semantic derivatives** a lo
 ## Prerequisites
 
 - you can start the v1 stack from [Quickstart](../setup/quickstart.en.md)
-- a USB webcam is recognized by the PC (trying the [USB webcam sample](webcam.md) first makes this easier)
+- a USB webcam is recognized by the PC (trying [Detect with a USB webcam (OpenCV)](webcam.md) first makes this easier)
 - Docker can use the `--profile vlm` profile (the first model pull downloads several GB)
 
 ## Shortest path
@@ -118,7 +118,7 @@ python capture_snapshot.py
 !!! note "No camera / cannot open it"
     You can substitute any JPEG as `snapshot.jpg`. If capture fails due to camera
     index or usage, see the `mock` mode and troubleshooting in the
-    [USB webcam sample](webcam.md).
+    [Detect with a USB webcam (OpenCV)](webcam.md).
 
 ## 3. Get the "meaning" from the local model
 
@@ -145,21 +145,21 @@ An example SIR (values depend on the image and analyzer):
 
 !!! note "Choosing the analyzer"
     The default is a deterministic stub. For real OpenCV face detection, set
-    `SEMANTIC_ANALYZER_BACKEND=vision` when starting the publisher. Combined with
-    `--profile vlm`, the distribution step below also attaches VLM descriptions
+    `SEMANTIC_ANALYZER_BACKEND=vision` when starting the publisher. If you started
+    with `VLM_BACKEND` set as in §1, the distribution step below also attaches VLM descriptions
     (`description_*`).
 
 ## 4. Distribute the semantic data over the platform
 
 Submit the image to the publisher and publish an event that points at it, so the AI-derived data enters the distribution pipeline. The exercise program in the next section runs consent registration → `/media/upload` → `/simulate/publish` in one go.
 
-If you started with `--profile vlm`, the publisher also calls the VLM here and attaches `description_full` / `description_summary` / `description_model` / `processing_warnings` to the row.
+If you started with `VLM_BACKEND` set as in §1, the publisher also calls the VLM here and attaches `description_full` / `description_summary` / `description_model` / `processing_warnings` to the row.
 
 !!! info "Consumer-side retrieval is tier-gated"
     To read the attached `description_*` on the consumer side you need a
     ViewerToken obtained by presenting a DataUserVC (`/platform/data` returns 401
     for a plain GET). Projecting `description_full` / `description_summary` per
-    trust tier is covered in §12 of [DataUserVC × tiered access](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur).
+    trust tier is covered in §12 of [Tier by semantic level](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur).
     The core of this page is "camera → local model semantic enrichment →
     distribute over the platform".
 
@@ -167,7 +167,7 @@ If you started with `--profile vlm`, the publisher also calls the VLM here and a
 
 - `/semantic/analyze` returns structured semantic data (SIR) only, never the raw image
 - the meaning is produced with the local model only, without sending images to a cloud
-- when `--profile vlm` is used, the distributed row carries `description_*` (descriptions and model ID)
+- when `VLM_BACKEND` is set, the distributed row carries `description_*` (descriptions and model ID)
 
 ## Something to think about
 
@@ -202,6 +202,14 @@ python examples/hands_on/local_vlm_distribution/problem_program.py \
 
 Compare with `answer_program.py`. Add `--distribute` to run the distribution too.
 
+!!! note "If `--distribute` times out"
+    `/simulate/publish` responds only after VLM inference finishes. On a CPU-only PC inference takes tens of seconds to minutes, so the program may exceed its wait time and stop with an error such as `TimeoutError` (the wait defaults to 600 s and can be changed with the `HANDS_ON_HTTP_TIMEOUT` environment variable; an older course repository uses 10 s, so run `git pull`). The publisher keeps processing, and the row is recorded once inference is done. Confirm that a row with `raw_topic` `homeassistant/event/possible_littering` and `action` `allow` was added (checking via `/platform/data` needs a ViewerToken):
+
+    ```bash
+    curl -s localhost:8080/audit/logs \
+      | jq '[.[] | select(.raw_topic == "homeassistant/event/possible_littering")][0] | {ts, action, reason}'
+    ```
+
 ### Step C. Add a feature from scratch (advanced)
 
 Without a template, implement one of these yourself:
@@ -213,7 +221,7 @@ Without a template, implement one of these yourself:
 
 ## Going further (extension directions)
 
-- **Natural-language search and processing**: run natural-language search and summarization over the accumulated semantic data with an LLM ([LLM Planner](llm-planner.md) / [Regional safety assistant](regional-safety-assistant.md)).
+- **Natural-language search and processing**: run natural-language search and summarization over the accumulated semantic data with an LLM ([Let an AI plan the steps (LLM Planner)](llm-planner.md) / [Run the regional safety assistant](regional-safety-assistant.md)).
 - **Remote device control**: based on the analysis result, separate `plan` and `execute` to operate a device (same Part 3).
 - **Raspberry Pi + Pi camera**: split the roles so the Pi captures and the PC/host runs inference (this page keeps everything on the laptop first).
 
@@ -222,10 +230,10 @@ Without a template, implement one of these yourself:
 - the first model pull is large and slow → wait for completion in the `vlm-pull` logs; do it when you have bandwidth to spare
 - inference is slow / times out on CPU → use the lightweight `VLM_MODEL=moondream`, or raise `VLM_TIMEOUT_SEC`
 - `processing_warnings` shows `vlm_unavailable` → check that the `vlm` service is up and the model pull is complete (`docker compose ... ps` / `logs`)
-- the camera cannot be opened → change the camera index or stop the process holding it (see [USB webcam sample](webcam.md))
+- the camera cannot be opened → change the camera index or stop the process holding it (see [Detect with a USB webcam (OpenCV)](webcam.md))
 
 ## Related pages
 
-- Prerequisites: [USB webcam sample](webcam.md) / [Quickstart](../setup/quickstart.en.md)
-- Deep dive: DataUserVC × tiered access ([§8 media integration](data-user-vc-tiered-media.md#8-real-data-integration-option-b--http-media-gateway), [§12 VLM tier](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur)) / [LLM Planner](llm-planner.md)
-- Design: [DataUserVC × tiered access control spec (tier extension: semantic-level redaction)](data-user-vc-tiered-spec.md)
+- Prerequisites: [Detect with a USB webcam (OpenCV)](webcam.md) / [Quickstart](../setup/quickstart.en.md)
+- Deep dive: DataUserVC × tiered access ([§8 media integration](data-user-vc-tiered-media.md#8-real-data-integration-option-b--http-media-gateway), [§12 VLM tier](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur)) / [Let an AI plan the steps (LLM Planner)](llm-planner.md)
+- Design: [Tiered access design spec (tier extension: semantic-level redaction)](data-user-vc-tiered-spec.md)

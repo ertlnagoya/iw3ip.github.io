@@ -8,7 +8,7 @@
 >
 > **使うもの**: PC + USB ウェブカメラ (無ければ手元の JPEG 画像) + Docker + Python 3
 >
-> **所要時間**: 90〜120 分 (初回は VLM のモデル取得に時間がかかります)
+> **所要時間**: 約 90〜120 分（初回は VLM のモデル取得に時間がかかります）
 
 ## 目的
 
@@ -173,7 +173,7 @@ python3 problem_program.py --out-dir results_mine
 - **構成 D の意味データが `{"people_count": 0, "objects": [], "sensitive_region_types": [], "privacy_risk_score": 1.0}` になる**: publisher の解析が失敗しています。教材リポジトリのトップで `docker compose -f infra/docker-compose.yml logs publisher | grep "semantic analyze failed"` を実行し、失敗の理由を確認します。教材リポジトリを最新にして (`git pull`)、publisher を `--build` 付きで起動し直します。`SEMANTIC_ANALYZER_BACKEND=vision` を付け忘れた場合は、固定の模擬データが返ります。
 - **構成 B が `skipped: local VLM not reachable` になる**: Ollama が起動しているか (`docker ps`)、ポート 11434 で待ち受けているかを確認します。
 - **時間がかかりすぎる**: CPU だけの PC では、1 回の説明に数十秒から数分かかります。答えの長さは 120 トークンに制限しています。
-- **カメラが開けない**: [USB ウェブカメラ](webcam.md) のトラブル項目を参照するか、`--image` で画像を渡します。
+- **カメラが開けない**: [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) のトラブル項目を参照するか、`--image` で画像を渡します。
 
 ## 7. 後片付け
 
@@ -192,4 +192,4 @@ docker compose -f infra/docker-compose.yml down
 
 - [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) — ローカルの VLM と意味データを基盤で流通させる
 - [意味レベルで段階化する](data-user-vc-tiered-semantic.md) — 受け取る人の信頼度に応じて、顔のぼかしや説明文を出し分ける
-- [USB ウェブカメラ](webcam.md) — カメラの取り込みの基礎
+- [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) — カメラの取り込みの基礎

@@ -4,13 +4,13 @@ Phase 2 で共有するようなイベント (`possible_littering` など) を�
 
 > **やること**: 自由文の要求 → plan → execute の流れを通す
 >
-> **前提**: [USB ウェブカメライベント共有サンプル](webcam-event-sharing.md)
+> **前提**: [検知イベントだけを共有する](webcam-event-sharing.md)
 >
 > **使うもの**: PC のみ
 >
-> **所要時間**: 60 分くらい
+> **所要時間**: 約 60 分
 
-[USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md) の発展として、**人間の要求を AI が解釈し、イベント収集・条件判定・機器操作へ分解する** 流れを確認します。
+[検知イベントだけを共有する](webcam-event-sharing.md) の発展として、**人間の要求を AI が解釈し、イベント収集・条件判定・機器操作へ分解する** 流れを確認します。
 
 Phase 2 では `possible_littering` のようなイベントを共有しました。  
 Phase 3 では、その先として、次の流れを扱います。
@@ -68,7 +68,7 @@ Phase 3 では、その先として、次の流れを扱います。
 - [examples/phase3_events_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_events_park_safety.json)
 
 このページでは `問題用プログラム / 解答用プログラム` ではなく、**最小実装そのもの**を読む形にしています。  
-理由は、このページでは「planner」「evaluator」「actuator」のモジュール境界自体が学習対象だからです。
+理由は、planner・evaluator・actuator のモジュール境界自体が学習対象だからです。
 
 ## 想定シナリオ
 
@@ -285,5 +285,5 @@ docker compose -f infra/docker-compose.yml --profile assistant down
 
 ## 次の学習
 
-- Phase 2 からつなげて理解したい場合: [USBウェブカメライベント共有サンプル（Phase 2）](webcam-event-sharing.md)
-- Phase 1 の基礎から見直したい場合: [HA x SSI Publisherサンプル（Phase 1）](ha-ssi-publisher.md)
+- Phase 2 からつなげて理解したい場合: [検知イベントだけを共有する](webcam-event-sharing.md)
+- Phase 1 の基礎から見直したい場合: [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md)

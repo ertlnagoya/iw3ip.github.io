@@ -88,7 +88,7 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 
 ## Step E0. Start the prerequisite environment (same as Stage 5)
 
-If the Stage 5 Hardhat node is still running, first stop the Hardhat node (and the mediator) in Terminal A with Ctrl+C. If the old node keeps port 8545, the new node cannot start, the deploy lands on the old chain, and the addresses do not match the table in Step E2.
+If the Stage 5 Hardhat node is still running, first stop the Hardhat node in Terminal A with Ctrl+C. If the old node keeps port 8545, the new node cannot start, the deploy lands on the old chain, and the addresses do not match the table in Step E2.
 
 ```bash
 # Hardhat + deploy (latest version, in which Merchandise holds dataset_id in additionalInfo)
@@ -143,7 +143,7 @@ In a PC browser (Mac):
 http://<HOST_IP>:8080/issuer/offer?type=ServiceVC&dataset_id=home/env/temperature&purpose=write_continuous
 ```
 
-Show the QR code → scan it with the iPhone wallet → **approve "IW3IP Service Credential"**.
+Show the QR code → scan it with the iPhone wallet → **approve "IW3IP Service Credential"** (shown as "IW3IP サービスクレデンシャル" in a Japanese-language wallet).
 
 Then present it:
 
@@ -260,14 +260,14 @@ open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 
 `open` is a macOS command. On Linux use `xdg-open`, on Windows (WSL) use `explorer.exe`, or paste the printed URL into a browser.
 
-Scan the QR code with the iPhone wallet and approve "IW3IP Purchase Viewer (Event-only)". The command above sends the deeplink to an external QR generation service, so do not use it outside a local hands-on environment.
+Scan the QR code with the iPhone wallet and approve "IW3IP Purchase Viewer (Event-only)" (shown as "IW3IP 購入閲覧（Tier 1 / イベントのみ）" in a Japanese-language wallet). The command above sends the deeplink to an external QR generation service, so do not use it outside a local hands-on environment.
 
 Confirm in the wallet that the VC claims contain `dataset_id: home/env/temperature`.
 
 audit:
 
 ```bash
-curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool | grep -A1 marketplace/issued
+curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool | grep eth_did_bound
 ```
 
 → `eth_did_bound:claim=...:eth=0x3C44...:tx=0x...`

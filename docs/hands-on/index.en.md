@@ -12,7 +12,7 @@ They are **additive lanes, not a replacement** — Basic alone is enough to buy 
 
 ### Basic (v1) — minimal setup
 
-- List data on the marketplace, **purchase via MetaMask**, **download from encrypted IPFS** and decrypt
+- List data on the marketplace and **purchase via MetaMask** to receive it. The seller side puts the data in the storage server (simple-storage), encrypts its location (URI) with the buyer's public key, and writes it to the chain. The buyer side decrypts it and fetches the data
 - All you need is a PC and MetaMask
 - Part 1 of the hands-on builds this v1 path
 
@@ -25,7 +25,7 @@ They are **additive lanes, not a replacement** — Basic alone is enough to buy 
 ```
 Purchase (shared by v1 and v2)
     ↓
-    ├── v1 lane: encrypted-IPFS URI → decrypt → data       ← covered in Part 1
+    ├── v1 lane: encrypted URI → decrypt → data from storage ← covered in Part 1
     └── v2 lane: bridge → PurchaseViewerVC → wallet         ← covered in Part 2
                   → ViewerToken → /platform/data
 ```
@@ -37,20 +37,20 @@ Design detail: [Marketplace VC Bridge — v1 / v2 design spec](../design/marketp
 This site uses three kinds of numbering.
 
 - **Part 1–3**: the learning order on this site (Basic, Feature Extensions, Intelligence Integration).
-- **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see [Platform Overview](../platform-overview.md)). Page titles carry the Phase.
+- **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see [Platform Overview](../platform-overview.md)).
 - **Stage 0–7, A, T**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0). Each page assumes the earlier Stages are done. There is no Stage 2.
 
 | Stage | Hands-on | VC |
 |---|---|---|
-| 0 | [USB Webcam Event Sharing](webcam-event-sharing.md), [Environment / Disaster Event Sharing](environment-disaster.md) | none (JSON registered at `/consents`) |
-| 1 | [SSI Wallet](ha-ssi-wallet.md) | ConsentVC |
-| 3 | [SSI Viewer](ha-ssi-viewer.md) | ViewerVC |
-| 4 prep | [SSI Service](ha-ssi-service.md) | ServiceVC |
-| 5 | [Marketplace × Wallet bridge](marketplace-vc-bridge.md) | PurchaseViewerVC |
-| 6 | [4-VC end-to-end](marketplace-vc-end-to-end.md) | Consent / Viewer / Service / PurchaseViewer |
-| 7 | [Seller VC](marketplace-seller-vc.md) | SellerVC |
-| A | [Mobile App](marketplace-mobile-app.md) | PurchaseViewerVC (phone only) |
-| T | [DataUserVC Tiered Access](data-user-vc-tiered.md) | DataUserVC |
+| 0 | [Share detections, not raw frames](webcam-event-sharing.md), [Share disaster events](environment-disaster.md) | none (JSON registered at `/consents`) |
+| 1 | [Authenticate the data provider](ha-ssi-wallet.md) | ConsentVC |
+| 3 | [Authenticate the viewer](ha-ssi-viewer.md) | ViewerVC |
+| 4 prep | [Authenticate machines](ha-ssi-service.md) | ServiceVC |
+| 5 | [Hand a credential to the buyer's wallet](marketplace-vc-bridge.md) | PurchaseViewerVC |
+| 6 | [Tie four credentials together end-to-end](marketplace-vc-end-to-end.md) | Consent / Viewer / Service / PurchaseViewer |
+| 7 | [Back the seller's identity](marketplace-seller-vc.md) | SellerVC |
+| A | [Marketplace as a phone app](marketplace-mobile-app.md) | PurchaseViewerVC (phone only) |
+| T | [Tier the response by trust](data-user-vc-tiered.md) | DataUserVC |
 
 The mapping between VCs and tokens is summarized in [VC Architecture Overview](../design/vc-architecture-overview.md).
 
@@ -94,9 +94,9 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
     <h3>Consent, conditional sharing, tiered access</h3>
     <p>Use VCs and a wallet to share according to purpose and trust level. You can stop partway.</p>
     <p class="iw3ip-phase-links">
-      <a href="ha-ssi-wallet/">HA SSI Wallet</a> /
       <a href="webcam-event-sharing/">Webcam Event Sharing</a> /
       <a href="environment-disaster/">Environment Disaster</a> /
+      <a href="ha-ssi-wallet/">HA SSI Wallet</a> /
       <a href="marketplace-vc-bridge/">VC Bridge</a> /
       <a href="data-user-vc-tiered/">DataUserVC Tiered</a>
     </p>
@@ -119,7 +119,7 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
 | Goal | Path |
 |---|---|
 | See it run first | [HA Demo Simulator](ha-demo-simulator.md) only (approx. 20 min) |
-| Cover all of Basic | All of Part 1 (approx. 2 hours; pick one device in §1.2) |
+| Cover all of Basic | All of Part 1 (approx. 1.5 hours; pick one device in §1.2) |
 | Reach safe / conditional sharing | Part 1 → Part 2 §2.1–§2.3 (+ approx. 4 hours) |
 | Reach v2 marketplace integration | Part 1 → Part 2 §2.4 (+ approx. 4 hours) |
 | Reach tiered access | Through Part 2 §2.5 (+ approx. 1 hour; about 3 more hours to cover image/video delivery and semantic-level tiering) |
@@ -133,9 +133,9 @@ Each hands-on page opens with a "What you'll learn / Prerequisites / What you ne
 
 What runs behind each sub-group. Part 2 is mixed — some sub-groups need the blockchain, others don't.
 
-| Sub-group | publisher (Docker) | Blockchain (Hardhat) | MetaMask | SSI wallet (phone) | IPFS (encrypted) | Image proc. / LLM |
+| Sub-group | publisher (Docker) | Blockchain (Hardhat) | MetaMask | SSI wallet (phone) | IPFS / storage (v1) | Image proc. / LLM |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
-| **Part 1 / Capture data** | ✓ | – | – | – | – | – |
+| **Part 1 / Capture data** | ✓ <small>(HA path)</small> | ✓ <small>(camera path)</small> | – | – | ✓ <small>(camera path)</small> | – |
 | **Part 1 / Trade (v1)** | – | ✓ | ✓ | – | ✓ | – |
 | **Part 2 / Add authentication** | ✓ | – | – | ✓ | – | – |
 | **Part 2 / Wire wallet to marketplace (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
@@ -152,11 +152,12 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 
 ### Reading the tables
 
-- **publisher**: the hands-on server, started with `docker compose up`. Part 1 / Trade (v1) does not use it. v1 uses IPFS instead, and IPFS and the publisher both use port 8080, so they cannot run at the same time.
+- **publisher**: the hands-on server, started with `docker compose up`. Part 1 / Trade (v1) does not use it. The v1 stack also starts IPFS, and IPFS and the publisher both use port 8080, so they cannot run at the same time.
 - **Blockchain**: a local Hardhat chain plus deployed contracts. Required when the marketplace purchase is the entry point.
 - **MetaMask**: signs / sends transactions on the local chain.
 - **SSI wallet**: iw3ip-wallet (a fork of Sphereon Wallet) on a phone — receives and presents VCs.
-- **IPFS (encrypted)**: the v1 post-purchase delivery lane. v2 replaces this role with VCs.
+- **IPFS / storage (v1)**: used in v1. After a purchase, the data is placed in the storage server (simple-storage), and its location (URI) is encrypted and written to the chain. IPFS and PostgreSQL hold video metadata and back the search screen. v2 adds a lane that uses VCs.
+- **Camera path / HA path**: in Part 1, HUSKYLENS2 and the USB webcam hand event files to `mediator-owner`, so they need the [Quickstart](../setup/quickstart.md) stack (Hardhat, storage server, IPFS, and so on). HA SSI Publisher sends data to the publisher.
 - **Image proc. / LLM**: OpenCV (Tier 2 blur), Ollama (LLaVA / moondream for VLM), and the LLM planner in Part 3.
 
 ---
@@ -172,21 +173,21 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 
 The Home Assistant simulator lets you run the entire walkthrough without any IoT device. A good place to begin.
 
-- [HA Demo Simulator](ha-demo-simulator.md)
+- [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
 
 ### 1.2 Capture data from a device
 
-Build a path that pulls data off a camera or sensor and sends it to the publisher. Choose one that matches your hardware:
+Build a path that pulls data off a camera or sensor. HUSKYLENS2 and the USB webcam hand event files to `mediator-owner`; HA SSI Publisher sends data to the publisher. Choose one that matches your hardware:
 
-- [HUSKYLENS2](huskylens2.md) — purpose-built AI camera
-- [USB Webcam](webcam.md) — generic USB camera + OpenCV
-- [HA × SSI Publisher](ha-ssi-publisher.md) — Home Assistant integration
+- [Detect a person on an AI camera (HUSKYLENS2)](huskylens2.md) — purpose-built AI camera
+- [Detect with a USB webcam (OpenCV)](webcam.md) — generic USB camera + OpenCV
+- [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) — Home Assistant integration
 
 ### 1.3 Trade on the marketplace (v1 lane)
 
-The list → buy → decrypt-from-IPFS flow. This is the completion point of **Basic (v1)**.
+The list → buy → receive flow. On delivery, the location (URI) of the data placed in the storage server (simple-storage) is encrypted and passed through the chain. This is the completion point of **Basic (v1)**.
 
-1. **List**: run a sample from §1.2 ([HUSKYLENS2](huskylens2.md) or [USB webcam](webcam.md); mock mode is enough). Event files are written to `mediator-owner/raw_data/output`. `mediator-owner` detects each file, registers it as merchandise, and prints the item's address.
+1. **List**: run a sample from §1.2 ([HUSKYLENS2](huskylens2.md) or [USB webcam](webcam.md); mock mode is enough). Event files are written to `mediator-owner/raw_data/output`. If you chose HA SSI Publisher in §1.2, run the [USB webcam sample](webcam.md) in mock mode to list an item. `mediator-owner` detects each event file, registers it as merchandise, and prints the item's address.
 
     ```
     Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskylens_1791551565.txt
@@ -221,15 +222,15 @@ The 5 items registered by step 2 of Quickstart (deployment) were not listed by `
 
 Detailed bring-up: [Quickstart](../setup/quickstart.md).
 
-### 1.4 View on a phone
+### 1.4 Open the marketplace and buy on a phone
 
 Open the §1.3 marketplace screen in a phone browser and walk through a purchase.
 
-- [Mobile Viewer](mobile-viewer.md)
+- [Open the marketplace and buy on a phone (v1)](mobile-viewer.md)
 
 ### Done when…
 
-- `/platform/ingest` shows the publisher receiving your device's data
+- You confirmed that the §1.2 data arrived: on the HA path it appears in `curl localhost:8080/platform/ingest`, and on the camera path it appears as `Product deployed` in `mediator-owner`
 - Listing → purchase → delivery on the marketplace worked, and the data was saved under `mediator-buyer/downloads`
 
 ---
@@ -242,43 +243,43 @@ Open the §1.3 marketplace screen in a phone browser and walk through a purchase
 - Implement that conditional sharing with **VCs and a wallet**
 - Vary what is shown by trust level with **tiered access (Tier 3 / 2 / 1)**
 
-### 2.1 Add consent (Consent VC)
-
-Issue and present a "I consent to sharing for this purpose" VC.
-
-- [HA × SSI Wallet](ha-ssi-wallet.md)
-
-### 2.2 Event sharing — share inferences, not raw frames
+### 2.1 Event sharing — share inferences, not raw frames (Stage 0)
 
 Send "person detected: yes" / "littering: yes" events instead of the raw video.
 
-- [Webcam Event Sharing](webcam-event-sharing.md)
-- [Environment Disaster](environment-disaster.md)
+- [Share detections, not raw frames](webcam-event-sharing.md)
+- [Share disaster events](environment-disaster.md)
+
+### 2.2 Add consent (Consent VC) (Stage 1)
+
+Issue and present a "I consent to sharing for this purpose" VC.
+
+- [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
 
 ### 2.3 Split read vs write roles
 
 Use VCs to separate "read-only viewer" from "write-only service".
 
-- [HA × SSI Viewer](ha-ssi-viewer.md)
-- [HA × SSI Service](ha-ssi-service.md)
+- [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md)
+- [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md)
 
 ### 2.4 Marketplace × wallet (v2 lane)
 
-Replace IPFS-encrypted delivery with **PurchaseViewerVC + ViewerToken**.
+Deliver the data after purchase with **PurchaseViewerVC + ViewerToken** instead of the encrypted URI (v1).
 
-- [Marketplace VC Bridge](marketplace-vc-bridge.md) — stand up the bridge
-- [Marketplace VC end-to-end (Stage 6)](marketplace-vc-end-to-end.md) — full buy-to-view path
-- [Marketplace Seller VC (Stage 7)](marketplace-seller-vc.md) — seller-side VC
-- [Marketplace Mobile App (Stage A)](marketplace-mobile-app.md) — dedicated mobile app
+- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — stand up the bridge
+- [Tie four credentials together end-to-end (Stage 6)](marketplace-vc-end-to-end.md) — full buy-to-view path
+- [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — seller-side VC
+- [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md) — dedicated mobile app
 
 ### 2.5 Tiered access by trust (Stage T)
 
 Switch the response between Tier 3 (video + everything), Tier 2 (image + derived), and Tier 1 (summary only) based on the user's **DataUserVC**. Goes all the way to **semantic intermediate representation + trust-aware rendering**.
 
-- [DataUserVC Tiered Access hands-on](data-user-vc-tiered.md)
-- [Deliver images and video with tiered access](data-user-vc-tiered-media.md) — continues with §8–§11
-- [Tier by semantic level](data-user-vc-tiered-semantic.md) — continues with §12–§13
-- [DataUserVC Tiered Access spec](data-user-vc-tiered-spec.md)
+- [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)
+- [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — continues with §8–§11
+- [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — continues with §12–§13
+- [Tiered access design spec](data-user-vc-tiered-spec.md)
 
 ### Done when…
 
@@ -302,7 +303,7 @@ Switch the response between Tier 3 (video + everything), Tier 2 (image + derived
 
 Analyze laptop + USB-camera frames with a local model and distribute the semantic data over the platform. A step-by-step exercise: read the structure → fill in the template → add a feature from scratch.
 
-- [Enrich camera data with a local VLM and distribute it](local-vlm-distribution.md)
+- [Enrich camera data with a local VLM](local-vlm-distribution.md)
 
 ### 3.2 Protect camera images before handing them to AI
 
@@ -314,13 +315,13 @@ Hand the same camera image to AI in four ways (raw to the cloud, on the PC only,
 
 Loads a sample event file recording "when / where / what happened" (`examples/phase3_events_park_safety.json`) and answers free-form requests.
 
-- [Regional Safety Assistant](regional-safety-assistant.md)
+- [Run the regional safety assistant](regional-safety-assistant.md)
 
 ### 3.4 LLM Planner
 
 The "request → plan → execute → UI" decomposition pattern.
 
-- [LLM Planner hands-on](llm-planner.md)
+- [Let an AI plan the steps (LLM Planner)](llm-planner.md)
 - [LLM Planner replacement spec](llm-planner-spec.md)
 
 ### Done when…

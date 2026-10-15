@@ -144,9 +144,9 @@ nav:
               - "Open the marketplace and buy on a phone (v1)": hands-on/mobile-viewer.md
       - "Part 2: Feature Extensions — Add auth, marketplace integration, and processing":
           - "Add authentication (SSI wallet)":
-              - "Authenticate the data provider (Consent VC / Stage 1)": hands-on/ha-ssi-wallet.md
               - "Share detections, not raw frames": hands-on/webcam-event-sharing.md
               - "Share disaster events": hands-on/environment-disaster.md
+              - "Authenticate the data provider (Consent VC / Stage 1)": hands-on/ha-ssi-wallet.md
               - "Authenticate the viewer (Viewer VC / Stage 3)": hands-on/ha-ssi-viewer.md
               - "Authenticate machines (Service VC / Stage 4 prep)": hands-on/ha-ssi-service.md
           - "Wire wallet to the marketplace (v2)":

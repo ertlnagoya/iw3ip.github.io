@@ -1,23 +1,23 @@
 # Authenticate the viewer (Viewer VC / Stage 3)
 
-[HA SSI Wallet](ha-ssi-wallet.en.md) protected the write side with a VC. This page protects the read side with a VC.
+[Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) protected the write side with a VC. This page protects the read side with a VC.
 
 > **What you'll do**: Present a ViewerVC to be granted read access
 >
-> **Prerequisites**: [HA SSI Wallet](ha-ssi-wallet.en.md) (Stage 1) finished
+> **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) finished
 >
 > **What you need**: PC + smartphone (iw3ip-wallet)
 >
 > **Time required**: approx. 45 min
 
-!!! note "Sequel to the [SSI Wallet hands-on](ha-ssi-wallet.md)"
-    Assumes you've completed Stage 1 (PolicyToken-gated write).
+!!! note "Continues from Stage 1"
+    Assumes you've completed [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) (PolicyToken-gated write).
     This page covers Stage 3: gating **read** with VC presentation.
 
 !!! tip "Choosing a dataset"
     The example here is written for `home/env/temperature`, but it also
     works with `home/event/possible_littering`, the same as Stage 0
-    [webcam-event-sharing](webcam-event-sharing.md) (the PD in
+    [Share detections, not raw frames](webcam-event-sharing.md) (the PD in
     [viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/viewer-possible-littering.json)
     is already registered). Choose that if you want to use the same
     dataset throughout the hands-on series.
@@ -37,7 +37,7 @@ Pipeline:
 
 - Why "write VC" and "read VC" are separated
 - Issuing ViewerVC via OID4VCI and presenting via OID4VP
-- ViewerToken's 60-second TTL with multi-use semantics
+- ViewerToken's 60-second TTL, and that it can be used any number of times within the TTL
 - How `/platform/data` reads are recorded in the audit log
 
 ## Common issues
@@ -54,8 +54,8 @@ Pipeline:
 
 ## Prerequisites
 
-- Have completed §1〜§8 of the [SSI Wallet hands-on](ha-ssi-wallet.md)
-- Publisher running with `feat/ssi-viewer-vc` or later
+- Have completed §1〜§8 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
+- Publisher running from the `main` branch
 - `iw3ip-wallet` available on phone
 - `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 
@@ -87,7 +87,7 @@ curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m j
 
 ## 2. Write data via ConsentVC (recap)
 
-Follow [SSI Wallet hands-on §5〜§8](ha-ssi-wallet.md#5-present-via-verifier-qr)
+Follow §5〜§8 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md#5-present-via-verifier-qr)
 to present ConsentVC, get a PolicyToken, and POST to `/platform/ingest`.
 Those rows are what §5 will read back.
 
@@ -116,7 +116,7 @@ http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=V
 `vc_kind=ViewerVC` selects `viewer-temperature.json` instead of the
 ConsentVC-side PD. Send the QR to the wallet, present the credential.
 
-Response the wallet receives (for reference; it is not shown in the shell where you run curl):
+Response the wallet receives (for reference; it is not shown in the PC browser):
 
 ```json
 {
@@ -132,10 +132,10 @@ Response the wallet receives (for reference; it is not shown in the shell where 
 
 ## 5. Read via /platform/data
 
-The `viewer_token` is returned to the wallet as the `/verifier/response` response, so you cannot see it from the shell where you run curl. After the presentation finishes, check the publisher log and copy the value after `token=` on the `viewer_token_issued` line.
+The `viewer_token` is returned to the wallet as the `/verifier/response` response, so it is not shown in the PC browser. After the presentation finishes, check the publisher log and copy the value after `token=` on the `viewer_token_issued` line.
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep viewer_token_issued
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued
 ```
 
 The token's TTL is 60 seconds. Run the next curl within 60 seconds of the log line. If you miss it, present again from §4.
@@ -152,16 +152,17 @@ Expected response:
 ```json
 {
   "dataset_id": "home/env/temperature",
-  "count": 3,
+  "count": 1,
   "read_count": 1,
   "seller_did": null,
   "allowed_views": ["event"],
   "rows": [
-    {"dataset_id": "home/env/temperature", "value": 21.4, "purpose": "research"},
-    {"dataset_id": "home/env/temperature", "value": 22.0, "purpose": "research"}
+    {"dataset_id": "home/env/temperature", "value": 21.4, "purpose": "research"}
   ]
 }
 ```
+
+`rows` holds the rows written so far. `count` is the number of `rows`, so it changes with how many rows you have written (1 if you wrote once in §2).
 
 `read_count` shows how many times this token has been used. Within the
 60-second TTL the same token can be reused; `read_count` increments each call.
@@ -216,26 +217,25 @@ token produce three rows with `read_count` 1, 2, 3.
 | Endpoint | `/verifier/request?vc_kind=ConsentVC` | `/verifier/request?vc_kind=ViewerVC` |
 | Token | PolicyToken | ViewerToken |
 | TTL | 5 min | 60 s |
-| Use | single-use | multi-use within TTL |
+| Use | single-use | any number of times within TTL |
 | API | `POST /platform/ingest` | `GET /platform/data` |
 | Audit `raw_topic` | `platform/ingest` | `platform/data` |
 | VC claim | `allowed_purposes` | `allowed_actions` |
 
 ## Next steps
 
-ViewerVC reads use a **freely-chosen dataset_id**. Other authorization
-shapes live in:
+ViewerVC reads use a **directly specified dataset_id**. Other forms of authorization are covered on the following pages.
 
-- [Stage 4 prep: SSI Service](ha-ssi-service.md) — M2M continuous write (ServiceVC)
-- [Stage 5: Marketplace integration v2](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
-- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md) — capstone
-- [Stage 7: SellerVC](marketplace-seller-vc.md) — marketplace seller identity
+- [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) — continuous writes from a device (ServiceVC)
+- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
+- [Tie four credentials together end-to-end (Stage 6)](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
+- [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — seller identity
 
 ## Extension ideas
 
-- **VC expiry**: shorten the credential's `exp` and combine with revocation
+- **VC expiry**: shorten the credential's `exp` and combine it with revocation (revoke is not implemented yet)
 - **Multi-dataset ViewerVC**: extend the schema with `dataset_ids: [...]`
-- **Phase 3 integration**: have the [LLM Planner](llm-planner.md) acquire ViewerTokens automatically before each tool call
+- **Phase 3 integration**: have [Let an AI plan the steps (LLM Planner)](llm-planner.md) acquire ViewerTokens automatically before each tool call
 
 ## Troubleshooting
 

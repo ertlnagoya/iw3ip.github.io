@@ -14,7 +14,7 @@
 ### Current state (up to Stage 6)
 
 Anyone can call `IoTMarket.registerMerchandise(merchandiseAddr)`.
-The owner of a Merchandise is fixed to the `msg.sender` of the constructor,
+The owner of a Merchandise is fixed to the `tx.origin` of the constructor (the account that sent the deployment transaction),
 but nobody verifies whether that owner is a legitimate seller.
 
 Concrete risks:
@@ -109,9 +109,12 @@ Request:
 {
   "merchandise_address": "0x...",
   "seller_eth_addr": "0x...",
-  "tx_hash": "0x..."   // registerMerchandise tx
+  "tx_hash": "0x...",   // registerMerchandise tx
+  "dataset_id": "home/env/temperature"
 }
 ```
+
+All four fields are required. If one is missing, the server returns 400 (`missing_field:<field name>`).
 
 Headers:
 
@@ -125,6 +128,8 @@ Server-side verification:
 2. Read `dataset_id` with Merchandise.getAllAdditionalInfo()
 3. `dataset_id` is included in the SellerToken's `licensed_datasets`
 4. (Optional) Verify that Merchandise.getOwner() == `seller_eth_addr`. Done only when `MARKETPLACE_HARDHAT_RPC` is set on the publisher
+
+→ In the implementation, step 2 is not performed. The `dataset_id` from the request body is used as is, and the server only checks that it is in the SellerToken's `licensed_datasets`.
 
 On success:
 
@@ -140,6 +145,18 @@ On failure (typical cases):
 | `seller_token_expired` | 401 |
 | `dataset_not_licensed` | 403 |
 | `merchandise_lookup_failed` | 502 |
+
+→ The implementation returns the following reasons. There is no `merchandise_lookup_failed`.
+
+| Reason | HTTP |
+| --- | --- |
+| `missing_authorization_header` / `invalid_authorization_header` | 401 |
+| `missing_field:<field name>` | 400 |
+| `seller_token_unknown` | 401 |
+| `seller_token_expired` | 401 |
+| `seller_token_dataset_not_licensed` | 403 |
+| `chain_rpc_failed` (owner cannot be read while `MARKETPLACE_HARDHAT_RPC` is set) | 502 |
+| `owner_mismatch` (on-chain owner differs from `seller_eth_addr`) | 403 |
 
 ### 4.3 Extension to an existing endpoint
 
@@ -230,6 +247,8 @@ Example:
   "holder_did": "did:jwk:..."
 }
 ```
+
+→ In the implementation the reason is `seller_register:jti=<SellerToken jti>:merchandise=<address>:eth=<seller_eth_addr>:tx=<tx_hash>:owner_verify=<verified|skipped>`. The `dataset_id` goes into the audit row's `dataset_id` column, not the reason. `register_count` is not in the reason; it is returned in the response.
 
 ## 9. Test strategy
 

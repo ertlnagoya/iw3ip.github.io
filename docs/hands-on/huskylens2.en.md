@@ -4,11 +4,11 @@ Turn detections from the HUSKYLENS2 AI camera into event files.
 
 > **What you'll do**: Generate event files from HUSKYLENS2 (or mock) detections and confirm they are registered as merchandise
 >
-> **Prerequisites**: [Setup](../setup/index.en.md) + [Quickstart](../setup/quickstart.en.md)
+> **Prerequisites**: [Environment Setup](../setup/index.en.md) + [Quickstart](../setup/quickstart.en.md)
 >
-> **What you need**: PC + HUSKYLENS2 (no device → use [USB webcam sample](webcam.en.md) instead)
+> **What you need**: PC + HUSKYLENS2 (no device → use [Detect with a USB webcam (OpenCV)](webcam.md) instead)
 >
-> **Time**: ~45 min
+> **Time required**: approx. 45 min
 
 ## Goal
 

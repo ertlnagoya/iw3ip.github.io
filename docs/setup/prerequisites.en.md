@@ -138,12 +138,9 @@ If you see the "Hello from Docker!" message, it is working.
 ### Clone the lesson repo
 
 ```bash
-git clone --recursive https://github.com/ertlnagoya/Blockchain_IoT_Marketplace.git
+git clone https://github.com/ertlnagoya/Blockchain_IoT_Marketplace.git
 cd Blockchain_IoT_Marketplace
 ```
-
-> **Don't forget `--recursive`**: the repo has submodules. Without it, some directories will be empty.
-> If you already cloned without `--recursive`, run `git submodule update --init --recursive`.
 
 The initial clone takes a few minutes (the repo is large).
 
@@ -176,7 +173,7 @@ All checked → head to [Quickstart](quickstart.md).
 
 ## When things go wrong
 
-- Port conflict → see "Ports" in [Troubleshooting](../operations/troubleshooting.md)
+- Port conflict → see "Port conflicts" in [Troubleshooting](../operations/troubleshooting.md#port-conflicts)
 - Docker out of memory → bump Docker Desktop's memory limit to ≥ 6 GB
 - Anything else → check [FAQ](../operations/faq.md)
 
@@ -185,7 +182,6 @@ All checked → head to [Quickstart](quickstart.md).
 | Term | Short meaning |
 |---|---|
 | **Terminal** | The text-based command app (macOS: Terminal, Windows: PowerShell or WSL) |
-| **Submodule** | A repo embedded inside another repo |
 | **Container** | A "boxed" application that Docker runs |
 | **Extension** | A small add-on inside a browser. MetaMask is one |
 

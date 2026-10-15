@@ -13,7 +13,7 @@
 
 | 用語 | 指すもの |
 |---|---|
-| **v1** | 現行の「Marketplace + MetaMask + 暗号化 IPFS 配信」システム |
+| **v1** | 現行の「Marketplace + MetaMask + 暗号化した URI による配信」システム |
 | **v2** | v1 に **bridge service + PurchaseViewerVC + publisher データ API** を追加した、スマホ SSI ウォレット連携システム。VC は Verifiable Credential (検証可能な資格情報) の略 |
 | **bridge** | v2 で新設するイベントリスナー兼 publisher 連携サービス |
 | **buyer** | データ購入者 (人間)。MetaMask と iw3ip-wallet の両方を持つ前提 |
@@ -21,9 +21,11 @@
 
 ### 1.2 共存方針
 
-v2 は v1 を置き換えない。v1 の暗号化 IPFS 配信は維持し、v2 は購入完了後に使える
+v2 は v1 を置き換えない。v1 の暗号化した URI による配信は維持し、v2 は購入完了後に使える
 追加の経路 (下図の lane) として v1 と並行して動作する。buyer は購入後に、暗号化 URI で
 受け取る (v1) か、VC 経由で受け取る (v2) かを選択できる。
+
+→ 実装の v1 では、データ本体は IPFS ではなく保管庫 (simple-storage) に置く。出品者側の `mediator-owner` がデータを保管庫に置き、その場所 (URI) を買い手の公開鍵で暗号化して `emitUpload` でチェーンに書き込む。IPFS と PostgreSQL (`ipfs_records`) は、動画のメタデータの登録と検索画面に使う。
 
 ```
 購入 (共通)
@@ -129,7 +131,7 @@ Identifier、分散型識別子) の方式で、ここではウォレットの�
 | コンポーネント | v2 での扱い |
 |---|---|
 | `Merchandise.emitUpload(encryptURI)` + Upload event | **残す**。v1 の経路として動作する。同じ Purchase イベントから v1 と v2 の両方の経路が動作する |
-| `PubKey` コントラクト (買い手公開鍵レジストリ) | **残す**。v1 の経路でのみ参照される |
+| `PubKey` コントラクト (買い手公開鍵レジストリ) | **残す**。v2 でも必要。`Merchandise.purchase()` が `getPubKey(tx.origin)` を呼ぶため、買い手の公開鍵が未登録だと v2 の経路でも購入が取り消される (revert) |
 | 暗号化 → 復号フロー | **残す**。ハンズオンでは v1 と v2 の比較として扱う |
 
 ### 3.4 v1 に **無く、v2 でも作らない**もの
@@ -272,12 +274,16 @@ Response:
 
 iot-market-ui がポーリングする。`status: pending|delivered|expired` を返す。
 
+→ 実装では `status` は `pending` (VC 未受領) か `delivered` (受領済み) の 2 つだけである。`expired` は無い。claim が無いときは 404 (`claim_not_found`) を返す。
+
 #### `GET /platform/data?merchandise=<addr>`
 
 既存の `?dataset_id=` と並ぶ取得方法である。Bearer には PurchaseViewerVC の提示で得た ViewerToken を指定する。
 内部では Merchandise から `dataset_id` を逆引きし、既存の `?dataset_id=` と同じ処理で取得する。
 
-### 8.2 bridge 側 (新設)
+### 8.2 bridge 側 (新設、未実装)
+
+→ 以下の 2 つは未実装である。実装の bridge は Purchase イベントを購読して `/marketplace/claim` を呼ぶだけで、HTTP サーバを持たない。iot-market-ui は publisher の `GET /marketplace/claim/{claim_id}` で状態を確かめる。
 
 #### `POST /bridge/notify` (任意)
 
@@ -304,6 +310,14 @@ claim の進行状況を返す。
 - `buyer_eth_addr`
 
 これらは既存の audit_log テーブルに `ALTER TABLE ... ADD COLUMN` で追加する。
+
+→ 実装では次のとおりで、[VC アーキテクチャ全体像](vc-architecture-overview.md) の §7 と同じである。
+
+- `marketplace/claim`: `reason=claim_received:<claim_id>:tx=<tx_hash>`
+- `marketplace/issued`: `reason=eth_did_bound:claim=<claim_id>:eth=<buyer_eth_addr>:tx=<tx_hash>`
+- データ取得時の `raw_topic` は `marketplace/data` ではなく `platform/data` (`reason=viewer_token_used:<jti>:<read_count>:views=...`)
+
+`ALTER TABLE` による列の追加は行っていない。`buyer_eth_addr` と `tx_hash` は上のとおり reason の文字列に入る。
 
 ## 10. テスト戦略
 
@@ -345,7 +359,8 @@ e2e (end-to-end) テストには、ハンズオンの手順をそのまま用い
 1. iot-market-ui は SvelteKit + Svelte 5 への移行途中。新規 page 追加時の
    API バージョンを M5 着手前に確認する
 2. bridge を `ssi-wallet` profile に同居させるか、別 profile (`marketplace-vc`) を
-   作るか。M2 で決定する
+   作るか。M2 で決定する。→ 別の profile `mv-bridge` とした
+   (`infra/docker-compose.yml`)
 3. PurchaseViewerVC の TTL は 24 時間で良いか (購入後数日して気付いて閲覧する
    ケースを想定するなら 7 日?)。→ 実装では個別の TTL を設けず、他の VC と同じ
    `credential_ttl_days` (既定 365 日) とした (§6 参照)

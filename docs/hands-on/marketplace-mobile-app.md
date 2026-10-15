@@ -8,7 +8,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet) + MetaMask モバイル
 >
-> **所要時間**: 30 分くらい
+> **所要時間**: 約 30 分
 
 !!! abstract "コマンドラインを使わない PWA 版"
     Phase 2 で構築した backend をそのまま使い、`iot-market-ui` を
@@ -181,7 +181,8 @@ STEP 3 / 3 - 準備完了
 ```
 
 ハンズオン参加者は Stage 1〜7 で既に両方のアプリを設定済のはずなので
-「もう入っています」を 2 回タップすれば `/` に進みます。
+「もう入っています」を 2 回タップすると STEP 3 に進みます。続けて
+「マーケットへ進む」をタップすると `/` に移動します。
 
 ---
 
@@ -194,6 +195,10 @@ STEP 3 / 3 - 準備完了
 
 ### 操作 (iPhone, MetaMask Mobile)
 
+0. MetaMask Mobile を準備する (初回のみ。[Stage 5 の Step 5](marketplace-vc-bridge.md#step-5-metamask-設定) と同じ設定です)
+    - ネットワークを追加: Network Name `Hardhat localhost`、RPC URL `http://<HOST_IP>:8545`、Chain ID `31337`、Currency `ETH`
+    - 追加後、`Hardhat localhost` に切り替える
+    - アカウントメニュー → 「秘密鍵をインポート」→ Account #2 の秘密鍵 (Stage 5 の Step 1 でメモしたもの) を入れる。PubKey を登録済みのアカウント (Stage 5 の Step 3) でないと購入できません
 1. MetaMask Mobile を開く → 内蔵ブラウザ (右下のグローブアイコン) で
    `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
    を開く (deploy script が作る Merchandise #0。#1 は Stage 5 で購入済みのことがあるため使わない)
@@ -201,6 +206,9 @@ STEP 3 / 3 - 準備完了
 3. 「Purchase」ボタンを押し、MetaMask 側で **Confirm**
 4. 数秒後、自動で `/purchased/<txHash>` に遷移し QR + 「ウォレットで開く」
    ボタンが表示される
+
+この購入履歴は、購入に使った MetaMask Mobile の内蔵ブラウザの `localStorage` に保存されます。
+Step M4・M5 も、この内蔵ブラウザで続けてください。
 
 !!! note "PC ブラウザでの代替"
     iPhone での MetaMask Mobile の操作が難しい場合は、PC の Chrome の
@@ -225,8 +233,7 @@ iw3ip-wallet が起動して「IW3IP 購入閲覧（Tier 1 / イベントのみ�
 ### 期待結果
 - wallet の VC 一覧に新しいエントリ
 - claim に `merchandise_address`, `tx_hash`, `buyer_eth_addr`, `dataset_id`
-- (任意) 自動的に Safari に復帰 = Universal Links が wallet 側で
-  設定されていれば。設定されていなければホームボタンで Safari に戻る
+- 承認後は、アプリの切り替えで MetaMask Mobile (内蔵ブラウザ) に戻る
 
 ---
 
@@ -239,12 +246,14 @@ iw3ip-wallet が起動して「IW3IP 購入閲覧（Tier 1 / イベントのみ�
 
 ### 操作
 
-1. iPhone のホーム画面アプリで IW3IP を起動
-2. ハンバーガーメニュー → **「購入履歴 / データを見る」**
-3. Step M3 の購入が表示されている (dataset_id, merchandise, tx, 日時)
-4. **「閲覧チケットを取得」** をタップ → wallet で提示
-5. PC 側 `docker logs iw3ip-publisher | grep viewer_token_issued` で token を確認
-6. その token を `/my-data` の「ViewerToken (Bearer)」欄に貼り付け
+1. MetaMask Mobile の内蔵ブラウザで `http://<HOST_IP>:5173/my-data` を開く
+   (ハンバーガーメニュー → **「購入履歴 / データを見る」** でも可)
+2. Step M3 の購入が表示されている (dataset_id, merchandise, tx, 日時)
+3. **「閲覧チケットを取得」** をタップ → wallet で提示
+4. PC 側 `docker logs iw3ip-publisher 2>&1 | grep viewer_token_issued | tail -1` で token を確認
+   (publisher のログは標準エラーに出るため `2>&1` が必要)
+5. `/my-data` に戻り、その購入の **「このデータを見る」** をタップして「ViewerToken (Bearer)」欄を表示
+6. その token を「ViewerToken (Bearer)」欄に貼り付け
 7. **「取得実行」** で JSON が表示
 
 ### 期待 JSON
@@ -260,8 +269,11 @@ iw3ip-wallet が起動して「IW3IP 購入閲覧（Tier 1 / イベントのみ�
 }
 ```
 
-Stage 7 で `/marketplace/register` した Merchandise を購入した場合は、
-`seller_did` に seller の `did:jwk:...` が入ります。
+Merchandise #0 は seller 登録をしていないので、`seller_did` は `"unknown"` です。
+`seller_did` に seller の `did:jwk:...` が入るのは、Stage 7 の Step S3〜S4 で新しく
+deploy・登録した Merchandise を、その後 publisher を作り直さずに購入した場合だけです
+(seller の対応付けは publisher のメモリにあり、作り直すと消えます。Stage 7 で使った
+Merchandise は購入済みなので、もう一度は買えません)。
 
 !!! note "現状の限界 (Stage 9 で解消予定)"
     ViewerToken を手動で貼り付ける必要がある点が、現状の使い勝手の
@@ -279,7 +291,7 @@ Stage 7 で `/marketplace/register` した Merchandise を購入した場合は�
 | M2 | onboarding 3 ステップ | 「マーケットへ進む」で `/` に遷移 |
 | M3 | 購入後遷移 | `/purchased/[txHash]` で QR + deeplink |
 | M4 | wallet で VC 受領 | claim に merchandise/tx/eth |
-| M5 | `/my-data` で履歴表示 + データ取得 | `seller_did` 入りの JSON |
+| M5 | `/my-data` で履歴表示 + データ取得 | `dataset_id` と `rows` を含む JSON |
 
 ---
 

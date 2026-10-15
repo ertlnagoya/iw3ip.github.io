@@ -43,15 +43,15 @@ If you cannot change the hosts file, replace `host.docker.internal` with `localh
 
 Run the mediators and frontend on the DevContainer / Docker side, where `host.docker.internal` resolves as intended. Choose this if you prefer not to change the settings.
 
-## IPFS restart loop
+## IPFS container keeps restarting
 
-- Symptom: the IPFS container keeps restarting
-  - Check: confirm with `docker compose ps` that the IPFS service is the one repeatedly restarting
-  - Action: use `ipfs/kubo:latest` in `ipfs/docker-compose.yaml`
+- Symptom: running `docker compose ps` in the `ipfs` directory shows the `ipfs` STATUS stuck at `Restarting`
+  - Check: read the error with `docker compose logs ipfs`. If it says port 8080 is in use, check whether the publisher is running ([Port conflicts](#port-conflicts))
+  - Action: if the stored data is broken, delete it together with the volumes with `docker compose down -v`, then recreate with `docker compose up -d`. The IPFS and PostgreSQL data are lost. Recreate the `ipfs_records` table as described in `ipfs/README.md`, then restart `mediator-owner` so it registers the data again
 
-## `/mobile` not reachable from smartphone
+## `http://<HOST_IP>:5173/` not reachable from smartphone
 
-- Symptom: `/mobile` is not reachable from the smartphone
+- Symptom: the phone browser cannot open `http://<HOST_IP>:5173/` (`<HOST_IP>` is the PC's LAN IP)
   - Check: the frontend was started with `--host 0.0.0.0`
   - Check: both devices are on the same Wi-Fi network
   - Check: the firewall allows `5173`
@@ -59,7 +59,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 ## Product does not appear
 
 - Symptom: no merchandise is shown at <http://localhost:5173>
-  - The top page is a search screen. "Run Search" lists only items registered together with video metadata. For event-file items and the 5 items registered by the deployment, open `http://localhost:5173/merchandise/<item address>` directly.
+  - The top page is a search screen. "Run Search" lists only items whose video metadata `mediator-owner` registered in IPFS and PostgreSQL (the `ipfs_records` table). Items created from event files and the 5 items registered by the deployment do not appear in the search. Open `http://localhost:5173/merchandise/<item address>` directly.
   - Check: `mediator-owner` was started with `cargo run -- settings/owner_1.yaml`
   - Check: the `mediator-owner` terminal shows `Watching raw_data/output for new event files`. If not, update the course repository (`git pull`) and restart it
   - Check: when an event file is written, `Product deployed: 0x... for file ...` is printed. The address shown is the one to use in the merchandise page URL
@@ -79,7 +79,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
     {"action":"deny","subject_did":"unknown","dataset_id":"home/event/possible_littering","purpose":"research","reason":"no_matching_consent", ...}
     ```
 
-  - Most likely cause: **an expired consent VC**. If the `valid_to` of a consent file (`examples/ha_demo/consent_*.json`) is in the past, the consent no longer matches at the current time and the event is denied even after registration. The bundled sample files use fixed dates, so they expire as time passes.
+  - Likely causes: the consent was not registered, or **the consent has expired**. If the `valid_to` of a consent file (`examples/ha_demo/consent_*.json`) is in the past, the consent does not match at the current time and the event is denied even after registration. The bundled samples are valid until `2030-12-31T23:59:59Z`, but files whose dates you edited or files you wrote yourself can expire.
 
 ### Check
 
@@ -93,15 +93,14 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 
 ### Fix
 
-- Extend `valid_to` to a sufficiently future date and re-register. Example to bump all expired entries at once (macOS `sed` needs `-i ''`):
+- Move `valid_to` to a later date and re-register. Example that rewrites `valid_to` in every file at once (macOS `sed` needs `-i ''`):
 
   ```bash
-  sed -i '' 's/"valid_to": "2026-05-01T00:00:00Z"/"valid_to": "2027-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
+  sed -i '' 's/"valid_to": "[^"]*"/"valid_to": "2035-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
   ```
 
 - After editing, re-register the consents (confirm each response contains `"status":"stored"`), re-send the events, then check `/platform/ingest` again.
 - Existing `deny` entries remain in the log as history. Always verify with **a new event sent after the consent was registered**.
-- Permanent fix: in the course repository, set the consent `valid_to` to a long-lived date (or generate it as "now + 1 year" at runtime).
 
 ## Merchandise page returns 500 (iot-market-ui endpoint)
 
@@ -152,3 +151,24 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
     ```bash
     PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
     ```
+
+## Port conflicts
+
+- Symptom: a process does not start and prints `address already in use` or `port is already allocated`
+  - Check: find the process that holds the port (macOS / Linux).
+
+    ```bash
+    lsof -i :8080
+    ```
+
+  - The main ports used in the course:
+
+    | Port | Used by | Note |
+    |---|---|---|
+    | 8080 | IPFS gateway (`ipfs/docker-compose.yaml`) and the publisher (`infra/docker-compose.yml`) | Cannot run together. Before using the publisher, run `docker compose down` in the `ipfs` directory |
+    | 8545 | Hardhat node (`npx hardhat node`) | Do not start a second node |
+    | 5173 | Frontend (`iot-market-ui`, `npm run dev`) | Check that no other Vite dev server is running |
+    | 8090 | assistant (`assistant` / `assistant-llm` / `assistant-demo` profiles) | The three profiles share the port, so start one at a time |
+    | 11434 | Ollama (installed directly on the PC) | If the Ollama app is running in the background, another Ollama cannot start |
+
+  - Fix: stop the conflicting process and start again.

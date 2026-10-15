@@ -14,7 +14,7 @@
 ### 現状 (Stage 6 まで)
 
 誰でも `IoTMarket.registerMerchandise(merchandiseAddr)` を呼べる。
-Merchandise の owner は constructor 時の `msg.sender` で固定されるが、
+Merchandise の owner は constructor 時の `tx.origin` (デプロイの取引を送ったアカウント) で固定されるが、
 その owner が正規の seller かどうかは誰も検証していない。
 
 具体的なリスク:
@@ -108,9 +108,12 @@ Request:
 {
   "merchandise_address": "0x...",
   "seller_eth_addr": "0x...",
-  "tx_hash": "0x..."   // registerMerchandise tx
+  "tx_hash": "0x...",   // registerMerchandise tx
+  "dataset_id": "home/env/temperature"
 }
 ```
+
+4 つの項目はすべて必須である。欠けていると 400 (`missing_field:<項目名>`) を返す。
 
 Headers:
 ```
@@ -123,6 +126,8 @@ Authorization: Bearer <SellerToken>
 2. Merchandise.getAllAdditionalInfo() で `dataset_id` を読み出し
 3. `dataset_id` が SellerToken の `licensed_datasets` に含まれる
 4. (任意) Merchandise.getOwner() == `seller_eth_addr` を検証。publisher に `MARKETPLACE_HARDHAT_RPC` を設定したときだけ行う
+
+→ 実装では手順 2 を行わない。`dataset_id` はリクエスト本文の値をそのまま使い、SellerToken の `licensed_datasets` に含まれるかだけを確かめる。
 
 成功時:
 
@@ -138,6 +143,18 @@ Authorization: Bearer <SellerToken>
 | `seller_token_expired` | 401 |
 | `dataset_not_licensed` | 403 |
 | `merchandise_lookup_failed` | 502 |
+
+→ 実装では次の reason を返す。`merchandise_lookup_failed` は無い。
+
+| Reason | HTTP |
+| --- | --- |
+| `missing_authorization_header` / `invalid_authorization_header` | 401 |
+| `missing_field:<項目名>` | 400 |
+| `seller_token_unknown` | 401 |
+| `seller_token_expired` | 401 |
+| `seller_token_dataset_not_licensed` | 403 |
+| `chain_rpc_failed` (`MARKETPLACE_HARDHAT_RPC` 設定時に owner を読めない) | 502 |
+| `owner_mismatch` (チェーン上の owner と `seller_eth_addr` が違う) | 403 |
 
 ### 4.3 既存エンドポイントへの拡張
 
@@ -227,6 +244,8 @@ MVP では `/seller` は簡単なページに留める (Hardhat console を使�
   "holder_did": "did:jwk:..."
 }
 ```
+
+→ 実装では reason を `seller_register:jti=<SellerToken の jti>:merchandise=<アドレス>:eth=<seller_eth_addr>:tx=<tx_hash>:owner_verify=<verified|skipped>` とする。`dataset_id` は reason ではなく audit 行の `dataset_id` 列に入る。`register_count` は reason には入らず、レスポンスで返す。
 
 ## 9. テスト戦略
 

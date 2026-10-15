@@ -8,7 +8,7 @@ This page continues [Tier the response by trust](data-user-vc-tiered.md) (§0–
 >
 > **What you need**: PC + smartphone (iw3ip-wallet), and a publisher started with `--profile vlm` (Ollama)
 >
-> **Time**: 60–90 min (the first run takes longer because the VLM model has to be downloaded)
+> **Time required**: approx. 60–90 min (the first run takes longer because the VLM model has to be downloaded)
 
 ## 12. Semantic-level redaction (VLM + face blur)
 
@@ -18,7 +18,7 @@ source via VLM inference + face/PII blurring** and projects those
 derivatives per tier. Tier 1 stops being "you get nothing useful" and
 ships a **PII-redacted summary** instead.
 
-Design rationale: see [DataUserVC × Tiered Access Spec § "Tier extension"](data-user-vc-tiered-spec.md#tier-vlm).
+Design rationale: see [Tiered access design spec, "Tier extension"](data-user-vc-tiered-spec.md#tier-vlm).
 
 ### 12.1 Updated tier definitions
 
@@ -29,9 +29,10 @@ Design rationale: see [DataUserVC × Tiered Access Spec § "Tier extension"](dat
 | **1** Summary | `summary` (new) | enterprise + unknown purpose + legalCompliance only (50–59) | **summary text only** (PII-redacted, no image) |
 | 0 Denied | `denied` | unqualified (<50) | events only (no image, video, or description) |
 
-A new `summary` value joins the `access_level` enum: with the VLM
-profile on, scores 50–59 map to `summary` (with the profile off,
-scores below 60 are still `denied`). The `/platform/data` row schema gains:
+A new `summary` value joins the `access_level` enum: only when the
+publisher's `VLM_BACKEND` environment variable is non-empty (set in §12.2),
+scores 50–59 map to `summary`. With `VLM_BACKEND` empty, scores below 60 are
+still `denied`, even if Ollama is running under `--profile vlm`. The `/platform/data` row schema gains:
 
 | Key | Content | Visible at tier |
 |---|---|---|
@@ -45,26 +46,28 @@ scores below 60 are still `denied`). The `/platform/data` row schema gains:
 
 ### 12.2 Bring up with `--profile vlm`
 
-VLM and face blur are **opt-in**. With the profile off, §1–§11 keep
+VLM and face blur are **opt-in**. The switch to four tiers happens when the
+publisher's `VLM_BACKEND` environment variable is non-empty. `--profile vlm`
+only starts the Ollama containers; with `VLM_BACKEND` empty, §1–§11 keep
 working under the legacy 3-tier projection.
+
+Set the publisher backends, then bring everything up. The compose file reads
+these environment variables, so either `export` them in your shell or
+write them in `.env`:
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
+export VLM_BACKEND=ollama
+export IMAGE_REDACTION_BACKEND=opencv
 # Turn profile vlm on. The Ollama service and vlm-pull (pre-pulls llava)
 # start together
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
   publisher mosquitto vlm vlm-pull
 ```
 
-Switch the publisher backends on. The compose file reads these
-environment variables, so either `export` them in your shell or
-write them in `.env`:
-
-```bash
-export VLM_BACKEND=ollama
-export IMAGE_REDACTION_BACKEND=opencv
-docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
-```
+Starting with changed environment variables recreates the publisher container.
+The claims, ViewerTokens, and event rows kept in memory are cleared, so redo the
+claims and presentations in §12.4.
 
 Wait for `vlm-pull` to finish pulling `llava` (first time only, multi-GB):
 
@@ -80,8 +83,39 @@ curl -s http://localhost:8080/health | jq .
 # -> {"status": "ok", ...}
 ```
 
-Toggling profile off vs on against the same dataset shows that the
-`description_*` keys appear only when on.
+#### 12.2.1 Publish an event with an image
+
+`description_*` and `image_url_redacted` are attached only to rows published
+after `VLM_BACKEND` is set. Register the consent and publish an event with an
+image. To check face blur, pass an image with a face (a synthetic one, for
+example) via `--image`.
+
+```bash
+curl -s -X POST localhost:8080/consents \
+  -H 'content-type: application/json' \
+  -d @examples/consent_possible_littering.json | jq .status
+python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+  --base-url http://$HOST_IP:8080
+```
+
+!!! note "The row lands even if the script times out"
+    `/simulate/publish` responds only after VLM inference finishes. On a
+    CPU-only PC inference takes tens of seconds to minutes, so the script may
+    exceed its wait time and stop with an error such as
+    `TimeoutError` (the wait defaults to 600 s and can be changed with the `HANDS_ON_HTTP_TIMEOUT` environment variable; an older course repository uses 10 s, so run `git pull`). The publisher keeps processing, and the row is recorded once
+    inference is done. Confirm that a row with `raw_topic`
+    `homeassistant/event/possible_littering` and `action` `allow` was added:
+
+    ```bash
+    curl -s localhost:8080/audit/logs \
+      | jq '[.[] | select(.raw_topic == "homeassistant/event/possible_littering")][0] | {ts, action, reason}'
+    ```
+
+    LLaVA takes minutes per inference on CPU. If it exceeds `VLM_TIMEOUT_SEC`
+    (default 180 s), the row gets `processing_warnings: ["vlm_unavailable"]`.
+    On a CPU-only PC, restart with `export VLM_TIMEOUT_SEC=600`, or use the
+    lighter `moondream` (`export VLM_MODEL=moondream`; see §13.3 for pulling
+    the model and §12.10 for a comparison).
 
 ### 12.3 Four DataUserVC offers
 
@@ -107,7 +141,7 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=unknown&legal_compliance=true&data_handling_policy=other&misuse_record=false
 ```
 
-score = 20 + 5 + 15 + 0 + 10 = 50 -> summary (only when VLM profile is on)
+score = 20 + 5 + 15 + 0 + 10 = 50 -> summary (only when `VLM_BACKEND` is set)
 
 #### 12.3.d Tier 0 (denied) — same as §2c
 
@@ -120,7 +154,7 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 ### 12.4 Four `/marketplace/claim` calls + `/platform/data` comparison
 
 Same routine as [§3](data-user-vc-tiered.md#3-three-marketplaceclaim-calls): claim → PurchaseViewerVC → present → ViewerToken → fetch.
-With VLM profile on:
+The rows are the ones published in §12.2.1. With `VLM_BACKEND` set:
 
 | Profile | `event` | `image_url` | `video_url` | `image_url_redacted` | `description_full` | `description_summary` |
 |---|---|---|---|---|---|---|
@@ -129,9 +163,9 @@ With VLM profile on:
 | 12.3.c Tier 1 (summary) | yes | **no** | **no** | **no** | **no** | yes |
 | 12.3.d Tier 0 (denied) | yes (events only) | **no** | **no** | **no** | **no** | **no** |
 
-With profile **off** the legacy 3-tier projection runs (no derivative
+With `VLM_BACKEND` **empty** the legacy 3-tier projection runs (no derivative
 keys appear). Claim 12.3.c then resolves to `denied` since `summary`
-is profile-on only.
+is used only when `VLM_BACKEND` is set.
 
 ### 12.5 Verifying face blur
 
@@ -223,7 +257,7 @@ Clearing `IMAGE_REDACTION_BACKEND` disables face blur entirely. Nothing
 is attempted, so no `redaction_unavailable` appears (that warning is
 emitted only when a backend such as opencv is set and the blur fails).
 `VLM_BACKEND` is still set, so the 4-tier mapping of §12.1 stays in
-effect; this is not the same as the 3-tier projection with the profile off.
+effect; this is not the same as the 3-tier projection with `VLM_BACKEND` empty.
 
 `image_url` / `video_url` always remain visible at Tier 3 even when
 derivatives are degraded — the receiver contract is "expected key
@@ -232,7 +266,7 @@ missing → check `processing_warnings`".
 ### 12.8 Relation to §11 (PWA Provider)
 
 Images uploaded through `/provider` ([§11](data-user-vc-tiered-media.md#11-pwa-provider-the-data-provider-side)) automatically flow through
-the VLM pipeline when profile vlm is on. The **provider page itself
+the VLM pipeline when `VLM_BACKEND` is set. The **provider page itself
 needs no change**; derivative generation is server-side. The
 receiver-side `/viewer` shows **`image_url_redacted` with a 🔒 badge**
 when raw keys are dropped, renders `description_full` /
@@ -249,7 +283,7 @@ inline warning banner per row when `processing_warnings[]` is set
 | First `/provider/publish` times out | LLaVA cold start (loading into VRAM) takes 30–60s. Confirm `vlm-pull` reported "model ready"; subsequent calls are fast |
 | `description_full` and `description_summary` come back identical | LLaVA may have ignored the prompt difference. `docker compose logs vlm` should show two distinct `/api/generate` calls; if not, check the prompt strings in `vlm_client.py` |
 | `image_url_redacted` looks unblurred | Haar cascade catches only frontal faces. Side / occluded / small faces pass through — swap in a DNN detector if needed |
-| `description_*` keys appear with profile OFF | Bug — the legacy projection should never emit derivative keys. The regression test `test_pipeline_no_injectors_keeps_legacy_envelope` covers this; if you see it, file an issue |
+| `description_*` keys appear with `VLM_BACKEND` empty | Bug — the legacy projection should never emit derivative keys. The regression test `test_pipeline_no_injectors_keeps_legacy_envelope` covers this; if you see it, file an issue |
 | `processing_warnings: ["vlm_unavailable"]` keeps firing | Ollama not responding or `VLM_API_URL` wrong. The publisher image has no curl, so check from the publisher with `docker compose -f infra/docker-compose.yml exec publisher python -c "import httpx;print(httpx.get('http://vlm:11434/api/version').text)"` |
 
 ### 12.10 Real-device validation log
@@ -322,7 +356,7 @@ cannot reach raw bytes by construction (fail-closed by design).
 ### 13.1 Architecture
 
 ```
-[iPhone Safari /provider]   uploads frames as in §1-§2
+[iPhone Safari /provider]   uploads frames as in §11.3
        |  POST /media/upload
        v
 [publisher SemanticAnalyzer]   /semantic/analyze
@@ -430,14 +464,13 @@ either condition fires:
 - The renderer actually produced image bytes (any tier)
 
 Fields recorded: `ts`, `action`, `subject_did` (sir.source_device_id),
-`purpose=semantic_render`, `reason=trust=...;kinds=...;image=yes|no;
-audit_required=...;rationale=...`, `message_hash` (sir.frame_id),
+`dataset_id` (empty; the current implementation does not set it), `purpose=semantic_render`, `reason=trust=...;kinds=...;image=yes|no;
+audit_required=...;rationale=...`, `message_hash` (sir.frame_id), `raw_topic` (same value as `action`),
 `presentation_verified` (`owner_or_admin` or `policy_only`).
 
 We never log the source bytes, the base64-encoded rendered image,
 or any face encoding / person name derived from the SIR. `image_url`
-is recorded (in this walkthrough you only pass the publisher's own
-`/media/<sha>.<ext>` URLs).
+is not in the audit row either (the row has no field for a URL).
 
 Calls with `audit_required` false that return no image are not written
 to the audit table, whatever the trust level, so the audit table records

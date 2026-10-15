@@ -4,13 +4,13 @@ The basic Phase 3 sample: using a sample file of events like those shared in Pha
 
 > **What you'll do**: Free-form request → plan → execute
 >
-> **Prerequisites**: [Webcam event sharing](webcam-event-sharing.en.md)
+> **Prerequisites**: [Share detections, not raw frames](webcam-event-sharing.en.md)
 >
 > **What you need**: PC only
 >
-> **Time**: ~60 min
+> **Time required**: approx. 60 min
 
-As an extension of the [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md), this covers the flow where **an AI interprets a human request and breaks it down into event collection, condition evaluation, and device control**.
+As an extension of [Share detections, not raw frames](webcam-event-sharing.md), this covers the flow where **an AI interprets a human request and breaks it down into event collection, condition evaluation, and device control**.
 
 In Phase 2, the focus was on sharing events such as `possible_littering`.  
 In Phase 3, the flow becomes:
@@ -68,7 +68,7 @@ This hands-on uses the following files.
 - [examples/phase3_events_park_safety.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/phase3_events_park_safety.json)
 
 Unlike the earlier workshop samples, this page points directly to the **minimum implementation itself** rather than a separate problem/answer pair.  
-That is intentional, because on this page the module boundaries between planner, evaluator, and actuator are part of what learners should understand.
+The reason is that the module boundaries between planner, evaluator, and actuator are themselves what you learn here.
 
 ## Scenario
 
@@ -285,5 +285,5 @@ docker compose -f infra/docker-compose.yml --profile assistant down
 
 ## Next steps
 
-- To connect this back to Phase 2: [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md)
-- To review the Phase 1 foundation: [HA x SSI Publisher sample (Phase 1)](ha-ssi-publisher.md)
+- To connect this back to Phase 2: [Share detections, not raw frames](webcam-event-sharing.md)
+- To review the Phase 1 foundation: [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)

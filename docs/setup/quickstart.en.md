@@ -1,7 +1,7 @@
 # Quickstart (run the stack)
 
 Using the tools you installed in [Prerequisites](prerequisites.md), start the full hands-on environment together.
-Estimated time: **15–30 min** (the first run pulls Docker images and runs `npm install`).
+Estimated time: **approx. 15–30 min** (the first run pulls Docker images and runs `npm install`).
 
 > This starts **6 kinds of processes**. Because the contract deployment and each of the two mediators also take a terminal, you will open 7 terminals in total.
 > Follow the steps in order.
@@ -77,6 +77,7 @@ Terminal 1:
 
 ```bash
 cd iot-market
+npm install   # first time only
 npx hardhat node
 ```
 
@@ -159,7 +160,7 @@ docker compose up -d
 docker compose ps
 ```
 
-If the State of both `ipfs` and `postgres` is **Up**, they are running.
+If the STATUS column of the rows whose SERVICE is `ipfs` and `postgres` starts with **Up**, they are running.
 
 ### 6. Start the mediators (owner + buyer)
 
@@ -210,7 +211,7 @@ The owner side then prints `Watching raw_data/output for new event files` and re
 
 3. Set up **MetaMask** (next section).
 
-"Run Search" on the search screen lists items that `mediator-owner` registered together with their data. The 5 items registered by the deployment in step 2 are not covered by the search, so open a merchandise page URL directly. The addresses are printed in step 2 (they are the same every time).
+"Run Search" on the search screen lists only items whose video metadata `mediator-owner` registered in IPFS and PostgreSQL (the `ipfs_records` table). The 5 items registered by the deployment in step 2 and items created from event files do not appear in the search. Open the merchandise page URL (`http://localhost:5173/merchandise/<item address>`) directly. The addresses of the 5 deployed items are printed in step 2 (they are the same every time).
 
 ## MetaMask local-chain setup
 

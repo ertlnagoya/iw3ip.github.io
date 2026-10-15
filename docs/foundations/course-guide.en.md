@@ -50,14 +50,14 @@ Assuming 90-minute sessions, these are the pages to cover depending on how many 
 
 | Sessions available | Pages to cover | Aim |
 |---|---|---|
-| 1 | [HA Demo Simulator](../hands-on/ha-demo-simulator.md) (20 min) → [HA × SSI Publisher](../hands-on/ha-ssi-publisher.md) (45 min) → review | Confirm consent-based `allow` / `deny` and the audit log |
-| 3 (sessions 7–9 in the table above) | Session 1: the single-session set above. Session 2: [Quickstart](../setup/quickstart.md) (30 min) → [USB Webcam](../hands-on/webcam.md) (30 min; mock mode is enough) → [Mobile Viewer](../hands-on/mobile-viewer.md) (20 min). Session 3: [USB Webcam Event Sharing](../hands-on/webcam-event-sharing.md) (45 min) → [Environment / Disaster Event Sharing](../hands-on/environment-disaster.md) (30 min) | Go from ingestion through trading to event sharing, without the SSI wallet (the phone purchase uses MetaMask Mobile) |
-| 5 | The 3-session set plus: Session 4: [Consent VC](../hands-on/ha-ssi-wallet.md) (60 min). Session 5: [Viewer VC](../hands-on/ha-ssi-viewer.md) (45 min) → [Service VC](../hands-on/ha-ssi-service.md) (45 min) | Issue and present VCs, and compare write, read, and machine-to-machine authorization |
+| 1 | [HA Demo Simulator](../hands-on/ha-demo-simulator.md) (approx. 20 min) → [HA × SSI Publisher](../hands-on/ha-ssi-publisher.md) (approx. 45 min) → review | Confirm consent-based `allow` / `deny` and the audit log |
+| 3 (sessions 7–9 in the table above) | Session 1: the single-session set above. Session 2: [Quickstart](../setup/quickstart.md) (approx. 30 min) → [USB Webcam](../hands-on/webcam.md) (approx. 30 min; mock mode is enough) → [Mobile Viewer](../hands-on/mobile-viewer.md) (approx. 20 min). Session 3: [USB Webcam Event Sharing](../hands-on/webcam-event-sharing.md) (approx. 45 min) → [Environment / Disaster Event Sharing](../hands-on/environment-disaster.md) (approx. 30 min) | Go from ingestion through trading to event sharing, without the SSI wallet (the phone purchase uses MetaMask Mobile) |
+| 5 | The 3-session set plus: Session 4: [Consent VC](../hands-on/ha-ssi-wallet.md) (approx. 60 min). Session 5: [Viewer VC](../hands-on/ha-ssi-viewer.md) (approx. 45 min) → [Service VC](../hands-on/ha-ssi-service.md) (approx. 45 min) | Issue and present VCs, and compare write, read, and machine-to-machine authorization |
 | Advanced (intensive course, thesis work) | Choose from the marketplace integration ([Stage 5](../hands-on/marketplace-vc-bridge.md) to [Stage 7](../hands-on/marketplace-seller-vc.md), about 4 hours), [tiered access](../hands-on/data-user-vc-tiered.md) (about 4 hours), and Part 3 (about 5 hours) | Linking payment and authorization, tiering by trust, AI-based decisions |
 
 Sessions that use the wallet (session 4 onward) need `iw3ip-wallet` on the students' phones. Because building it takes time, the instructor should distribute a prepared build in advance.
 
-In a 15-session plan, sessions 10–12 ("Validation and comparison") can also be used for the Part 3 pages [Regional Safety Assistant](../hands-on/regional-safety-assistant.md) (60 min) and [LLM Planner](../hands-on/llm-planner.md) (60 min).
+In a 15-session plan, sessions 10–12 ("Validation and comparison") can also be used for the Part 3 pages [Regional Safety Assistant](../hands-on/regional-safety-assistant.md) (approx. 60 min) and [LLM Planner](../hands-on/llm-planner.md) (approx. 60 min).
 
 ## Suggested Assessment
 

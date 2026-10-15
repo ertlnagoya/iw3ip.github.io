@@ -1,6 +1,6 @@
 # スマホでマーケットを開いて購入する (v1)
 
-v1 マーケットプレイス (現行 + MetaMask + 暗号化 IPFS) の閲覧をスマホブラウザから確認します。VC 連携 (v2) の動線は別ページです。
+v1 マーケットプレイス (MetaMask で購入し、データは simple-storage (:3000) 経由で受け渡す) を、スマホのブラウザで開いて購入するところまで確かめます。VC 連携 (v2) の動線は別ページです。
 
 > **やること**: スマホのブラウザでマーケットプレイス画面を開き、購入操作まで確かめる
 >
@@ -8,24 +8,24 @@ v1 マーケットプレイス (現行 + MetaMask + 暗号化 IPFS) の閲覧を
 >
 > **使うもの**: PC + スマホ (同じネットワーク)
 >
-> **所要時間**: 20 分くらい
+> **所要時間**: 約 20 分
 
-!!! note "v1 の閲覧手順"
-    このページは **v1 (現行マーケットプレイス + MetaMask)** での
-    閲覧確認手順です。VC 連携 (v2) のスマホ動線は
-    [マーケットプレイス × ウォレット連携](marketplace-vc-bridge.md) を
+!!! note "v1 で開いて購入する手順"
+    このページは **v1 (現行マーケットプレイス + MetaMask)** で、
+    スマホからマーケットを開いて購入する手順です。VC 連携 (v2) のスマホ動線は
+    [スマホアプリで購入から閲覧まで (Stage A)](marketplace-mobile-app.md) を
     参照してください。
 
 ## 目的
 
-スマホからイベントフィードを閲覧し、必要なデータを購入できることを確認します。
+スマホからマーケットを開き、商品を購入できることを確かめます。
 
 ## このページで分かること
 
-- スマホから閲覧用 UI に接続するために何が必要か
+- スマホからマーケット画面に接続するために何が必要か
 - iot-market-ui が公開するルート (`/`, `/merchandise/[address]`,
   `/purchased/[txHash]`, `/seller` 等) の役割
-- 閲覧確認と購入確認で見るべき画面
+- 開いたとき・購入したときに見るべき画面
 
 !!! info "`/mobile` は実装されていません"
     過去の演習用プログラム (`examples/hands_on/mobile_viewer/`) は
@@ -74,8 +74,8 @@ homepage `/` をスマホで開く形に読み替えてください。
 - **個別の商品を見る場合**: `http://<HOST_IP>:5173/merchandise/<address>` を直接開く
   (Hardhat デプロイ後の Merchandise アドレスを指定)
 - **購入まで確認したい場合**: MetaMask モバイルのブラウザで開きます
-- **VC 連携 (v2) を試したい場合**: [Stage 5 ハンズオン](marketplace-vc-bridge.md)
-  に進み、`/purchased/[txHash]` および `/seller` ページを使います
+- **VC 連携 (v2) を試したい場合**: [スマホアプリで購入から閲覧まで (Stage A)](marketplace-mobile-app.md)
+  に進みます
 - 接続で止まる場合: 先に [トラブル時](#トラブル時) を確認してください
 
 ## 接続の前提を整える
@@ -111,12 +111,17 @@ cp .env.example .env.local
     `npx hardhat node --hostname 0.0.0.0` で起動し直し、PC のファイアウォールで
     `8545` を許可してください。
 
+    ノードを起動し直すとチェーンが空に戻り、デプロイしたコントラクトは消えます。
+    起動し直したら [最短起動](../setup/quickstart.md) の手順 2 (デプロイ) をやり直し、
+    `mediator-owner` と `mediator-buyer` も再起動してください。以前の商品アドレスは使えません。
+
 `.env.local` を変更したら、フロント (`npm run dev`) を再起動して反映します。
 
 ### 1. PC側をLAN公開で起動
 
+手順 0 で `iot-market-ui` に移動したままのターミナルで実行します。
+
 ```bash
-cd iot-market-ui
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
@@ -128,7 +133,7 @@ ipconfig getifaddr en0
 
 `ipconfig getifaddr en0` は macOS のコマンドです。Windows では `ipconfig`、Linux では `ip addr` で確認します。以下の手順に出てくる `<HOST_IP>` は、ここで得られた IP アドレスに置き換えてください (OS 別の調べ方は [ハンズオンの概要](index.md#host-ip) にもまとめています)。
 
-## スマホで閲覧画面を確認する
+## スマホでマーケットを開く
 
 ### 3. スマホでアクセス
 
@@ -160,7 +165,8 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 
 - iot-market-ui の検索 UI または商品ページがスマホで開ける
 - 個別 Merchandise ページで購入操作が走る
-- 購入後 `/purchased/[txHash]` に遷移し VC 受領 QR が表示される (v2)
+- 購入後は `/purchased/[txHash]` に移ります。この画面は publisher の `/marketplace/claim` を呼んで VC 受け取り用の QR を出す v2 用の画面です。v1 では publisher を起動していないため「エラー: ...」と表示されますが、購入自体は完了しています
+- 購入できたかは PC の `mediator-buyer` のログで確かめます。`You bought a product of ...` に続いて `File downloaded successfully` と `Verification result: true` が出れば、データが simple-storage (:3000) から届いています
 
 ## 成功例
 
@@ -168,9 +174,9 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 - 商品ページから購入動線まで進める
 - MetaMask モバイル経由で購入確認画面に進める
 
-閲覧用 UI への接続確認は完了です。必要なら購入操作を試し、接続できない場合は以下のトラブル項目を確認してください。
+- `mediator-buyer` のログに購入とダウンロードの行が出る
 
-## 購入操作とトラブル確認
+接続できない場合や購入が進まない場合は、以下のトラブル項目を確認してください。
 
 ## トラブル時
 

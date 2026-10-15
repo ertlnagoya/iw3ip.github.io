@@ -1,7 +1,7 @@
 # 最短起動 (スタックを動かす)
 
 [事前準備](prerequisites.md) でインストールしたツールを使って、ハンズオン環境一式をまとめて起動します。
-所要時間の目安は **15〜30 分** です (初回は docker pull / npm install に時間がかかります)。
+所要時間の目安は **約 15〜30 分** です (初回は docker pull / npm install に時間がかかります)。
 
 > ここでは 6 種類のプロセスを起動します。コントラクトのデプロイと、2 つある仲介プロセスにもそれぞれターミナルを使うため、ターミナルは全部で 7 つ開きます。
 > 手順どおりに進めてください。
@@ -77,6 +77,7 @@ ping -c 1 host.docker.internal
 
 ```bash
 cd iot-market
+npm install   # 初回のみ
 npx hardhat node
 ```
 
@@ -160,7 +161,7 @@ docker compose up -d
 docker compose ps
 ```
 
-`ipfs` と `postgres` の State が **Up** であれば成功です。
+SERVICE が `ipfs` と `postgres` の行の STATUS が **Up** で始まっていれば成功です。
 
 ### 6. 仲介プロセス (オーナー側 + 購入者側) を起動
 
@@ -211,7 +212,7 @@ Starting blockchain watch
 
 3. **MetaMask** をセットアップします (次節)。
 
-検索画面の「Run Search」で一覧に出るのは、`mediator-owner` がデータとあわせて登録した商品です。手順 2 のデプロイで登録される 5 件は検索の対象にならないので、商品ページの URL を直接開いて確認します。アドレスは手順 2 の出力に表示されます (毎回同じ値です)。
+検索画面の「Run Search」で一覧に出るのは、`mediator-owner` が動画のメタデータを IPFS と PostgreSQL (`ipfs_records` テーブル) に登録した商品だけです。手順 2 のデプロイで登録される 5 件や、イベントファイルから作られた商品は検索に出ません。商品ページの URL (`http://localhost:5173/merchandise/<商品のアドレス>`) を直接開いて確認します。デプロイした 5 件のアドレスは手順 2 の出力に表示されます (毎回同じ値です)。
 
 ## MetaMask のローカルチェーン設定
 

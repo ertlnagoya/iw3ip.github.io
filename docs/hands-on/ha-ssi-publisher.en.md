@@ -4,7 +4,7 @@ Build a minimal setup that receives Home Assistant state over MQTT and decides w
 
 > **What you'll do**: MQTT → publisher → Consent VC check → audit log
 >
-> **Prerequisites**: [Quickstart](../setup/quickstart.en.md), ideally [HA Demo Simulator](ha-demo-simulator.en.md)
+> **Prerequisites**: [Quickstart](../setup/quickstart.en.md), ideally [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
 >
 > **What you need**: PC able to run Home Assistant
 >
@@ -196,5 +196,5 @@ docker compose -f infra/docker-compose.yml down
 
 If you want to move directly into Phase 2, continue with:
 
-- [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
-- [USB webcam event sharing sample (Phase 2)](webcam-event-sharing.md)
+- [Share disaster events](environment-disaster.md) (Phase 2)
+- [Share detections, not raw frames](webcam-event-sharing.md) (Phase 2)

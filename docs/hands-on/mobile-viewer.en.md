@@ -1,6 +1,6 @@
 # Open the marketplace and buy on a phone (v1)
 
-Browse v1-marketplace data (current + MetaMask + encrypted IPFS) from a phone browser. The v2 VC flow is a separate page.
+Open the v1 marketplace (purchase with MetaMask; data is handed over through simple-storage on :3000) in a phone browser and go as far as buying an item. The v2 VC flow is a separate page.
 
 > **What you'll do**: Open the marketplace screen in a phone browser and walk through a purchase
 >
@@ -8,23 +8,23 @@ Browse v1-marketplace data (current + MetaMask + encrypted IPFS) from a phone br
 >
 > **What you need**: PC + smartphone on the same network
 >
-> **Time**: ~20 min
+> **Time required**: approx. 20 min
 
-!!! note "v1 viewing flow"
-    This page covers the **v1 (current marketplace + MetaMask)** path
-    for inspecting shared results. For the v2 wallet-VC flow, see
-    [Marketplace × Wallet bridge](marketplace-vc-bridge.md).
+!!! note "Open and buy on v1"
+    This page covers opening the marketplace and buying from a phone on
+    **v1 (current marketplace + MetaMask)**. For the v2 wallet-VC phone flow, see
+    [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md).
 
 ## Goal
 
-Confirm from a smartphone that you can browse the event feed and purchase the data you need.
+Confirm that you can open the marketplace from a smartphone and buy an item.
 
 ## What this page covers
 
-- what is required to connect to the viewer UI from a smartphone
+- what is required to reach the marketplace UI from a smartphone
 - the roles of the routes that iot-market-ui exposes (`/`, `/merchandise/[address]`,
   `/purchased/[txHash]`, `/seller`)
-- which screens to check for viewing and for purchase
+- which screens to check when opening and when buying
 
 !!! info "`/mobile` is not implemented"
     The legacy exercise program (`examples/hands_on/mobile_viewer/`)
@@ -73,9 +73,7 @@ Branches after that:
 - **Specific item**: open `http://<HOST_IP>:5173/merchandise/<address>` directly
   (use a Merchandise address from the Hardhat deploy output)
 - **Purchase path**: open the same URL in MetaMask Mobile
-- **VC-mediated path (v2)**: jump to [Stage 5](marketplace-vc-bridge.md);
-  the iot-market-ui exposes `/purchased/[txHash]` and `/seller` for the
-  wallet-aware flows
+- **VC-mediated path (v2)**: go to [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md)
 - If the connection fails early: jump to the troubleshooting section first
 
 ## Prepare the connection baseline
@@ -110,12 +108,17 @@ Edit `.env.local` and set the host for your scenario.
     MetaMask Mobile cannot reach it. For phone access, restart the node with
     `npx hardhat node --hostname 0.0.0.0` and allow `8545` through the PC firewall.
 
+    Restarting the node resets the chain and the deployed contracts are gone.
+    After restarting, redo step 2 (deploy) of the [Quickstart](../setup/quickstart.en.md)
+    and restart `mediator-owner` and `mediator-buyer` as well. Earlier item addresses no longer work.
+
 Restart the frontend (`npm run dev`) after editing `.env.local`.
 
 ### 1. Start the PC side on the LAN
 
+Run this in the terminal that is still in `iot-market-ui` from step 0.
+
 ```bash
-cd iot-market-ui
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
@@ -127,7 +130,7 @@ ipconfig getifaddr en0
 
 `ipconfig getifaddr en0` is a macOS command. On Windows use `ipconfig`; on Linux use `ip addr`. Replace `<HOST_IP>` in the following steps with the IP address you found here (the [Hands-on overview](index.md#host-ip) also lists how to check it on each OS).
 
-## Check the viewer screen from the smartphone
+## Open the marketplace from the smartphone
 
 ### 3. Open from the smartphone
 
@@ -159,7 +162,8 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 
 - The iot-market-ui search UI or a merchandise page opens on the smartphone
 - The purchase action runs on an individual Merchandise page
-- After purchase, the page moves to `/purchased/[txHash]` and shows the QR code for receiving the VC (v2)
+- After purchase, the page moves to `/purchased/[txHash]`. This v2 screen calls the publisher's `/marketplace/claim` to show a QR code for receiving a VC. On v1 the publisher is not running, so it shows "エラー: ..." (error), but the purchase itself has completed
+- Confirm the purchase in the PC's `mediator-buyer` log: `You bought a product of ...` followed by `File downloaded successfully` and `Verification result: true` means the data arrived from simple-storage (:3000)
 
 ## Success example
 
@@ -167,9 +171,9 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 - You can proceed from a merchandise page to the purchase flow
 - You can reach the purchase confirmation screen through MetaMask Mobile
 
-The connection to the viewer UI is confirmed. If needed, try the purchase action; if you cannot connect, check the troubleshooting items below.
+- The `mediator-buyer` log shows the purchase and download lines
 
-## Purchase path and troubleshooting
+If you cannot connect or the purchase does not proceed, check the troubleshooting items below.
 
 ## Troubleshooting
 

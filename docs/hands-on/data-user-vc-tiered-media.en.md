@@ -8,7 +8,7 @@ This page continues [Tier the response by trust](data-user-vc-tiered.md) (§0–
 >
 > **What you need**: PC + smartphone (iw3ip-wallet)
 >
-> **Time**: ~90 min
+> **Time required**: approx. 90 min
 
 As on the first page, the command examples assume that the course repository is cloned to
 `~/program/Blockchain_IoT_Marketplace`. `$HOST_IP` and `<HOST_IP>` are the PC's LAN IP (see the [Hands-on overview](index.md#host-ip) for how to set it). Options A / B / C are compared in
@@ -24,8 +24,14 @@ folds it into the event payload as `image_url` / `video_url`.
 
 ### 8.1 One-shot provider script
 
+The script does not register a consent (ConsentVC), so register one first (not needed if you did it in §4a of the first page, unless the publisher container has been recreated since).
+
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
+curl -s -X POST localhost:8080/consents \
+  -H 'content-type: application/json' \
+  -d @examples/consent_possible_littering.json | jq .status
+# -> "stored"
 python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
@@ -36,6 +42,8 @@ The script:
 2. Uploads both via `POST /media/upload` (sha256 dedupe).
 3. Posts a `possible_littering` event carrying `image_url` /
    `video_url` / `video_duration_sec` to `/simulate/publish`.
+
+The final `[publish]` output should show `"status": "allowed"`. If it says `denied`, check the consent registration.
 
 ### 8.2 Receiver (unchanged — same Tier 3 / 2 / 1 flow as §3–§7)
 
@@ -91,6 +99,8 @@ docker compose -f infra/docker-compose.yml ps ipfs
 # iw3ip-ipfs container should be Up
 ```
 
+Recreating the publisher container with `--force-recreate` clears the claims, ViewerTokens, and event rows it kept in memory. After publishing again in §9.2, redo the claims in [§3](data-user-vc-tiered.md#3-three-marketplaceclaim-calls) and the presentation in [§4](data-user-vc-tiered.md#4-issue-purchaseviewervc-present-fetch-platformdata) of the first page. Registering the consent again with the same command as in §8.1 is also a good idea.
+
 Verify the publisher picked up the env vars:
 
 ```bash
@@ -105,14 +115,12 @@ docker compose -f infra/docker-compose.yml exec publisher \
 ### 9.2 Confirm CIDs come back from upload
 
 `provider_with_media.py` is unchanged but now sees `cid` and
-`ipfs_gateway_url` in the response (`/tmp/stage_t_demo.jpg` is an
-example path; substitute a file of your own):
+`ipfs_gateway_url` in the response. Without `--image` / `--video` it uses the same fixtures as §8.1
+(`examples/hands_on/data_user_vc_tiered/fixtures/stage_t_demo.jpg` / `stage_t_demo.mp4`):
 
 ```bash
 python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
-  --base-url http://$HOST_IP:8080 \
-  --image /tmp/stage_t_demo.jpg \
-  --video /tmp/stage_t_demo.jpg
+  --base-url http://$HOST_IP:8080
 ```
 
 Expected output (`cid` starts with `bafk...`):
@@ -123,7 +131,7 @@ Expected output (`cid` starts with `bafk...`):
     "url": "http://<HOST_IP>:8080/media/<sha256>.jpg",
     "sha256": "...",
     "content_type": "image/jpeg",
-    "byte_size": 7645,
+    "byte_size": 155,
     "cid": "bafkreigb...",
     "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreigb..."
   },
@@ -138,10 +146,10 @@ working.
 ### 9.3 Receiver: CID or URL — pick one
 
 `/platform/data` now hands back **both** `image_cid` and `image_url`
-for Tier 2 / Tier 3:
+for Tier 2 / Tier 3. `$VIEWER_TOKEN` is a Tier 3 ViewerToken extracted as in [§4](data-user-vc-tiered.md#4-issue-purchaseviewervc-present-fetch-platformdata) of the first page (valid for 60 seconds):
 
 ```bash
-curl -s -H "authorization: Bearer $TOK_GOV" \
+curl -s -H "authorization: Bearer $VIEWER_TOKEN" \
   "http://$HOST_IP:8080/platform/data?dataset_id=home/event/possible_littering" \
   | jq --arg h "$HOST_IP" '.rows[0] | {image_cid, image_url, ipfs_gateway: ("http://"+$h+":8080/ipfs/"+.image_cid)}'
 ```
@@ -173,7 +181,7 @@ CID is enough to fetch the asset from any cooperating peer.
 | `cid: null` in upload response | `docker compose ... ps ipfs` — bring kubo back up if down |
 | `/ipfs/<cid>` returns 502 | Publisher can't reach `http://ipfs:8080`. Check Docker network membership |
 | `/ipfs/<cid>` returns 404 | `IPFS_GATEWAY_URL` is empty. Set `.env` or export and recreate |
-| Public gateway can't fetch | Behind NAT, kubo not visible to peers. `ipfs swarm peers` to verify |
+| Public gateway can't fetch | Behind NAT, kubo not visible to peers. Run `docker compose -f infra/docker-compose.yml exec ipfs ipfs swarm peers` to verify |
 
 ## 10. PWA viewer (one UX for phone *and* PC)
 
@@ -294,7 +302,7 @@ through. That's Stage T's whole point.
 |---|---|
 | iPhone deeplink doesn't open the wallet | Tap the visible "Open in wallet" link; check Safari's "Open in App" permission |
 | PC doesn't show a QR | The browser couldn't reach the CDN (`cdn.jsdelivr.net`). Plug in. |
-| PC poll never finishes | Confirm the wallet actually presented a valid VC: `docker compose logs publisher` should show a `200 /verifier/response` |
+| PC poll never finishes | Confirm the wallet actually presented a valid VC: `docker compose -f infra/docker-compose.yml logs publisher` should show a `200 /verifier/response` |
 | `/viewer` returns 401 | ViewerToken TTL (60 s) lapsed. Reload `/buyer/start` |
 | `/buyer/start` shows a "dataset mismatch" red banner | See §10.8 below |
 
@@ -323,7 +331,7 @@ Main reason codes and their banner copy:
 3. publisher receives `/verifier/response` and records `{"verified": false, "reason": "dataset_mismatch"}`.
 4. The PC's `/verifier/status` long-poll returns `status: "denied"` with the `human_message_*` strings.
 5. The page replaces the QR with `<div class="deny-banner">The presented VC is bound to a different dataset.</div>` plus a re-present link to `/buyer/start?ds=...`.
-6. `docker compose logs publisher` shows the audit row `_write_audit(action="presentation", reason="dataset_mismatch", verified="false")`.
+6. `/audit/logs` gains a row with `raw_topic` `oid4vp/response`, `action` `deny`, and `reason` `dataset_mismatch` (check with `curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'`).
 
 To reproduce on a real device, reuse the §10.5 setup but issue an extra
 `/issuer/offer?type=PurchaseViewerVC&claim_id=<other-claim>` so the
@@ -412,7 +420,7 @@ Storage stays bounded because uploads are deduplicated by SHA-256.
 !!! tip "Why browser recording matters for demos"
     PC webcam → SSI auth → publish in **one browser tab** is a 30-second
     demo of "data with provenance attached." It complements the
-    [USB Webcam Event Sharing sample](webcam-event-sharing.md): that
+    [Share detections, not raw frames](webcam-event-sharing.md): that
     one streams continuously, this one captures discrete clips with
     on-the-spot attribution.
 
@@ -524,15 +532,13 @@ are fixed in the latest `main`.
 | 4 | Wallet showed "Retrieving access token failed: 400 / Error Screen" | OID4VCI offers are **single-use**, but Sphereon-family wallets retry `/issuer/token` internally. The 2nd call fails with `invalid_grant` (400). The **1st call already issued the VC into the wallet** — the error screen is misleading. Dismiss it and the credential list shows the new card | Wallet behavior, documented in §11.7 |
 
 Reproduction steps and verification points for each scenario are
-below. Walk each subsection end-to-end, flip the `status` column to
-"verified", and append the observed values + screenshots to this page (PR
-welcome).
+below. Use them as a reference when you try the flow in your own environment.
 
 #### Common preconditions
 
 For all scenarios:
 
-1. `docker compose -f infra/docker-compose.yml up -d publisher bridge mosquitto` is up
+1. `docker compose -f infra/docker-compose.yml up -d publisher mosquitto` is up
 2. Wallet holds a SellerVC whose `licensed_datasets` contains `home/event/possible_littering`
 3. Publisher host is reachable from both PC and iPhone (same LAN recommended)
 
@@ -616,16 +622,6 @@ In DevTools console:
 Expected: `["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]`
 (first entry = the one actually picked).
 
-**Screenshots (not yet added)**:
-
-```
-images/data-user-vc-tiered/provider/B-chrome-permission.png         # camera permission
-images/data-user-vc-tiered/provider/B-chrome-recording.png          # live preview + red banner
-images/data-user-vc-tiered/provider/B-chrome-uploaded.png           # upload result with URL/CID
-images/data-user-vc-tiered/provider/B-chrome-publish-ok.png         # publish success
-images/data-user-vc-tiered/provider/B-chrome-devtools-codec.png     # DevTools codec output
-```
-
 #### C. PC browser recording — Firefox (VP8 fallback)
 
 **Goal**: confirm Firefox completes the same flow and falls back to
@@ -636,15 +632,6 @@ VP8 when VP9 is unavailable.
 **Verification points**: run the same DevTools snippet and confirm
 `vp9,opus` returns `false` while `vp8,opus` (or bare `webm`) returns
 `true`. Upload should still produce `content_type: video/webm`.
-
-**Screenshots (not yet added)**:
-
-```
-images/data-user-vc-tiered/provider/C-firefox-permission.png
-images/data-user-vc-tiered/provider/C-firefox-recording.png
-images/data-user-vc-tiered/provider/C-firefox-publish-ok.png
-images/data-user-vc-tiered/provider/C-firefox-devtools-codec.png    # vp9=false, vp8=true
-```
 
 #### D. macOS Safari (Safari 17+ uses WebM/VP9; Safari 16 and earlier fall back to MP4)
 
@@ -672,30 +659,9 @@ Run the codec list in DevTools console to make the branch visible.
 **Safari-specific notes**:
 
 - Safari prior to 14.1 has no `MediaRecorder` at all; `recStatus`
-  surfaces "このブラウザは録画に対応していません". If you hit that, add
-  the version range to §11.7.
+  surfaces "このブラウザは録画に対応していません" (this browser does not support recording). In that case, use a newer Safari or Chrome / Firefox.
 - Camera/mic permission may need to be granted via the **address-bar
   Safari settings icon** in some setups.
-
-**Screenshots (not yet added)**:
-
-```
-images/data-user-vc-tiered/provider/D-safari-permission.png
-images/data-user-vc-tiered/provider/D-safari-recording.png
-images/data-user-vc-tiered/provider/D-safari-publish-ok.png
-images/data-user-vc-tiered/provider/D-safari-devtools-codec.png     # mp4=true
-```
-
-#### Post-validation checklist
-
-After all four scenarios:
-
-- [ ] Screenshots placed in
-      `docs/hands-on/images/data-user-vc-tiered/provider/` at the paths above
-- [ ] §11.8 status table updated to "verified"
-- [ ] Observed codec values, OS versions, and any unusual behavior
-      appended to the relevant subsection
-- [ ] §11.7 troubleshooting extended with any new symptoms found during validation
 
 ## Where to go next
 

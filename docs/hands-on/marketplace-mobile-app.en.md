@@ -8,7 +8,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 >
 > **What you need**: PC + smartphone (iw3ip-wallet) + MetaMask mobile
 >
-> **Time**: about 30 minutes
+> **Time required**: approx. 30 min
 
 !!! abstract "A PWA version that needs no command line"
     In this hands-on you use the backend built in Phase 2 as is, and use `iot-market-ui`
@@ -185,7 +185,8 @@ STEP 3 / 3 - 準備完了                                  # Ready
 ```
 
 Hands-on participants should already have set up both apps in Stages 1–7, so
-tapping "もう入っています" (Already installed) twice takes you to `/`.
+tapping "もう入っています" (Already installed) twice takes you to STEP 3. Then tap
+"マーケットへ進む" (Go to the market) to move to `/`.
 
 ---
 
@@ -199,6 +200,10 @@ tapping "もう入っています" (Already installed) twice takes you to `/`.
 
 ### Steps (iPhone, MetaMask Mobile)
 
+0. Set up MetaMask Mobile (first time only; the same settings as [Stage 5 Step 5](marketplace-vc-bridge.md#step-5-configure-metamask))
+    - Add a network: Network Name `Hardhat localhost`, RPC URL `http://<HOST_IP>:8545`, Chain ID `31337`, Currency `ETH`
+    - After adding it, switch to `Hardhat localhost`
+    - Account menu → "Import private key" → enter the private key of Account #2 (noted in Stage 5 Step 1). Only an account whose PubKey is registered (Stage 5 Step 3) can purchase
 1. Open MetaMask Mobile → in the built-in browser (the globe icon at the bottom right), open
    `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
    (Merchandise #0, created by the deploy script. Do not use #1, which may already have been purchased in Stage 5)
@@ -206,6 +211,9 @@ tapping "もう入っています" (Already installed) twice takes you to `/`.
 3. Press the "Purchase" button and **Confirm** on the MetaMask side
 4. After a few seconds, the page moves automatically to `/purchased/<txHash>`, and a QR code and the
    "ウォレットで開く" (Open in wallet) button are shown
+
+This purchase history is saved in the `localStorage` of the MetaMask Mobile in-app browser you used.
+Continue Steps M4 and M5 in this in-app browser.
 
 !!! note "Alternative using a PC browser"
     If operating MetaMask Mobile on the iPhone is difficult, you may open the same URL with the
@@ -232,8 +240,7 @@ iw3ip-wallet launches and shows the "IW3IP Purchase Viewer (Event-only)" confirm
 
 - A new entry in the wallet's VC list
 - The claims include `merchandise_address`, `tx_hash`, `buyer_eth_addr`, `dataset_id`
-- (Optional) Automatic return to Safari, if Universal Links are configured on the
-  wallet side. If not, go back to Safari with the home button
+- After approving, switch apps to go back to MetaMask Mobile (its in-app browser)
 
 ---
 
@@ -247,12 +254,14 @@ iw3ip-wallet launches and shows the "IW3IP Purchase Viewer (Event-only)" confirm
 
 ### Steps
 
-1. Launch IW3IP from the home screen app on the iPhone
-2. Hamburger menu → **"購入履歴 / データを見る" (Purchase history / View data)**
-3. The purchase from Step M3 is shown (dataset_id, merchandise, tx, date and time)
-4. Tap **"閲覧チケットを取得" (Get viewing ticket)** → present in the wallet
-5. On the PC, check the token with `docker logs iw3ip-publisher | grep viewer_token_issued`
-6. Paste that token into the "ViewerToken (Bearer)" field on `/my-data`
+1. In the MetaMask Mobile in-app browser, open `http://<HOST_IP>:5173/my-data`
+   (or use the hamburger menu → **"購入履歴 / データを見る" (Purchase history / View data)**)
+2. The purchase from Step M3 is shown (dataset_id, merchandise, tx, date and time)
+3. Tap **"閲覧チケットを取得" (Get viewing ticket)** → present in the wallet
+4. On the PC, check the token with `docker logs iw3ip-publisher 2>&1 | grep viewer_token_issued | tail -1`
+   (`2>&1` is needed because the publisher logs to stderr)
+5. Go back to `/my-data` and tap **"このデータを見る" (View this data)** for that purchase to show the "ViewerToken (Bearer)" field
+6. Paste that token into the "ViewerToken (Bearer)" field
 7. **"取得実行" (Fetch)** shows the JSON
 
 ### Expected JSON
@@ -268,8 +277,11 @@ iw3ip-wallet launches and shows the "IW3IP Purchase Viewer (Event-only)" confirm
 }
 ```
 
-If you purchased a Merchandise registered with `/marketplace/register` in Stage 7,
-`seller_did` contains the seller's `did:jwk:...`.
+Merchandise #0 has no seller registration, so `seller_did` is `"unknown"`.
+`seller_did` contains the seller's `did:jwk:...` only when you purchase a Merchandise newly
+deployed and registered in Stage 7 Steps S3–S4, without recreating the publisher since then
+(the seller binding lives in the publisher's memory and is lost on recreation; the Merchandise
+used in Stage 7 has already been purchased and cannot be bought again).
 
 !!! note "Current limitation (to be resolved in Stage 9)"
     Having to paste the ViewerToken manually is the current usability
@@ -287,7 +299,7 @@ If you purchased a Merchandise registered with `/marketplace/register` in Stage 
 | M2 | 3-step onboarding | "マーケットへ進む" (Go to the market) moves to `/` |
 | M3 | Transition after purchase | QR + deeplink on `/purchased/[txHash]` |
 | M4 | VC received in the wallet | Claims include merchandise/tx/eth |
-| M5 | History shown and data fetched in `/my-data` | JSON containing `seller_did` |
+| M5 | History shown and data fetched in `/my-data` | JSON containing `dataset_id` and `rows` |
 
 ---
 

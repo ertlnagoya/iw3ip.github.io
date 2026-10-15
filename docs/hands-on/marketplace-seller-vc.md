@@ -8,7 +8,7 @@
 >
 > **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
-> **所要時間**: 45 分くらい
+> **所要時間**: 約 45 分
 
 !!! abstract "5 種目の VC: SellerVC"
     マーケット出品時に **「誰が」この dataset を売るのか**を VC で
@@ -35,7 +35,7 @@
 
 - SellerVC の `licensed_datasets` で「この seller はどの dataset を売って良いか」
   を VC に記載する仕組み
-- SellerToken (24h 多回利用) が `/marketplace/register` 専用で動くこと
+- SellerToken (24 時間、何度でも使える) が `/marketplace/register` 専用で動くこと
 - (任意) 環境変数 `MARKETPLACE_HARDHAT_RPC` 設定時、publisher が
   on-chain で `Merchandise.getOwner() == seller_eth_addr` を検証すること
 - 監査ログに **`marketplace/seller_registered`** 行が追加されること
@@ -47,7 +47,7 @@
 [Seller wallet]
    │ 1. /issuer/offer?type=SellerVC → 受領
    │ 2. /verifier/request?vc_kind=SellerVC → 提示
-   │ 3. SellerToken (24h 多回)
+   │ 3. SellerToken (24h 複数回可)
    │
 [Seller (Hardhat console)]
    │ 4. Merchandise を deploy + IoTMarket.registerMerchandise()
@@ -347,7 +347,7 @@ UI の手順:
 2. **Step 2**: 「/verifier/request を開く」 → wallet で SellerVC を提示 →
    publisher ログから `SellerToken` をコピー
 3. **Step 3**: 上で取得した token + Step S3 の merchandise/eth/tx を貼り、
-   `dataset_id` を選んで「Register」
+   `dataset_id` を入力して「Register」
 
 成功時、画面下に Step S4 と同じ JSON レスポンスが表示されます。
 

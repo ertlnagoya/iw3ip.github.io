@@ -5,7 +5,7 @@ Publisher が公開するカメラ視野を **イベント／画像／動画** �
 動的に絞り込むための設計文書です。
 
 このページでは、既存の実装のうち**どこを固定し、どこを差し替えるか**を定義します。
-ハンズオン手順は [DataUserVC × 段階アクセス](data-user-vc-tiered.md) を参照してください。
+ハンズオン手順は [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) を参照してください。
 
 ## このページで分かること
 
@@ -241,7 +241,7 @@ score >= 60                               -> "access"
 
 ## テスト方針
 
-`tests/test_data_user_vc_tiered.py` に次の 13 ケースを置きます（括弧内はケース数）。
+初期実装の時点では、`tests/test_data_user_vc_tiered.py` に次の 13 ケースを置きました（括弧内はケース数）。その後の機能追加で、このファイルのテストは 42 件に増えています。
 
 1. `evaluate()` の純関数テスト（4）
    - GovernmentOrganization × Research × ISO27001 → full
@@ -255,7 +255,7 @@ score >= 60                               -> "access"
 6. `PurchaseViewerVC` が claim の `allowed_views` を継承（1）
 7. `/platform/data` の Tier 1/2/3 投影（3）
 
-テストは合計 88 件（既存 75 + 新規 13）で、既存テストに失敗はありません。
+初期実装の時点で、テストは合計 88 件（既存 75 + 新規 13）で、既存テストに失敗はありませんでした。
 
 ## 将来拡張
 
@@ -283,8 +283,8 @@ score >= 60                               -> "access"
 | **1** Summary | `summary`（新） | 企業 + 不明な purpose + legalCompliance のみ (50〜59) | **概要テキストのみ**（PII redact 済、image 無し） |
 | 0 Denied | `denied` | 不適格 (<50) | イベントのみ (現在の実装では claim は拒否されない) |
 
-`access_level` の値域に **`summary`** を追加します。VLM profile が有効なときだけ、score 50〜59 が
-`summary` になります。profile が無効な場合の `denied` の扱いは変わらず、score 60 未満は `denied` と判定され、イベントのみ閲覧できます。
+`access_level` の値域に **`summary`** を追加します。publisher の `VLM_BACKEND` が空でないとき（VLM 拡張が有効なとき）だけ、score 50〜59 が
+`summary` になります。`VLM_BACKEND` が空の場合の `denied` の扱いは変わらず、score 60 未満は `denied` と判定され、イベントのみ閲覧できます。
 
 ### 派生データの schema
 
@@ -335,8 +335,8 @@ allowed_views ⊆ {
 
 ### VLM パイプライン契約
 
-publisher 内蔵で `--profile vlm` を ON にすると、`/provider/publish` の処理経路に
-次のステップが挟まります。
+publisher の `VLM_BACKEND`（と `IMAGE_REDACTION_BACKEND`）を設定すると、`/provider/publish` の処理経路に
+次のステップが挟まります（`--profile vlm` は Ollama のコンテナを起動するだけです）。
 
 ```
 provider page
@@ -351,14 +351,14 @@ provider page
               └── 既存: platform_client.send(envelope)
 ```
 
-VLM が使えない場合（profile が無効、または推論に失敗）は、機能を縮退（degrade）させて処理を続けます。条件ごとの挙動は次のとおりです。
+VLM が使えない場合（VLM 拡張が無効、または推論に失敗）は、機能を縮退（degrade）させて処理を続けます。条件ごとの挙動は次のとおりです。
 
 | 条件 | publisher の挙動 |
 |---|---|
-| `--profile vlm` 無効 | キーを **生成しない**（旧仕様と同じ — Tier 1/2 は従来の挙動にフォールバック） |
-| profile 有効 + VLM 呼び出し失敗 | description キーは省略、`image_url_redacted` のみ生成 試行（顔ブラー単体は VLM 不要なため）|
-| profile 有効 + 顔ブラー失敗 | redacted 画像キー省略、description のみ。Tier 2 受信者には image 無しで text のみ届く |
-| profile 有効 + 両方成功 | 全キー生成 |
+| VLM 拡張が無効（`VLM_BACKEND` が空） | キーを **生成しない**（旧仕様と同じ — Tier 1/2 は従来の挙動にフォールバック） |
+| VLM 拡張が有効 + VLM 呼び出し失敗 | description キーは省略、`image_url_redacted` のみ生成 試行（顔ブラー単体は VLM 不要なため）|
+| VLM 拡張が有効 + 顔ブラー失敗 | redacted 画像キー省略、description のみ。Tier 2 受信者には image 無しで text のみ届く |
+| VLM 拡張が有効 + 両方成功 | 全キー生成 |
 
 degrade 時はレスポンスに **`processing_warnings: ["vlm_unavailable", ...]`** を
 含めて、受信側が状況を把握できるようにします。
@@ -410,9 +410,9 @@ VLM のアップグレード前後で同じ画像から異なる説明が生成�
 
 ### テスト方針（追加分）
 
-`tests/test_data_user_vc_tiered_vlm.py` を新設し、次のケースを確認します（括弧内はケース数）。
+`tests/test_data_user_vc_tiered_vlm.py` を新設し、次のケースを確認します（括弧内は初期実装の時点のケース数）。
 
-1. `--profile vlm` 無効時に既存の Tier 投影が回帰しない（5）
+1. VLM 拡張が無効なときに既存の Tier 投影が回帰しない（5）
 2. stub VLM backend で `description_*` キーが期待通りの shape で出る（3）
 3. tier 別の `/platform/data` 投影マトリクス（4）
    - Tier 3: 生キー + 派生キー全部
@@ -424,7 +424,7 @@ VLM のアップグレード前後で同じ画像から異なる説明が生成�
    - 両方失敗 → Tier 1/2 両方とも description_summary 無し（純粋に degraded）
 5. `processing_warnings` の流出経路（2）
 
-合計 16 ケースを追加し、既存の 88 件とは独立に管理します。このうち、profile が無効なときに
+初期実装の時点で合計 16 ケースを追加し、既存の 88 件とは独立に管理しました（現在、このファイルのテストは 29 件です）。このうち、VLM 拡張が無効なときに
 従来の動作が変わらないことの確認を最も重視します。
 
 ### 将来課題（spec 上で明記）

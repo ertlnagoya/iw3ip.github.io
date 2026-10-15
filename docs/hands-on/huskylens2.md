@@ -6,9 +6,9 @@ HUSKYLENS2 という小型 AI カメラからイベントを取り出し、マ�
 >
 > **前提**: [環境構築](../setup/index.md) と [最短起動](../setup/quickstart.md)
 >
-> **使うもの**: PC + HUSKYLENS2 (なければ [USB ウェブカメラサンプル](webcam.md) で代替)
+> **使うもの**: PC + HUSKYLENS2 (なければ [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) で代替)
 >
-> **所要時間**: 45 分くらい
+> **所要時間**: 約 45 分
 
 ## 目的
 

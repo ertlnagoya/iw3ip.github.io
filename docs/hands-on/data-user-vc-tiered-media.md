@@ -8,7 +8,7 @@
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet)
 >
-> **所要時間**: 90 分くらい
+> **所要時間**: 約 90 分
 
 コマンド例は 1 ページ目と同じく、教材リポジトリを `~/program/Blockchain_IoT_Marketplace` に clone した前提で示します。`$HOST_IP` と `<HOST_IP>` は PC の LAN IP です (設定のしかたは [ハンズオンの概要](index.md#host-ip) を参照)。案 A / 案 B / 案 C の違いは
 [§0b](data-user-vc-tiered.md#0b-実データ画像--動画統合の選び方) を参照してください。
@@ -22,8 +22,14 @@ POST して、返ってきた URL を payload の `image_url` / `video_url` に�
 
 ### 8.1 提供側スクリプトを実行する
 
+このスクリプトは同意 (ConsentVC) を登録しません。先に同意を登録しておきます（1 ページ目の §4a で登録済みなら不要です。ただし publisher のコンテナを作り直した場合は、もう一度登録します）。
+
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
+curl -s -X POST localhost:8080/consents \
+  -H 'content-type: application/json' \
+  -d @examples/consent_possible_littering.json | jq .status
+# -> "stored"
 python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
@@ -35,7 +41,7 @@ python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 3. `image_url` / `video_url` 付きイベントを `/simulate/publish` に送る
 
 スクリプト出力に `image_url` / `video_url` の `http://<HOST_IP>:8080/media/...`
-形式の URL が表示されます。
+形式の URL が表示されます。最後の `[publish]` の `status` が `allowed` なら成功です。`denied` の場合は、同意の登録を確認します。
 
 ### 8.2 受信側（既存の Tier 3 / 2 / 1 フロー）
 
@@ -89,6 +95,8 @@ docker compose -f infra/docker-compose.yml ps ipfs
 # iw3ip-ipfs container が Up になっていれば OK
 ```
 
+`--force-recreate` で publisher のコンテナを作り直すと、メモリに保存していた claim、ViewerToken、イベントの行は消えます。§9.2 でイベントを流し直したあと、1 ページ目の [§3](data-user-vc-tiered.md#3-marketplaceclaim-を-3-通り呼び出す) の claim と [§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) の提示をやり直してください。同意も、§8.1 と同じコマンドでもう一度登録しておくと確実です。
+
 publisher の設定に `IPFS_API_URL=http://ipfs:5001` が反映されたことを確認します。
 
 ```bash
@@ -102,13 +110,11 @@ docker compose -f infra/docker-compose.yml exec publisher \
 ### 9.2 アップロード時に CID が返ることを確認
 
 `provider_with_media.py` のレスポンスに `cid` と `ipfs_gateway_url` が増えます。
-`/tmp/stage_t_demo.jpg` は例なので、手元のファイルのパスに読み替えてください。
+`--image` / `--video` を省くと、§8.1 と同じ fixture（`examples/hands_on/data_user_vc_tiered/fixtures/stage_t_demo.jpg` / `stage_t_demo.mp4`）を使います。
 
 ```bash
 python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
-  --base-url http://$HOST_IP:8080 \
-  --image /tmp/stage_t_demo.jpg \
-  --video /tmp/stage_t_demo.jpg
+  --base-url http://$HOST_IP:8080
 ```
 
 期待する出力は次のとおりです（`cid` フィールドが `bafk...` で始まります）。
@@ -119,7 +125,7 @@ python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
     "url": "http://<HOST_IP>:8080/media/<sha256>.jpg",
     "sha256": "...",
     "content_type": "image/jpeg",
-    "byte_size": 7645,
+    "byte_size": 155,
     "cid": "bafkreigb...",
     "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreigb..."
   },
@@ -132,10 +138,10 @@ provider が payload に `image_cid` / `video_cid` を自動的に入れるの�
 
 ### 9.3 受信側：CID でも URL でも取れる
 
-Tier 3 / 2 の `/platform/data` 応答に `image_cid` と `image_url` の両方が出ます。
+Tier 3 / 2 の `/platform/data` 応答に `image_cid` と `image_url` の両方が出ます。`$VIEWER_TOKEN` は、1 ページ目の [§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) と同じ手順で取り出した Tier 3 の ViewerToken です（有効期間は 60 秒です）。
 
 ```bash
-curl -s -H "authorization: Bearer $TOK_GOV" \
+curl -s -H "authorization: Bearer $VIEWER_TOKEN" \
   "http://$HOST_IP:8080/platform/data?dataset_id=home/event/possible_littering" \
   | jq --arg h "$HOST_IP" '.rows[0] | {image_cid, image_url, ipfs_gateway: ("http://"+$h+":8080/ipfs/"+.image_cid)}'
 ```
@@ -172,7 +178,7 @@ iPhone Safari でいずれかを開いてください。
 | `cid: null` がレスポンスに返る | `docker compose ... ps ipfs` で kubo container が Up か確認。停止していたら `docker compose ... --profile ipfs up -d ipfs` で起動する |
 | `/ipfs/<cid>` が 502 | publisher から `http://ipfs:8080` に到達できない。Docker network 共有を確認 |
 | `/ipfs/<cid>` が 404 | `IPFS_GATEWAY_URL` が空。`.env` か `export` 設定を確認 |
-| 公開 gateway で取得できない | NAT 配下の場合、kubo がピアに見えていない。`ipfs swarm peers` でピア接続を確認 |
+| 公開 gateway で取得できない | NAT 配下の場合、kubo がピアに見えていない。`docker compose -f infra/docker-compose.yml exec ipfs ipfs swarm peers` でピア接続を確認 |
 
 ## 10. PWA Viewer（スマホ + PC 共通 UX）
 
@@ -287,7 +293,7 @@ iPhone（iw3ip-wallet）で一連の流れを実行したときの `/viewer` 画
 |---|---|
 | iPhone で deeplink が起動しない | Safari → ウォレットで開く リンクをタップ。Safari の「アプリ起動許可」を確認 |
 | PC で QR が表示されない | ブラウザが CDN（`cdn.jsdelivr.net`）に到達できるか確認。オフライン環境ではエラーになる |
-| PC のロングポーリングが終わらない | ウォレット側で正しい VC を提示できているか `docker compose logs publisher` で `/verifier/response` の 200 を確認 |
+| PC のロングポーリングが終わらない | ウォレット側で正しい VC を提示できているか `docker compose -f infra/docker-compose.yml logs publisher` で `/verifier/response` の 200 を確認 |
 | `/viewer` が 401 | ViewerToken TTL 60 秒切れ。`/buyer/start` から再開 |
 | `/buyer/start` に「データセットが一致しません」バナー | §10.8 の deny UX を参照 |
 
@@ -315,7 +321,7 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 3. publisher は `/verifier/response` を受け取り、`{"verified": false, "reason": "dataset_mismatch"}` を記録
 4. PC の `/verifier/status` ロングポーリングが `status: "denied"` + `human_message_ja` を返す
 5. PC ページは QR を `<div class="deny-banner">提示された VC のデータセットが、要求されたデータセットと一致しません。</div>` に置き換え、`/buyer/start?ds=...` への再提示リンクを表示
-6. 同時に `docker compose logs publisher` 側で `_write_audit(action="presentation", reason="dataset_mismatch", verified="false")` の監査ログ行が出る
+6. 同時に `/audit/logs` に、`raw_topic` が `oid4vp/response`、`action` が `deny`、`reason` が `dataset_mismatch` の行が記録される（`curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'` で確認できる）
 
 実機で確認する場合は、§10.5 と同じ環境で、**別のデータセットに対する claim** から
 `/issuer/offer?type=PurchaseViewerVC&claim_id=<別 claim>` を発行し、ウォレットに 4 枚目の
@@ -400,8 +406,7 @@ SHA-256 で重複排除されるので、同じファイルを複数回アップ
 !!! tip "ブラウザ録画のメリット"
     PC のウェブカメラでの撮影から SSI 認証、Publish までをブラウザ 1 画面で
     実行できるので、デモやワークショップで「来歴付きデータの提供」を 30 秒ほどで
-    見せられます。USB ウェブカメラ + MQTT のハンズオン（[USB ウェブカメラ
-    イベント共有サンプル](webcam-event-sharing.md)）は常時ストリーミングする構成でしたが、
+    見せられます。USB ウェブカメラ + MQTT のハンズオン（[検知イベントだけを共有する](webcam-event-sharing.md)）は常時ストリーミングする構成でしたが、
     こちらは人がその場で撮影したデータに来歴を付けて提供する使い方です。
 
 録画で停止を押すと `video_duration_sec` フォームに **実測秒数が自動入力**される
@@ -511,15 +516,13 @@ POST します。
 | 3 | Publish 直前に `HTTP 401 seller_token_unknown` | `SSIStateStore` がインメモリのため、container を再ビルドするとすべての token が消える。`/provider/start` から SellerVC を提示し直せば復旧する | 仕様どおりの動作です。ハンズオンでは container の起動後に SellerVC を提示する必要があり、§11.7 に記載しています |
 | 4 | ウォレットに「Retrieving access token failed: 400」のエラー画面が出る | OID4VCI の offer は 1 回しか使えない（**single-use**）が、Sphereon 系のウォレットが `/issuer/token` をリトライし、2 回目が `invalid_grant` で 400 になる。実際には 1 回目で VC はウォレットに入っている | ウォレット側の挙動です。エラー画面を閉じて credential 一覧を見ると PurchaseViewerVC.full が入っています。§11.7 に記載しています |
 
-各シナリオの再現手順と確認内容は以下のとおりです。検証する人は各項を
-通して実施し、上の表の「状態」列を「検証済」に更新して、観測値とスクリーンショットを
-このページに追記してください。
+各シナリオの再現手順と確認内容は以下のとおりです。自分の環境で試すときの参考にしてください。
 
 #### 共通の前提
 
 すべてのシナリオで次を前提とします。
 
-1. `docker compose -f infra/docker-compose.yml up -d publisher bridge mosquitto` が稼働
+1. `docker compose -f infra/docker-compose.yml up -d publisher mosquitto` が稼働
 2. `licensed_datasets` に `home/event/possible_littering` を含む SellerVC を 1 枚ウォレットに持っている
 3. publisher のホストは PC からも iPhone からも到達可能（同じ LAN 推奨）
 
@@ -602,16 +605,6 @@ DevTools コンソールで次を実行します。
 期待値は `["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]` です
 （先頭の要素が実際に使われます）。
 
-**スクリーンショット（未配置）**:
-
-```
-images/data-user-vc-tiered/provider/B-chrome-permission.png         # カメラ権限ダイアログ
-images/data-user-vc-tiered/provider/B-chrome-recording.png          # 録画中（赤バナー + プレビュー）
-images/data-user-vc-tiered/provider/B-chrome-uploaded.png           # 録画完了 + URL/CID
-images/data-user-vc-tiered/provider/B-chrome-publish-ok.png         # Publish 成功
-images/data-user-vc-tiered/provider/B-chrome-devtools-codec.png     # DevTools の codec 判定
-```
-
 #### C. PC ブラウザ録画 — Firefox（VP8 フォールバック）
 
 **目的**: Firefox でも録画から Publish までが動くこと、VP9 が無い場合に VP8 へ
@@ -624,15 +617,6 @@ images/data-user-vc-tiered/provider/B-chrome-devtools-codec.png     # DevTools �
 DevTools で B と同じスニペットを実行して MediaRecorder.isTypeSupported を呼び出し、
 **`vp9,opus` が `false` で、`vp8,opus` または `webm` が `true`** であることを
 確認します。アップロードされたファイルの `content_type` も `video/webm` になっていれば成功です。
-
-**スクリーンショット（未配置）**:
-
-```
-images/data-user-vc-tiered/provider/C-firefox-permission.png
-images/data-user-vc-tiered/provider/C-firefox-recording.png
-images/data-user-vc-tiered/provider/C-firefox-publish-ok.png
-images/data-user-vc-tiered/provider/C-firefox-devtools-codec.png    # vp9=false, vp8=true
-```
 
 #### D. macOS Safari (Safari 17+ は WebM/VP9, Safari 16 以下は MP4 fallback)
 
@@ -659,29 +643,9 @@ DevTools コンソールで実際の codec 一覧を出力すると、どちら�
 **Safari 固有の注意**:
 
 - Safari 14.1 未満では `MediaRecorder` 自体が無く、`recStatus` が「このブラウザは
-  録画に対応していません」になります。その場合は §11.7 のトラブルシュートに該当バージョン
-  の情報を追記してください。
+  録画に対応していません」になります。その場合は、新しい Safari か Chrome / Firefox を使ってください。
 - マイク/カメラ権限を **アドレスバー左の Safari 設定アイコン**から付与する必要が
   ある場合があります。
-
-**スクリーンショット（未配置）**:
-
-```
-images/data-user-vc-tiered/provider/D-safari-permission.png
-images/data-user-vc-tiered/provider/D-safari-recording.png
-images/data-user-vc-tiered/provider/D-safari-publish-ok.png
-images/data-user-vc-tiered/provider/D-safari-devtools-codec.png     # mp4=true
-```
-
-#### 検証完了後のチェックリスト
-
-すべてのシナリオで:
-
-- [ ] スクリーンショットを `docs/hands-on/images/data-user-vc-tiered/provider/`
-      に上記のパスで配置
-- [ ] §11.8 冒頭の表の「状態」列を「検証済」に更新
-- [ ] 実機で観測した codec 値・OS バージョン・特異な挙動を該当サブセクションに追記
-- [ ] §11.7 トラブルシュートに、検証中に発見した新しい症状があれば追記
 
 ## 次に進む
 

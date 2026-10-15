@@ -4,9 +4,9 @@ Covers the M2M (machine-to-machine) case where a service (a program), not a pers
 
 > **What you'll do**: Authorize continuous writes from a service that holds a ServiceVC
 >
-> **Prerequisites**: [HA SSI Wallet](ha-ssi-wallet.en.md) (Stage 1) and [HA SSI Viewer](ha-ssi-viewer.en.md) (Stage 3)
+> **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) and [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md)
 >
-> **What you need**: PC only
+> **What you need**: PC + smartphone (iw3ip-wallet)
 >
 > **Time required**: approx. 45 min
 
@@ -28,14 +28,14 @@ consenting to one share at a time. But a **continuous publisher
 (MQTT-driven)** can't tolerate re-presentation per event.
 
 ServiceVC encodes "this service may write continuously," and
-presentation yields a ServiceToken valid for 1 hour with multiple uses.
+presentation yields a ServiceToken valid for 1 hour that can be used any number of times within the TTL.
 A publisher process holds this token and attaches it as Bearer to
 every `/platform/ingest` call.
 
 ```
 [service]  -- ServiceVC presentation (once) -> [Verifier]
                                                   |
-                                            ServiceToken (1h, multi)
+                                            ServiceToken (1h, reusable)
 [service]  <- ServiceToken ----------------------+
 [service]  -- POST /platform/ingest x N --------> [Publisher]
                                                   authz via ServiceToken
@@ -44,8 +44,8 @@ every `/platform/ingest` call.
 ## What this page covers
 
 - Why "human VC (ConsentVC)" and "service VC (ServiceVC)" are split
-- The three token shapes: single-use write, multi-use read,
-  multi-use continuous write
+- The three token shapes: single-use write, repeated reads,
+  repeated continuous writes
 - ServiceToken's 1-hour TTL with `write_count` accumulation
 - How `/platform/ingest` accepts both PolicyToken and ServiceToken
   (PolicyToken first, fall through to ServiceToken on "unknown")
@@ -62,9 +62,9 @@ every `/platform/ingest` call.
 
 ## Prerequisites
 
-- Completed [SSI Wallet hands-on (Stage 1)](ha-ssi-wallet.md)
-- Publisher running with `feat/ssi-service-vc` or later
-- iw3ip-wallet available if you want to hold ServiceVC on a phone
+- Completed [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
+- Publisher running from the `main` branch
+- iw3ip-wallet available on the phone (used in §2 and §3 to receive and present the ServiceVC)
 - `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 
 ## 1. Start and inspect metadata
@@ -129,7 +129,7 @@ done
 
 Expected: all 5 return `{"status":"received","count":N}`.
 
-Unlike PolicyToken, the second call doesn't trigger `403 already_consumed`.
+Unlike PolicyToken, the second call doesn't trigger `403 policy_token_already_consumed`.
 
 ## 5. Inspect write_count in the audit log
 
@@ -172,7 +172,7 @@ on purpose — to preserve the Stage 1 user-visible error name.
 | Holder | human user | human viewer | service (e.g. publisher) |
 | Token | PolicyToken | ViewerToken | ServiceToken |
 | TTL | 5 min | 60 s | 1 h |
-| Use | single-use | multi-use within TTL | multi-use within TTL |
+| Use | single-use | any number of times within TTL | any number of times within TTL |
 | API | `POST /platform/ingest` | `GET /platform/data` | `POST /platform/ingest` |
 | VC claim | `allowed_purposes` | `allowed_actions=[read]` | `allowed_actions=[write_continuous]` |
 
@@ -192,7 +192,7 @@ each plan step via a VC presentation.
 
 ## Related
 
-- [SSI Wallet sample (Stage 1)](ha-ssi-wallet.md): human single-use write
-- [SSI Viewer sample (Stage 3)](ha-ssi-viewer.md): human multi-use read
-- [Phase 2 hands-on appendix](webcam-event-sharing.md#appendix-wallet-mode-authorization):
+- [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md): single-use write by a person
+- [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md): repeated reads by a person
+- Appendix of [Share detections, not raw frames](webcam-event-sharing.md#appendix-wallet-mode-authorization):
   one-shot wallet mode (no ServiceVC required)

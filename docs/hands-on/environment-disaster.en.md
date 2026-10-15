@@ -4,16 +4,16 @@ Share edge-generated disaster events instead of raw camera frames.
 
 > **What you'll do**: Emit disaster events from mock data, share, observe
 >
-> **Prerequisites**: [HA SSI Publisher sample](ha-ssi-publisher.en.md)
+> **Prerequisites**: [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
 >
 > **What you need**: PC only
 >
-> **Time**: ~30 min
+> **Time required**: approx. 30 min
 
 This hands-on is designed as a minimal **Phase 2: Event / Intelligence Sharing** exercise.  
 Instead of sharing camera images or raw sensor streams, it shares disaster-related events generated at the edge.
 
-This page uses the existing `HA x SSI Publisher` sample as the base and reproduces the following flow with simulated data:
+This page uses the existing HA SSI Publisher as the base and reproduces the following flow with simulated data:
 
 `simulated sensor / edge inference -> disaster event -> Consent VC check -> allow / deny -> audit log`
 
@@ -28,7 +28,7 @@ For a first pass, these four steps are enough.
 
 Branches after that:
 
-- If you only want to confirm the allowed path: stop after the `allowed` case
+- If you only want to confirm the allowed path: you can finish once you have confirmed `allowed`
 - If you want to understand consent properly: also send `advertising` and confirm the denied case
 - If you want to inspect the MQTT path too: finish with `mosquitto_pub`
 
@@ -46,8 +46,9 @@ Branches after that:
 
 ## Prerequisites
 
-- you can run the [HA x SSI Publisher sample](ha-ssi-publisher.md)
+- you can run [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
 - Docker / Docker Compose is available
+- If the IPFS from the [Quickstart](../setup/quickstart.en.md) is still running, stop it first (`cd ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - `curl` is available
 
 This hands-on assumes the source-code repository `Blockchain_IoT_Marketplace` on the `main` branch.
@@ -130,7 +131,7 @@ curl -X POST http://localhost:8080/consents \
     "retention_days": 30,
     "reshare_allowed": false,
     "valid_from": "2026-02-01T00:00:00Z",
-    "valid_to": "2027-12-31T23:59:59Z",
+    "valid_to": "2030-12-31T23:59:59Z",
     "signature": "PLACEHOLDER"
   }'
 ```
@@ -291,7 +292,7 @@ The focus therefore changes as follows:
 
 The main flow registers `consent_flood_risk_high.json` via POST to
 `/consents` — i.e. consent is stored as plaintext JSON on the publisher.
-The [Mobile SSI wallet hands-on](ha-ssi-wallet.md) takes a different
+The hands-on [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) takes a different
 route: residents or observers hold a VC in their phone wallet and present
 it via OID4VP. The publisher ships ConsentVC PDs for both
 `home/event/flood_risk_high` (matches the main flow exactly) and
@@ -305,7 +306,7 @@ the wallet using the same dataset as the main hands-on.
 | Consent storage | publisher server | mobile wallet |
 | Transport | JSON POST | OID4VP (QR / deeplink) |
 | Validity window | `valid_to` TTL | short-lived PolicyToken per presentation (5 min, single-use) |
-| Revocation | DELETE `/consents` | revoke VC / drop from wallet |
+| Revocation | DELETE `/consents` | drop from wallet (revoke is not implemented) |
 | Audit log | `purpose` / `dataset_id` | also `holder_did` / `vc_hash` |
 
 The **decision logic is identical**: `(dataset_id, purpose)` decides
@@ -340,7 +341,7 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
 3. Take the PolicyToken and POST a Stage-0-shaped event.
    The PolicyToken is the value after `token=` on the `policy_token_issued` line in the publisher log. Copy it into `POLICY` (valid for 5 minutes):
    ```bash
-   docker compose -f infra/docker-compose.yml --profile ssi-wallet logs publisher | grep policy_token_issued
+   docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued
    POLICY=<value after token=>
    ```
    ```bash
@@ -364,9 +365,9 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
   ([consent-event-flood-risk-high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-event-flood-risk-high.json))
   is registered, so the wallet flow ingests the exact same event
   shape (sensor_id / water_level_m / severity) that the main flow uses.
-- Continuous MQTT under wallet mode requires a **multi-use M2M token
-  (ServiceVC)**, which is covered in the [SSI Service hands-on](ha-ssi-service.md).
+- Continuous MQTT under wallet mode requires an **M2M token usable any number of times within its TTL
+  (ServiceVC)**, which is covered in [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md).
 
 ### Related
 
-- Symmetric read-side gating: [SSI Viewer sample](ha-ssi-viewer.md)
+- Symmetric read-side gating: [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md)

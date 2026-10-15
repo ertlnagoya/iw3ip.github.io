@@ -1,14 +1,14 @@
 # Let an AI plan the steps (LLM Planner)
 
-Replace the rule-based planner in the [regional safety assistant](regional-safety-assistant.en.md) with one based on a large language model (LLM), in three stages.
+Replace the rule-based planner in [Run the regional safety assistant](regional-safety-assistant.en.md) with one based on a large language model (LLM), in three stages.
 
 > **What you'll do**: Swap planner via stub provider first, check it in the frontend demo, then use a real LLM
 >
-> **Prerequisites**: [Regional safety assistant](regional-safety-assistant.en.md)
+> **Prerequisites**: [Run the regional safety assistant](regional-safety-assistant.en.md)
 >
 > **What you need**: PC (real LLM step needs an API key or a local LLM)
 >
-> **Time**: ~60 min
+> **Time required**: approx. 60 min
 
 This page is organized in three stages:
 
@@ -48,7 +48,14 @@ Branches after that:
 
 - Docker / Docker Compose
 - `curl`
-- Python 3.11 or later (to run `uvicorn` in Stage 1 and 5.2 and `pytest` in 5.5 on the host). Install the packages with `pip install fastapi uvicorn pydantic pydantic-settings httpx pytest`
+- Python 3.11 or later (to run `uvicorn` in Stage 1 and 5.2 and `pytest` in 5.5 on the host). Create a virtual environment (venv) at the top of the `Blockchain_IoT_Marketplace` repository and install the packages into it. With Homebrew Python and similar setups, `pip install` outside a venv fails with an `externally-managed-environment` error
+
+    ```bash
+    python3 -m venv .venv && source .venv/bin/activate
+    pip install fastapi uvicorn pydantic pydantic-settings httpx pytest
+    ```
+
+    `pip install -e . pytest` installs the same packages. In every newly opened terminal ("another terminal"), run `source .venv/bin/activate` before using `uvicorn`, `python`, or `pytest`. With the venv active, `python` points to the venv's Python 3
 - the `main` branch of the `Blockchain_IoT_Marketplace` repository
 
 References:
@@ -104,7 +111,7 @@ ASSISTANT_LLM_PROVIDER=stub \
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
-`uvicorn` runs on the host Python (see "Python 3.11 or later" in the prerequisites). The Docker Compose `assistant` service starts with the rule-based planner and returns `planner_name` `rule-based-planner-v1`, so use the host for this stage.
+`uvicorn` runs on the host Python (the venv created in the prerequisites). The Docker Compose `assistant` service starts with the rule-based planner and returns `planner_name` `rule-based-planner-v1`, so use the host for this stage.
 
 In another terminal:
 
@@ -470,6 +477,12 @@ Reference screenshot:
 
 If you do not want to call a real API yet, you can check just the HTTP path with an OpenAI-compatible mock server.
 
+If `assistant-demo` from §3.5 is still running, its `llm-mock` already holds port 18000. Stop it first (`assistant-demo` also uses port 8090, so stop it either way):
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant-demo down
+```
+
 Start the mock server:
 
 ```bash
@@ -482,7 +495,7 @@ Docker Compose example:
 docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-mock
 ```
 
-In another terminal, start the assistant. Stop any other assistant on port 8090 first (the Docker `assistant`, `assistant-demo`, or `assistant-llm`):
+In another terminal, start the assistant. In the new terminal, run `source .venv/bin/activate` at the top of the repository first. Stop any other assistant on port 8090 first (the Docker `assistant`, `assistant-demo`, or `assistant-llm`):
 
 ```bash
 source examples/phase3_llm_mock.env.example
@@ -587,4 +600,4 @@ Check:
 ## Next steps
 
 - For the design rationale: [LLM Planner replacement spec](llm-planner-spec.md)
-- To go back to the original Phase 3 sample: [Regional Safety Assistant sample (Phase 3)](regional-safety-assistant.md)
+- To go back to the original Phase 3 sample: [Run the regional safety assistant (Phase 3)](regional-safety-assistant.md)

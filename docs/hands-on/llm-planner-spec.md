@@ -1,7 +1,7 @@
 # LLM Planner 置き換え仕様
 
-[地域安全アシスタントサンプル](regional-safety-assistant.md) の planner を、LLM（Large Language Model、大規模言語モデル）ベースに置き換えるための仕様書です。  
-実装手順は [LLM Plannerハンズオン](llm-planner.md) で扱い、このページでは何を固定し、どこを差し替えるかを定義します。
+[地域安全アシスタントを動かす](regional-safety-assistant.md) の planner を、LLM（Large Language Model、大規模言語モデル）ベースに置き換えるための仕様書です。  
+実装手順は [AI に手順を考えさせる (LLM Planner)](llm-planner.md) で扱い、このページでは何を固定し、どこを差し替えるかを定義します。
 
 ## このページで分かること
 

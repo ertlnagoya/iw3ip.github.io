@@ -1,14 +1,14 @@
 # AI に手順を考えさせる (LLM Planner)
 
-Phase 3 の [地域安全アシスタント](regional-safety-assistant.md) の rule-based planner を、LLM（Large Language Model、大規模言語モデル）ベースの planner に差し替える最小構成を試します。
+Phase 3 の [地域安全アシスタントを動かす](regional-safety-assistant.md) の rule-based planner を、LLM（Large Language Model、大規模言語モデル）ベースの planner に差し替える最小構成を試します。
 
 > **やること**: stub provider → フロントデモ → 実 LLM の 3 段階で planner を差し替える
 >
-> **前提**: [地域安全アシスタント](regional-safety-assistant.md)
+> **前提**: [地域安全アシスタントを動かす](regional-safety-assistant.md)
 >
 > **使うもの**: PC (実 LLM を使う場合は API キーまたはローカル LLM)
 >
-> **所要時間**: 60 分くらい
+> **所要時間**: 約 60 分
 
 このページでは次の 3 段階で進めます。
 
@@ -48,7 +48,14 @@ Phase 3 の [地域安全アシスタント](regional-safety-assistant.md) の r
 
 - Docker / Docker Compose が使える
 - `curl` が使える
-- Python 3.11 以上 (段階 1 と 5.2 の `uvicorn`、5.5 の `pytest` をホストで動かすため)。`pip install fastapi uvicorn pydantic pydantic-settings httpx pytest` で必要なパッケージを入れておく
+- Python 3.11 以上 (段階 1 と 5.2 の `uvicorn`、5.5 の `pytest` をホストで動かすため)。`Blockchain_IoT_Marketplace` リポジトリのトップで仮想環境 (venv) を作り、その中に必要なパッケージを入れておく。Homebrew の Python などでは、venv の外で `pip install` すると `externally-managed-environment` エラーになります
+
+    ```bash
+    python3 -m venv .venv && source .venv/bin/activate
+    pip install fastapi uvicorn pydantic pydantic-settings httpx pytest
+    ```
+
+    `pip install -e . pytest` でも同じパッケージが入ります。新しく開いたターミナル (「別ターミナル」) でも、`uvicorn`・`python`・`pytest` を使う前に `source .venv/bin/activate` を実行します。venv を有効にすると、`python` は venv の Python 3 を指します
 - ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使う
 
 参考:
@@ -104,7 +111,7 @@ ASSISTANT_LLM_PROVIDER=stub \
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
-`uvicorn` はホストの Python で動かします (前提の「Python 3.11 以上」を参照)。Docker Compose の `assistant` サービスは rule-based planner で起動し、`planner_name` が `rule-based-planner-v1` になるため、この段階ではホストで起動します。
+`uvicorn` はホストの Python (前提で作った venv) で動かします。Docker Compose の `assistant` サービスは rule-based planner で起動し、`planner_name` が `rule-based-planner-v1` になるため、この段階ではホストで起動します。
 
 別ターミナルで起動を確認します。
 
@@ -470,6 +477,12 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 実 API をまだ使いたくない場合は、OpenAI 互換のモックサーバで HTTP 経路だけ確認できます。
 
+§3.5 で `assistant-demo` を起動したままの場合は、その中の `llm-mock` が 18000 番ポートを使っています。先に止めます (`assistant-demo` も 8090 番ポートを使うので、どちらにしても止めておきます)。
+
+```bash
+docker compose -f infra/docker-compose.yml --profile assistant-demo down
+```
+
 まず mock server を起動します。
 
 ```bash
@@ -482,7 +495,7 @@ Docker Compose を使う場合は次を実行します。
 docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-mock
 ```
 
-別ターミナルで assistant を起動します。8090 番ポートを使うほかの assistant (Docker の `assistant`、`assistant-demo`、`assistant-llm`) は先に止めておきます。
+別ターミナルで assistant を起動します。新しいターミナルでは、リポジトリのトップで `source .venv/bin/activate` を先に実行します。8090 番ポートを使うほかの assistant (Docker の `assistant`、`assistant-demo`、`assistant-llm`) は先に止めておきます。
 
 ```bash
 source examples/phase3_llm_mock.env.example
@@ -586,5 +599,5 @@ LLM の出力はそのまま採用せず、次を必ず検証します。
 
 ## 次の学習
 
-- 実装方針を整理したい場合: [LLM Planner置き換え仕様](llm-planner-spec.md)
-- Phase 3 の元サンプルに戻る場合: [地域安全アシスタントサンプル（Phase 3）](regional-safety-assistant.md)
+- 実装方針を整理したい場合: [LLM Planner 置き換え仕様](llm-planner-spec.md)
+- Phase 3 の元サンプルに戻る場合: [地域安全アシスタントを動かす（Phase 3）](regional-safety-assistant.md)

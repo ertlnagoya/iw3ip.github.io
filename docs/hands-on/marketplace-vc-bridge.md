@@ -8,7 +8,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 >
 > **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
-> **所要時間**: 60 分くらい
+> **所要時間**: 約 60 分
 
 !!! abstract "v2 を試すハンズオン"
     マーケットプレイスでの購入を起点に、買い手のウォレットへ
@@ -28,7 +28,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 
 ## 目的
 
-このハンズオンでは、**v1 (現行マーケット + MetaMask + 暗号化 IPFS 配信)**
+このハンズオンでは、**v1 (現行マーケット + MetaMask + 暗号化した URI による配信)**
 に **v2 (VC 連携)** を追加したときに、認可がどう変わるかを確認します。
 
 - 同じ人間が **2 つの身元** (ETH 鍵と did:jwk) を扱う意味
@@ -70,7 +70,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
            ▼
        [iw3ip-wallet]
            │  OID4VP で提示
-           │  → ViewerToken (60s 多回利用)
+           │  → ViewerToken (60s 複数回可)
            ▼
        [/platform/data?merchandise=<addr>]
            │  ViewerToken Bearer で取得
@@ -97,7 +97,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 
 ### 操作
 
-[クイックスタート](../setup/quickstart.md) の Hardhat ノードと mediator (mediator-owner / mediator-buyer) が動いていれば、先にそれぞれ Ctrl+C で止めてください。古いノードが 8545 番を使ったままだと、次のコマンドが起動に失敗します。
+[最短起動](../setup/quickstart.md) の Hardhat ノードと mediator (mediator-owner / mediator-buyer) が動いていれば、先にそれぞれ Ctrl+C で止めてください。古いノードが 8545 番を使ったままだと、次のコマンドが起動に失敗します。最短起動の IPFS も、`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` で止めてください。IPFS と後で起動する publisher は、どちらもポート 8080 を使います。
 
 ターミナル A (起動したまま):
 
@@ -208,7 +208,7 @@ registered for: 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC
 ## Step 4. publisher + bridge を起動
 
 ### 何を確認するか
-- publisher が PurchaseViewerVC を含む VC 種を発行できる状態 (Stage 7 まで通っていれば 5 種すべてが揃う)
+- publisher が PurchaseViewerVC を含む VC 種を発行できる状態
 - bridge が Hardhat の Purchase event を購読し、Merchandise×5 を見ている
 
 ### 操作
@@ -262,7 +262,7 @@ docker logs iw3ip-mv-bridge 2>&1 | tail -5
 →
 ```
 bridge: listening to 5 merchandise(s)
-bridge: starting poll from block 14
+bridge: starting poll from block <現在のブロック番号>
 bridge: started rpc=http://host.docker.internal:8545 market=0xe7f1725... publisher=http://publisher:8080
 ```
 
@@ -362,7 +362,7 @@ docker logs iw3ip-mv-bridge 2>&1 | tail -5
 ```
 →
 ```
-bridge: Purchase event from 0xDc64a140... buyer=0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC tx=0x4e7c3e0a...
+bridge: Purchase event from 0xDc64a140... buyer=0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC dataset=home/env/temperature tx=0x4e7c3e0a...
 bridge: claim ok jti=2b417b32e6566830 deeplink=openid-credential-offer://?credential_offer=...
 ```
 
@@ -420,7 +420,7 @@ open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 
 `open` は macOS のコマンドです。Linux では `xdg-open`、Windows (WSL) では `explorer.exe` に読み替えるか、表示された URL をブラウザに貼り付けてください。
 
-iPhone のカメラで QR を読み取ると wallet が起動し、「IW3IP Purchase Viewer (Event-only)」の承認画面が出るので承認します。
+iPhone のカメラで QR を読み取ると wallet が起動し、「IW3IP 購入閲覧（Tier 1 / イベントのみ）」の承認画面 (英語表示では「IW3IP Purchase Viewer (Event-only)」) が出るので承認します。
 
 !!! warning "QR 生成に外部サービスを使います"
     上のコマンドは deeplink の内容を外部の QR 生成サービス (api.qrserver.com) に送ります。deeplink には VC 発行用のコードが含まれるため、ローカルのハンズオン環境以外では使わないでください。
@@ -460,7 +460,7 @@ MetaMask の鍵と wallet の鍵が「同じ人物」として publisher 上で�
 ## Step 8. ViewerToken を取り出す
 
 ### 何を確認するか
-- wallet で **PurchaseViewerVC を提示**すると ViewerToken (60 秒・多回利用) が払い出される
+- wallet で **PurchaseViewerVC を提示**すると ViewerToken (60 秒間、何度でも使える) が払い出される
 - ConsentVC (Stage 1) や ViewerVC (Stage 3) と区別して、購入連動の VC を選ぶ
 
 ### 操作
@@ -526,6 +526,8 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 `count: 0` でも認可は通っているので問題ありません。実データは別途 `POST /platform/ingest`
 (Stage 1) で投入できますが、本ハンズオンの目的は認可ロジックの確認です。
 
+`count` が 0 になるのは、この dataset にまだ何も書き込んでいない場合です。publisher は書き込まれたデータをメモリに保持するので、前のハンズオンで同じ dataset に書き込み、その後 publisher を作り直していなければ、その分の件数と `rows` が返ります。これも正常です。
+
 ### 期限切れの確認 (60 秒経過後)
 
 ```bash
@@ -559,10 +561,13 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool
 
 | id | raw_topic | reason | subject |
 | --- | --- | --- | --- |
-| (最新) | `platform/data` | `viewer_token_used:cc38f06e...:1:views=event` | `did:jwk:...` |
-| -1 | `oid4vp/response` | `ok` | `did:jwk:...` |
-| -2 | `marketplace/issued` | **`eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c...`** | `did:jwk:...` |
-| -3 | `marketplace/claim` | `claim_received:2b417b32...:tx=0x4e7c...` | `eth:0x3C44...` |
+| (最新) | `platform/data` (action=`deny`) | `viewer_token_expired` | `unknown` |
+| -1 | `platform/data` | `viewer_token_used:cc38f06e...:1:views=event` | `did:jwk:...` |
+| -2 | `oid4vp/response` | `ok` | `did:jwk:...` |
+| -3 | `marketplace/issued` | **`eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c...`** | `did:jwk:...` |
+| -4 | `marketplace/claim` | `claim_received:2b417b32...:tx=0x4e7c...` | `eth:0x3C44...` |
+
+最新の行は、Step 9 の期限切れ確認で拒否されたときの記録です。期限切れの確認をしていなければ、この行はありません。
 
 `marketplace/claim` (eth_addr 主体) と `marketplace/issued` (did:jwk 主体) が **同じ claim_id でリンク**していることを確認してください。これが、支払いをした ETH アドレスと VC を提示した DID を結び付ける記録です。
 
@@ -700,5 +705,5 @@ ipconfig getifaddr en0   # 現在の LAN IP
 
 - [Marketplace VC Bridge 設計仕様 (v1/v2)](../design/marketplace-vc-bridge-spec.md) — 全体構造
 - [SSI Wallet (Stage 1)](ha-ssi-wallet.md) — 書き込み単回認可
-- [SSI Viewer (Stage 3)](ha-ssi-viewer.md) — 読み出し多回認可 (v1 dataset 直指定)
+- [SSI Viewer (Stage 3)](ha-ssi-viewer.md) — 複数回の読み出しを認可 (v1、dataset を直接指定)
 - [SSI Service (Stage 4 prep)](ha-ssi-service.md) — M2M 連続書き込み

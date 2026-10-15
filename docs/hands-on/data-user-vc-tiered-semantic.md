@@ -8,7 +8,7 @@
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet)、`--profile vlm` で起動する publisher（Ollama）
 >
-> **所要時間**: 60〜90 分（初回は VLM のモデル取得に時間がかかります）
+> **所要時間**: 約 60〜90 分（初回は VLM のモデル取得に時間がかかります）
 
 ## 12. 意味レベルの段階化（VLM + 顔ブラー）
 
@@ -19,7 +19,7 @@ VLM（Vision Language Model。画像を入力に取れる言語モデル）に�
 出し分ける**仕組みを動かします。これにより Tier 1 の受信者にも、
 **プライバシー情報を除いた要約テキスト**を渡せます。
 
-設計の根拠は [DataUserVC × 段階アクセス制御 仕様 §「tier 拡張: 意味レベルでの段階化」](data-user-vc-tiered-spec.md#tier-vlm)
+設計の根拠は [段階アクセスの設計仕様 の「tier 拡張: 意味レベルでの段階化」](data-user-vc-tiered-spec.md#tier-vlm)
 を参照してください。
 
 ### 12.1 新しい tier 定義
@@ -31,8 +31,8 @@ VLM（Vision Language Model。画像を入力に取れる言語モデル）に�
 | **1** Summary | `summary`（新） | 企業 + 不明な purpose + legalCompliance のみ (50〜59) | **概要文のみ**（PII redact 済、image 無し） |
 | 0 Denied | `denied` | 不適格 (<50) | イベントのみ (画像・動画・説明文なし) |
 
-`access` と `denied` の間に、新しい `summary` tier が加わります。VLM profile が有効なときだけ、
-score 50〜59 が `summary` になります（profile が無効なら、従来どおり 60 未満は `denied` です）。
+`access` と `denied` の間に、新しい `summary` tier が加わります。publisher の環境変数 `VLM_BACKEND` が空でないとき（§12.2 で設定します）だけ、
+score 50〜59 が `summary` になります。`VLM_BACKEND` が空なら、`--profile vlm` で Ollama を起動していても、従来どおり 60 未満は `denied` です。
 `/platform/data` のレスポンスに次のキーが増えます:
 
 | キー | 内容 | 露出する tier |
@@ -47,25 +47,22 @@ score 50〜59 が `summary` になります（profile が無効なら、従来�
 
 ### 12.2 `--profile vlm` で起動
 
-VLM と顔ブラーは **opt-in**（明示的に有効にしたときだけ動く機能）です。既定（profile 無効）では
-§1〜§11 と同じ 3 段階の tier 投影で動きます。
+VLM と顔ブラーは **opt-in**（明示的に有効にしたときだけ動く機能）です。4 段階の tier に切り替わるのは、publisher の環境変数 `VLM_BACKEND` が空でないときです。`--profile vlm` は Ollama のコンテナを起動するだけで、`VLM_BACKEND` が空なら §1〜§11 と同じ 3 段階の tier 投影で動きます。
+
+publisher の環境変数を VLM 用に設定してから起動します（compose ファイルが受け取る環境変数を
+シェルで `export` するか、`.env` に書きます）。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
+export VLM_BACKEND=ollama
+export IMAGE_REDACTION_BACKEND=opencv
 # profile vlm を ON にする。Ollama service と vlm-pull (llava の事前 pull)
 # が一緒に立ち上がる
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
   publisher mosquitto vlm vlm-pull
 ```
 
-publisher の環境変数を VLM 用に切り替えます（compose ファイルが受け取る環境変数を
-シェルで `export` するか、`.env` に書きます）。
-
-```bash
-export VLM_BACKEND=ollama
-export IMAGE_REDACTION_BACKEND=opencv
-docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
-```
+環境変数を変えて起動すると、publisher のコンテナは作り直されます。メモリに保存していた claim、ViewerToken、イベントの行は消えるので、あとの §12.4 で claim と提示をやり直します。
 
 `vlm-pull` が `llava` モデルを pull し終わるまで待ちます（初回のみ。数 GB あります）。
 
@@ -81,8 +78,27 @@ curl -s http://localhost:8080/health | jq .
 # -> {"status": "ok", ...}
 ```
 
-profile を無効にした場合と有効にした場合で同じデータセットの `/platform/data`
-を取得すると、有効な場合にだけ `description_*` キーが含まれます。
+#### 12.2.1 画像つきのイベントを流す
+
+`description_*` や `image_url_redacted` は、`VLM_BACKEND` を設定したあとに流したイベントの行にだけ付きます。同意を登録し、画像つきのイベントを流します。顔ブラーを確かめたい場合は、`--image` に顔が写った画像（合成画像など）を指定します。
+
+```bash
+curl -s -X POST localhost:8080/consents \
+  -H 'content-type: application/json' \
+  -d @examples/consent_possible_littering.json | jq .status
+python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+  --base-url http://$HOST_IP:8080
+```
+
+!!! note "タイムアウトしても行は届いている"
+    `/simulate/publish` は、VLM の推論が終わってから応答します。CPU だけの PC では推論に数十秒から数分かかるため、スクリプト側の待ち時間を超えて `TimeoutError` などで終わることがあります (待ち時間は既定 600 秒で、環境変数 `HANDS_ON_HTTP_TIMEOUT` で変えられます。古い教材リポジトリでは 10 秒なので `git pull` します)。publisher 側の処理は続いているので、行は推論が終わったあとに記録されます。次のコマンドで、`raw_topic` が `homeassistant/event/possible_littering` で `action` が `allow` の行が増えたことを確認します。
+
+    ```bash
+    curl -s localhost:8080/audit/logs \
+      | jq '[.[] | select(.raw_topic == "homeassistant/event/possible_littering")][0] | {ts, action, reason}'
+    ```
+
+    LLaVA は CPU では 1 回の推論に数分かかり、`VLM_TIMEOUT_SEC`（既定 180 秒）を超えると `processing_warnings: ["vlm_unavailable"]` になります。CPU だけの PC では `export VLM_TIMEOUT_SEC=600` を設定して起動し直すか、軽量な `moondream` を使います（`export VLM_MODEL=moondream`。モデルの pull のしかたは §13.3 を参照。§12.10 に比較があります）。
 
 ### 12.3 4 種類の DataUserVC オファー
 
@@ -108,7 +124,7 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=unknown&legal_compliance=true&data_handling_policy=other&misuse_record=false
 ```
 
-score = 20 + 5 + 15 + 0 + 10 = 50 -> summary (VLM profile ON のときのみ)
+score = 20 + 5 + 15 + 0 + 10 = 50 -> summary (`VLM_BACKEND` を設定したときのみ)
 
 #### 12.3.d Tier 0（denied）— §2c と同じ
 
@@ -121,7 +137,7 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 ### 12.4 4 通りの `/marketplace/claim` と `/platform/data` 比較
 
 [§3〜§4](data-user-vc-tiered.md#3-marketplaceclaim-を-3-通り呼び出す) と同じ要領で、4 通りそれぞれについて claim、PurchaseViewerVC の提示、ViewerToken の取得、
-`/platform/data` の取得を行います。VLM profile が有効なとき、レスポンスに含まれるキーは次のように変わります。
+`/platform/data` の取得を行います。対象の行は §12.2.1 で流したものです。`VLM_BACKEND` を設定しているとき、レスポンスに含まれるキーは次のように変わります。
 
 | プロファイル | `event` | `image_url` | `video_url` | `image_url_redacted` | `description_full` | `description_summary` |
 |---|---|---|---|---|---|---|
@@ -130,8 +146,8 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 | 12.3.c Tier 1 (summary) | あり | **なし** | **なし** | **なし** | **なし** | あり |
 | 12.3.d Tier 0 (denied) | あり (イベントのみ) | **なし** | **なし** | **なし** | **なし** | **なし** |
 
-profile が無効なら従来どおり（[§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) と同じ）3 段階の tier 投影になり、新しいキーは応答に含まれません。
-この状態で 12.3.c の claim を送ると `denied` になります（summary tier は profile が有効なときだけ
+`VLM_BACKEND` が空なら従来どおり（[§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) と同じ）3 段階の tier 投影になり、新しいキーは応答に含まれません。
+この状態で 12.3.c の claim を送ると `denied` になります（summary tier は `VLM_BACKEND` を設定したときだけ
 使われます）。
 
 ### 12.5 顔/PII ブラーの確認方法
@@ -222,16 +238,15 @@ docker compose -f infra/docker-compose.yml stop vlm
 処理を試みて失敗したわけではないので、`redaction_unavailable` は出ません
 （`redaction_unavailable` は、opencv などの backend を指定したうえでブラーに失敗したときにだけ出ます）。
 また `VLM_BACKEND` は設定されたままなので、tier の対応は §12.1 の 4 段階のままです。
-profile を無効にしたときの 3 段階の投影には戻りません。
+`VLM_BACKEND` が空のときの 3 段階の投影には戻りません。
 
-degrade 時も `image_url` / `video_url` は **そのまま残る**ので、
-受信側は Tier に応じた投影で、生のキーか派生キーのどちらかを必ず受け取ります。
-受信側は、期待したキーの一部が無いときに `processing_warnings` を確認すれば状況が分かります。
+degrade 時も、Tier 3 では `image_url` / `video_url` が **そのまま残ります**。
+受信側は、期待したキーが無いときに `processing_warnings` を確認すれば状況が分かります。
 
 ### 12.8 既存 §11 (PWA Provider) との関係
 
-[§11](data-user-vc-tiered-media.md#11-pwa-providerデータ提供者向け-pwa) の `/provider` ページからアップロードして Publish した画像は、profile vlm が
-有効ならそのまま VLM パイプラインを通ります。**provider 側のページに変更はなく**、
+[§11](data-user-vc-tiered-media.md#11-pwa-providerデータ提供者向け-pwa) の `/provider` ページからアップロードして Publish した画像は、`VLM_BACKEND` を
+設定していればそのまま VLM パイプラインを通ります。**provider 側のページに変更はなく**、
 派生データはサーバー側で自動的に生成されます。受信側の `/viewer` は、
 **Tier 2 で生のキーが無い場合に `image_url_redacted` を 🔒 バッジ付きで表示**し、
 `description_full` と `description_summary` を緑とオレンジで並べて表示します。
@@ -247,7 +262,7 @@ degrade 時も `image_url` / `video_url` は **そのまま残る**ので、
 | 1 回目の `/provider/publish` がタイムアウト | LLaVA の初回起動（cold start。モデルを VRAM にロードする処理）に 30〜60 秒かかります。`vlm-pull` のログに model ready が出ているか確認してください。出ていれば 2 回目以降は速くなります |
 | `description_full` / `description_summary` が同じ内容 | LLaVA が prompt を区別していない可能性があります。`docker compose logs vlm` で `/api/generate` の呼び出しが 2 回別々に来ているかを確認してください。同じ画像でも prompt が違うので、戻り値は別々になるはずです |
 | `image_url_redacted` の画像で顔がぼけていない | Haar cascade が検出するのは正面顔だけです。横顔・斜め顔にはブラーがかかりません。必要なら DNN 系の検出器に差し替えます |
-| Profile OFF でも `description_*` キーが出る | 不具合です。profile が無効なのに従来の tier 投影になっていない可能性があります。`tests/test_data_user_vc_tiered_vlm.py::test_pipeline_no_injectors_keeps_legacy_envelope` が pass することを確認し、再現する場合は issue を立ててください |
+| `VLM_BACKEND` が空でも `description_*` キーが出る | 不具合です。VLM 拡張が無効なのに従来の tier 投影になっていない可能性があります。`tests/test_data_user_vc_tiered_vlm.py::test_pipeline_no_injectors_keeps_legacy_envelope` が pass することを確認し、再現する場合は issue を立ててください |
 | `processing_warnings: ["vlm_unavailable"]` が常時出る | Ollama が応答していないか、`VLM_API_URL` が間違っています。publisher のイメージには curl が入っていないので、`docker compose -f infra/docker-compose.yml exec publisher python -c "import httpx;print(httpx.get('http://vlm:11434/api/version').text)"` で疎通を確認してください |
 
 ### 12.10 実機検証ログ
@@ -322,13 +337,13 @@ ollama に **`moondream`**（1.7 GB。llava の約 1/3 のサイズ）を入れ�
 判定できないときは、開示しない側に倒れます）。
 
 詳細な設計根拠は
-[DataUserVC × 段階アクセス制御 仕様](data-user-vc-tiered-spec.md) を参照してください
+[段階アクセスの設計仕様](data-user-vc-tiered-spec.md) を参照してください
 （§13 に対応する章は仕様ページにまだ無く、追加を予定しています）。
 
 ### 13.1 アーキテクチャ概観
 
 ```
-[iPhone Safari の /provider]   §1〜§2 と同じフローでフレームをアップロード
+[iPhone Safari の /provider]   §11.3 と同じフローでフレームをアップロード
        │  POST /media/upload
        ▼
 [publisher SemanticAnalyzer]   /semantic/analyze
@@ -456,14 +471,15 @@ Publish ボタンとは独立して動くので、確認だけして Publish せ
 | `ts` | UTC ISO8601 |
 | `action` | `semantic/render` または `semantic/render_url` |
 | `subject_did` | `sir.source_device_id` |
+| `dataset_id` | 空文字（現在の実装では設定しません） |
 | `purpose` | `semantic_render` |
 | `reason` | `trust=<level>;kinds=<list>;image=yes|no;audit_required=<bool>;rationale=<policy>` |
 | `message_hash` | `sir.frame_id` |
+| `raw_topic` | `action` と同じ値 |
 | `presentation_verified` | `owner_or_admin` または `policy_only` |
 
 **記録しないもの**: 原フレームのバイト列、base64 化されたレンダリング画像、SIR から
-派生する顔エンコーディング・人名等。`image_url` は記録します（この手順では publisher 自身の
-`/media/<sha>.<ext>` だけを渡します）。
+派生する顔エンコーディング・人名等。`image_url` も監査行には入りません（監査行には URL を入れる項目がありません）。
 
 `audit_required` が False で、画像も返さなかった呼び出しは、信頼度にかかわらず
 audit テーブルに記録しません（audit テーブルの記録を「実際の開示」に絞るためです）。

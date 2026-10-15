@@ -4,7 +4,7 @@ A page that runs data generation through sharing in a minimal setup, using Home 
 
 > **What you'll do**: Stream Home Assistant demo data into the publisher and watch it in the browser
 >
-> **Prerequisites**: [Environment setup](../setup/index.en.md) is done
+> **Prerequisites**: [Environment Setup](../setup/index.en.md) is done
 >
 > **What you need**: PC only (Docker is enough)
 >
@@ -294,7 +294,7 @@ curl 'http://localhost:8080/platform/ingest'
 
 Why do VCs have an expiry at all? Consider what becomes safer compared with consent that never expires, and how you would operate the system when a consent expires in production.
 
-Once this part works, the basic sharing path from Home Assistant to the publisher is in place. The next step is to confirm that the same path can also produce a rejection when Consent VC conditions do not match.
+Once this part works, the basic sharing path from Home Assistant to the publisher is in place. Next, confirm a rejection caused by a `purpose` mismatch.
 
 ## Phase 2: Confirm event sharing and denial
 
@@ -462,26 +462,16 @@ This sample lets you go through Phase 1, Phase 2, and Phase 3 in a single enviro
 
 This page therefore also serves as a connection point to the following hands-on pages:
 
-- [HA x SSI Publisher sample (Phase 1)](ha-ssi-publisher.md)
-- [Environment and disaster event sharing sample (Phase 2)](environment-disaster.md)
-- [Regional safety assistant sample (Phase 3)](regional-safety-assistant.md)
+- [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) (Phase 1)
+- [Share disaster events](environment-disaster.md) (Phase 2)
+- [Run the regional safety assistant](regional-safety-assistant.md) (Phase 3)
 
 ### 11. Stop services
 
-```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo down
-```
-
-If Node-RED is also running:
+Whether or not you started Node-RED or Phase 3, this one command stops everything:
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo --profile nodered down
-```
-
-If you also started the Phase 3 path:
-
-```bash
-docker compose -f infra/docker-compose.yml --profile ha-demo-phase3 down
+docker compose -f infra/docker-compose.yml --profile ha-demo --profile ha-demo-phase3 --profile nodered down
 ```
 
 ## Future extensions
