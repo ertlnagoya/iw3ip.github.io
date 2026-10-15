@@ -44,7 +44,7 @@ flowchart LR
 ## Prerequisites
 
 - Docker
-- Python 3.11+ with OpenCV, installed in a venv at the top of the course repository (`python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`; OpenCV 5 removed the face detector used here). In the terminal that runs `answer_program.py` / `problem_program.py`, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` first
+- Python 3 with OpenCV, installed in a venv at the top of the course repository (`python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`; OpenCV 5 removed the face detector used here). In the terminal that runs `answer_program.py` / `problem_program.py`, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` first
 - An up-to-date course repository (`git pull`)
 - A USB webcam (without one, pass a JPEG image with `--image`)
 

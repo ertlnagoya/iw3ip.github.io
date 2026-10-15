@@ -300,7 +300,7 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 ```
 
 その後、[Stage 5 ハンズオン](marketplace-vc-bridge.md) の手順で MetaMask 購入 → wallet 受領
-→ ViewerToken 取得 → 取得の順に進めます。
+→ ViewerToken 取得 → 取得の順に進めます。ViewerToken の有効期限は 60 秒なので、提示したらすぐに次のコマンドを実行し、`viewer_token_expired` が出たら提示からやり直してください。
 
 ```bash
 TOKEN=<buyer の ViewerToken>

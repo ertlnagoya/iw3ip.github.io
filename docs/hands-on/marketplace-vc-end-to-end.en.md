@@ -294,6 +294,8 @@ http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=P
 
 QR code → in the wallet, select the **PurchaseViewerVC** (do not confuse it with the ServiceVC or the ViewerVC) and present it.
 
+The ViewerToken expires after 60 seconds. Run the next commands right after presenting; if you get `viewer_token_expired`, present again.
+
 ```bash
 PUB=$(docker ps -qf name=publisher)   # needed when running in a different terminal from Step E1
 TOKEN=$(docker logs $PUB 2>&1 | grep "viewer_token_issued vc_kind=PurchaseViewerVC" | tail -1 | sed -E 's/.*token=([^ ]+).*/\1/')

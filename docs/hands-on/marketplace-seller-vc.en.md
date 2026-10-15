@@ -308,7 +308,7 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 ```
 
 Then follow the procedure of the [Stage 5 hands-on](marketplace-vc-bridge.md): purchase with MetaMask → receive in the wallet
-→ obtain a ViewerToken → fetch.
+→ obtain a ViewerToken → fetch. The ViewerToken expires after 60 seconds, so run the next commands right after presenting; if you get `viewer_token_expired`, present again.
 
 ```bash
 TOKEN=<the buyer's ViewerToken>

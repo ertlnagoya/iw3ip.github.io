@@ -38,7 +38,7 @@ Aggregate HUSKYLENS2 (or mock) detections every few seconds and write them out a
 - `sensor-bridge` available
 - the output folder `mediator-owner/raw_data/output` exists (the steps create it if missing)
 - for serial mode, the serial device path is visible from the PC
-- Python 3 (serial mode also needs `pyserial`)
+- Python 3 (serial mode also needs `pyserial`. Install them in a virtual environment (venv) at the top of the course repository (`python3 -m venv .venv && source .venv/bin/activate && pip install pyserial`). In a newly opened terminal, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` first. On macOS there may be no `pip` command, and Homebrew Python rejects `pip install` outside a venv)
 
 ## Exercise Programs
 
@@ -164,7 +164,7 @@ python3 huskylens_bridge.py --mode serial --serial-port /dev/ttyUSB0 --output-di
 ## Troubleshooting
 
 - Symptom: `pyserial` is missing
-  - Action: install with `pip install pyserial`
+  - Action: activate the venv (`source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate`), run `pip install pyserial`, and rerun in the same terminal
 - Symptom: the serial port is unknown
   - Check: `/dev/ttyUSB0`, `/dev/tty.usbserial-*`, or the OS device manager
 - Symptom: no event file is created

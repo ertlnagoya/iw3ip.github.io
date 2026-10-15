@@ -38,7 +38,7 @@ HUSKYLENS2（または mock の入力）の検知結果を数秒ごとにまと�
 - `sensor-bridge` が利用できる
 - 出力先のフォルダ `mediator-owner/raw_data/output` がある (無ければ手順の中で作ります)
 - シリアル接続時は、PCからデバイスのポート名が見えている
-- Python 3 が使える（serial モードでは `pyserial` も必要）
+- Python 3 が使える（serial モードでは `pyserial` も必要。教材リポジトリのトップで仮想環境 (venv) を作り、その中に入れます (`python3 -m venv .venv && source .venv/bin/activate && pip install pyserial`)。新しく開いたターミナルでは `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を先に実行します。macOS では `pip` コマンドが無かったり、Homebrew の Python では venv の外で `pip install` するとエラーになったりするためです）
 
 ## 演習用プログラム
 
@@ -170,7 +170,7 @@ python3 huskylens_bridge.py \
 ### 4. トラブル時
 
 - 症状: `pyserial` が見つからない
-  - 対応: `pip install pyserial`
+  - 対応: venv を有効にして (`source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate`) `pip install pyserial` を実行し、同じターミナルで実行し直す
 - 症状: シリアルポート名が分からない
   - 確認: `/dev/tty.usbserial-*` などのデバイス名を確認
 - 症状: デバイスが読めない
