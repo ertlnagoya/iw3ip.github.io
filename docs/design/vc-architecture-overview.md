@@ -108,7 +108,7 @@ Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ
 
 ## 7. 監査ログのチェーン
 
-1 つの購入から最大 8 行の audit log が連鎖する (Stage 4-prep+5+7 すべて経由した場合):
+1 つの購入から、次の 8 種類の行 (ingest は N 行) の audit log が連鎖する (Stage 4-prep+5+7 すべて経由した場合)。Stage 6 のハンズオン (Stage 7 の 2 行が無く、ingest が 5 回) では 10 行になる:
 
 | # | raw_topic | reason | 主体 (subject_did) |
 | --- | --- | --- | --- |
@@ -119,7 +119,7 @@ Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ
 | 5 | `marketplace/claim` | `claim_received:<id>:tx=...` | `eth:<buyer_addr>` |
 | 6 | `marketplace/issued` | `eth_did_bound:claim=...:eth=...:tx=...` | buyer did:jwk |
 | 7 | `oid4vp/response` | `ok` (PurchaseViewerVC 提示) | buyer did:jwk |
-| 8 | `platform/data` | `viewer_token_used:<jti>:<n>` | buyer did:jwk |
+| 8 | `platform/data` | `viewer_token_used:<jti>:<n>:views=...` | buyer did:jwk |
 
 注目すべき点:
 

@@ -167,6 +167,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
     | 8545 | Hardhat ノード (`npx hardhat node`) | 2 つ目のノードを起動しない |
     | 5173 | フロントエンド (`iot-market-ui`、`npm run dev`) | 別の Vite 開発サーバが動いていないか確認する |
     | 8090 | assistant (`assistant` / `assistant-llm` / `assistant-demo` のプロファイル) | 3 つのプロファイルは同じポートを使うので、1 つずつ起動する |
+    | 18000 | llm-mock (`llm-mock` / `assistant-demo` のプロファイル) | 2 つのプロファイルを同時に起動しない |
     | 11434 | Ollama (PC に直接入れた場合) | Ollama アプリが常駐していると、別の Ollama を起動できない |
 
   - 対応: 競合しているプロセスを止めてから起動し直します。

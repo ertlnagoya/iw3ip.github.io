@@ -219,7 +219,7 @@ VLM だけを停止する場合:
 
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
-# /provider/publish を投げる → /platform/data で
+# provider_with_media.py でイベントを流す (§12.2.1) → /platform/data で
 # processing_warnings: ["vlm_unavailable"] が出る
 # image_url_redacted は生成される (顔ブラーは VLM 不要のため)
 # description_* キーは欠落
@@ -388,16 +388,19 @@ ollama に **`moondream`**（1.7 GB。llava の約 1/3 のサイズ）を入れ�
 ### 13.3 起動
 
 §12.2 の `vlm-pull` が取得するのは `VLM_MODEL` の既定値 `llava` だけです。ここでは `moondream` を使うので、
-先に取得しておきます。そのうえで、VLM tier (§12) を有効にした publisher に
+先に取得しておきます。§12.7 で vlm を止めた場合は、先に起動し直します。そのうえで、VLM tier (§12) を有効にした publisher に
 **`SEMANTIC_ANALYZER_BACKEND` 環境変数**を加えて起動し直します。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile vlm up -d vlm
 docker compose -f infra/docker-compose.yml --profile vlm exec vlm ollama pull moondream
 SEMANTIC_ANALYZER_BACKEND=vision \
   VLM_BACKEND=ollama VLM_MODEL=moondream IMAGE_REDACTION_BACKEND=opencv \
   docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
 ```
+
+環境変数を変えて起動すると、publisher のコンテナは作り直されます。メモリに保存していた claim、ViewerToken、イベントの行は消えるので、§13.5 に進む前に §12.2.1 でイベントを流し直し、§12.4 で claim と提示をやり直します。
 
 | 環境変数 | 値 | 効果 |
 |---|---|---|

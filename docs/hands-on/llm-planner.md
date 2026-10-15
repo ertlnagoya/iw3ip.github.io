@@ -55,7 +55,7 @@ Phase 3 の [地域安全アシスタントを動かす](regional-safety-assista
     pip install fastapi uvicorn pydantic pydantic-settings httpx pytest
     ```
 
-    `pip install -e . pytest` でも同じパッケージが入ります。新しく開いたターミナル (「別ターミナル」) でも、`uvicorn`・`python`・`pytest` を使う前に `source .venv/bin/activate` を実行します。venv を有効にすると、`python` は venv の Python 3 を指します
+    `pip install -e . pytest` でも必要なパッケージが入ります (publisher 用のパッケージも一緒に入ります)。`python3 --version` が 3.11 より古い場合は、`python3.11 -m venv .venv` のようにバージョンを指定して venv を作ります。新しく開いたターミナル (「別ターミナル」) でも、`uvicorn`・`python`・`pytest` を使う前に `source .venv/bin/activate` を実行します。venv を有効にすると、`python` は venv の Python 3 を指します
 - ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使う
 
 参考:

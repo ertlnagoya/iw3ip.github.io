@@ -131,6 +131,7 @@ The LLM is not allowed to invent event names or action names. It must select onl
 - `park-north`
 - `park-south`
 - `station-front`
+- `unknown-area` (when the location cannot be determined)
 
 If the LLM returns a value outside these sets, the planner rejects it.
 

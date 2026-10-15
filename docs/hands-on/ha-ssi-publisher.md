@@ -6,7 +6,7 @@ Home Assistant の状態を MQTT で受け、Consent VC で共有可否を判定
 >
 > **前提**: [最短起動](../setup/quickstart.md)、できれば [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)
 >
-> **使うもの**: PC (Home Assistant が動かせる構成)
+> **使うもの**: PC (Docker)
 >
 > **所要時間**: 約 45 分
 
@@ -23,7 +23,7 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 
 最初は次の 4 手順で十分です。
 
-1. `docker compose -f infra/docker-compose.yml up --build -d`
+1. `PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d`
 2. `consent_temperature.json` を登録する
 3. `/simulate/publish` で `temperature` を送る
 4. `/audit/logs` を見て `allow` を確認する
@@ -78,8 +78,10 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 
 ### 1. 起動
 
+`PLATFORM_INGEST_READ_ENABLED=true` は、手順 6 で届いたデータを確かめる `GET /platform/ingest` を有効にする指定です (認証なしで全件を返すデモ用の機能のため、既定では無効です)。
+
 ```bash
-docker compose -f infra/docker-compose.yml up --build -d
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
 ```
 
 確認:
@@ -182,6 +184,17 @@ curl 'http://localhost:8080/audit/logs?limit=10'
 
 - `allow` / `deny` / `send_error` が記録される
 - `dataset_id`, `purpose`, `message_hash` が残る
+
+許可されたデータが送信先 (Platform API) に届いたかも確認します。
+
+```bash
+curl http://localhost:8080/platform/ingest
+```
+
+確認ポイント:
+
+- 手順 3 で送った `"dataset_id":"home/env/temperature"` のデータが含まれる (拒否された手順 4 の `home/energy/power` は含まれない)
+- `{"detail":"platform_ingest_read_disabled"}` が返る場合は、手順 1 で `PLATFORM_INGEST_READ_ENABLED=true` を付け忘れています。付けて起動し直してください ([トラブルシュート](../operations/troubleshooting.md) の項目 9)
 
 ### 7. 停止
 

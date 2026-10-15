@@ -290,6 +290,8 @@ The focus therefore changes as follows:
 
 ## Appendix: wallet-mode authorization
 
+Try this appendix after finishing [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md).
+
 The main flow registers `consent_flood_risk_high.json` via POST to
 `/consents` — i.e. consent is stored as plaintext JSON on the publisher.
 The hands-on [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) takes a different
@@ -341,9 +343,10 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
 3. Take the PolicyToken and POST a Stage-0-shaped event.
    The PolicyToken is the value after `token=` on the `policy_token_issued` line in the publisher log. Copy it into `POLICY` (valid for 5 minutes):
    ```bash
-   docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued
+   docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued | tail -n 1
    POLICY=<value after token=>
    ```
+   If 5 minutes have passed or `policy_token_expired` is returned, redo the presentation and use the `token=` value from the last line printed above.
    ```bash
    curl -X POST http://localhost:8080/platform/ingest \
      -H "Authorization: Bearer $POLICY" \

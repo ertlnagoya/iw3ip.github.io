@@ -46,6 +46,7 @@
 ## 前提
 
 - [最短起動](../setup/quickstart.md) の v1 スタックを起動できる
+- [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 - USB ウェブカメラが PC から認識されている（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を一度試していると理解が早い）
 - Docker で `--profile vlm` が使える（初回はモデル pull で数 GB のダウンロード）
 
@@ -126,19 +127,20 @@ python capture_snapshot.py
 ```bash
 curl -s -X POST http://localhost:8080/semantic/analyze \
   -F "file=@snapshot.jpg" \
-  -F "source_device_id=laptop-webcam-01" | jq .
+  -F "source_device_id=laptop-webcam-01" \
+  | jq '{scene_summary, people, sensitive_regions: [.sensitive_regions[].type], events: [.events[].type], privacy_risk_score, analyzer_version}'
 ```
 
-返る SIR の例（値は画像とアナライザに依存します）:
+既定のスタブでは画像によらず次の固定値が返ります。`SEMANTIC_ANALYZER_BACKEND=vision` で起動すると値が画像に応じて変わります。
 
 ```json
 {
+  "scene_summary": "研究室の入口付近に1人の人物がいる（mock出力）",
   "people": {"count": 1, "identities": []},
-  "objects": [ ... ],
-  "sensitive_regions": [ {"type": "face"} ],
-  "scene_summary": "...",
-  "privacy_risk_score": 0.4,
-  "analyzer_version": "..."
+  "sensitive_regions": ["face", "text", "unknown_sensitive"],
+  "events": ["person_detected"],
+  "privacy_risk_score": 0.78,
+  "analyzer_version": "mock-semantic-analyzer/v1"
 }
 ```
 

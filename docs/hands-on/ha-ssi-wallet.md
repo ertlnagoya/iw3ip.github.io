@@ -4,7 +4,7 @@
 
 > **やること**: スマホで Consent VC を受け取り、提示して書き込みを許可してもらう
 >
-> **前提**: [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) または [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md) を済ませてあること
+> **前提**: [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) または [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md) を済ませてあること、できれば Stage 0 ([検知イベントだけを共有する](webcam-event-sharing.md) または [防災イベントを共有する](environment-disaster.md))
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet 入り)
 >
@@ -19,7 +19,7 @@
     ([検知イベントだけを共有する](webcam-event-sharing.md)) と同じカメライベント
     `home/event/possible_littering` でも同じ手順で動作するので、その場合は
     dataset と purpose を読み替えてください。Stage の番号は
-    [ハンズオン](index.md#part-phase-stage) で説明しています。
+    [ハンズオンの概要](index.md#part-phase-stage) で説明しています。
 
 ## 目的
 
@@ -309,8 +309,10 @@ PC のブラウザには表示されません。提示が終わったら publish
 `token=` の後ろの値をコピーして、上の `<policy_token>` に使います。
 
 ```bash
-docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued | tail -n 1
 ```
+
+§5 から 5 分を過ぎた場合や、`policy_token_expired` が返る場合は、トークンの期限が切れています。§5 の提示をやり直し、上のコマンドで出た最新の行 (最後の行) の `token=` の値を使います。
 
 ## 次のステップ
 

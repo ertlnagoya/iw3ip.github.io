@@ -109,7 +109,7 @@ Details: [Marketplace VC Bridge design spec](marketplace-vc-bridge-spec.md), [Se
 
 ## 7. Audit log chain
 
-A single purchase chains up to 8 audit log rows (when Stages 4-prep, 5, and 7 are all involved):
+A single purchase chains audit log rows of the following 8 kinds (N rows for ingest) (when Stages 4-prep, 5, and 7 are all involved). In the Stage 6 hands-on (no Stage 7 rows, 5 ingests) this gives 10 rows:
 
 | # | raw_topic | reason | Subject (subject_did) |
 | --- | --- | --- | --- |
@@ -120,7 +120,7 @@ A single purchase chains up to 8 audit log rows (when Stages 4-prep, 5, and 7 ar
 | 5 | `marketplace/claim` | `claim_received:<id>:tx=...` | `eth:<buyer_addr>` |
 | 6 | `marketplace/issued` | `eth_did_bound:claim=...:eth=...:tx=...` | buyer did:jwk |
 | 7 | `oid4vp/response` | `ok` (PurchaseViewerVC presented) | buyer did:jwk |
-| 8 | `platform/data` | `viewer_token_used:<jti>:<n>` | buyer did:jwk |
+| 8 | `platform/data` | `viewer_token_used:<jti>:<n>:views=...` | buyer did:jwk |
 
 Points to note:
 

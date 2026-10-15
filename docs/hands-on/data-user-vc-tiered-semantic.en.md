@@ -238,7 +238,7 @@ Stop the VLM only:
 
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
-# /provider/publish still succeeds; /platform/data carries
+# publish an event with provider_with_media.py (§12.2.1); it still succeeds and /platform/data carries
 # processing_warnings: ["vlm_unavailable"]
 # image_url_redacted is still generated (face blur is VLM-free)
 # description_* keys are absent
@@ -397,15 +397,20 @@ cannot reach raw bytes by construction (fail-closed by design).
 
 Add `SEMANTIC_ANALYZER_BACKEND` to the existing VLM-tier compose run.
 `vlm-pull` in §12.2 pulls only the `VLM_MODEL` default (`llava`). This
-step uses `moondream`, so pull it first:
+step uses `moondream`, so pull it first. If you stopped vlm in §12.7, start it again first:
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile vlm up -d vlm
 docker compose -f infra/docker-compose.yml --profile vlm exec vlm ollama pull moondream
 SEMANTIC_ANALYZER_BACKEND=vision \
   VLM_BACKEND=ollama VLM_MODEL=moondream IMAGE_REDACTION_BACKEND=opencv \
   docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
 ```
+
+Starting with changed environment variables recreates the publisher container.
+The claims, ViewerTokens, and event rows kept in memory are cleared, so before
+§13.5 publish the event again as in §12.2.1 and redo the claims and presentations in §12.4.
 
 | Env var | Value | Effect |
 |---|---|---|

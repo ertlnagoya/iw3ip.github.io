@@ -97,6 +97,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 ### What to check
 
 - The PWA manifest and service worker are built into the Vite dev server
+  (the service worker is registered only when the page is opened over https or on localhost. It is not registered at `http://<HOST_IP>:5173`, but you can still add the app to the home screen)
 - When opened in iPhone Safari, it can be turned into an app with `Add to Home Screen`
 
 ### Steps
@@ -153,8 +154,9 @@ onboarding screen appears.
   `/seller`, `/merchandise/[address]`)
 
 !!! note "On Android (Chrome)"
-    Because the manifest is present, a prompt to install appears automatically.
-    You can also add it manually from the menu → "アプリをインストール" (Install app).
+    `http://<HOST_IP>:5173` is not https, so the service worker is not registered
+    and no install prompt appears automatically.
+    Add it from the menu → "ホーム画面に追加" (Add to Home screen).
 
 ---
 
@@ -207,8 +209,9 @@ tapping "もう入っています" (Already installed) twice takes you to STEP 3
 1. Open MetaMask Mobile → in the built-in browser (the globe icon at the bottom right), open
    `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
    (Merchandise #0, created by the deploy script. Do not use #1, which may already have been purchased in Stage 5)
-2. Tap "Connect your wallet!" to connect MetaMask
-3. Press the "Purchase" button and **Confirm** on the MetaMask side
+2. (Optional) Hamburger menu → tap "Connect your Wallet" to connect MetaMask.
+   On a phone-width screen the "Connect your wallet!" button at the top right is not shown. The button in step 3 connects automatically, so you can skip this step
+3. Press the "Purchase!" button and **Confirm** on the MetaMask side
 4. After a few seconds, the page moves automatically to `/purchased/<txHash>`, and a QR code and the
    "ウォレットで開く" (Open in wallet) button are shown
 
@@ -263,6 +266,10 @@ iw3ip-wallet launches and shows the "IW3IP Purchase Viewer (Event-only)" confirm
 5. Go back to `/my-data` and tap **"このデータを見る" (View this data)** for that purchase to show the "ViewerToken (Bearer)" field
 6. Paste that token into the "ViewerToken (Bearer)" field
 7. **"取得実行" (Fetch)** shows the JSON
+
+!!! note "The ViewerToken is valid for 60 seconds"
+    Do steps 3 to 7 without a break. Send the token you checked on the PC to the iPhone with Universal Clipboard or AirDrop.
+    If you see `viewer_token_expired`, start again from step 3.
 
 ### Expected JSON
 

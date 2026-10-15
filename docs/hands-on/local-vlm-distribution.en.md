@@ -46,6 +46,7 @@ Instead of distributing raw images, distribute the **semantic derivatives** a lo
 ## Prerequisites
 
 - you can start the v1 stack from [Quickstart](../setup/quickstart.en.md)
+- If the IPFS from the [Quickstart](../setup/quickstart.en.md) is still running, stop it first (`cd ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - a USB webcam is recognized by the PC (trying [Detect with a USB webcam (OpenCV)](webcam.md) first makes this easier)
 - Docker can use the `--profile vlm` profile (the first model pull downloads several GB)
 
@@ -127,19 +128,20 @@ POST the captured image to the publisher's `/semantic/analyze`. The local model 
 ```bash
 curl -s -X POST http://localhost:8080/semantic/analyze \
   -F "file=@snapshot.jpg" \
-  -F "source_device_id=laptop-webcam-01" | jq .
+  -F "source_device_id=laptop-webcam-01" \
+  | jq '{scene_summary, people, sensitive_regions: [.sensitive_regions[].type], events: [.events[].type], privacy_risk_score, analyzer_version}'
 ```
 
-An example SIR (values depend on the image and analyzer):
+With the default stub, the following fixed values come back regardless of the image. If you start with `SEMANTIC_ANALYZER_BACKEND=vision`, the values change with the image.
 
 ```json
 {
+  "scene_summary": "研究室の入口付近に1人の人物がいる（mock出力）",
   "people": {"count": 1, "identities": []},
-  "objects": [ ... ],
-  "sensitive_regions": [ {"type": "face"} ],
-  "scene_summary": "...",
-  "privacy_risk_score": 0.4,
-  "analyzer_version": "..."
+  "sensitive_regions": ["face", "text", "unknown_sensitive"],
+  "events": ["person_detected"],
+  "privacy_risk_score": 0.78,
+  "analyzer_version": "mock-semantic-analyzer/v1"
 }
 ```
 

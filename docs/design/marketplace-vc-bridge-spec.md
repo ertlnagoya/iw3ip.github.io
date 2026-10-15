@@ -222,6 +222,12 @@ ViewerVC との違い:
 - VC の有効期間は、設計時点ではウォレットでの受領後 24 時間 (購入直後のアクセスを想定) としていた。現在の実装では、他の VC と同じく publisher の設定値 `credential_ttl_days` (既定 365 日) に従う。提示して得る ViewerToken の有効期間は 60 秒である
 - `allowed_actions=["read"]` は ViewerVC と同じ
 
+→ 実装では、上の例と次の点が違う (`publisher/app/ssi/issuer_routes.py` と `sdjwt.py`)。
+
+- `sub` は無く、holder の DID は `subject_id` に入る
+- `purchased_at` は ISO 8601 の文字列ではなく、エポック秒の整数である
+- `allowed_views`、`access_level` (既定 `event`)、`trust_score` (既定 0) が加わる
+
 ## 7. eth_addr ↔ did:jwk 紐付け (MVP の選択肢)
 
 ### 7.1 採用案 (MVP): query 経由の素朴な方式
@@ -338,6 +344,8 @@ claim の進行状況を返す。
 - Node test: `bridge/test/publisher_client.test.ts`
     - mock Hardhat provider
     - Purchase event → publisher mock 呼び出し検証
+
+→ 実装では、`bridge/test/publisher_client.test.ts` には `PublisherClient` を作れるかを見る smoke test が 1 つあるだけで、上の 2 つのテストはまだ無い。また §10.1 のうち「期限切れ」と「違う buyer での提示拒否」のテストは `tests/test_marketplace_*.py` には無い (ViewerToken の期限切れは `tests/test_ssi_viewer_token.py` で確認している)。
 
 ### 10.3 e2e (手動 / iPhone 実機)
 

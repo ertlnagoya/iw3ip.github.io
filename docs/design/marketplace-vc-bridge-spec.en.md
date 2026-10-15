@@ -222,6 +222,12 @@ Differences from ViewerVC:
 - At design time, the VC lifetime was set to 24 hours after receipt in the wallet (assuming access right after the purchase). In the current implementation it follows the publisher setting `credential_ttl_days` (default 365 days), as for the other VCs. The ViewerToken obtained by presenting it is valid for 60 seconds
 - `allowed_actions=["read"]` is the same as in ViewerVC
 
+→ In the implementation, it differs from the example above in these points (`publisher/app/ssi/issuer_routes.py` and `sdjwt.py`):
+
+- There is no `sub`. The holder DID goes into `subject_id`
+- `purchased_at` is an integer in epoch seconds, not an ISO 8601 string
+- `allowed_views`, `access_level` (default `event`), and `trust_score` (default 0) are added
+
 ## 7. eth_addr ↔ did:jwk binding (options for the MVP)
 
 ### 7.1 Adopted approach (MVP): a naive method via query
@@ -340,6 +346,8 @@ No columns are added with `ALTER TABLE`. `buyer_eth_addr` and `tx_hash` are carr
 - Node test: `bridge/test/publisher_client.test.ts`
     - mock Hardhat provider
     - Verify Purchase event → call to the publisher mock
+
+→ In the implementation, `bridge/test/publisher_client.test.ts` has only one smoke test that checks that a `PublisherClient` can be constructed. The two tests above do not exist yet. Also, of §10.1, there are no tests for "Expiry" and "Rejecting a presentation by a different buyer" in `tests/test_marketplace_*.py` (ViewerToken expiry is checked in `tests/test_ssi_viewer_token.py`).
 
 ### 10.3 e2e (manual / real iPhone)
 

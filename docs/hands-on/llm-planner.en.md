@@ -55,7 +55,7 @@ Branches after that:
     pip install fastapi uvicorn pydantic pydantic-settings httpx pytest
     ```
 
-    `pip install -e . pytest` installs the same packages. In every newly opened terminal ("another terminal"), run `source .venv/bin/activate` before using `uvicorn`, `python`, or `pytest`. With the venv active, `python` points to the venv's Python 3
+    `pip install -e . pytest` also installs the required packages (along with the publisher's). If `python3 --version` is older than 3.11, create the venv with a specific version, such as `python3.11 -m venv .venv`. In every newly opened terminal ("another terminal"), run `source .venv/bin/activate` before using `uvicorn`, `python`, or `pytest`. With the venv active, `python` points to the venv's Python 3
 - the `main` branch of the `Blockchain_IoT_Marketplace` repository
 
 References:

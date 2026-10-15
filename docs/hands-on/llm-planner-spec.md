@@ -131,6 +131,7 @@ LLM がイベント名やアクション名を自由に作ることは禁止し�
 - `park-north`
 - `park-south`
 - `station-front`
+- `unknown-area`（場所を特定できないとき）
 
 LLM が許可外の値を返した場合は、planner 側で reject します。
 

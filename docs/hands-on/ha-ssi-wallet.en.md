@@ -4,7 +4,7 @@ Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to aut
 
 > **What you'll do**: Receive a Consent VC on your phone and present it to allow a write
 >
-> **Prerequisites**: [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) or [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md) finished
+> **Prerequisites**: [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) or [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md) finished, and ideally Stage 0 ([Share detections, not raw frames](webcam-event-sharing.md) or [Share disaster events](environment-disaster.md))
 >
 > **What you need**: PC + smartphone with iw3ip-wallet
 >
@@ -309,8 +309,10 @@ finishes, check the publisher log, find the line
 value after `token=` into `<policy_token>` above.
 
 ```bash
-docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued | tail -n 1
 ```
+
+If more than 5 minutes have passed since §5, or `policy_token_expired` is returned, the token has expired. Redo the presentation in §5 and use the `token=` value from the newest (last) line printed by the command above.
 
 ## Next steps
 

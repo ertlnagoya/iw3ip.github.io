@@ -233,7 +233,7 @@ export HOST_IP=192.168.1.20
 
 ### Part 1 の成功判定
 
-- 1.2 のデータが届いたことを確認できた。HA 経路では `curl localhost:8080/platform/ingest` に、カメラ経路では `mediator-owner` の `Product deployed` にデータが現れる
+- 1.2 のデータが届いたことを確認できた。HA 経路では `curl http://localhost:8080/platform/ingest` (HA SSI Publisher の手順 6) に、カメラ経路では `mediator-owner` の `Product deployed` にデータが現れる
 - マーケットで出品 → 購入 → 受け取りが一通りでき、`mediator-buyer/downloads` にデータが保存された
 
 ---

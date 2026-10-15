@@ -161,7 +161,7 @@ docker compose up -d
 docker compose ps
 ```
 
-SERVICE が `ipfs` と `postgres` の行の STATUS が **Up** で始まっていれば成功です。
+`SERVICE` 列が `ipfs` と `postgres` の行で、`STATUS` が **Up** で始まっていれば成功です。
 
 ### 6. 仲介プロセス (オーナー側 + 購入者側) を起動
 

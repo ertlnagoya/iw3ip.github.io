@@ -96,6 +96,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 ### 何を確認するか
 - Vite dev server に PWA manifest と service worker が組み込まれている
+  (service worker が登録されるのは https か localhost で開いたときだけです。`http://<HOST_IP>:5173` では登録されませんが、ホーム画面への追加はできます)
 - iPhone Safari で開いたとき、 `Add to Home Screen` でアプリ化できる
 
 ### 操作
@@ -150,8 +151,9 @@ iPhone Safari で `http://<HOST_IP>:5173/welcome` を開くと、3 ステップ
   `/seller`, `/merchandise/[address]`)
 
 !!! note "Android (Chrome) の場合"
-    manifest があるため、自動的にインストールを促す表示が出ます。
-    手動でも、メニュー → 「アプリをインストール」から追加できます。
+    `http://<HOST_IP>:5173` は https ではないため service worker が登録されず、
+    インストールを促す表示は自動では出ません。
+    メニュー → 「ホーム画面に追加」から追加してください。
 
 ---
 
@@ -202,8 +204,9 @@ STEP 3 / 3 - 準備完了
 1. MetaMask Mobile を開く → 内蔵ブラウザ (右下のグローブアイコン) で
    `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
    を開く (deploy script が作る Merchandise #0。#1 は Stage 5 で購入済みのことがあるため使わない)
-2. 「Connect your wallet!」をタップして MetaMask 接続
-3. 「Purchase」ボタンを押し、MetaMask 側で **Confirm**
+2. (省略可) ハンバーガーメニュー → 「Connect your Wallet」をタップして MetaMask 接続。
+   スマートフォンの画面幅では右上の「Connect your wallet!」ボタンは表示されません。手順 3 のボタンを押すと自動で接続されるので、この手順は飛ばしても構いません
+3. 「Purchase!」ボタンを押し、MetaMask 側で **Confirm**
 4. 数秒後、自動で `/purchased/<txHash>` に遷移し QR + 「ウォレットで開く」
    ボタンが表示される
 
@@ -255,6 +258,10 @@ iw3ip-wallet が起動して「IW3IP 購入閲覧（Tier 1 / イベントのみ�
 5. `/my-data` に戻り、その購入の **「このデータを見る」** をタップして「ViewerToken (Bearer)」欄を表示
 6. その token を「ViewerToken (Bearer)」欄に貼り付け
 7. **「取得実行」** で JSON が表示
+
+!!! note "ViewerToken の有効期限は 60 秒"
+    手順 3〜7 は続けて行ってください。PC で確認した token は、ユニバーサルクリップボードや AirDrop で iPhone に渡します。
+    `viewer_token_expired` が出たら、手順 3 からやり直してください。
 
 ### 期待 JSON
 

@@ -24,7 +24,7 @@ folds it into the event payload as `image_url` / `video_url`.
 
 ### 8.1 One-shot provider script
 
-The script does not register a consent (ConsentVC), so register one first (not needed if you did it in §4a of the first page, unless the publisher container has been recreated since).
+The script does not register a consent (ConsentVC), so register one first (not needed if you did it in §4a of the first page; consents are stored on the publisher volume, so they survive a container recreate).
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -99,7 +99,7 @@ docker compose -f infra/docker-compose.yml ps ipfs
 # iw3ip-ipfs container should be Up
 ```
 
-Recreating the publisher container with `--force-recreate` clears the claims, ViewerTokens, and event rows it kept in memory. After publishing again in §9.2, redo the claims in [§3](data-user-vc-tiered.md#3-three-marketplaceclaim-calls) and the presentation in [§4](data-user-vc-tiered.md#4-issue-purchaseviewervc-present-fetch-platformdata) of the first page. Registering the consent again with the same command as in §8.1 is also a good idea.
+Recreating the publisher container with `--force-recreate` clears the claims, ViewerTokens, and event rows it kept in memory. After publishing again in §9.2, redo the claims in [§3](data-user-vc-tiered.md#3-three-marketplaceclaim-calls) and the presentation in [§4](data-user-vc-tiered.md#4-issue-purchaseviewervc-present-fetch-platformdata) of the first page. Consents are stored on the volume, so you do not need to register them again.
 
 Verify the publisher picked up the env vars:
 

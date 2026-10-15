@@ -400,9 +400,10 @@ chainId キャッシュのリセットが必要です ([Stage 5 のトラブル�
 SERVICE=
 ```
 
-**原因**: Step E0 で publisher を再起動した直後で、過去の
-`service_token_issued` ログが消えており、まだ Step E1 の発行と
-提示を完了していない。
+**原因**: publisher を作り直した後で過去の `service_token_issued`
+ログが消えている、または Step E1 の発行と提示がまだ終わっていない。
+(Step E0 の `up --build -d` は、変更の無い publisher を作り直さない
+ので、ログが残っていることもある)
 
 **対処**: 「ServiceVC を **発行** → wallet で受領 → ServiceVC を
 **提示**」の 2 ステップを実行してから token を grep する。発行と

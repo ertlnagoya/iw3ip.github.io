@@ -289,6 +289,8 @@ Phase 1 では、温度や電力のようなデータ共有を中心に見まし
 
 ## 補論: ウォレットモードによる認可
 
+この補論は [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) を済ませてから試します。
+
 本編では `consent_flood_risk_high.json` を `/consents` に POST して
 ポリシー登録しました。これは「同意の記録を平文 JSON でサーバに置く」
 方式です。**同じ認可を、住民や観測者がスマホで保持する VC を提示する形**
@@ -338,9 +340,10 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
 3. PolicyToken を取得し、本編と同じ形のイベントを 1 件 ingest。
    PolicyToken は publisher のログの `policy_token_issued` 行にある `token=` の後ろの値です。コピーして `POLICY` に入れます (有効期限 5 分):
    ```bash
-   docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued
+   docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued | tail -n 1
    POLICY=<token= の後ろの値>
    ```
+   期限 (5 分) を過ぎた場合や `policy_token_expired` が返る場合は、提示をやり直し、上のコマンドで出た最後の行の `token=` の値を使います。
    ```bash
    curl -X POST http://localhost:8080/platform/ingest \
      -H "Authorization: Bearer $POLICY" \

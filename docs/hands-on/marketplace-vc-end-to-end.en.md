@@ -407,9 +407,10 @@ needs its chainId cache reset ([Troubleshooting A in Stage 5](marketplace-vc-bri
 SERVICE=
 ```
 
-**Cause**: You have just restarted the publisher in Step E0, so the past
-`service_token_issued` logs are gone, and you have not yet completed the issuance and
-presentation of Step E1.
+**Cause**: The publisher was recreated and the past `service_token_issued`
+logs are gone, or you have not yet completed the issuance and presentation of Step E1.
+(`up --build -d` in Step E0 does not recreate an unchanged publisher,
+so the logs may still be there)
 
 **Fix**: Run the two steps "**issue** the ServiceVC → receive it in the wallet →
 **present** the ServiceVC", and then grep the token. Issuance and

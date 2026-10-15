@@ -290,6 +290,8 @@ The key change is that the theme moves from **detection** to **condition-based s
 
 ## Appendix: wallet-mode authorization
 
+Try this appendix after finishing [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md).
+
 The main flow registers `consent_possible_littering.json` via POST to
 `/consents` — i.e. consent is stored as plaintext JSON on the publisher.
 The hands-on [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) takes a different
@@ -316,7 +318,7 @@ Gating every MQTT event through the wallet doesn't fit PolicyToken's
 single-use semantics. Instead, send **one event** by hand to feel the
 flow:
 
-A phone wallet cannot reach the PC's `localhost`, so open the URLs below in a PC browser with `<HOST_IP>` replaced by the PC's LAN IP (see the [Hands-on overview](index.md#host-ip) for how to find it).
+A phone wallet cannot reach the PC's `localhost`, so open the URLs from §4–§5 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) in a PC browser with `<HOST_IP>` replaced by the PC's LAN IP (see the [Hands-on overview](index.md#host-ip) for how to find it).
 
 First, restart with the `ssi-wallet` profile. If you forget `PLATFORM_INGEST_READ_ENABLED=true`, the rows you wrote in the main flow are lost and `GET /platform/ingest` returns 404.
 
@@ -329,9 +331,10 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
    `community_cleaning`, `research`, or `planning`) and obtain a PolicyToken.
    The PolicyToken is the value after `token=` on the `policy_token_issued` line in the publisher log. Copy it into `POLICY` (valid for 5 minutes):
    ```bash
-   docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued
+   docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued | tail -n 1
    POLICY=<value after token=>
    ```
+   If 5 minutes have passed or `policy_token_expired` is returned, redo the presentation and use the `token=` value from the last line printed above.
 2. Pause MQTT if it's running
 3. POST a Stage-0-shaped event with the PolicyToken in the Bearer header:
    ```bash

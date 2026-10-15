@@ -6,7 +6,7 @@ Build a minimal setup that receives Home Assistant state over MQTT and decides w
 >
 > **Prerequisites**: [Quickstart](../setup/quickstart.en.md), ideally [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
 >
-> **What you need**: PC able to run Home Assistant
+> **What you need**: PC (Docker)
 >
 > **Time required**: approx. 45 min
 
@@ -23,7 +23,7 @@ Pipeline:
 
 For a first pass, these four steps are enough.
 
-1. `docker compose -f infra/docker-compose.yml up --build -d`
+1. `PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d`
 2. Register `consent_temperature.json`
 3. Send the `temperature` request through `/simulate/publish`
 4. Inspect `/audit/logs` and confirm `allow`
@@ -78,8 +78,10 @@ The problem program focuses on how `topic`, `payload`, and `purpose` are combine
 
 ### 1. Start services
 
+`PLATFORM_INGEST_READ_ENABLED=true` enables `GET /platform/ingest`, which you use in step 6 to check the delivered data (it is a demo-only API that returns everything without authentication, so it is off by default).
+
 ```bash
-docker compose -f infra/docker-compose.yml up --build -d
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
 ```
 
 Health check:
@@ -182,6 +184,17 @@ Checkpoints:
 
 - actions include `allow`, `deny`, and/or `send_error`
 - each record includes `dataset_id`, `purpose`, and `message_hash`
+
+Also confirm that the allowed data reached the destination (Platform API).
+
+```bash
+curl http://localhost:8080/platform/ingest
+```
+
+Checkpoints:
+
+- the data from step 3 (`"dataset_id":"home/env/temperature"`) is included (the denied `home/energy/power` from step 4 is not)
+- if `{"detail":"platform_ingest_read_disabled"}` is returned, `PLATFORM_INGEST_READ_ENABLED=true` was missing in step 1. Restart with it (see "`GET /platform/ingest` returns 404" in [Troubleshooting](../operations/troubleshooting.md))
 
 ### 7. Stop services
 

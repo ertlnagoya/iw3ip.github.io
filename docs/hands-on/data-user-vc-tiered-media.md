@@ -22,7 +22,7 @@ POST して、返ってきた URL を payload の `image_url` / `video_url` に�
 
 ### 8.1 提供側スクリプトを実行する
 
-このスクリプトは同意 (ConsentVC) を登録しません。先に同意を登録しておきます（1 ページ目の §4a で登録済みなら不要です。ただし publisher のコンテナを作り直した場合は、もう一度登録します）。
+このスクリプトは同意 (ConsentVC) を登録しません。先に同意を登録しておきます（1 ページ目の §4a で登録済みなら不要です。同意は publisher のボリュームに保存されるので、コンテナを作り直しても残ります）。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -95,7 +95,7 @@ docker compose -f infra/docker-compose.yml ps ipfs
 # iw3ip-ipfs container が Up になっていれば OK
 ```
 
-`--force-recreate` で publisher のコンテナを作り直すと、メモリに保存していた claim、ViewerToken、イベントの行は消えます。§9.2 でイベントを流し直したあと、1 ページ目の [§3](data-user-vc-tiered.md#3-marketplaceclaim-を-3-通り呼び出す) の claim と [§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) の提示をやり直してください。同意も、§8.1 と同じコマンドでもう一度登録しておくと確実です。
+`--force-recreate` で publisher のコンテナを作り直すと、メモリに保存していた claim、ViewerToken、イベントの行は消えます。§9.2 でイベントを流し直したあと、1 ページ目の [§3](data-user-vc-tiered.md#3-marketplaceclaim-を-3-通り呼び出す) の claim と [§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) の提示をやり直してください。同意はボリュームに保存されているので、登録し直す必要はありません。
 
 publisher の設定に `IPFS_API_URL=http://ipfs:5001` が反映されたことを確認します。
 

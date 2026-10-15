@@ -230,7 +230,7 @@ Open the §1.3 marketplace screen in a phone browser and walk through a purchase
 
 ### Done when…
 
-- You confirmed that the §1.2 data arrived: on the HA path it appears in `curl localhost:8080/platform/ingest`, and on the camera path it appears as `Product deployed` in `mediator-owner`
+- You confirmed that the §1.2 data arrived: on the HA path it appears in `curl http://localhost:8080/platform/ingest` (step 6 of HA SSI Publisher), and on the camera path it appears as `Product deployed` in `mediator-owner`
 - Listing → purchase → delivery on the marketplace worked, and the data was saved under `mediator-buyer/downloads`
 
 ---
