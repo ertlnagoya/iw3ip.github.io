@@ -62,7 +62,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 ## 前提
 
-- Stage 5 / 6 / 7 のハンズオンを済ませている
+- Stage 5 / 6 / 7 のハンズオンを済ませている。その後に Hardhat を起動し直した場合は、先に [Stage 6 の Step E0](marketplace-vc-end-to-end.md#step-e0-前提環境の起動-stage-5-と共通) (ノードの起動、デプロイ、公開鍵の登録、bridge の作り直し) をやり直す
 - publisher + bridge + Hardhat + iot-market-ui が起動できる
 - iw3ip-wallet (iPhone) が動く
 - コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます

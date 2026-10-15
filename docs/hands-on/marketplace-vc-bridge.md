@@ -410,7 +410,7 @@ npx react-native start
 ### 操作: deeplink を QR で iPhone に渡す
 
 ```bash
-DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok jti=2b417b32e6566830" | tail -1 | sed -E 's/.*deeplink=//')
+DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1 | sed -E 's/.*deeplink=//')
 echo "$DEEPLINK"
 
 # QR を Mac ブラウザで開く

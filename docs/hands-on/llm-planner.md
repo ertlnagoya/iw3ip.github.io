@@ -48,14 +48,14 @@ Phase 3 の [地域安全アシスタントを動かす](regional-safety-assista
 
 - Docker / Docker Compose が使える
 - `curl` が使える
-- Python 3.11 以上 (段階 1 と 5.2 の `uvicorn`、5.5 の `pytest` をホストで動かすため)。`Blockchain_IoT_Marketplace` リポジトリのトップで仮想環境 (venv) を作り、その中に必要なパッケージを入れておく。Homebrew の Python などでは、venv の外で `pip install` すると `externally-managed-environment` エラーになります
+- Python 3.11 以上 (段階 1 と 5.2 の `uvicorn`、5.5 の `pytest` をホストで動かすため)。`Blockchain_IoT_Marketplace` リポジトリのトップで仮想環境 (venv) を作り、その中に必要なパッケージを入れておく。Homebrew の Python などでは、venv の外で `pip install` すると `externally-managed-environment` エラーになります。`python3 --version` が 3.11 より古い場合は、下の `python3 -m venv` を `python3.11 -m venv` のようにバージョンを指定して実行します
 
     ```bash
     python3 -m venv .venv && source .venv/bin/activate
     pip install fastapi uvicorn pydantic pydantic-settings httpx pytest
     ```
 
-    `pip install -e . pytest` でも必要なパッケージが入ります (publisher 用のパッケージも一緒に入ります)。`python3 --version` が 3.11 より古い場合は、`python3.11 -m venv .venv` のようにバージョンを指定して venv を作ります。新しく開いたターミナル (「別ターミナル」) でも、`uvicorn`・`python`・`pytest` を使う前に `source .venv/bin/activate` を実行します。venv を有効にすると、`python` は venv の Python 3 を指します
+    `pip install -e . pytest` でも必要なパッケージが入ります (publisher 用のパッケージも一緒に入ります)。新しく開いたターミナル (「別ターミナル」) でも、`uvicorn`・`python`・`pytest` を使う前に `source .venv/bin/activate` を実行します。venv を有効にすると、`python` は venv の Python 3 を指します
 - ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使う
 
 参考:

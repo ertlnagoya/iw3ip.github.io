@@ -48,14 +48,14 @@ Branches after that:
 
 - Docker / Docker Compose
 - `curl`
-- Python 3.11 or later (to run `uvicorn` in Stage 1 and 5.2 and `pytest` in 5.5 on the host). Create a virtual environment (venv) at the top of the `Blockchain_IoT_Marketplace` repository and install the packages into it. With Homebrew Python and similar setups, `pip install` outside a venv fails with an `externally-managed-environment` error
+- Python 3.11 or later (to run `uvicorn` in Stage 1 and 5.2 and `pytest` in 5.5 on the host). Create a virtual environment (venv) at the top of the `Blockchain_IoT_Marketplace` repository and install the packages into it. With Homebrew Python and similar setups, `pip install` outside a venv fails with an `externally-managed-environment` error. If `python3 --version` is older than 3.11, run the `python3 -m venv` line below with a specific version, such as `python3.11 -m venv`
 
     ```bash
     python3 -m venv .venv && source .venv/bin/activate
     pip install fastapi uvicorn pydantic pydantic-settings httpx pytest
     ```
 
-    `pip install -e . pytest` also installs the required packages (along with the publisher's). If `python3 --version` is older than 3.11, create the venv with a specific version, such as `python3.11 -m venv .venv`. In every newly opened terminal ("another terminal"), run `source .venv/bin/activate` before using `uvicorn`, `python`, or `pytest`. With the venv active, `python` points to the venv's Python 3
+    `pip install -e . pytest` also installs the required packages (along with the publisher's). In every newly opened terminal ("another terminal"), run `source .venv/bin/activate` before using `uvicorn`, `python`, or `pytest`. With the venv active, `python` points to the venv's Python 3
 - the `main` branch of the `Blockchain_IoT_Marketplace` repository
 
 References:

@@ -78,7 +78,7 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 
 - You have gone through [Stage 1](ha-ssi-wallet.md) / [Stage 3](ha-ssi-viewer.md) /
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)
-- The Stage 5 Hardhat node is restarted in Step E0 (publisher / bridge / iot-market-ui are started or recreated in E0)
+- The Stage 5 Hardhat node is restarted in Step E0 (publisher and iot-market-ui are started in E0 and the bridge is recreated there; the publisher is recreated only when its code changed)
 - `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet cloned to `~/program/iw3ip-wallet`
 - In this hands-on, **one iPhone wallet plays two roles (seller + buyer)**
@@ -117,8 +117,8 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
 # → bridge: listening to 5 merchandise(s)
 
-# iot-market-ui (another terminal)
-cd iot-market-ui
+# iot-market-ui (another terminal; skip this if the Stage 5 Terminal D server is still running)
+cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
 

@@ -255,6 +255,8 @@ curl -s 'localhost:8080/audit/logs?limit=100' \
 
 ## 6. テストで突き合わせ
 
+Python 3.11 以上が必要です。`python3 --version` が 3.11 より古い場合は、下の `python3 -m venv` を `python3.11 -m venv` のようにバージョンを指定して実行します。
+
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 python3 -m venv .venv && source .venv/bin/activate

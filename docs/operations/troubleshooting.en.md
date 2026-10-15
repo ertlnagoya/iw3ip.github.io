@@ -169,7 +169,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
     | 8545 | Hardhat node (`npx hardhat node`) | Do not start a second node |
     | 5173 | Frontend (`iot-market-ui`, `npm run dev`) | Check that no other Vite dev server is running |
     | 8090 | assistant (`assistant` / `assistant-llm` / `assistant-demo` profiles) | The three profiles share the port, so start one at a time |
-    | 18000 | llm-mock (`llm-mock` / `assistant-demo` profiles) | Do not start both profiles at once |
+    | 18000 | llm-mock (`llm-mock` / `assistant-demo` profiles) | Stop the `llm-mock` / `assistant-demo` container before running the host `uvicorn examples.phase3_llm_mock_server:app --port 18000` |
     | 11434 | Ollama (installed directly on the PC) | If the Ollama app is running in the background, another Ollama cannot start |
 
   - Fix: stop the conflicting process and start again.

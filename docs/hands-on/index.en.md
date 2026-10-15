@@ -284,7 +284,7 @@ Switch the response between Tier 3 (video + everything), Tier 2 (image + derived
 ### Done when…
 
 - A Consent / DataUserVC / PurchaseViewerVC lands in your phone wallet
-- Changing `purpose` or trust level flips `/platform/data` between allow / deny / different content
+- Changing `purpose` flips sharing (`/simulate/publish`) or presentation (`/verifier/request`) between allow / deny, and changing the trust level changes what `/platform/data` returns
 - The audit log records who looked at what, when, and for what purpose
 
 ---

@@ -46,7 +46,7 @@ Instead of distributing raw images, distribute the **semantic derivatives** a lo
 ## Prerequisites
 
 - you can start the v1 stack from [Quickstart](../setup/quickstart.en.md)
-- If the IPFS from the [Quickstart](../setup/quickstart.en.md) is still running, stop it first (`cd ipfs && docker compose down`); IPFS and the publisher both use port 8080
+- If the IPFS from the [Quickstart](../setup/quickstart.en.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - a USB webcam is recognized by the PC (trying [Detect with a USB webcam (OpenCV)](webcam.md) first makes this easier)
 - Docker can use the `--profile vlm` profile (the first model pull downloads several GB)
 

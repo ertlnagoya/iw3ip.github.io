@@ -62,7 +62,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 
 ## Prerequisites
 
-- You have completed the Stage 5 / 6 / 7 hands-ons
+- You have completed the Stage 5 / 6 / 7 hands-ons. If you restarted Hardhat since then, first redo [Stage 6 Step E0](marketplace-vc-end-to-end.md#step-e0-start-the-prerequisite-environment-same-as-stage-5) (start the node, deploy, register the public key, recreate the bridge)
 - You can start publisher + bridge + Hardhat + iot-market-ui
 - iw3ip-wallet (iPhone) works
 - `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP

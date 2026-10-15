@@ -80,7 +80,7 @@ Branches after that:
 
 ### 0. Configure the frontend endpoint (.env.local) { #env-local }
 
-`iot-market-ui` reads the blockchain (RPC) and publisher endpoints from `iot-market-ui/.env.local`. If it points at the wrong host, the merchandise page returns **HTTP 500** (if the file is missing, `127.0.0.1` is used, so the phone cannot connect). Copy the template first and match it to your setup.
+`iot-market-ui` reads the blockchain (RPC) and publisher endpoints from `iot-market-ui/.env.local`. If it points at the wrong host, the merchandise page returns **HTTP 500** (if the file is missing, `127.0.0.1` is used for RPC and `localhost` for the publisher, so the phone cannot connect). Copy the template first and match it to your setup.
 
 ```bash
 cd iot-market-ui
@@ -156,7 +156,7 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 - Add the local chain network to MetaMask Mobile beforehand:
     - RPC URL: `http://<HOST_IP>:8545` (e.g. `http://192.168.1.20:8545`)
     - Chain ID: `31337` / Currency symbol: `ETH`
-- Also import the **Account #2 Private Key** into MetaMask Mobile and buy with that account (the same key as in [Quickstart](../setup/quickstart.md#metamask-local-chain-setup)). Only Accounts #0–#2 have a registered public key, and the buyer-side mediator (`mediator-buyer`) runs as Account #2. A purchase from any other account reverts
+- Also import the **Account #2 Private Key** into MetaMask Mobile and buy with that account (the same key as in [Quickstart](../setup/quickstart.md#metamask-local-chain-setup)). Only Account #1 (`mediator-owner`) and Account #2 (`mediator-buyer`) have a registered public key. The buyer-side mediator runs as Account #2, so buying from any other account either reverts or never delivers the data
 - If MetaMask rejects the network, confirm the node was started with `--hostname 0.0.0.0` and that both `.env.local` and the MetaMask RPC use the **PC's LAN IP, not 127.0.0.1**
 
 ### 5. What to check

@@ -108,7 +108,7 @@ Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ
 
 ## 7. 監査ログのチェーン
 
-1 つの購入から、次の 8 種類の行 (ingest は N 行) の audit log が連鎖する (Stage 4-prep+5+7 すべて経由した場合)。Stage 6 のハンズオン (Stage 7 の 2 行が無く、ingest が 5 回) では 10 行になる:
+1 つの購入から、次の 8 種類の audit log が連鎖する (Stage 4-prep+5+7 をすべて経由した場合。#4 は ingest の回数だけ並ぶ)。Stage 6 のハンズオンでは Stage 7 の #1・#2 が無く、ingest が 5 回なので 10 行になる:
 
 | # | raw_topic | reason | 主体 (subject_did) |
 | --- | --- | --- | --- |

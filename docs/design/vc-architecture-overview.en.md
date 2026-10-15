@@ -109,7 +109,7 @@ Details: [Marketplace VC Bridge design spec](marketplace-vc-bridge-spec.md), [Se
 
 ## 7. Audit log chain
 
-A single purchase chains audit log rows of the following 8 kinds (N rows for ingest) (when Stages 4-prep, 5, and 7 are all involved). In the Stage 6 hands-on (no Stage 7 rows, 5 ingests) this gives 10 rows:
+A single purchase chains the following 8 kinds of audit log rows (when Stages 4-prep, 5, and 7 are all involved; #4 repeats once per ingest). In the Stage 6 hands-on, Stage 7's #1 and #2 are absent and there are 5 ingests, so there are 10 rows:
 
 | # | raw_topic | reason | Subject (subject_did) |
 | --- | --- | --- | --- |

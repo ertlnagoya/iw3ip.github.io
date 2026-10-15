@@ -82,7 +82,7 @@ homepage `/` をスマホで開く形に読み替えてください。
 
 ### 0. フロントの接続先を設定 (.env.local) { #env-local }
 
-`iot-market-ui` は、ブロックチェーン (RPC) と publisher の接続先を `iot-market-ui/.env.local` から読み込みます。接続先が間違っていると、商品ページが **HTTP 500** になります (ファイルが無い場合は `127.0.0.1` が使われるため、スマホからは接続できません)。まず雛形をコピーして自分の環境に合わせます。
+`iot-market-ui` は、ブロックチェーン (RPC) と publisher の接続先を `iot-market-ui/.env.local` から読み込みます。接続先が間違っていると、商品ページが **HTTP 500** になります (ファイルが無い場合は RPC に `127.0.0.1`、publisher に `localhost` が使われるため、スマホからは接続できません)。まず雛形をコピーして自分の環境に合わせます。
 
 ```bash
 cd iot-market-ui
@@ -159,7 +159,7 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 - MetaMask モバイルにローカルチェーンのネットワークを追加しておく:
     - RPC URL: `http://<HOST_IP>:8545` (例: `http://192.168.1.20:8545`)
     - チェーン ID: `31337` / 通貨記号: `ETH`
-- MetaMask モバイルにも **Account #2 の Private Key** をインポートし、そのアカウントで購入する ([最短起動](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ鍵)。公開鍵が登録されているのは Account #0〜#2 だけで、購入者側の仲介プロセス (`mediator-buyer`) は Account #2 として動きます。別のアカウントで購入すると取引が失敗 (revert) します
+- MetaMask モバイルにも **Account #2 の Private Key** をインポートし、そのアカウントで購入する ([最短起動](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ鍵)。公開鍵が登録されているのは、仲介プロセスが使う Account #1 (`mediator-owner`) と Account #2 (`mediator-buyer`) だけです。購入者側の仲介プロセスは Account #2 として動くため、ほかのアカウントで購入すると、取引が失敗 (revert) するか、データが届きません
 - ネットワーク追加が拒否される場合は、ノードを `--hostname 0.0.0.0` で起動しているか、`.env.local` と MetaMask の RPC が **127.0.0.1 ではなく PC の LAN IP** になっているかを確認
 
 ### 5. 確認ポイント

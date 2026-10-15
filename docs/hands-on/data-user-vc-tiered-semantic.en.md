@@ -167,6 +167,8 @@ With `VLM_BACKEND` **empty** the legacy 3-tier projection runs (no derivative
 keys appear). Claim 12.3.c then resolves to `denied` since `summary`
 is used only when `VLM_BACKEND` is set.
 
+Even for a summary-tier claim, the wallet shows the card under the event-only name (`PurchaseViewerVC.event`). The issued VC's `allowed_views` still contains `description_summary`, so `/platform/data` returns what the summary tier allows.
+
 ### 12.5 Verifying face blur
 
 Open `image_url_redacted` from a Tier 2 response in a browser. You

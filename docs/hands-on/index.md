@@ -288,7 +288,7 @@ export HOST_IP=192.168.1.20
 ### Part 2 の成功判定
 
 - Consent / DataUserVC / PurchaseViewerVC のいずれかをスマホ wallet に取り込めた
-- `purpose` や信頼度を変えると、`/platform/data` の応答が `allow` / `deny` / 内容違いに切り替わる
+- `purpose` を変えると、共有 (`/simulate/publish`) や提示 (`/verifier/request`) の結果が `allow` / `deny` に切り替わり、信頼度を変えると `/platform/data` で見える内容が変わる
 - audit log に「誰が・いつ・どの purpose で・何を見たか」が残っている
 
 ---

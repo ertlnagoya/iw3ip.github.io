@@ -79,7 +79,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 - [Stage 1](ha-ssi-wallet.md) / [Stage 3](ha-ssi-viewer.md) /
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)
   を一通り通している
-- Stage 5 の Hardhat ノードは Step E0 で起動し直す (publisher / bridge / iot-market-ui は E0 で起動・再作成する)
+- Stage 5 の Hardhat ノードは Step E0 で起動し直す (publisher と iot-market-ui は E0 で起動し、bridge は E0 で作り直す。publisher はコードに変更があるときだけ作り直される)
 - コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 - このハンズオンでは **同一 iPhone wallet が 1 人で 2 役 (seller + buyer)**
@@ -118,8 +118,8 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
 # → bridge: listening to 5 merchandise(s)
 
-# iot-market-ui (別ターミナル)
-cd iot-market-ui
+# iot-market-ui (別ターミナル。Stage 5 のターミナル D で動いていれば、そのまま使えるので不要)
+cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
 

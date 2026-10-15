@@ -46,7 +46,7 @@
 ## 前提
 
 - [最短起動](../setup/quickstart.md) の v1 スタックを起動できる
-- [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
+- [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 - USB ウェブカメラが PC から認識されている（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を一度試していると理解が早い）
 - Docker で `--profile vlm` が使える（初回はモデル pull で数 GB のダウンロード）
 

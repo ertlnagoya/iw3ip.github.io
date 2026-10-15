@@ -4,7 +4,7 @@
 
 > **やること**: スマホで Consent VC を受け取り、提示して書き込みを許可してもらう
 >
-> **前提**: [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) または [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md) を済ませてあること、できれば Stage 0 ([検知イベントだけを共有する](webcam-event-sharing.md) または [防災イベントを共有する](environment-disaster.md))
+> **前提**: [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) または [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md) を済ませてあること。できれば Stage 0 ([検知イベントだけを共有する](webcam-event-sharing.md) または [防災イベントを共有する](environment-disaster.md)) も済ませておく
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet 入り)
 >

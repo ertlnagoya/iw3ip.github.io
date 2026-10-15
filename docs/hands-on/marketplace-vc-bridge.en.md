@@ -427,7 +427,7 @@ Confirm `Metro waiting on...`. Press "Reload JS" in the wallet to return to the 
 ### Steps: pass the deeplink to the iPhone as a QR code
 
 ```bash
-DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok jti=2b417b32e6566830" | tail -1 | sed -E 's/.*deeplink=//')
+DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1 | sed -E 's/.*deeplink=//')
 echo "$DEEPLINK"
 
 # Open the QR code in the Mac browser

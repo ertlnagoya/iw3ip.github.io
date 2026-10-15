@@ -188,13 +188,13 @@ curl -X POST http://localhost:8090/assistant/execute \
   -d @examples/phase3_request_park_safety.json
 ```
 
-Example expected output:
+Example expected output (the sample request file is in Japanese, so `request_text` comes back in Japanese; the rule-based planner looks for 公園北側, ポイ捨て, 照明 and 通知):
 
 ```json
 {
   "status": "executed",
   "execution": {
-    "request_text": "If littering or risky behavior is increasing on the north side of the park, tell me. If needed, turn on the lights and notify the manager.",
+    "request_text": "公園北側でポイ捨てや危険行動が増えていたら教えて。必要なら照明をつけて管理者に通知して。",
     "evaluation": {
       "triggered": true,
       "matched_counts": {"possible_littering": 3, "suspicious_activity": 0},

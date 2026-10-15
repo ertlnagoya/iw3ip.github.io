@@ -150,6 +150,8 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 この状態で 12.3.c の claim を送ると `denied` になります（summary tier は `VLM_BACKEND` を設定したときだけ
 使われます）。
 
+summary tier の claim でも、ウォレットに届くカードは「イベントのみ」(`PurchaseViewerVC.event`) の名前で表示されます。発行される VC の `allowed_views` には `description_summary` が入っているので、`/platform/data` で見える内容は summary tier のとおりです。
+
 ### 12.5 顔/PII ブラーの確認方法
 
 Tier 2 で受信した `image_url_redacted` の URL をブラウザで開くと、

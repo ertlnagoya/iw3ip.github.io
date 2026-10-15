@@ -317,7 +317,7 @@ PolicyToken は 1 回使うと無効になるため、連続する MQTT イベ�
 wallet 経由で認可する使い方には向きません。ここでは **1 件のイベントだけ
 curl で送る**ことを勧めます。
 
-スマホのウォレットは PC の `localhost` に届かないため、[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) の §4〜§5 の URL は、`<HOST_IP>` を PC の LAN IP に置き換えて PC ブラウザで開きます (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。
+スマホのウォレットは PC の `localhost` に届かないため、[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) の §4〜§5 の URL は、`<HOST_IP>` を PC の LAN IP に置き換えてから PC ブラウザで開きます (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。
 
 まず `ssi-wallet` プロファイルを付けて起動し直します。`PLATFORM_INGEST_READ_ENABLED=true` を付け忘れると、本編で書き込んだ行が消えるうえ、`GET /platform/ingest` が 404 になります。
 

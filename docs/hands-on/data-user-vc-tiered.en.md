@@ -257,6 +257,8 @@ For each tier, confirm the rows appear from top to bottom as `marketplace/claim`
 
 ## 6. Cross-check with tests
 
+Python 3.11 or later is required. If `python3 --version` is older than 3.11, run the `python3 -m venv` line below with a specific version, such as `python3.11 -m venv`.
+
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 python3 -m venv .venv && source .venv/bin/activate
