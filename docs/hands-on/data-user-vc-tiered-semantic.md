@@ -86,7 +86,7 @@ curl -s http://localhost:8080/health | jq .
 curl -s -X POST localhost:8080/consents \
   -H 'content-type: application/json' \
   -d @examples/consent_possible_littering.json | jq .status
-python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
 

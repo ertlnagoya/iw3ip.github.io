@@ -44,7 +44,7 @@ flowchart LR
 ## 前提
 
 - Docker が使える
-- Python 3 と OpenCV が使える (`pip install "opencv-python<5"`。OpenCV 5 では、この演習で使う顔検出の機能が外れています)
+- Python 3.11 以上と OpenCV が使える。教材リポジトリのトップで venv を作って入れます (`python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`。OpenCV 5 では、この演習で使う顔検出の機能が外れています)。`answer_program.py` / `problem_program.py` を動かすターミナルでは、`source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を先に実行します
 - 教材リポジトリが最新 (`git pull`)
 - USB ウェブカメラ (無い場合は、手元の JPEG 画像を `--image` で渡します)
 
@@ -169,7 +169,7 @@ python3 problem_program.py --out-dir results_mine
 
 ## 6. よくある問題
 
-- **`module 'cv2' has no attribute 'CascadeClassifier'`**: OpenCV 5 が入っています。`pip install "opencv-python<5"` で入れ直します。
+- **`module 'cv2' has no attribute 'CascadeClassifier'`**: OpenCV 5 が入っています。venv を有効にして `pip install "opencv-python<5"` で入れ直します。
 - **構成 D の意味データが `{"people_count": 0, "objects": [], "sensitive_region_types": [], "privacy_risk_score": 1.0}` になる**: publisher の解析が失敗しています。教材リポジトリのトップで `docker compose -f infra/docker-compose.yml logs publisher | grep "semantic analyze failed"` を実行し、失敗の理由を確認します。教材リポジトリを最新にして (`git pull`)、publisher を `--build` 付きで起動し直します。`SEMANTIC_ANALYZER_BACKEND=vision` を付け忘れた場合は、固定の模擬データが返ります。
 - **構成 B が `skipped: local VLM not reachable` になる**: Ollama が起動しているか (`docker ps`)、ポート 11434 で待ち受けているかを確認します。
 - **時間がかかりすぎる**: CPU だけの PC では、1 回の説明に数十秒から数分かかります。答えの長さは 120 トークンに制限しています。

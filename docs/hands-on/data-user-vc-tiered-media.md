@@ -30,7 +30,7 @@ curl -s -X POST localhost:8080/consents \
   -H 'content-type: application/json' \
   -d @examples/consent_possible_littering.json | jq .status
 # -> "stored"
-python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
 
@@ -55,7 +55,7 @@ iPhone Safari で `image_url` をタップすると、1×1 JPEG が表示され�
 自分で用意した画像 / 動画を使う場合は、次のように指定します。
 
 ```bash
-python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080 \
   --image /path/to/snapshot.jpg \
   --video /path/to/clip.mp4 \
@@ -113,7 +113,7 @@ docker compose -f infra/docker-compose.yml exec publisher \
 `--image` / `--video` を省くと、§8.1 と同じ fixture（`examples/hands_on/data_user_vc_tiered/fixtures/stage_t_demo.jpg` / `stage_t_demo.mp4`）を使います。
 
 ```bash
-python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
 

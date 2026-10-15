@@ -135,7 +135,7 @@ Response the wallet receives (for reference; it is not shown in the PC browser):
 The `viewer_token` is returned to the wallet as the `/verifier/response` response, so it is not shown in the PC browser. After the presentation finishes, check the publisher log and copy the value after `token=` on the `viewer_token_issued` line.
 
 ```bash
-docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1
 ```
 
 The token's TTL is 60 seconds. Run the next curl within 60 seconds of the log line. If you miss it, present again from §4.

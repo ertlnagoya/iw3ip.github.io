@@ -128,7 +128,7 @@ Expected output:
 
 ```
   VITE v5.x  ready in 500 ms
-  ➜  Local:   http://localhost:5173/
+  ➜  Local:   http://127.0.0.1:5173/
 ```
 
 Open <http://localhost:5173> in a browser. If the search screen titled "IoT データ検索" (IoT data search) appears, the frontend is running.

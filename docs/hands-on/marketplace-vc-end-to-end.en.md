@@ -95,13 +95,14 @@ If the Stage 5 Hardhat node is still running, first stop the Hardhat node in Ter
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
 git checkout main && git pull --ff-only
 npx hardhat node --hostname 0.0.0.0 &   # Terminal A recommended
+sleep 5   # wait until the node is listening
 npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
-# Note IoTMarket = 0xe7f1725... and the addresses of Merchandise #0..4
+# Note IoTMarket = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 and the addresses of Merchandise #0..4
 
 # Register a PubKey (buyer = Account #2)
 npx hardhat console --network localhost
 # > const [_, __, buyer] = await ethers.getSigners();
-# > const pk = await ethers.getContractAt("PubKey", "0x5FbDB23...", buyer);
+# > const pk = await ethers.getContractAt("PubKey", "0x5FbDB2315678afecb367f032d93F642f64180aa3", buyer);
 # > await (await pk.registerKey("[handson]")).wait();
 # > .exit
 

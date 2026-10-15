@@ -138,7 +138,7 @@ QR または deeplink でウォレットを開き、ViewerVC を選んで提示�
 `viewer_token` は `/verifier/response` のレスポンスとしてウォレットに返るため、PC のブラウザには表示されません。提示が終わったら publisher のログを確認し、`viewer_token_issued` の行にある `token=` の後ろの値をコピーします。
 
 ```bash
-docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1
 ```
 
 トークンの有効期限 (TTL) は 60 秒です。ログに出てから 60 秒以内に次の curl を実行してください。間に合わなかった場合は、§4 の提示からやり直します。

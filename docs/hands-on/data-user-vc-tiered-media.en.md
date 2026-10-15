@@ -32,7 +32,7 @@ curl -s -X POST localhost:8080/consents \
   -H 'content-type: application/json' \
   -d @examples/consent_possible_littering.json | jq .status
 # -> "stored"
-python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
 
@@ -57,7 +57,7 @@ Tap `image_url` in iPhone Safari → the JPEG opens directly. To try a
 real photo / clip:
 
 ```bash
-python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080 \
   --image /path/to/snapshot.jpg \
   --video /path/to/clip.mp4 \
@@ -119,7 +119,7 @@ docker compose -f infra/docker-compose.yml exec publisher \
 (`examples/hands_on/data_user_vc_tiered/fixtures/stage_t_demo.jpg` / `stage_t_demo.mp4`):
 
 ```bash
-python examples/hands_on/data_user_vc_tiered/provider_with_media.py \
+python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
 

@@ -48,6 +48,7 @@ Instead of distributing raw images, distribute the **semantic derivatives** a lo
 - you can start the v1 stack from [Quickstart](../setup/quickstart.en.md)
 - If the IPFS from the [Quickstart](../setup/quickstart.en.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - a USB webcam is recognized by the PC (trying [Detect with a USB webcam (OpenCV)](webcam.md) first makes this easier)
+- A Python 3.11+ virtual environment at the top of the course repository with OpenCV installed (`python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`). In every new terminal, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate`. With Homebrew Python and similar setups, `pip install` outside a venv fails
 - Docker can use the `--profile vlm` profile (the first model pull downloads several GB)
 
 ## Shortest path
@@ -97,7 +98,7 @@ curl -s http://localhost:8080/health | jq .
 
 ## 2. Capture one frame from the webcam
 
-Grab a single still image from the USB webcam and save it as `snapshot.jpg`. The script uses OpenCV; install it with `pip install "opencv-python<5"` if needed (OpenCV 5 removed `cv2.CascadeClassifier`).
+Grab a single still image from the USB webcam and save it as `snapshot.jpg`. The script uses OpenCV, so run it in a terminal with the venv from the prerequisites active (`opencv-python<5` is installed because OpenCV 5 removed `cv2.CascadeClassifier`).
 
 ```python
 # capture_snapshot.py
@@ -113,7 +114,7 @@ print("saved snapshot.jpg")
 ```
 
 ```bash
-python capture_snapshot.py
+python3 capture_snapshot.py
 ```
 
 !!! note "No camera / cannot open it"
@@ -198,7 +199,7 @@ Implement the two TODOs in `problem_program.py`.
 - **TODO 2 `build_event()`**: build the event payload that carries the uploaded image (`image_url`) into the platform
 
 ```bash
-python examples/hands_on/local_vlm_distribution/problem_program.py \
+python3 examples/hands_on/local_vlm_distribution/problem_program.py \
   --base-url http://localhost:8080 --image snapshot.jpg
 ```
 

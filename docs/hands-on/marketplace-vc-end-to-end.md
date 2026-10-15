@@ -96,13 +96,14 @@ Stage 5 の Hardhat ノードが動いていれば、先にターミナル A の
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
 git checkout main && git pull --ff-only
 npx hardhat node --hostname 0.0.0.0 &   # ターミナル A 推奨
+sleep 5   # ノードが待ち受けを始めるまで待つ
 npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
-# IoTMarket = 0xe7f1725..., Merchandise #0..4 のアドレスをメモ
+# IoTMarket = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512, Merchandise #0..4 のアドレスをメモ
 
 # PubKey 登録 (buyer = Account #2)
 npx hardhat console --network localhost
 # > const [_, __, buyer] = await ethers.getSigners();
-# > const pk = await ethers.getContractAt("PubKey", "0x5FbDB23...", buyer);
+# > const pk = await ethers.getContractAt("PubKey", "0x5FbDB2315678afecb367f032d93F642f64180aa3", buyer);
 # > await (await pk.registerKey("[handson]")).wait();
 # > .exit
 

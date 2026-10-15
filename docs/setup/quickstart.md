@@ -128,7 +128,7 @@ npm run dev
 
 ```
   VITE v5.x  ready in 500 ms
-  ➜  Local:   http://localhost:5173/
+  ➜  Local:   http://127.0.0.1:5173/
 ```
 
 ブラウザで <http://localhost:5173> を開いて、「IoT データ検索」という検索画面が表示されれば成功です。

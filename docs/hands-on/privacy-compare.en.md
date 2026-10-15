@@ -44,7 +44,7 @@ flowchart LR
 ## Prerequisites
 
 - Docker
-- Python 3 with OpenCV (`pip install "opencv-python<5"`; OpenCV 5 removed the face detector used here)
+- Python 3.11+ with OpenCV, installed in a venv at the top of the course repository (`python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`; OpenCV 5 removed the face detector used here). In the terminal that runs `answer_program.py` / `problem_program.py`, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` first
 - An up-to-date course repository (`git pull`)
 - A USB webcam (without one, pass a JPEG image with `--image`)
 
@@ -169,7 +169,7 @@ Things to think about:
 
 ## 6. Common issues
 
-- **`module 'cv2' has no attribute 'CascadeClassifier'`**: OpenCV 5 is installed. Reinstall with `pip install "opencv-python<5"`.
+- **`module 'cv2' has no attribute 'CascadeClassifier'`**: OpenCV 5 is installed. Activate the venv and reinstall with `pip install "opencv-python<5"`.
 - **D's semantic data is `{"people_count": 0, "objects": [], "sensitive_region_types": [], "privacy_risk_score": 1.0}`**: the publisher's analysis failed. At the top of the course repository, run `docker compose -f infra/docker-compose.yml logs publisher | grep "semantic analyze failed"` to see why. Update the course repository (`git pull`) and restart the publisher with `--build`. Without `SEMANTIC_ANALYZER_BACKEND=vision`, a fixed mock result is returned.
 - **B says `skipped: local VLM not reachable`**: check that Ollama is running (`docker ps`) and listening on port 11434.
 - **It takes too long**: on a CPU-only PC one description takes from tens of seconds to a few minutes. Answers are capped at 120 tokens.

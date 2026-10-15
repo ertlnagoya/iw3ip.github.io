@@ -48,6 +48,7 @@
 - [最短起動](../setup/quickstart.md) の v1 スタックを起動できる
 - [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 - USB ウェブカメラが PC から認識されている（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を一度試していると理解が早い）
+- 教材リポジトリのトップで Python 3.11 以上の仮想環境を作り、OpenCV を入れておく (`python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`)。新しく開いたターミナルでも `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を実行します。Homebrew の Python などでは、venv の外で `pip install` するとエラーになります
 - Docker で `--profile vlm` が使える（初回はモデル pull で数 GB のダウンロード）
 
 ## 最短ルート
@@ -96,7 +97,7 @@ curl -s http://localhost:8080/health | jq .
 
 ## 2. ウェブカメラから 1 枚撮る
 
-USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。OpenCV を使うので、未導入の場合は `pip install "opencv-python<5"` で入れてください（OpenCV 5 では `cv2.CascadeClassifier` が外れています）。
+USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。OpenCV を使うので、前提で作った venv を有効にしたターミナルで実行します（OpenCV 5 では `cv2.CascadeClassifier` が外れているため、`opencv-python<5` を入れています）。
 
 ```python
 # capture_snapshot.py
@@ -112,7 +113,7 @@ print("saved snapshot.jpg")
 ```
 
 ```bash
-python capture_snapshot.py
+python3 capture_snapshot.py
 ```
 
 !!! note "カメラが無い / 開けない場合"
@@ -195,7 +196,7 @@ README の「Big picture」で、3 つの関数の役割を押さえます。`an
 - **TODO 2 `build_event()`**: アップロードした画像（`image_url`）を運ぶイベントペイロードを組み立てる
 
 ```bash
-python examples/hands_on/local_vlm_distribution/problem_program.py \
+python3 examples/hands_on/local_vlm_distribution/problem_program.py \
   --base-url http://localhost:8080 --image snapshot.jpg
 ```
 
