@@ -109,11 +109,20 @@ npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
 
 # PubKey 登録 (buyer = Account #2)
 npx hardhat console --network localhost
-# > const [_, __, buyer] = await ethers.getSigners();
-# > const pk = await ethers.getContractAt("PubKey", "0x5FbDB2315678afecb367f032d93F642f64180aa3", buyer);
-# > await (await pk.registerKey("[handson]")).wait();
-# > .exit
+```
 
+コンソールが開いたら、次を貼り付けます。
+
+```javascript
+const [_, __, buyer] = await ethers.getSigners();
+const pk = await ethers.getContractAt("PubKey", "0x5FbDB2315678afecb367f032d93F642f64180aa3", buyer);
+await (await pk.registerKey("[handson]")).wait();
+.exit   // コンソールを抜けてシェルに戻る
+```
+
+続けて、同じターミナル B で publisher と bridge を起動します。
+
+```bash
 # publisher + bridge
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
@@ -126,7 +135,11 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
 # → bridge: listening to 5 merchandise(s)
 
-# iot-market-ui (別ターミナル。Stage 5 のターミナル D で動いていれば、そのまま使えるので不要)
+```
+
+iot-market-ui は別のターミナルで起動します (Stage 5 のターミナル D で動いていれば、そのまま使えるので不要です)。
+
+```bash
 cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
 npm run dev -- --host 0.0.0.0 --port 5173
 ```

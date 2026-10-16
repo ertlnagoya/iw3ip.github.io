@@ -515,6 +515,7 @@ In yet another terminal, call the same endpoint:
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 curl -X POST http://localhost:8090/assistant/plan \
   -H 'Content-Type: application/json' \
   -d @examples/phase3_request_park_safety.json
@@ -539,6 +540,8 @@ This hands-on also includes a reusable pytest file for both the problem and answ
 First, validate the answer program:
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 pytest -q tests/test_phase3_llm_hands_on_program.py
 ```
 

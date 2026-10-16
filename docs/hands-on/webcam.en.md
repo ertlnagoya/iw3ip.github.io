@@ -87,10 +87,10 @@ One line is printed every 5 seconds, as below. Press `Ctrl+C` to stop.
 [webcam-bridge] wrote ../mediator-owner/raw_data/output/401_webcam_event_1791549335.txt
 ```
 
-Look at the generated files.
+Look at the generated files in another terminal (you can leave the bridge running).
 
 ```bash
-cat ../mediator-owner/raw_data/output/401_webcam_event_*.txt | head -10
+cat ~/program/Blockchain_IoT_Marketplace/mediator-owner/raw_data/output/401_webcam_event_*.txt | head -10
 ```
 
 ```

@@ -211,6 +211,7 @@ const market = await ethers.getContractAt("IoTMarket", "0xe7f1725E7734CE288F8367
 const regTx = await market.registerMerchandise(merch);
 const regReceipt = await regTx.wait();
 console.log("register tx:", regReceipt.hash);
+.exit   // コンソールを抜けてシェルに戻る
 ```
 
 ### メモ
@@ -229,7 +230,10 @@ console に表示された `seller`、`merchandise`、`deploy tx`、`register tx
 
 ### 操作
 
+Step S2 で `SELLER` を設定したターミナル (リポジトリのトップ) で実行します。
+
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 SELLER_ETH=<Step S3 のseller address>
 MERCH=<Step S3 のmerchandise address>
 TX_HASH=<Step S3 のregister tx hash>
@@ -439,7 +443,7 @@ console.log({ pubKey: c1.length, ioTMarket: c2.length });
 // 2 が出ていたら消えている
 ```
 
-消えていれば `npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost`
+消えていれば、`.exit` でコンソールを抜けてから `npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost`
 で再デプロイ。
 
 注意: ノード再起動後の chain には、前セッションで自分が手動デプロイした

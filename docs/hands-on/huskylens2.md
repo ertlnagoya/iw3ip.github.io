@@ -97,11 +97,11 @@ python3 huskylens_bridge.py \
 [bridge] batch detections=13 file=../mediator-owner/raw_data/output/301_huskylens_1791549173.txt
 ```
 
-出力されたファイルの中身を確認します。
+出力されたファイルの中身を、別のターミナルで確認します (bridge は動かしたままで構いません)。
 
 ```bash
-ls ../mediator-owner/raw_data/output
-cat ../mediator-owner/raw_data/output/301_huskylens_*.txt | head -20
+ls ~/program/Blockchain_IoT_Marketplace/mediator-owner/raw_data/output
+cat ~/program/Blockchain_IoT_Marketplace/mediator-owner/raw_data/output/301_huskylens_*.txt | head -20
 ```
 
 ```

@@ -216,6 +216,7 @@ const market = await ethers.getContractAt("IoTMarket", "0xe7f1725E7734CE288F8367
 const regTx = await market.registerMerchandise(merch);
 const regReceipt = await regTx.wait();
 console.log("register tx:", regReceipt.hash);
+.exit   // leave the console and return to the shell
 ```
 
 ### Note down
@@ -235,7 +236,10 @@ Note down the four values shown in the console: `seller`, `merchandise`, `deploy
 
 ### Steps
 
+Run this in the terminal where you set `SELLER` in Step S2 (at the repository top).
+
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 SELLER_ETH=<seller address from Step S3>
 MERCH=<merchandise address from Step S3>
 TX_HASH=<register tx hash from Step S3>
@@ -446,7 +450,7 @@ console.log({ pubKey: c1.length, ioTMarket: c2.length });
 // If 2 is printed, the code is gone
 ```
 
-If it is gone, redeploy with `npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost`.
+If it is gone, leave the console with `.exit`, then redeploy with `npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost`.
 
 Note: on the chain after a node restart, a Merchandise that you deployed manually in the previous session
 (other than the deterministic addresses of the script) is not restored. **After a chain reset,

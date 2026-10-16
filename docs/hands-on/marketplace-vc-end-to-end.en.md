@@ -108,11 +108,20 @@ npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
 
 # Register a PubKey (buyer = Account #2)
 npx hardhat console --network localhost
-# > const [_, __, buyer] = await ethers.getSigners();
-# > const pk = await ethers.getContractAt("PubKey", "0x5FbDB2315678afecb367f032d93F642f64180aa3", buyer);
-# > await (await pk.registerKey("[handson]")).wait();
-# > .exit
+```
 
+When the console opens, paste the following.
+
+```javascript
+const [_, __, buyer] = await ethers.getSigners();
+const pk = await ethers.getContractAt("PubKey", "0x5FbDB2315678afecb367f032d93F642f64180aa3", buyer);
+await (await pk.registerKey("[handson]")).wait();
+.exit   // leave the console and return to the shell
+```
+
+Then, in the same Terminal B, start the publisher and the bridge.
+
+```bash
 # publisher + bridge
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
@@ -125,7 +134,11 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
 # → bridge: listening to 5 merchandise(s)
 
-# iot-market-ui (another terminal; skip this if the Stage 5 Terminal D server is still running)
+```
+
+Start iot-market-ui in another terminal (skip this if the Stage 5 Terminal D server is still running).
+
+```bash
 cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
 npm run dev -- --host 0.0.0.0 --port 5173
 ```

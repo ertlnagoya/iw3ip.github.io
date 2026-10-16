@@ -88,10 +88,10 @@ python3 webcam_litter_bridge.py \
 [webcam-bridge] wrote ../mediator-owner/raw_data/output/401_webcam_event_1791549335.txt
 ```
 
-出力されたファイルの中身を確認します。
+出力されたファイルの中身を、別のターミナルで確認します (bridge は動かしたままで構いません)。
 
 ```bash
-cat ../mediator-owner/raw_data/output/401_webcam_event_*.txt | head -10
+cat ~/program/Blockchain_IoT_Marketplace/mediator-owner/raw_data/output/401_webcam_event_*.txt | head -10
 ```
 
 ```

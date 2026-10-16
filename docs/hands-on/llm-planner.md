@@ -515,6 +515,7 @@ uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 curl -X POST http://localhost:8090/assistant/plan \
   -H 'Content-Type: application/json' \
   -d @examples/phase3_request_park_safety.json
@@ -539,6 +540,8 @@ curl -X POST http://localhost:8090/assistant/plan \
 まず、解答用プログラムで確認します。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 pytest -q tests/test_phase3_llm_hands_on_program.py
 ```
 

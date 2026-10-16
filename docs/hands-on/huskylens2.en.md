@@ -97,11 +97,11 @@ One line is printed every 8 seconds, as below. Press `Ctrl+C` to stop.
 [bridge] batch detections=13 file=../mediator-owner/raw_data/output/301_huskylens_1791549173.txt
 ```
 
-Look at the generated files.
+Look at the generated files in another terminal (you can leave the bridge running).
 
 ```bash
-ls ../mediator-owner/raw_data/output
-cat ../mediator-owner/raw_data/output/301_huskylens_*.txt | head -20
+ls ~/program/Blockchain_IoT_Marketplace/mediator-owner/raw_data/output
+cat ~/program/Blockchain_IoT_Marketplace/mediator-owner/raw_data/output/301_huskylens_*.txt | head -20
 ```
 
 ```
