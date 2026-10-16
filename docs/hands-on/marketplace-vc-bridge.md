@@ -349,6 +349,7 @@ const merch = await ethers.getContractAt(
 const tx = await merch.purchase({ value: await merch.getPrice() });
 const r = await tx.wait();
 console.log("tx hash:", r.hash, "status:", r.status);
+.exit   // コンソールを抜けてシェルに戻る
 ```
 
 → `tx hash: 0x4e7c...` `status: 1`

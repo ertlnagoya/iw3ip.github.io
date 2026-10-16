@@ -511,9 +511,10 @@ source examples/phase3_llm_mock.env.example
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
-その後は同じ `curl` を使います。
+さらに別のターミナルで、同じ `curl` を送ります。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 curl -X POST http://localhost:8090/assistant/plan \
   -H 'Content-Type: application/json' \
   -d @examples/phase3_request_park_safety.json
