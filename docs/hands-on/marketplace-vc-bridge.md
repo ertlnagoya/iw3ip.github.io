@@ -231,6 +231,9 @@ docker compose -f infra/docker-compose.yml \
   up --build -d
 ```
 
+!!! note "Hardhat を起動し直して、この手順をやり直す場合"
+    起動し直したチェーンで同じ購入をすると、取引の ID (tx hash) が前回と同じになります。publisher は購入の申告を取引の ID でメモリに覚えていて、同じ ID には前回の (使用済みの) コードを返すため、ウォレットが `/issuer/token` で 400 になります。やり直すときは publisher も作り直します (`docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge`)。発行用の鍵と監査ログはボリュームに保存されているので消えません。
+
 ### 期待出力 (確認 3 件)
 
 #### 4-A. publisher ヘルスチェック

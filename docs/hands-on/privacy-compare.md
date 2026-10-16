@@ -186,7 +186,7 @@ python3 problem_program.py --out-dir results_mine
 rm -rf results results_mine received
 cd ../../..
 docker rm -f iw3ip-ollama
-docker compose -f infra/docker-compose.yml down
+docker compose -f infra/docker-compose.yml --profile vlm down
 ```
 
 取得した VLM のモデル (`iw3ip_ollama` ボリューム、約 1.7 GB) も不要なら、`docker volume rm iw3ip_ollama` で削除します。

@@ -489,6 +489,8 @@ docker logs iw3ip-mv-bridge 2>&1 | tail -5
 を捕捉できる。古い deeplink は破棄して、新しい `bridge: claim ok` 行から
 取り直すこと。
 
+wallet の 400 が続く場合は、Hardhat を起動し直したあとに同じ購入をして、取引の ID (tx hash) が前回と同じになっている可能性がある。publisher は同じ取引 ID には前回の使用済みのコードを返すので、publisher も作り直す (`docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge`)。publisher のメモリ上の SellerToken と seller の登録も消えるので、Step S2 と S4 をやり直す。
+
 ### H. その他
 
 [Stage 5 のトラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング)

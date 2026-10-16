@@ -235,6 +235,9 @@ docker compose -f infra/docker-compose.yml \
   up --build -d
 ```
 
+!!! note "Repeating this step after restarting Hardhat"
+    On the restarted chain the same purchase produces the same transaction ID (tx hash). The publisher remembers claims by transaction ID in memory and returns the previous (already used) code for the same ID, so the wallet gets 400 at `/issuer/token`. When you repeat, recreate the publisher as well (`docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge`). The issuer key and the audit log are on a volume and are kept.
+
 ### Expected output (three checks)
 
 #### 4-A. Publisher health check

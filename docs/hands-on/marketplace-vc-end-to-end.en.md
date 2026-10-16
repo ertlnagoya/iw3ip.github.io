@@ -126,9 +126,10 @@ Then, in the same Terminal B, start the publisher and the bridge.
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 
-# Hardhat was restarted, so recreate the bridge to make it read the new chain
-# (the bridge watches from the block number at its startup, so a stale bridge misses purchases)
-docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
+# Hardhat was restarted, so recreate the bridge and the publisher
+# (the bridge watches from the block number at its startup; the publisher keeps the old chain's claims in memory
+#  and would return an already used code for a purchase with the same transaction ID)
+docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge
 
 # Check the bridge log
 docker logs iw3ip-mv-bridge 2>&1 | tail -5

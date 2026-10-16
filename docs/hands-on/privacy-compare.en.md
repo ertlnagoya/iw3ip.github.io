@@ -186,7 +186,7 @@ Stop the mock cloud in Terminal 2 with Ctrl+C, then delete the frames you took a
 rm -rf results results_mine received
 cd ../../..
 docker rm -f iw3ip-ollama
-docker compose -f infra/docker-compose.yml down
+docker compose -f infra/docker-compose.yml --profile vlm down
 ```
 
 If you no longer need the downloaded VLM model (the `iw3ip_ollama` volume, about 1.7 GB), remove it with `docker volume rm iw3ip_ollama`.

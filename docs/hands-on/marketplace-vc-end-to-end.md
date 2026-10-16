@@ -127,9 +127,10 @@ await (await pk.registerKey("[handson]")).wait();
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 
-# Hardhat を起動し直したので、bridge を作り直して新しいチェーンを読み直させる
-# (bridge は起動時のブロック番号から監視するため、古いままだと購入を検知できない)
-docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
+# Hardhat を起動し直したので、bridge と publisher を作り直す
+# (bridge は起動時のブロック番号から監視する。publisher は前のチェーンの購入の申告をメモリに持っていて、
+#  同じ取引 ID の購入に使用済みのコードを返してしまう)
+docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge
 
 # bridge ログ確認
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
