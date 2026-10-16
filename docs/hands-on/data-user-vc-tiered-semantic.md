@@ -264,7 +264,7 @@ degrade 時も、Tier 3 では `image_url` / `video_url` が **そのまま残�
 |---|---|
 | `vlm-pull` が `Error: pull model manifest: file does not exist` | 指定したモデル名またはタグが Ollama のレジストリに存在しません。`VLM_MODEL` の綴りを確認してください（例: `llava`、`llava:7b`、`moondream`）。ネットワークに到達できない場合は、このメッセージではなく `dial tcp ... lookup registry.ollama.ai` や connection refused が出ます。疎通はホストから `curl -I https://registry.ollama.ai` で確認できます（何らかの HTTP 応答が返れば到達できています） |
 | 1 回目の `/provider/publish` がタイムアウト | LLaVA の初回起動（cold start。モデルを VRAM にロードする処理）に 30〜60 秒かかります。`vlm-pull` のログに model ready が出ているか確認してください。出ていれば 2 回目以降は速くなります |
-| `description_full` / `description_summary` が同じ内容 | LLaVA が prompt を区別していない可能性があります。`docker compose logs vlm` で `/api/generate` の呼び出しが 2 回別々に来ているかを確認してください。同じ画像でも prompt が違うので、戻り値は別々になるはずです |
+| `description_full` / `description_summary` が同じ内容 | LLaVA が prompt を区別していない可能性があります。`docker compose -f infra/docker-compose.yml logs vlm` で `/api/generate` の呼び出しが 2 回別々に来ているかを確認してください。同じ画像でも prompt が違うので、戻り値は別々になるはずです |
 | `image_url_redacted` の画像で顔がぼけていない | Haar cascade が検出するのは正面顔だけです。横顔・斜め顔にはブラーがかかりません。必要なら DNN 系の検出器に差し替えます |
 | `VLM_BACKEND` が空でも `description_*` キーが出る | 不具合です。VLM 拡張が無効なのに従来の tier 投影になっていない可能性があります。`tests/test_data_user_vc_tiered_vlm.py::test_pipeline_no_injectors_keeps_legacy_envelope` が pass することを確認し、再現する場合は issue を立ててください |
 | `processing_warnings: ["vlm_unavailable"]` が常時出る | Ollama が応答していないか、`VLM_API_URL` が間違っています。publisher のイメージには curl が入っていないので、`docker compose -f infra/docker-compose.yml exec publisher python -c "import httpx;print(httpx.get('http://vlm:11434/api/version').text)"` で疎通を確認してください |

@@ -232,7 +232,7 @@ Without a template, implement one of these yourself:
 
 - the first model pull is large and slow → wait for completion in the `vlm-pull` logs; do it when you have bandwidth to spare
 - inference is slow / times out on CPU → use the lightweight `VLM_MODEL=moondream`, or raise `VLM_TIMEOUT_SEC`
-- `processing_warnings` shows `vlm_unavailable` → check that the `vlm` service is up and the model pull is complete (`docker compose ... ps` / `logs`)
+- `processing_warnings` shows `vlm_unavailable` → check that the `vlm` service is up and the model pull is complete (`docker compose -f infra/docker-compose.yml --profile vlm ps` / `docker compose -f infra/docker-compose.yml logs vlm-pull`)
 - the camera cannot be opened → change the camera index or stop the process holding it (see [Detect with a USB webcam (OpenCV)](webcam.md))
 
 ## Related pages

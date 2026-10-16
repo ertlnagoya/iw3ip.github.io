@@ -178,7 +178,7 @@ CID is enough to fetch the asset from any cooperating peer.
 
 | Symptom | Fix |
 |---|---|
-| `cid: null` in upload response | `docker compose ... ps ipfs` — bring kubo back up if down |
+| `cid: null` in upload response | `docker compose -f infra/docker-compose.yml --profile ipfs ps ipfs` — bring kubo back up if down |
 | `/ipfs/<cid>` returns 502 | Publisher can't reach `http://ipfs:8080`. Check Docker network membership |
 | `/ipfs/<cid>` returns 404 | `IPFS_GATEWAY_URL` is empty. Set `.env` or export and recreate |
 | Public gateway can't fetch | Behind NAT, kubo not visible to peers. Run `docker compose -f infra/docker-compose.yml exec ipfs ipfs swarm peers` to verify |
@@ -369,7 +369,7 @@ on success.
 
 ### 11.1 Open the page
 
-No special prep beyond having `docker compose ... up -d publisher`
+No special prep beyond having `docker compose -f infra/docker-compose.yml up -d publisher`
 running. From a PC browser:
 
 ```

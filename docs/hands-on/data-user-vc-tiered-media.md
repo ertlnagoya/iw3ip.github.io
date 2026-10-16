@@ -175,7 +175,7 @@ iPhone Safari でいずれかを開いてください。
 
 | 症状 | 対処 |
 |---|---|
-| `cid: null` がレスポンスに返る | `docker compose ... ps ipfs` で kubo container が Up か確認。停止していたら `docker compose ... --profile ipfs up -d ipfs` で起動する |
+| `cid: null` がレスポンスに返る | `docker compose -f infra/docker-compose.yml --profile ipfs ps ipfs` で kubo container が Up か確認。停止していたら `docker compose -f infra/docker-compose.yml --profile ipfs up -d ipfs` で起動する |
 | `/ipfs/<cid>` が 502 | publisher から `http://ipfs:8080` に到達できない。Docker network 共有を確認 |
 | `/ipfs/<cid>` が 404 | `IPFS_GATEWAY_URL` が空。`.env` か `export` 設定を確認 |
 | 公開 gateway で取得できない | NAT 配下の場合、kubo がピアに見えていない。`docker compose -f infra/docker-compose.yml exec ipfs ipfs swarm peers` でピア接続を確認 |
@@ -357,7 +357,7 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 
 ### 11.1 起動
 
-特別な準備は不要です（`docker compose ... up -d publisher` で publisher が動いていれば使えます）。
+特別な準備は不要です（`docker compose -f infra/docker-compose.yml up -d publisher` で publisher が動いていれば使えます）。
 PC ブラウザで次の URL を開きます。
 
 ```

@@ -229,7 +229,7 @@ python3 examples/hands_on/local_vlm_distribution/problem_program.py \
 
 - 初回のモデル pull が重く時間がかかる → `vlm-pull` のログで取得完了を待つ。回線に余裕のあるときに実施する。
 - CPU で推論が遅い / タイムアウトする → 軽量な `VLM_MODEL=moondream` を使う、`VLM_TIMEOUT_SEC` を延ばす。
-- `processing_warnings` に `vlm_unavailable` が出る → `vlm` サービスが起動しているか、モデル pull が完了しているかを確認（`docker compose ... ps` / `logs`）。
+- `processing_warnings` に `vlm_unavailable` が出る → `vlm` サービスが起動しているか、モデル pull が完了しているかを確認（`docker compose -f infra/docker-compose.yml --profile vlm ps` / `docker compose -f infra/docker-compose.yml logs vlm-pull`）。
 - カメラが開けない → カメラ index の変更や占有プロセスの停止（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を参照）。
 
 ## 関連ページ

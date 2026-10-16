@@ -98,7 +98,7 @@ cp .env.example .env.local
     VITE_PUBLISHER_URL=http://127.0.0.1:8080
     ```
 
-- **スマホから操作する場合**: PC の LAN IP (手順2で確認) に置き換えます。
+- **スマホから操作する場合**: PC の LAN IP に置き換えます。IP は `ipconfig getifaddr en0` (macOS) で調べます (手順 2 と同じコマンド)。
 
     ```
     VITE_RPC_URL=http://<HOST_IP>:8545
@@ -126,6 +126,8 @@ npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
 ### 2. PCのLAN IPを確認
+
+手順 1 のターミナルは `npm run dev` が動いたままなので、別のターミナルで実行します。
 
 ```bash
 ipconfig getifaddr en0

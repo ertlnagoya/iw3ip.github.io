@@ -96,7 +96,7 @@ Edit `.env.local` and set the host for your scenario.
     VITE_PUBLISHER_URL=http://127.0.0.1:8080
     ```
 
-- **From a phone**: replace it with the PC's LAN IP (see step 2).
+- **From a phone**: replace it with the PC's LAN IP. Find it with `ipconfig getifaddr en0` on macOS (the same command as in step 2).
 
     ```
     VITE_RPC_URL=http://<HOST_IP>:8545
@@ -123,6 +123,8 @@ npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
 ### 2. Check the PC LAN IP
+
+Run this in another terminal; the step 1 terminal is still running `npm run dev`.
 
 ```bash
 ipconfig getifaddr en0
