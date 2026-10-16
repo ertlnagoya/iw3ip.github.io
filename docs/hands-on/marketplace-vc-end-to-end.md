@@ -91,12 +91,19 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 
 Stage 5 の Hardhat ノードが動いていれば、先にターミナル A の Hardhat ノードを Ctrl+C で止めてください。古いノードが 8545 番を使ったままだと新しいノードが起動できず、デプロイが古いチェーンに入って、Step E2 の表とアドレスが合わなくなります。
 
+ターミナル A で Hardhat ノードを起動し、動かしたままにします (止めるときは Ctrl+C)。
+
 ```bash
-# Hardhat + デプロイ (Merchandise が dataset_id を additionalInfo に持つ最新版)
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
 git checkout main && git pull --ff-only
-npx hardhat node --hostname 0.0.0.0 &   # ターミナル A 推奨
-sleep 5   # ノードが待ち受けを始めるまで待つ
+npx hardhat node --hostname 0.0.0.0
+```
+
+`Started HTTP and WebSocket JSON-RPC server` が表示されたら、ターミナル B で続けます。
+
+```bash
+# デプロイ (Merchandise が dataset_id を additionalInfo に持つ最新版)
+cd ~/program/Blockchain_IoT_Marketplace/iot-market
 npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
 # IoTMarket = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512, Merchandise #0..4 のアドレスをメモ
 
@@ -233,7 +240,6 @@ docker logs iw3ip-mv-bridge 2>&1 | grep "Purchase event" | tail -1
 
 ```
 bridge: Purchase event from 0x2279B7A0... buyer=0x3C44... dataset=home/env/temperature tx=0x...
-bridge: claim ok jti=...
 ```
 
 dataset がハードコードされた値ではなく、on-chain から取得されていることを確認します。

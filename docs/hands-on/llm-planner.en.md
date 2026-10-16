@@ -502,7 +502,7 @@ Docker Compose example:
 docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-mock
 ```
 
-In another terminal, start the assistant. In the new terminal, run `source .venv/bin/activate` at the top of the repository first. Stop any other assistant on port 8090 first (the Docker `assistant`, `assistant-demo`, or `assistant-llm`):
+In another terminal, start the assistant (the commands below move to the repository top and activate the venv). Stop any other assistant on port 8090 first (the Docker `assistant`, `assistant-demo`, or `assistant-llm`):
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace

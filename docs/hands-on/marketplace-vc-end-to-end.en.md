@@ -90,12 +90,19 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 
 If the Stage 5 Hardhat node is still running, first stop the Hardhat node in Terminal A with Ctrl+C. If the old node keeps port 8545, the new node cannot start, the deploy lands on the old chain, and the addresses do not match the table in Step E2.
 
+Start the Hardhat node in Terminal A and leave it running (stop it with Ctrl+C).
+
 ```bash
-# Hardhat + deploy (latest version, in which Merchandise holds dataset_id in additionalInfo)
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
 git checkout main && git pull --ff-only
-npx hardhat node --hostname 0.0.0.0 &   # Terminal A recommended
-sleep 5   # wait until the node is listening
+npx hardhat node --hostname 0.0.0.0
+```
+
+When `Started HTTP and WebSocket JSON-RPC server` appears, continue in Terminal B.
+
+```bash
+# Deploy (latest version, in which Merchandise holds dataset_id in additionalInfo)
+cd ~/program/Blockchain_IoT_Marketplace/iot-market
 npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
 # Note IoTMarket = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 and the addresses of Merchandise #0..4
 
@@ -235,7 +242,6 @@ docker logs iw3ip-mv-bridge 2>&1 | grep "Purchase event" | tail -1
 
 ```
 bridge: Purchase event from 0x2279B7A0... buyer=0x3C44... dataset=home/env/temperature tx=0x...
-bridge: claim ok jti=...
 ```
 
 Confirm that the dataset is obtained from on-chain and is not a hardcoded value.

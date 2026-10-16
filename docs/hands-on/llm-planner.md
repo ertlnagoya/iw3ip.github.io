@@ -502,7 +502,7 @@ Docker Compose を使う場合は次を実行します。
 docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-mock
 ```
 
-別ターミナルで assistant を起動します。新しいターミナルでは、リポジトリのトップで `source .venv/bin/activate` を先に実行します。8090 番ポートを使うほかの assistant (Docker の `assistant`、`assistant-demo`、`assistant-llm`) は先に止めておきます。
+別ターミナルで assistant を起動します (下のコマンドで、リポジトリのトップに移って venv を有効にします)。8090 番ポートを使うほかの assistant (Docker の `assistant`、`assistant-demo`、`assistant-llm`) は先に止めておきます。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
