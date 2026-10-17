@@ -78,7 +78,7 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 
 - You have gone through [Stage 1](ha-ssi-wallet.md) / [Stage 3](ha-ssi-viewer.md) /
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)
-- The Stage 5 Hardhat node is restarted in Step E0 (publisher and iot-market-ui are started in E0 and the bridge is recreated there; the publisher is recreated only when its code changed)
+- The Stage 5 Hardhat node is restarted in Step E0 (publisher and iot-market-ui are started in E0, and the bridge and the publisher are recreated there)
 - `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet cloned to `~/program/iw3ip-wallet`
 - In this hands-on, **one iPhone wallet plays two roles (seller + buyer)**
@@ -433,8 +433,7 @@ SERVICE=
 
 **Cause**: The publisher was recreated and the past `service_token_issued`
 logs are gone, or you have not yet completed the issuance and presentation of Step E1.
-(`up --build -d` in Step E0 does not recreate an unchanged publisher,
-so the logs may still be there)
+(Step E0 recreates the publisher, so tokens from earlier sessions are not in the logs)
 
 **Fix**: Run the two steps "**issue** the ServiceVC → receive it in the wallet →
 **present** the ServiceVC", and then grep the token. Issuance and

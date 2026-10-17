@@ -133,8 +133,12 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 - ノードを LAN 公開で起動し直します。
 
   ```bash
+  # 動いているノード (最短起動のターミナル 1) を Ctrl+C で止めてから
+  cd ~/program/Blockchain_IoT_Marketplace/iot-market
   npx hardhat node --hostname 0.0.0.0
   ```
+
+  起動し直すとチェーンが空になります。[最短起動](../setup/quickstart.md) の手順 2 (デプロイ) をやり直し、`mediator-owner` と `mediator-buyer` も再起動してください。MetaMask で nonce のエラーが出たら、アカウントのリセット (Settings → Advanced → Clear activity tab data) を行います。
 
 - MetaMask に追加する RPC URL を **PC の LAN IP** にします (例: `http://192.168.1.20:8545`)。チェーン ID は `31337`。
 - PC のファイアウォールで `8545` が許可されているか、PC とスマホが同じ Wi-Fi かを確認します。

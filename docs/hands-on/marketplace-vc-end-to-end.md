@@ -79,7 +79,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 - [Stage 1](ha-ssi-wallet.md) / [Stage 3](ha-ssi-viewer.md) /
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)
   を一通り通している
-- Stage 5 の Hardhat ノードは Step E0 で起動し直す (publisher と iot-market-ui は E0 で起動し、bridge は E0 で作り直す。publisher はコードに変更があるときだけ作り直される)
+- Stage 5 の Hardhat ノードは Step E0 で起動し直す (publisher と iot-market-ui は E0 で起動し、bridge と publisher は E0 で作り直す)
 - コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 - このハンズオンでは **同一 iPhone wallet が 1 人で 2 役 (seller + buyer)**
@@ -426,8 +426,7 @@ SERVICE=
 
 **原因**: publisher を作り直した後で過去の `service_token_issued`
 ログが消えている、または Step E1 の発行と提示がまだ終わっていない。
-(Step E0 の `up --build -d` は、変更の無い publisher を作り直さない
-ので、ログが残っていることもある)
+(Step E0 で publisher を作り直すので、それより前のセッションのトークンはログに残っていない)
 
 **対処**: 「ServiceVC を **発行** → wallet で受領 → ServiceVC を
 **提示**」の 2 ステップを実行してから token を grep する。発行と

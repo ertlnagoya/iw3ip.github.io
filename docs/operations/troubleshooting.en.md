@@ -135,8 +135,12 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 - Restart the node exposed on the LAN.
 
   ```bash
+  # Stop the running node (Terminal 1 of the Quickstart) with Ctrl+C first
+  cd ~/program/Blockchain_IoT_Marketplace/iot-market
   npx hardhat node --hostname 0.0.0.0
   ```
+
+  Restarting empties the chain. Redo step 2 (deploy) of the [Quickstart](../setup/quickstart.en.md) and restart `mediator-owner` and `mediator-buyer`. If MetaMask shows a nonce error, reset the account (Settings → Advanced → Clear activity tab data).
 
 - Use the **PC's LAN IP** for the RPC URL in MetaMask (e.g. `http://192.168.1.20:8545`), with chain ID `31337`.
 - Confirm the PC firewall allows `8545` and that the PC and phone are on the same Wi-Fi.

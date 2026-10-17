@@ -87,7 +87,7 @@ curl -s http://localhost:8080/health | jq .
 
 `description_*` and `image_url_redacted` are attached only to rows published
 after `VLM_BACKEND` is set. Register the consent and publish an event with an
-image. To check face blur, pass an image with a face (a synthetic one, for
+image. In a new terminal, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip)). To check face blur, pass an image with a face (a synthetic one, for
 example) via `--image`.
 
 ```bash

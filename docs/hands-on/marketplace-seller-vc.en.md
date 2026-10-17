@@ -494,7 +494,7 @@ docker logs iw3ip-mv-bridge 2>&1 | tail -5
 After that, running `Merchandise.purchase()` again lets the bridge capture the new Purchase event.
 Discard the old deeplink and take a new one from the new `bridge: claim ok` line.
 
-If the wallet still gets 400, you may have repeated the same purchase after restarting Hardhat, so the transaction ID (tx hash) is the same as before. The publisher returns the previous, already used code for the same transaction ID, so recreate the publisher as well (`docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge`). This also clears the SellerToken and the seller registration held in the publisher's memory, so redo Steps S2 and S4.
+If the wallet still gets 400, you may have repeated the same purchase after restarting Hardhat, so the transaction ID (tx hash) is the same as before. The publisher returns the previous, already used code for the same transaction ID, so recreate the publisher as well (`docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge`). This also clears the SellerToken and the seller registration held in the publisher's memory, so redo Steps S2 and S4. The ingested rows (written in Stage 6 Step E1) are cleared too; redo Stage 6 Step E1 if you want rows in S5.
 
 ### H. Other issues
 
