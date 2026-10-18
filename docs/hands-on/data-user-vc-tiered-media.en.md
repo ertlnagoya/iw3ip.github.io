@@ -324,10 +324,10 @@ Main reason codes and their banner copy:
 | `missing_entityType` etc. | DataUserVC is missing *XXX*. | DataUserVC に *XXX* が含まれていません。 |
 | `verification_failed` | VC verification failed. | VC の署名検証に失敗しました。 |
 
-**Expected flow (not yet validated on a real device — implementation in Stage T):**
+**Publisher-side flow (not yet validated on a real device — read from the implementation; as noted below, step 2 does not happen with a normal wallet):**
 
 1. PC opens `/buyer/start?ds=home/event/possible_littering` → QR appears.
-2. From the wallet, intentionally pick a PurchaseViewerVC bound to a *different* dataset (e.g. `home/event/another_dataset`) and present it.
+2. Suppose a wallet sends a PurchaseViewerVC bound to a *different* dataset (e.g. `home/event/another_dataset`). A normal wallet does not offer such a card and shows "No Available Credential" instead.
 3. publisher receives `/verifier/response` and records `{"verified": false, "reason": "dataset_mismatch"}`.
 4. The PC's `/verifier/status` long-poll returns `status: "denied"` with the `human_message_*` strings.
 5. The page replaces the QR with `<div class="deny-banner">The presented VC is bound to a different dataset.</div>` plus a re-present link to `/buyer/start?ds=...`.

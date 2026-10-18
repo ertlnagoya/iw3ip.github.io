@@ -230,7 +230,7 @@ Import the **Account #2 Private Key** from step 1:
 
 1. MetaMask top-right icon → **Import account**
 2. Paste the private key (`0x` + 64 hex)
-3. If the imported account shows a balance of **10000 ETH**, the import succeeded
+3. If the imported account shows a balance of **about 10000 ETH**, the import succeeded (slightly less, 9999.99…, because `mediator-buyer` paid gas to register its public key)
 
 Reference (network add screen):
 
@@ -241,7 +241,7 @@ Reference (network add screen):
 - [ ] All terminals 1–7 are alive (no crash)
 - [ ] <http://localhost:5173> shows the search screen, and a merchandise page URL shows an item
 - [ ] MetaMask is on the `Hardhat Local` network
-- [ ] The MetaMask account shows `10000 ETH`
+- [ ] The MetaMask account shows about `10000 ETH` (9999.99… is fine)
 
 All checked → start [hands-on Part 1](../hands-on/index.en.md).
 

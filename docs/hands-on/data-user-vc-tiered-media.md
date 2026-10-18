@@ -314,10 +314,10 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 | `missing_entityType` 等 | DataUserVC に *XXX* が含まれていません。 | DataUserVC is missing *XXX*. |
 | `verification_failed` | VC の署名検証に失敗しました。 | VC verification failed. |
 
-**期待される動作（実機では未確認で、実装から読み取った内容です）:**
+**publisher 側の動作（実機では未確認で、実装から読み取った内容です。下の注のとおり、通常のウォレットでは手順 2 は起こりません）:**
 
 1. PC で `/buyer/start?ds=home/event/possible_littering` を開く → QR が出る
-2. iPhone のウォレットで、**異なる dataset にバインドされた** PurchaseViewerVC（例: `home/event/another_dataset`）をわざと選んで提示
+2. ウォレットが、**異なる dataset にバインドされた** PurchaseViewerVC（例: `home/event/another_dataset`）を送ってきたとする (通常のウォレットはこのカードを候補に出さず、「No Available Credential」と表示します)
 3. publisher は `/verifier/response` を受け取り、`{"verified": false, "reason": "dataset_mismatch"}` を記録
 4. PC の `/verifier/status` ロングポーリングが `status: "denied"` + `human_message_ja` を返す
 5. PC ページは QR を `<div class="deny-banner">提示された VC のデータセットが、要求されたデータセットと一致しません。</div>` に置き換え、`/buyer/start?ds=...` への再提示リンクを表示
