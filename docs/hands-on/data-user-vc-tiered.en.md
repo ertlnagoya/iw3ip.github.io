@@ -79,7 +79,8 @@ just gains a `cid` field, so the provider script needs no changes.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
-docker compose -f infra/docker-compose.yml up -d publisher mosquitto
+git pull --ff-only
+docker compose -f infra/docker-compose.yml up --build -d publisher mosquitto
 ```
 
 This page calls `/marketplace/claim` directly with curl, so the bridge and Hardhat are not started.
@@ -215,7 +216,12 @@ Event rows are kept only in the publisher's memory. Restarting the publisher cle
 
 ### 4b. Receive and present PurchaseViewerVC
 
-Open the `offer_url` from the §3 response in a PC browser (replace its host part with `<HOST_IP>`), scan the QR code with the wallet, and receive the PurchaseViewerVC of each claim. The wallet shows a separate card per tier. Then present it in the same way as Step 8 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md).
+Open the `offer_url` from the §3 response in a PC browser (replace its host part with `<HOST_IP>`), scan the QR code with the wallet, and receive the PurchaseViewerVC of each claim. The wallet shows a separate card per tier (with an old publisher all three cards have the same name, so `git pull` and start with `--build` as in §1). Then open the following URL in a PC browser, scan the QR code with the wallet, and present the card of the tier you want to check. This is the same operation as Step 8 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md), but the dataset is `home/event/possible_littering`.
+
+```
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/event/possible_littering&vc_kind=PurchaseViewerVC
+```
+
 Once the resulting ViewerToken is in hand, hit `/platform/data`:
 
 | Profile | `event` | `image_cid` | `video_cid` |

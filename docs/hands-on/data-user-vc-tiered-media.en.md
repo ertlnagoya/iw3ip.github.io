@@ -369,8 +369,14 @@ on success.
 
 ### 11.1 Open the page
 
-No special prep beyond having `docker compose -f infra/docker-compose.yml up -d publisher`
-running. From a PC browser:
+The publisher must be running (`docker compose -f infra/docker-compose.yml up -d publisher`).
+If the wallet has no SellerVC yet, first open the following URL in a PC browser and scan the QR code with the wallet to receive one.
+
+```
+http://<HOST_IP>:8080/issuer/offer?type=SellerVC&seller_id=seller-handson&licensed_datasets=home/event/possible_littering
+```
+
+Then open this URL in a PC browser:
 
 ```
 http://<HOST_IP>:8080/provider/start?ds=home/event/possible_littering

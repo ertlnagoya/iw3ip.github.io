@@ -151,6 +151,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
   - 対応: `PLATFORM_INGEST_READ_ENABLED=true` を付けて publisher を起動し直します。
 
     ```bash
+    cd ~/program/Blockchain_IoT_Marketplace
     PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
     ```
 

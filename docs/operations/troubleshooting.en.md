@@ -153,6 +153,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
   - Fix: restart the publisher with `PLATFORM_INGEST_READ_ENABLED=true`.
 
     ```bash
+    cd ~/program/Blockchain_IoT_Marketplace
     PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
     ```
 

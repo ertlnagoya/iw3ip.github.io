@@ -72,7 +72,7 @@ homepage `/` をスマホで開く形に読み替えてください。
 その後の分岐:
 
 - **個別の商品を見る場合**: `http://<HOST_IP>:5173/merchandise/<address>` を直接開く
-  (Hardhat デプロイ後の Merchandise アドレスを指定)
+  (アドレスは `mediator-owner` のターミナルに表示された `Product deployed: 0x…` のアドレス ([ハンズオンの概要](index.md) 1.3 の出品手順で、USB ウェブカメラサンプルを mock モードで動かして作る。最短起動の手順 2 でデプロイした 5 件は、購入してもデータが届きません))
 - **購入まで確認したい場合**: MetaMask モバイルのブラウザで開きます
 - **VC 連携 (v2) を試したい場合**: [スマホアプリで購入から閲覧まで (Stage A)](marketplace-mobile-app.md)
   に進みます
@@ -114,6 +114,7 @@ cp .env.example .env.local
     ノードを起動し直すとチェーンが空に戻り、デプロイしたコントラクトは消えます。
     起動し直したら [最短起動](../setup/quickstart.md) の手順 2 (デプロイ) をやり直し、
     `mediator-owner` と `mediator-buyer` も再起動してください。以前の商品アドレスは使えません。
+    USB ウェブカメラ (または HUSKYLENS2) の mock をもう一度動かし、新しく表示された `Product deployed` のアドレスを使います。
 
 `.env.local` を変更したら、フロント (`npm run dev`) を再起動して反映します。
 
@@ -149,7 +150,7 @@ http://<HOST_IP>:5173/
 http://192.168.1.20:5173/
 ```
 
-個別の商品を直接開く場合 (Hardhat にデプロイされた Merchandise アドレスを指定):
+個別の商品を直接開く場合 (アドレスは `mediator-owner` のターミナルに表示された `Product deployed: 0x…` のアドレス ([ハンズオンの概要](index.md) 1.3 の出品手順で、USB ウェブカメラサンプルを mock モードで動かして作る。最短起動の手順 2 でデプロイした 5 件は、購入してもデータが届きません)):
 
 ```txt
 http://<HOST_IP>:5173/merchandise/<merchandise_address>

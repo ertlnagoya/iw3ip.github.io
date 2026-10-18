@@ -77,7 +77,8 @@ provider 側スクリプトは変更せずに使えます。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
-docker compose -f infra/docker-compose.yml up -d publisher mosquitto
+git pull --ff-only
+docker compose -f infra/docker-compose.yml up --build -d publisher mosquitto
 ```
 
 このページでは `/marketplace/claim` を curl で直接呼び出すので、bridge と Hardhat は起動しません。
@@ -213,7 +214,12 @@ curl -s -X POST localhost:8080/simulate/publish \
 
 ### 4b. PurchaseViewerVC を受け取って提示する
 
-§3 の応答の `offer_url` (ホスト名の部分を `<HOST_IP>` に置き換えます) を PC のブラウザで開き、QR コードをウォレットで読み取って、各 claim の PurchaseViewerVC を受け取ります。ウォレットには tier ごとに別のカードとして表示されます。その後、[購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) の Step 8 と同じ手順で提示します。
+§3 の応答の `offer_url` (ホスト名の部分を `<HOST_IP>` に置き換えます) を PC のブラウザで開き、QR コードをウォレットで読み取って、各 claim の PurchaseViewerVC を受け取ります。ウォレットには tier ごとに別のカードとして表示されます (古い publisher のままだと 3 枚とも同じ名前になるので、§1 のとおり `git pull` して `--build` で起動し直します)。その後、PC のブラウザで次の URL を開き、表示された QR コードをウォレットで読み取って、確かめたい tier のカードを提示します。[購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) の Step 8 と同じ操作ですが、データセットは `home/event/possible_littering` です。
+
+```
+http://<HOST_IP>:8080/verifier/request?dataset_id=home/event/possible_littering&vc_kind=PurchaseViewerVC
+```
+
 提示が受理されると ViewerToken が発行されます。この ViewerToken で `/platform/data` を
 呼び出すと、プロファイルごとに次の差が出ます。
 

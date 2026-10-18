@@ -71,7 +71,7 @@ For a first pass, these five steps are enough.
 Branches after that:
 
 - **Specific item**: open `http://<HOST_IP>:5173/merchandise/<address>` directly
-  (use a Merchandise address from the Hardhat deploy output)
+  (use the `Product deployed: 0x…` address shown in the `mediator-owner` terminal (created by running the USB webcam sample in mock mode as in §1.3 of the [Hands-on overview](index.md); the 5 items deployed in step 2 of the Quickstart deliver no data when bought))
 - **Purchase path**: open the same URL in MetaMask Mobile
 - **VC-mediated path (v2)**: go to [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md)
 - If the connection fails early: jump to the troubleshooting section first
@@ -111,6 +111,7 @@ Edit `.env.local` and set the host for your scenario.
     Restarting the node resets the chain and the deployed contracts are gone.
     After restarting, redo step 2 (deploy) of the [Quickstart](../setup/quickstart.en.md)
     and restart `mediator-owner` and `mediator-buyer` as well. Earlier item addresses no longer work.
+    Run the USB webcam (or HUSKYLENS2) mock again and use the newly shown `Product deployed` address.
 
 Restart the frontend (`npm run dev`) after editing `.env.local`.
 
@@ -146,7 +147,7 @@ Example (homepage):
 http://192.168.1.20:5173/
 ```
 
-To open an individual item directly (specify a Merchandise address deployed to Hardhat):
+To open an individual item directly (use the `Product deployed: 0x…` address shown in the `mediator-owner` terminal (created by running the USB webcam sample in mock mode as in §1.3 of the [Hands-on overview](index.md); the 5 items deployed in step 2 of the Quickstart deliver no data when bought)):
 
 ```txt
 http://<HOST_IP>:5173/merchandise/<merchandise_address>

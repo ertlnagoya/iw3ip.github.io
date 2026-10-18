@@ -357,8 +357,14 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 
 ### 11.1 起動
 
-特別な準備は不要です（`docker compose -f infra/docker-compose.yml up -d publisher` で publisher が動いていれば使えます）。
-PC ブラウザで次の URL を開きます。
+publisher が動いていれば使えます（`docker compose -f infra/docker-compose.yml up -d publisher`）。
+ウォレットに SellerVC がまだ無い場合は、先に PC ブラウザで次の URL を開き、QR コードをウォレットで読み取って受け取ります。
+
+```
+http://<HOST_IP>:8080/issuer/offer?type=SellerVC&seller_id=seller-handson&licensed_datasets=home/event/possible_littering
+```
+
+そのあと、PC ブラウザで次の URL を開きます。
 
 ```
 http://<HOST_IP>:8080/provider/start?ds=home/event/possible_littering
