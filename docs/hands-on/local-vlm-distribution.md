@@ -71,7 +71,7 @@ export VLM_BACKEND=ollama
 # 品質重視かつ時間に余裕があれば llava（既定）でも可。
 export VLM_MODEL=moondream
 export IMAGE_REDACTION_BACKEND=opencv
-docker compose -f infra/docker-compose.yml --profile vlm up -d \
+docker compose -f infra/docker-compose.yml --profile vlm up --build -d \
   publisher mosquitto vlm vlm-pull
 ```
 
