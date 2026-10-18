@@ -147,7 +147,7 @@ Example (homepage):
 http://192.168.1.20:5173/
 ```
 
-To open an individual item directly (use the `Product deployed: 0x…` address shown in the `mediator-owner` terminal (created by running the USB webcam sample in mock mode as in §1.3 of the [Hands-on overview](index.md); the 5 items deployed in step 2 of the Quickstart deliver no data when bought)):
+To open an individual item directly (use the `Product deployed: 0x…` address shown in the `mediator-owner` terminal (created by running the USB webcam sample in mock mode as in §1.3 of the [Hands-on overview](index.md); the 5 items deployed in step 2 of the Quickstart deliver no data when bought; an item already bought in §1.3 cannot be bought again)):
 
 ```txt
 http://<HOST_IP>:5173/merchandise/<merchandise_address>
@@ -195,5 +195,6 @@ If you cannot connect or the purchase does not proceed, check the troubleshootin
   - See the "Cannot add the network to MetaMask" item in [Troubleshooting](../operations/troubleshooting.md)
 - Symptom: the purchase transaction fails (revert) / `mediator-buyer` never prints `You bought a product of`
   - Check: the account selected in MetaMask Mobile is Account #2 (other accounts have no registered public key and cannot buy)
+  - Check: whether you already bought that item with the same account (an item bought in §1.3 cannot be bought again; use a `Product deployed` address you have not bought yet)
   - Fix: import the same Account #2 Private Key as in [Quickstart](../setup/quickstart.md#metamask-local-chain-setup) and buy again with that account
   - See the "Purchase does not succeed" item in [Troubleshooting](../operations/troubleshooting.md)

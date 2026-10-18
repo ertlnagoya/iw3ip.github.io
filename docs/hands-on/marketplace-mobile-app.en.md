@@ -260,7 +260,7 @@ iw3ip-wallet launches and shows the "IW3IP Purchase Viewer (Event-only)" confirm
 1. In the MetaMask Mobile in-app browser, open `http://<HOST_IP>:5173/my-data`
    (or use the hamburger menu → **"購入履歴 / データを見る" (Purchase history / View data)**)
 2. The purchase from Step M3 is shown (dataset_id, merchandise, tx, date and time)
-3. Tap **"閲覧チケットを取得" (Get viewing ticket)** → present in the wallet
+3. Tap **"閲覧チケットを取得" (Get viewing ticket)** → on the page that opens, tap **"ウォレットで開く" (Open in wallet)** → choose the PurchaseViewerVC in the wallet and present it
 4. On the PC, check the token with `docker logs iw3ip-publisher 2>&1 | grep viewer_token_issued | tail -1`
    (`2>&1` is needed because the publisher logs to stderr)
 5. Go back to `/my-data` and tap **"このデータを見る" (View this data)** for that purchase to show the "ViewerToken (Bearer)" field

@@ -18,8 +18,8 @@
 !!! tip "licensed_datasets の選択"
     例は `home/env/temperature,home/env/humidity` ですが、Stage 0 と
     一貫性を持たせるなら `home/event/possible_littering,home/event/flood_risk_high`
-    でも構いません (publisher の `DEFAULT_ALLOWED_PURPOSES` に登録済)。
-    SellerVC の `licensed_datasets` は配列なので、両方を載せても構いません。
+    を加えても構いません。SellerVC の `licensed_datasets` は配列なので、両方を載せられます。
+    ただし、Step S3〜S6 で使う `home/env/temperature` は必ず含めます (含めないと S4 が 403 `seller_token_dataset_not_licensed` になります)。
 
 ## 目的
 

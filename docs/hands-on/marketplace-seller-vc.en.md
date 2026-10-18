@@ -17,9 +17,9 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
 
 !!! tip "Choosing licensed_datasets"
     The example uses `home/env/temperature,home/env/humidity`, but for
-    consistency with Stage 0 you can also use `home/event/possible_littering,home/event/flood_risk_high`
-    (already registered in the publisher's `DEFAULT_ALLOWED_PURPOSES`).
-    The `licensed_datasets` of a SellerVC is an array, so you can also include both.
+    consistency with Stage 0 you can also add `home/event/possible_littering,home/event/flood_risk_high`.
+    The `licensed_datasets` of a SellerVC is an array, so it can hold both.
+    Always keep `home/env/temperature`, which Steps S3–S6 use (without it S4 returns 403 `seller_token_dataset_not_licensed`).
 
 ## Goal
 

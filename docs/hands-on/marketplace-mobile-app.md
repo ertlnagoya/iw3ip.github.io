@@ -252,7 +252,7 @@ iw3ip-wallet が起動して「IW3IP 購入閲覧（Tier 1 / イベントのみ�
 1. MetaMask Mobile の内蔵ブラウザで `http://<HOST_IP>:5173/my-data` を開く
    (ハンバーガーメニュー → **「購入履歴 / データを見る」** でも可)
 2. Step M3 の購入が表示されている (dataset_id, merchandise, tx, 日時)
-3. **「閲覧チケットを取得」** をタップ → wallet で提示
+3. **「閲覧チケットを取得」** をタップ → 開いたページの **「ウォレットで開く」** をタップ → wallet で PurchaseViewerVC を選んで提示
 4. PC 側 `docker logs iw3ip-publisher 2>&1 | grep viewer_token_issued | tail -1` で token を確認
    (publisher のログは標準エラーに出るため `2>&1` が必要)
 5. `/my-data` に戻り、その購入の **「このデータを見る」** をタップして「ViewerToken (Bearer)」欄を表示

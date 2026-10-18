@@ -196,7 +196,7 @@ export HOST_IP=192.168.1.20
     Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskylens_1791551565.txt
     ```
 
-2. **購入**: 商品ページ (`http://localhost:5173/merchandise/<表示されたアドレス>`) を開き、右上の「Connect your wallet!」で MetaMask (Account #2) を接続してから「Purchase!」を押し、MetaMask で承認します。
+2. **購入**: 商品ページ (`http://localhost:5173/merchandise/<表示されたアドレス>`) を開き、右上の「Connect your wallet!」で MetaMask (Account #2) を接続してから「Purchase!」を押し、MetaMask で承認します。承認後に移るページには「エラー」と表示されますが、v1 では publisher が動いていないためで、購入は済んでいます。購入できたかは、次の `mediator-buyer` のログで確かめます。
 
 3. **受け取り**: 出品者側の `mediator-owner` が購入を検知し、データの置き場所を購入者の公開鍵で暗号化してチェーンに書き込みます。購入者側の `mediator-buyer` がそれを復号してデータを取得し、内容を検証します。
 

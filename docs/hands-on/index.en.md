@@ -193,7 +193,7 @@ The list → buy → receive flow. On delivery, the location (URI) of the data p
     Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskylens_1791551565.txt
     ```
 
-2. **Buy**: open the merchandise page (`http://localhost:5173/merchandise/<the address shown>`), connect MetaMask (Account #2) with "Connect your wallet!" at the top right, press "Purchase!", and confirm in MetaMask.
+2. **Buy**: open the merchandise page (`http://localhost:5173/merchandise/<the address shown>`), connect MetaMask (Account #2) with "Connect your wallet!" at the top right, press "Purchase!", and confirm in MetaMask. The page you land on afterwards shows an error because no publisher is running in v1; the purchase itself went through. Check it in the `mediator-buyer` log below.
 
 3. **Receive**: the seller-side `mediator-owner` detects the purchase, encrypts the location of the data with the buyer's public key, and writes it to the chain. The buyer-side `mediator-buyer` decrypts it, fetches the data, and verifies the content.
 

@@ -59,6 +59,9 @@ write them in `.env`:
 cd ~/program/Blockchain_IoT_Marketplace
 export VLM_BACKEND=ollama
 export IMAGE_REDACTION_BACKEND=opencv
+# Docker on macOS runs the model on the CPU, and llava takes about 3 minutes per call.
+# The default wait (180 s) is not enough, so extend it (or use the lighter VLM_MODEL=moondream)
+export VLM_TIMEOUT_SEC=600
 # Turn profile vlm on. The Ollama service and vlm-pull (pre-pulls llava)
 # start together
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
@@ -154,7 +157,11 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 ### 12.4 Four `/marketplace/claim` calls + `/platform/data` comparison
 
 Same routine as [§3](data-user-vc-tiered.md#3-three-marketplaceclaim-calls): claim → PurchaseViewerVC → present → ViewerToken → fetch.
-The rows are the ones published in §12.2.1. With `VLM_BACKEND` set:
+The rows are the ones published in §12.2.1.
+
+If the cards you received in §4 of the first page are still in the wallet, they appear under the same names as the cards you receive here. Presenting an old card shows no VLM descriptions or redacted image. Delete the old cards from the wallet first, or after presenting check `views=` in `docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`: Tier 3 is `event+image+video+image_redacted+description_full+description_summary`, Tier 2 is `event+image_redacted+description_full+description_summary`, Tier 1 is `event+description_summary`, and Tier 0 is `event`.
+
+With `VLM_BACKEND` set:
 
 | Profile | `event` | `image_url` | `video_url` | `image_url_redacted` | `description_full` | `description_summary` |
 |---|---|---|---|---|---|---|

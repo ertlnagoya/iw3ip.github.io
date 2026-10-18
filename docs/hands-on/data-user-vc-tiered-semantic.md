@@ -56,6 +56,9 @@ publisher の環境変数を VLM 用に設定してから起動します（compo
 cd ~/program/Blockchain_IoT_Marketplace
 export VLM_BACKEND=ollama
 export IMAGE_REDACTION_BACKEND=opencv
+# macOS の Docker ではモデルが CPU で動き、llava は 1 回に 3 分前後かかる。
+# 既定の待ち時間 (180 秒) では足りないので延ばす (軽い moondream にするなら VLM_MODEL=moondream)
+export VLM_TIMEOUT_SEC=600
 # profile vlm を ON にする。Ollama service と vlm-pull (llava の事前 pull)
 # が一緒に立ち上がる
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
@@ -137,7 +140,11 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 ### 12.4 4 通りの `/marketplace/claim` と `/platform/data` 比較
 
 [§3〜§4](data-user-vc-tiered.md#3-marketplaceclaim-を-3-通り呼び出す) と同じ要領で、4 通りそれぞれについて claim、PurchaseViewerVC の提示、ViewerToken の取得、
-`/platform/data` の取得を行います。対象の行は §12.2.1 で流したものです。`VLM_BACKEND` を設定しているとき、レスポンスに含まれるキーは次のように変わります。
+`/platform/data` の取得を行います。対象の行は §12.2.1 で流したものです。
+
+1 ページ目の §4 で受け取ったカードがウォレットに残っていると、ここで受け取るカードと同じ名前で並びます。古いカードを提示すると、VLM の説明文や加工した画像は出ません。先に古いカードをウォレットから削除するか、提示後に `docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1` の `views=` を確かめます。Tier 3 は `event+image+video+image_redacted+description_full+description_summary`、Tier 2 は `event+image_redacted+description_full+description_summary`、Tier 1 は `event+description_summary`、Tier 0 は `event` になります。
+
+`VLM_BACKEND` を設定しているとき、レスポンスに含まれるキーは次のように変わります。
 
 | プロファイル | `event` | `image_url` | `video_url` | `image_url_redacted` | `description_full` | `description_summary` |
 |---|---|---|---|---|---|---|

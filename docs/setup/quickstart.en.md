@@ -264,7 +264,7 @@ This alone is enough to try the first section of Part 1. If IPFS from step 5 is 
 | The IPFS container or the publisher does not start | The IPFS gateway and the publisher both use port 8080 | They cannot run at the same time. Before a hands-on that uses the publisher, run `docker compose down` in the `ipfs` directory |
 | A mediator stops with `dns error` or a connection error | `host.docker.internal` does not resolve | Do step 0.5 |
 | `error connecting to docker` | Docker Desktop not running | start Docker Desktop |
-| MetaMask "Nonce too high" | Chain restarted out of sync | Settings → Advanced → Reset Account |
+| MetaMask "Nonce too high" | Chain restarted out of sync | Settings → Advanced → "Clear activity tab data" (or "Reset Account") |
 | MetaMask rejects `localhost:8545` | Typo in RPC URL | make sure `http://` prefix is there |
 
 Anything else: [Troubleshooting](../operations/troubleshooting.md), [FAQ](../operations/faq.md).

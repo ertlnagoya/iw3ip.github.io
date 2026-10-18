@@ -150,7 +150,7 @@ http://<HOST_IP>:5173/
 http://192.168.1.20:5173/
 ```
 
-個別の商品を直接開く場合 (アドレスは `mediator-owner` のターミナルに表示された `Product deployed: 0x…` のアドレス ([ハンズオンの概要](index.md) 1.3 の出品手順で、USB ウェブカメラサンプルを mock モードで動かして作る。最短起動の手順 2 でデプロイした 5 件は、購入してもデータが届きません)):
+個別の商品を直接開く場合 (アドレスは `mediator-owner` のターミナルに表示された `Product deployed: 0x…` のアドレス ([ハンズオンの概要](index.md) 1.3 の出品手順で、USB ウェブカメラサンプルを mock モードで動かして作る。最短起動の手順 2 でデプロイした 5 件は、購入してもデータが届きません。1.3 ですでに買った商品は、もう一度は買えません)):
 
 ```txt
 http://<HOST_IP>:5173/merchandise/<merchandise_address>
@@ -198,5 +198,6 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
   - 詳しくは [トラブルシュート](../operations/troubleshooting.md) の「MetaMask にネットワークを追加できない」項目を参照
 - 症状: 購入の取引が失敗する (revert) / `mediator-buyer` に `You bought a product of` が出ない
   - 確認: MetaMask モバイルで選んでいるアカウントが Account #2 か (別のアカウントは公開鍵が登録されていないため購入できない)
+  - 確認: その商品を、同じアカウントですでに購入していないか (1.3 で買った商品は、もう一度は買えない。まだ買っていない `Product deployed` のアドレスを使う)
   - 対処: [最短起動](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ Account #2 の Private Key をインポートし、そのアカウントで購入し直す
   - 詳しくは [トラブルシュート](../operations/troubleshooting.md) の「購入できない」項目を参照

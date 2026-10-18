@@ -265,7 +265,7 @@ MetaMask をローカル Hardhat に接続します。
 | IPFS のコンテナが起動しない / publisher が起動しない | IPFS のゲートウェイと publisher が、どちらもポート 8080 を使う | 同時には起動できない。publisher を使うハンズオンの前に、`ipfs` ディレクトリで `docker compose down` を実行する |
 | 仲介プロセスが `dns error` や接続エラーで止まる | `host.docker.internal` を引けない | 手順 0.5 を実施 |
 | `error connecting to docker` | Docker Desktop 未起動 | Docker Desktop を起動 |
-| MetaMask に「Nonce too high」 | チェーン再起動でズレた | MetaMask Settings → Advanced → Reset Account |
+| MetaMask に「Nonce too high」 | チェーン再起動でズレた | MetaMask Settings → Advanced → 「Clear activity tab data」 (または「Reset Account」) |
 | MetaMask が `localhost:8545` を Reject | RPC URL の打ち間違い | `http://` を付け忘れていないか確認 |
 
 それ以外は [トラブルシュート](../operations/troubleshooting.md) と [FAQ](../operations/faq.md) を参照してください。

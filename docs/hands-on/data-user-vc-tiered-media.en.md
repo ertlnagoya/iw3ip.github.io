@@ -333,10 +333,7 @@ Main reason codes and their banner copy:
 5. The page replaces the QR with `<div class="deny-banner">The presented VC is bound to a different dataset.</div>` plus a re-present link to `/buyer/start?ds=...`.
 6. `/audit/logs` gains a row with `raw_topic` `oid4vp/response`, `action` `deny`, and `reason` `dataset_mismatch` (check with `curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'`).
 
-To reproduce on a real device, reuse the §10.5 setup but issue an extra
-`/issuer/offer?type=PurchaseViewerVC&claim_id=<other-claim>` so the
-wallet ends up holding a 4th card bound to a different dataset, then scan
-the QR with that card selected.
+In normal use this denial does not happen. The presentation request includes the target dataset, and the wallet does not offer cards that do not match (it shows "No Available Credential" instead). The flow above is the publisher's defence in case a wallet sends a non-matching card anyway.
 
 ## 11. PWA Provider (the data-provider side)
 
@@ -547,6 +544,14 @@ For all scenarios:
 1. `docker compose -f infra/docker-compose.yml up -d publisher mosquitto` is up
 2. Wallet holds a SellerVC whose `licensed_datasets` contains `home/event/possible_littering`
 3. Publisher host is reachable from both PC and iPhone (same LAN recommended)
+4. The publisher has been restarted so that its QR codes point at the PC's LAN IP. The PC browser opens the page via `localhost` for the reason below, so otherwise the QR target is also `localhost` and the iPhone wallet cannot reach it.
+
+    ```bash
+    cd ~/program/Blockchain_IoT_Marketplace
+    SSI_ISSUER_BASE_URL=http://$HOST_IP:8080 docker compose -f infra/docker-compose.yml up -d publisher
+    ```
+
+    The restart clears the in-memory SellerToken, so present the SellerVC again.
 
 The "browser recorder" mode (B/C/D) only works over **`localhost` or
 HTTPS** because of `getUserMedia`. Open the page on the same machine

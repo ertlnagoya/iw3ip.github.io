@@ -323,9 +323,7 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 5. PC ページは QR を `<div class="deny-banner">提示された VC のデータセットが、要求されたデータセットと一致しません。</div>` に置き換え、`/buyer/start?ds=...` への再提示リンクを表示
 6. 同時に `/audit/logs` に、`raw_topic` が `oid4vp/response`、`action` が `deny`、`reason` が `dataset_mismatch` の行が記録される（`curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'` で確認できる）
 
-実機で確認する場合は、§10.5 と同じ環境で、**別のデータセットに対する claim** から
-`/issuer/offer?type=PurchaseViewerVC&claim_id=<別 claim>` を発行し、ウォレットに 4 枚目の
-カードを入れます。その状態で QR を読み、4 枚目のカードを提示すると再現します。
+通常の操作では、この拒否は起きません。提示の要求には対象のデータセットが含まれていて、ウォレットは合わないカードを候補に出さないためです (候補が無いと「No Available Credential」と表示されます)。上の流れは、ウォレットが合わないカードを送ってきた場合に備えた publisher 側の防御です。
 
 ## 11. PWA Provider（データ提供者向け PWA）
 
@@ -531,6 +529,14 @@ POST します。
 1. `docker compose -f infra/docker-compose.yml up -d publisher mosquitto` が稼働
 2. `licensed_datasets` に `home/event/possible_littering` を含む SellerVC を 1 枚ウォレットに持っている
 3. publisher のホストは PC からも iPhone からも到達可能（同じ LAN 推奨）
+4. publisher を、QR コードの接続先が PC の LAN IP になるように起動し直している。PC のブラウザは下の理由で `localhost` で開くため、そのままでは QR コードの接続先も `localhost` になり、iPhone のウォレットが届きません。
+
+    ```bash
+    cd ~/program/Blockchain_IoT_Marketplace
+    SSI_ISSUER_BASE_URL=http://$HOST_IP:8080 docker compose -f infra/docker-compose.yml up -d publisher
+    ```
+
+    起動し直すと、メモリ上の SellerToken は消えるので、SellerVC はもう一度提示します。
 
 「ブラウザで録画」モード (B/C/D) は、`getUserMedia` の制約により **`localhost`
 または HTTPS でしか動きません**。LAN IP (`http://192.168.x.x:8080`) で
