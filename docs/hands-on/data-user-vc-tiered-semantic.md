@@ -80,7 +80,7 @@ curl -s http://localhost:8080/health | jq .
 
 #### 12.2.1 画像つきのイベントを流す
 
-`description_*` や `image_url_redacted` は、`VLM_BACKEND` を設定したあとに流したイベントの行にだけ付きます。同意を登録し、画像つきのイベントを流します。新しいターミナルでは、先に `export HOST_IP=<PC の LAN IP>` を実行します ([ハンズオンの概要](index.md#host-ip) を参照)。顔ブラーを確かめたい場合は、`--image` に顔が写った画像（合成画像など）を指定します。
+`description_*` や `image_url_redacted` は、`VLM_BACKEND` を設定したあとに流したイベントの行にだけ付きます。同意を登録し、画像つきのイベントを流します。新しいターミナルでは、先に `cd ~/program/Blockchain_IoT_Marketplace` で教材リポジトリに移動し、`export HOST_IP=<PC の LAN IP>` を実行します ([ハンズオンの概要](index.md#host-ip) を参照)。顔ブラーを確かめたい場合は、`--image` に顔が写った画像（合成画像など）を指定します。
 
 ```bash
 curl -s -X POST localhost:8080/consents \
