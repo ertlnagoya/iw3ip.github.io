@@ -177,6 +177,10 @@ score >= 60                               -> "access"
 `GET /verifier/request?vc_kind=DataUserVC` で提示要求を作ります。ウォレットが取得する
 `/verifier/request_object` の DCQL の `claims` で、上記の 5 属性（と `subject_id`）を要求します。
 
+!!! note "現在の実装"
+    publisher の提示の検証には DataUserVC を扱う処理がありますが、DataUserVC 用の提示の条件 (presentation definition) は教材リポジトリにまだ用意されていません。そのため、`GET /verifier/request?vc_kind=DataUserVC` は 404 になります。ハンズオンでは、同じ 5 属性を `/marketplace/claim` の `data_user_attrs` に直接渡して信頼度を決めます。
+
+
 ### `POST /verifier/*`（提示エンドポイント）
 
 `DataUserVC` が提示されたときの動作は次のとおりです。

@@ -6,7 +6,7 @@
 
 - 症状: 仲介プロセス (`mediator-owner` / `mediator-buyer`) やフロントが `host.docker.internal` に接続できず、DNS 解決に失敗する
   - ログ例: `ConnectError("dns error", ... "failed to lookup address information: nodename nor servname provided, or not known")`
-  - フロント例: `JsonRpcProvider failed to detect network ... (perhaps the URL is wrong or the node is not started)` が 1 秒おきに出続ける
+  - フロント例 (`iot-market-ui` の `VITE_RPC_URL` に `host.docker.internal` を設定している場合): `JsonRpcProvider failed to detect network ... (perhaps the URL is wrong or the node is not started)` が 1 秒おきに出続ける。既定の `http://127.0.0.1:8545` のままでこれが出るときは、この原因ではなくノードが止まっています (`npx hardhat node` のターミナルが動いているか確かめます)
   - 原因: `host.docker.internal` は Docker Desktop が **コンテナ内にのみ** 提供する特別なホスト名です。`cargo run` や `npm run dev` で **コンテナの外 (ホスト OS でネイティブ実行)** している場合、この名前は解決できません。
 
 ### 確認

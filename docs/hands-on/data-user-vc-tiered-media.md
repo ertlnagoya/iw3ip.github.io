@@ -95,7 +95,7 @@ docker compose -f infra/docker-compose.yml ps ipfs
 # iw3ip-ipfs container が Up になっていれば OK
 ```
 
-`--force-recreate` で publisher のコンテナを作り直すと、メモリに保存していた claim、ViewerToken、イベントの行は消えます。§9.2 でイベントを流し直したあと、1 ページ目の [§3](data-user-vc-tiered.md#3-marketplaceclaim-を-3-通り呼び出す) の claim と [§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) の提示をやり直してください。同意はボリュームに保存されているので、登録し直す必要はありません。
+`--force-recreate` で publisher のコンテナを作り直すと、メモリに保存していた claim、ViewerToken、イベントの行は消えます。§9.2 でイベントを流し直したあと、1 ページ目の [§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) の提示 (ViewerToken の取得) だけをやり直してください。ウォレットのカードは発行用の鍵がボリュームに残っているので、そのまま使えます。§3 の claim からやり直すと、同じ名前のカードが 3 枚増えます。同意はボリュームに保存されているので、登録し直す必要はありません。
 
 publisher の設定に `IPFS_API_URL=http://ipfs:5001` が反映されたことを確認します。
 
@@ -319,7 +319,7 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 1. PC で `/buyer/start?ds=home/event/possible_littering` を開く → QR が出る
 2. ウォレットが、**異なる dataset にバインドされた** PurchaseViewerVC（例: `home/event/another_dataset`）を送ってきたとする (通常のウォレットはこのカードを候補に出さず、「No Available Credential」と表示します)
 3. publisher は `/verifier/response` を受け取り、`{"verified": false, "reason": "dataset_mismatch"}` を記録
-4. PC の `/verifier/status` ロングポーリングが `status: "denied"` + `human_message_ja` を返す
+4. PC の `/verifier/status` ロングポーリングが、`result` に `verified: false`、`reason`、`human_message_ja` を入れて返す
 5. PC ページは QR を `<div class="deny-banner">提示された VC のデータセットが、要求されたデータセットと一致しません。</div>` に置き換え、`/buyer/start?ds=...` への再提示リンクを表示
 6. 同時に `/audit/logs` に、`raw_topic` が `oid4vp/response`、`action` が `deny`、`reason` が `dataset_mismatch` の行が記録される（`curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'` で確認できる）
 

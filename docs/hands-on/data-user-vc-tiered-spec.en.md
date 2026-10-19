@@ -181,6 +181,9 @@ For `DataUserVC`, `entity_type`, `legal_compliance`,
 request. The DCQL `claims` in `/verifier/request_object` (fetched by the
 wallet) ask for the five attributes above (plus `subject_id`).
 
+!!! note "Current implementation"
+    The publisher's presentation check has code for DataUserVC, but the course repository does not yet provide a presentation definition for DataUserVC. So `GET /verifier/request?vc_kind=DataUserVC` returns 404. The hands-on passes the same five attributes directly in the `data_user_attrs` of `/marketplace/claim` to decide the trust level.
+
 ### `POST /verifier/*` (presentation endpoints)
 
 When a `DataUserVC` is presented:

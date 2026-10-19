@@ -98,6 +98,8 @@ curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer \
 # → "vct": "https://iw3ip.example/credentials/SellerVC/v1"
 ```
 
+When S0 recreates the publisher (when the image changes or when `infra/.env` changes), the claims and ingested rows held in the publisher's memory since Stage 6 are cleared. So `count` in Step S5 can be 0. This does not affect the `seller_did` that Step S5 checks.
+
 ---
 
 ## Step S1. Issue a SellerVC
@@ -456,12 +458,12 @@ Note: on the chain after a node restart, a Merchandise that you deployed manuall
 (other than the deterministic addresses of the script) is not restored. **After a chain reset,
 it is safe to use only the five contracts deployed by the script.**
 
-### F. After redeploying the chain, a purchase by Account #2 fails with `function returned an unexpected amount of data`
+### F. After redeploying the chain, a purchase by Account #2 reverts with `0x295f0a57`
 
 **Cause**: The PubKey contract was redeployed and its state was reset, so
 the public key registration of the buyer (Account #2) is gone. The
-`i_pubKey.getPubKey(tx.origin)` called inside Merchandise.purchase() returns an empty response, and Solidity
-fails to decode the `string`.
+`i_pubKey.getPubKey(tx.origin)` called inside Merchandise.purchase() reverts with `PubKey__NotRegistered` (`0x295f0a57`)
+(the same as [Stage 5 troubleshooting B](marketplace-vc-bridge.md#b-purchase-reverts-with-0x295f0a57)).
 
 **Fix**: Register the PubKey again.
 

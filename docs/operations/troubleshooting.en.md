@@ -7,7 +7,7 @@ Even when several causes are possible, it is usually easiest to start from the c
 
 - Symptom: the mediators (`mediator-owner` / `mediator-buyer`) or the frontend cannot reach `host.docker.internal` and DNS resolution fails
   - Example log: `ConnectError("dns error", ... "failed to lookup address information: nodename nor servname provided, or not known")`
-  - Example (frontend): `JsonRpcProvider failed to detect network ... (perhaps the URL is wrong or the node is not started)` printed every second
+  - Example (frontend, when `VITE_RPC_URL` of `iot-market-ui` is set to `host.docker.internal`): `JsonRpcProvider failed to detect network ... (perhaps the URL is wrong or the node is not started)` printed every second. If this appears with the default `http://127.0.0.1:8545`, the cause is not this one but a stopped node (check that the `npx hardhat node` terminal is still running)
   - Cause: `host.docker.internal` is a special hostname that Docker Desktop provides **only inside containers**. When you run a process **outside a container (natively on the host OS)** with `cargo run` or `npm run dev`, that name cannot be resolved.
 
 ### Check

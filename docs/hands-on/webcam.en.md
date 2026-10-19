@@ -67,7 +67,7 @@ Branches after that:
 
 ### 1. Mock first
 
-Run from the top of the course repository (`Blockchain_IoT_Marketplace/`). Mock mode generates simulated events in place of a camera (no extra packages needed).
+Run in the `webcam-bridge` folder of the course repository (the first `cd` below moves there). Mock mode generates simulated events in place of a camera (no extra packages needed).
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge

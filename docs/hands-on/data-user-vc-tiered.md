@@ -19,7 +19,9 @@
 
 処理の流れは次のとおりです。
 
-`Wallet -> DataUserVC 提示 -> trustScore 算出 -> /marketplace/claim -> PurchaseViewerVC -> /platform/data に image/video が出る/出ない`
+`DataUserVC 発行 -> /marketplace/claim (data_user_attrs) -> trustScore 算出 -> PurchaseViewerVC -> /platform/data に image/video が出る/出ない`
+
+DataUserVC はウォレットに発行して中身を確かめるところまで行います。DataUserVC をウォレットから提示するための提示の条件 (presentation definition) は教材リポジトリにまだ無いため、このページでは DataUserVC と同じ属性を `/marketplace/claim` の `data_user_attrs` に直接渡して信頼度を決めます (§3)。
 
 ## 最短ルート
 
@@ -30,7 +32,7 @@
 
 ## このページで分かること
 
-- DataUserVC を発行・提示する OID4VCI（VC の発行プロトコル）/ OID4VP（VC の提示プロトコル）の流れ
+- DataUserVC を発行する OID4VCI（VC の発行プロトコル）と、PurchaseViewerVC を提示する OID4VP（VC の提示プロトコル）の流れ
 - `entityType / purpose / legalCompliance / dataHandlingPolicy / misuseRecord`
   の組み合わせで、判定 (`full / access / denied`) がどう変わるか
 - `/platform/data` の出力に `image_cid` / `video_cid` が現れる / 消える条件

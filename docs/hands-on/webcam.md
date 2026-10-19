@@ -68,7 +68,7 @@ USB ウェブカメラの画像から人物とポイ捨ての可能性を検知�
 
 ### 1. mockで最小確認
 
-教材リポジトリのトップ (`Blockchain_IoT_Marketplace/`) から実行します。mock モードは、カメラの代わりに疑似的なイベントを生成します (追加のパッケージは不要です)。
+教材リポジトリの `webcam-bridge` フォルダで実行します (下のコマンドの最初の `cd` で移動します)。mock モードは、カメラの代わりに疑似的なイベントを生成します (追加のパッケージは不要です)。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge

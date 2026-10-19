@@ -68,7 +68,7 @@ HUSKYLENS2（または mock の入力）の検知結果を数秒ごとにまと�
 
 ### 1. mockで最小確認
 
-教材リポジトリのトップ (`Blockchain_IoT_Marketplace/`) から実行します。mock モードは、機器の代わりに疑似的な検知結果を生成します。
+教材リポジトリの `sensor-bridge` フォルダで実行します (下のコマンドの最初の `cd` で移動します)。mock モードは、機器の代わりに疑似的な検知結果を生成します。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/sensor-bridge

@@ -21,7 +21,9 @@ if you want the design rationale.
 
 Pipeline:
 
-`Wallet -> DataUserVC presentation -> trustScore -> /marketplace/claim -> PurchaseViewerVC -> /platform/data shows/hides image|video`
+`DataUserVC issuance -> /marketplace/claim (data_user_attrs) -> trustScore -> PurchaseViewerVC -> /platform/data shows/hides image|video`
+
+The DataUserVC is issued to the wallet so you can inspect it. The course repository has no presentation definition for presenting a DataUserVC from the wallet yet, so this page passes the same attributes directly in the `data_user_attrs` of `/marketplace/claim` to decide the trust level (§3).
 
 ## Quickest path
 
@@ -32,7 +34,7 @@ Pipeline:
 
 ## What you'll learn
 
-- The OID4VCI / OID4VP flow for DataUserVC
+- The OID4VCI flow that issues a DataUserVC, and the OID4VP flow that presents a PurchaseViewerVC
 - How combinations of `entityType / purpose / legalCompliance /
   dataHandlingPolicy / misuseRecord` drive `full / access / denied`
 - When `image_cid` / `video_cid` appear or disappear from

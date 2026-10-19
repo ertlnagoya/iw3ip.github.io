@@ -99,7 +99,7 @@ docker compose -f infra/docker-compose.yml ps ipfs
 # iw3ip-ipfs container should be Up
 ```
 
-Recreating the publisher container with `--force-recreate` clears the claims, ViewerTokens, and event rows it kept in memory. After publishing again in §9.2, redo the claims in [§3](data-user-vc-tiered.md#3-three-marketplaceclaim-calls) and the presentation in [§4](data-user-vc-tiered.md#4-issue-purchaseviewervc-present-fetch-platformdata) of the first page. Consents are stored on the volume, so you do not need to register them again.
+Recreating the publisher container with `--force-recreate` clears the claims, ViewerTokens, and event rows it kept in memory. After publishing again in §9.2, redo only the presentation (getting a ViewerToken) in [§4](data-user-vc-tiered.md#4-issue-purchaseviewervc-present-fetch-platformdata) of the first page. The cards in the wallet stay usable because the issuer key is kept on the volume. Redoing the claims in §3 would add three more cards with the same names. Consents are stored on the volume, so you do not need to register them again.
 
 Verify the publisher picked up the env vars:
 
@@ -329,7 +329,7 @@ Main reason codes and their banner copy:
 1. PC opens `/buyer/start?ds=home/event/possible_littering` → QR appears.
 2. Suppose a wallet sends a PurchaseViewerVC bound to a *different* dataset (e.g. `home/event/another_dataset`). A normal wallet does not offer such a card and shows "No Available Credential" instead.
 3. publisher receives `/verifier/response` and records `{"verified": false, "reason": "dataset_mismatch"}`.
-4. The PC's `/verifier/status` long-poll returns `status: "denied"` with the `human_message_*` strings.
+4. The PC's `/verifier/status` long-poll returns a `result` holding `verified: false`, the `reason`, and the `human_message_*` strings.
 5. The page replaces the QR with `<div class="deny-banner">The presented VC is bound to a different dataset.</div>` plus a re-present link to `/buyer/start?ds=...`.
 6. `/audit/logs` gains a row with `raw_topic` `oid4vp/response`, `action` `deny`, and `reason` `dataset_mismatch` (check with `curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'`).
 

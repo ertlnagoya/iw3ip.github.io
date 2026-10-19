@@ -68,7 +68,7 @@ Branches after that:
 
 ## Mock first
 
-Run from the top of the course repository (`Blockchain_IoT_Marketplace/`). Mock mode generates simulated detections in place of a device.
+Run in the `sensor-bridge` folder of the course repository (the first `cd` below moves there). Mock mode generates simulated detections in place of a device.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/sensor-bridge

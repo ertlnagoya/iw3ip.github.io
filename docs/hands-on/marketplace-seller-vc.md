@@ -98,6 +98,8 @@ curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer \
 # → "vct": "https://iw3ip.example/credentials/SellerVC/v1"
 ```
 
+S0 で publisher が作り直されると (新しいイメージになったときや、`infra/.env` を変えたとき)、Stage 6 までに publisher のメモリにあった購入の申告と取り込んだ行は消えます。そのため、Step S5 の `count` が 0 になることがあります。Step S5 で確かめる `seller_did` には影響しません。
+
 ---
 
 ## Step S1. SellerVC を発行
@@ -450,12 +452,12 @@ console.log({ pubKey: c1.length, ioTMarket: c2.length });
 Merchandise (script の決定的アドレス以外) は復元されない。**chain reset
 後は script デプロイ由来の 5 種だけを使う**のが安全。
 
-### F. チェーン再デプロイ後、Account #2 の購入で `function returned an unexpected amount of data`
+### F. チェーン再デプロイ後、Account #2 の購入が `0x295f0a57` で revert する
 
 **原因**: PubKey contract が再デプロイされて state がリセットされたため、
 buyer (Account #2) の公開鍵登録が消えている。Merchandise.purchase() 内
-で呼ばれる `i_pubKey.getPubKey(tx.origin)` が空応答になり、Solidity が
-`string` のデコードに失敗する。
+で呼ばれる `i_pubKey.getPubKey(tx.origin)` が `PubKey__NotRegistered` (`0x295f0a57`) で revert する
+([Stage 5 のトラブル対応 B](marketplace-vc-bridge.md#b-purchase-が-0x295f0a57-で-revert) と同じ)。
 
 **対処**: PubKey を再登録する。
 
