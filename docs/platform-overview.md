@@ -192,10 +192,10 @@ IW3IP が答えようとしている問いは次の 3 つです。
 
 ここで扱う課題は、次の公開情報に基づいています。
 
-- 令和6年の行方不明者届受理数は 82,563 人（警察庁公表資料）
-- 落とし物の届出・検索のオンライン手続が整備されており、「物をなくす・見つける」問題は日常的に発生している
-- 顔識別カメラは犯罪予防に有効だがプライバシー侵害リスクもある（個人情報保護委員会の検討資料）
-- 自治体の防犯カメラ導入では設置費・運用費・市民受容が継続的な課題（都市計画論文集の事例研究）
+- 令和6年の行方不明者届受理数は 82,563 人 [1]
+- 落とし物の届出・検索のオンライン手続が整備されており [2], [3]、「物をなくす・見つける」問題は日常的に発生している
+- 顔識別カメラは犯罪予防に有効だがプライバシー侵害リスクもある [4]。防犯カメラの設置をプライバシーとの調和から論じた研究もある [5]
+- 自治体の防犯カメラ導入では設置費・運用費・市民受容が継続的な課題 [6]
 
 現実には「情報共有の必要性」「プライバシー配慮」「維持管理コスト」の三者が同時に存在します。IW3IP はこの三者をまとめて扱う基盤を目指しています。
 
@@ -237,17 +237,16 @@ IW3IP はカメラ映像専用の基盤ではありません。温度・振動�
 3. 挙動を確認: [Hands-on](hands-on/index.md)
 4. 研究の背景: [論文](publications.md), [参考文献](foundations/references.md)
 
-## 参考にした公開情報
+## 参考文献
 
-- 警察庁, 「令和6年における行方不明者届受理等の状況」: 令和6年の行方不明者数 82,563 人  
-  <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
-- 警察庁, 「オンラインでの申請等の案内」: 遺失物関係のオンライン手続  
-  <https://www.npa.go.jp/policies/application/shinseisys/>
-- 警察庁, 「落とし物の届出・検索」  
-  <https://www.npa.go.jp/bureau/soumu/ishitsubutsu/ishitsu-todokedekensaku.html>
-- 個人情報保護委員会, 「顔識別機能付き防犯カメラの利用に関する法的整理と検討課題」  
-  <https://www.ppc.go.jp/files/pdf/20220128_shiryou-2_kentoukadai.pdf>
-- 千葉尚路, 樋野公宏, 「プライバシーと調和する都市空間の防犯カメラ設置のあり方に関する研究」, 都市計画報告集, 2017  
-  <https://www.jstage.jst.go.jp/article/reportscpij/16/2/16_124/_article/-char/ja/>
-- 村中大輝, 雨宮護, 大山智也, 「地方自治体による公共空間への防犯カメラ大規模設置事業の取り組み実態と評価」, 都市計画論文集, Vol.51, No.3, pp.357-364, 2016  
-  <https://www.jstage.jst.go.jp/article/journalcpij/51/3/51_357/_pdf>
+[1] 警察庁, 「令和6年における行方不明者届受理等の状況」, <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
+
+[2] 警察庁, 「オンラインでの申請等の案内」, <https://www.npa.go.jp/policies/application/shinseisys/>
+
+[3] 警察庁, 「落とし物の届出・検索」, <https://www.npa.go.jp/bureau/soumu/ishitsubutsu/ishitsu-todokedekensaku.html>
+
+[4] 個人情報保護委員会, 「顔識別機能付き防犯カメラの利用に関する法的整理と検討課題」, 2022, <https://www.ppc.go.jp/files/pdf/20220128_shiryou-2_kentoukadai.pdf>
+
+[5] 千葉尚路, 樋野公宏, 「プライバシーと調和する都市空間の防犯カメラ設置のあり方に関する研究」, 都市計画報告集, Vol.16, No.2, pp.124–128, 2017. DOI: [10.11361/reportscpij.16.2_124](https://doi.org/10.11361/reportscpij.16.2_124)
+
+[6] 村中大輝, 雨宮護, 大山智也, 「地方自治体による公共空間への防犯カメラ大規模設置事業の取り組み実態と評価」, 都市計画論文集, Vol.51, No.3, pp.357–364, 2016. DOI: [10.11361/journalcpij.51.357](https://doi.org/10.11361/journalcpij.51.357)

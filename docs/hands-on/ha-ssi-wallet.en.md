@@ -12,7 +12,7 @@ Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to aut
 
 !!! note "Wallet used on this page"
     This page uses [`iw3ip-wallet`](https://github.com/ertlnagoya/iw3ip-wallet),
-    a fork of Sphereon mobile-wallet.
+    a fork of Sphereon mobile-wallet [1].
 
 !!! tip "Dataset choice"
     The examples on this page use `home/env/temperature`. The same steps
@@ -33,11 +33,11 @@ validates it -> allowed/denied**.
 
 Terms used on this page:
 
-- **OID4VCI** (OpenID for Verifiable Credential Issuance): the protocol for issuing a VC and handing it to a wallet
-- **OID4VP** (OpenID for Verifiable Presentations): the protocol for a wallet to present a VC
+- **OID4VCI** (OpenID for Verifiable Credential Issuance): the protocol for issuing a VC and handing it to a wallet [2]
+- **OID4VP** (OpenID for Verifiable Presentations): the protocol for a wallet to present a VC [3]
 - **Issuer / Verifier**: the side that issues a VC / the side that verifies a presented VC. In this hands-on, the publisher plays both roles
-- **Presentation Definition (PD)**: the verifier's request describing which VC and which fields it wants presented. Defined in the PEX (Presentation Exchange) spec
-- **SD-JWT VC**: a JWT-format VC that lets the holder disclose only selected fields
+- **Presentation Definition (PD)**: the verifier's request describing which VC and which fields it wants presented. Defined in the PEX (Presentation Exchange) spec (an implementation: `@sphereon/pex` [4])
+- **SD-JWT VC**: a JWT-format VC that lets the holder disclose only selected fields [5]
 - **did:jwk**: a DID whose identifier is the public key (JWK) itself
 - **PolicyToken**: a short-lived authorization token the publisher issues after the VC presentation is verified
 
@@ -60,14 +60,6 @@ Pipeline:
 - SD-JWT VC, W3C VC-JWT, and mdoc are not interchangeable; pin one format
 - QR redirect fails if the phone and PC are on different networks
   (same prerequisite as [Open the marketplace and buy on a phone (v1)](mobile-viewer.md))
-
-## Official links
-
-- Sphereon mobile-wallet (upstream): <https://github.com/Sphereon-Opensource/mobile-wallet>
-- `@sphereon/pex` (Presentation Exchange): <https://github.com/Sphereon-Opensource/pex>
-- OpenID for Verifiable Presentations: <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html>
-- OpenID for Verifiable Credential Issuance: <https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html>
-- SD-JWT VC: <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
 
 ## Prerequisites
 
@@ -345,3 +337,15 @@ This hands-on (Stage 1) only covers **single-use write authorization**
   - Check: clock skew (`iat` / `exp`) is within tolerance
 - Symptom: QR does not open
   - Check: phone and PC are on the same LAN (see [Open the marketplace and buy on a phone (v1)](mobile-viewer.md))
+
+## References
+
+[1] Sphereon, "mobile-wallet," GitHub repository, <https://github.com/Sphereon-Opensource/mobile-wallet>
+
+[2] OpenID Foundation, "OpenID for Verifiable Credential Issuance 1.0," <https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html>
+
+[3] OpenID Foundation, "OpenID for Verifiable Presentations 1.0," <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html>
+
+[4] Sphereon, "pex," GitHub repository, <https://github.com/Sphereon-Opensource/pex>
+
+[5] IETF, "SD-JWT-based Verifiable Credentials (SD-JWT VC)," Internet-Draft, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>

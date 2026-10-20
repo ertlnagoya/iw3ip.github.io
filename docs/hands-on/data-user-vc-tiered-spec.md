@@ -11,7 +11,7 @@ Publisher が公開するカメラ視野を **イベント／画像／動画** �
 
 - 既存 5 種類の VC（ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC）と、
   6 種類目として追加する **DataUserVC** の関係
-- Li らのスマートコントラクト `ssi/contracts/DataUserVerifier.sol`（[論文](../publications.md) 1 の著者による実装）に書かれた trustScore（信頼度スコア）算出ロジックを
+- 論文 [1] の著者 Li らによるスマートコントラクト `ssi/contracts/DataUserVerifier.sol` に書かれた trustScore（信頼度スコア）算出ロジックを
   Phase 2 の Publisher にどのように取り込むか
 - 「購入の申告の属性 (`data_user_attrs`) → trustScore → allowed_views」という単方向データフロー
 - データ供給側（HA / RaspberryPi / USB Webcam）と Publisher の責務分離
@@ -434,3 +434,7 @@ VLM のアップグレード前後で同じ画像から異なる説明が生成�
 - VLM 推論の **キャッシュ層**（同じ sha256 image に対して同じ description を
   再利用 — 現状の image dedup と対称な扱い）
 - VLM 推論の **コスト課金**（DataUserVC tier に応じて呼び出し回数を制限する等）
+
+## 参考文献
+
+[1] L. Li, Y. Yasue, and Y. Matsubara, "SSI-Enabled Authentication and Enhanced Metadata Search in Blockchain-based Decentralized IoT Data Platforms," in Proc. 2025 7th International Conference on Blockchain Computing and Applications (BCCA), 1st International Workshop on Blockchain for Decentralized Trust and Digital Identity (B4TI), Dubrovnik, Croatia, pp. 829–837, Oct. 2025. DOI: [10.1109/BCCA66705.2025.11229590](https://doi.org/10.1109/BCCA66705.2025.11229590)

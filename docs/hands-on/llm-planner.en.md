@@ -46,7 +46,7 @@ Branches after that:
 
 ## Prerequisites
 
-- Docker / Docker Compose
+- Docker / Docker Compose [1]
 - `curl`
 - Python 3.11 or later (to run `uvicorn` in Stage 1 and 5.2 and `pytest` in 5.5 on the host). Create a virtual environment (venv) at the top of the `Blockchain_IoT_Marketplace` repository and install the packages into it. With Homebrew Python and similar setups, `pip install` outside a venv fails with an `externally-managed-environment` error. If `python3 --version` is older than 3.11, run the `python3 -m venv` line below with a specific version, such as `python3.11 -m venv`
 
@@ -59,18 +59,13 @@ Branches after that:
     `pip install -e . pytest` also installs the required packages (along with the publisher's). In every newly opened terminal ("another terminal"), run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` before using `uvicorn`, `python`, or `pytest`. With the venv active, `python` points to the venv's Python 3
 - the `main` branch of the `Blockchain_IoT_Marketplace` repository
 
-References:
-
-- [Docker official site](https://docs.docker.com/get-docker/)
-- [httpx documentation](https://www.python-httpx.org/)
-
 ## Matching source files
 
 - [assistant/app/planner_interface.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner_interface.py)
 - [assistant/app/planner_factory.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner_factory.py)
 - [assistant/app/llm_planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_planner.py)
 - [assistant/app/llm_prompt.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_prompt.py)
-- [assistant/app/llm_provider.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_provider.py)
+- [assistant/app/llm_provider.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_provider.py) (calls the LLM over HTTP with httpx [2])
 - [assistant/app/plan_validator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/plan_validator.py)
 - [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase3_llm_planner/problem_program.py)
 - [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase3_llm_planner/answer_program.py)
@@ -651,3 +646,9 @@ When the LLM API cannot be used, `/assistant/plan` does not fail; it returns the
 
 - For the design rationale: [LLM Planner replacement spec](llm-planner-spec.md)
 - To go back to the original Phase 3 sample: [Run the regional safety assistant (Phase 3)](regional-safety-assistant.md)
+
+## References
+
+[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-docker/>
+
+[2] HTTPX, "HTTPX," <https://www.python-httpx.org/>

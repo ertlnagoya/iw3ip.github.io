@@ -46,7 +46,7 @@ Phase 3 の [地域安全アシスタントを動かす](regional-safety-assista
 
 ## 前提
 
-- Docker / Docker Compose が使える
+- Docker / Docker Compose が使える [1]
 - `curl` が使える
 - Python 3.11 以上 (段階 1 と 5.2 の `uvicorn`、5.5 の `pytest` をホストで動かすため)。`Blockchain_IoT_Marketplace` リポジトリのトップで仮想環境 (venv) を作り、その中に必要なパッケージを入れておく。Homebrew の Python などでは、venv の外で `pip install` すると `externally-managed-environment` エラーになります。`python3 --version` が 3.11 より古い場合は、下の `python3 -m venv` を `python3.11 -m venv` のようにバージョンを指定して実行します
 
@@ -59,18 +59,13 @@ Phase 3 の [地域安全アシスタントを動かす](regional-safety-assista
     `pip install -e . pytest` でも必要なパッケージが入ります (publisher 用のパッケージも一緒に入ります)。新しく開いたターミナル (「別ターミナル」) でも、`uvicorn`・`python`・`pytest` を使う前に `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を実行します。venv を有効にすると、`python` は venv の Python 3 を指します
 - ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使う
 
-参考:
-
-- [Docker 公式サイト](https://docs.docker.com/get-docker/)
-- [httpx 公式ドキュメント](https://www.python-httpx.org/)
-
 ## 対応するソースコード
 
 - [assistant/app/planner_interface.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner_interface.py)
 - [assistant/app/planner_factory.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/planner_factory.py)
 - [assistant/app/llm_planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_planner.py)
 - [assistant/app/llm_prompt.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_prompt.py)
-- [assistant/app/llm_provider.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_provider.py)
+- [assistant/app/llm_provider.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/llm_provider.py) (LLM への HTTP 呼び出しに httpx [2] を使う)
 - [assistant/app/plan_validator.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/plan_validator.py)
 - [問題用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase3_llm_planner/problem_program.py)
 - [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/phase3_llm_planner/answer_program.py)
@@ -651,3 +646,9 @@ LLM API を使えないとき、`/assistant/plan` はエラーにならず、rul
 
 - 実装方針を整理したい場合: [LLM Planner 置き換え仕様](llm-planner-spec.md)
 - Phase 3 の元サンプルに戻る場合: [地域安全アシスタントを動かす（Phase 3）](regional-safety-assistant.md)
+
+## 参考文献
+
+[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-docker/>
+
+[2] HTTPX, "HTTPX," <https://www.python-httpx.org/>

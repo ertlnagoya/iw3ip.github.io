@@ -480,21 +480,26 @@ docker compose -f infra/docker-compose.yml --profile ha-demo --profile ha-demo-p
 
 ### FIWARE
 
-都市・施設・複数組織にまたがる IoT データを `Context Broker` と `IoT Agent` で扱う基盤です。Home Assistant より構成は大きくなりますが、複数主体のデータ連携や通知購読を含む研究拡張に向いています。
-
-- 公式サイト: <https://www.fiware.org/>
-- Tutorials: <https://fiware-tutorials.readthedocs.io/en/latest/>
+都市・施設・複数組織にまたがる IoT データを `Context Broker` と `IoT Agent` で扱う基盤です [1]。Home Assistant より構成は大きくなりますが、複数主体のデータ連携や通知購読を含む研究拡張に向いています。構成要素の使い方は公式のチュートリアル [2] で順に試せます。
 
 ### Eclipse Ditto
 
-機器状態やコマンドをデジタルツインとして扱う基盤です。Phase 3 と組み合わせると、共有イベント → 判断 → 状態更新・制御結果まで追跡できます。
-
-- 公式サイト: <https://eclipse.dev/ditto/>
-- MQTT binding: <https://eclipse.dev/ditto/connectivity-protocol-bindings-mqtt.html>
+機器状態やコマンドをデジタルツインとして扱う基盤です [3]。Phase 3 と組み合わせると、共有イベント → 判断 → 状態更新・制御結果まで追跡できます。MQTT で機器とつなぐ方法は [4] にまとめられています。
 
 ### CARLA
 
-都市空間・車両・歩行者・仮想センサを含むシミュレータです。導入の手間はかかりますが、地域安全・防災・交通系のイベント生成に使え、Phase 2 / 3 の評価環境として利用できます。
+都市空間・車両・歩行者・仮想センサを含むシミュレータです [5]。導入の手間はかかりますが、地域安全・防災・交通系のイベント生成に使え、Phase 2 / 3 の評価環境として利用できます。使い方はドキュメント [6] にまとめられています。
 
-- 公式サイト: <https://carla.org/>
-- Documentation: <https://carla.readthedocs.io/>
+## 参考文献
+
+[1] FIWARE Foundation, "FIWARE," <https://www.fiware.org/>
+
+[2] FIWARE Foundation, "FIWARE Step-By-Step Tutorials," <https://fiware-tutorials.readthedocs.io/en/latest/>
+
+[3] Eclipse Foundation, "Eclipse Ditto," <https://eclipse.dev/ditto/>
+
+[4] Eclipse Foundation, "Eclipse Ditto Documentation: MQTT protocol binding," <https://eclipse.dev/ditto/connectivity-protocol-bindings-mqtt.html>
+
+[5] CARLA Team, "CARLA Simulator," <https://carla.org/>
+
+[6] CARLA Team, "CARLA Simulator Documentation," <https://carla.readthedocs.io/>

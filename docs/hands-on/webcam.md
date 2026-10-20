@@ -1,6 +1,6 @@
 # USB カメラでポイ捨てを検知する (OpenCV)
 
-HUSKYLENS2 がなくても、USB ウェブカメラと OpenCV だけで `person_detected` / `possible_littering` イベントを作れます。
+HUSKYLENS2 がなくても、USB ウェブカメラと OpenCV [1] だけで `person_detected` / `possible_littering` イベントを作れます。
 
 > **やること**: USB カメラ画像から人物・ポイ捨て検知をしてイベントファイルを生成
 >
@@ -26,11 +26,6 @@ USB ウェブカメラの画像から人物とポイ捨ての可能性を検知�
 - カメラのインデックスや占有状況で最初に失敗しやすい
 - 照明や画角でヒューリスティックの出力が大きく変わる
 - 検知が動いていても `mediator-owner` 側まで届いていないことがある
-
-## 公式リンク
-
-- OpenCV: <https://opencv.org/>
-- USBカメラ一般説明（参考）: <https://en.wikipedia.org/wiki/Webcam>
 
 ## 前提
 
@@ -177,3 +172,7 @@ python3 webcam_litter_bridge.py \
   - 確認: `mediator-owner` が起動しているか
   - 確認: 出力先が `mediator-owner/raw_data/output` と一致しているか
   - 確認: 教材リポジトリが最新か (`git pull` の後、`mediator-owner` を起動し直す)
+
+## 参考文献
+
+[1] OpenCV, "OpenCV," <https://opencv.org/>

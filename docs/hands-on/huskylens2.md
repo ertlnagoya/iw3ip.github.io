@@ -1,6 +1,6 @@
 # AI カメラで人物を検知する (HUSKYLENS2)
 
-HUSKYLENS2 という小型 AI カメラからイベントを取り出し、マーケットに出品するまでの一連を試します。
+HUSKYLENS2 という小型 AI カメラ [1] からイベントを取り出し、マーケットに出品するまでの一連を試します。
 
 > **やること**: HUSKYLENS2 (または mock) の検知結果からイベントファイルを生成し、商品として登録されることを確認する
 >
@@ -26,11 +26,6 @@ HUSKYLENS2（または mock の入力）の検知結果を数秒ごとにまと�
 - シリアルポート名や権限の確認で止まりやすい
 - 出力先のフォルダが無いと、イベントファイルを書き出せない
 - 実機でうまくいかないときは、まず `mock` でパイプラインだけ確認する方が切り分けやすい
-
-## 公式リンク
-
-- HUSKYLENS2 製品ページ: <https://www.dfrobot.com/product-2995.html>
-- DFRobot 公式サイト: <https://www.dfrobot.com/>
 
 ## 前提
 
@@ -186,3 +181,7 @@ python3 huskylens_bridge.py \
   - 確認: `mediator-owner` が起動しているか
   - 確認: 出力先が `mediator-owner/raw_data/output` と一致しているか
   - 確認: 教材リポジトリが最新か (`git pull` の後、`mediator-owner` を起動し直す)
+
+## 参考文献
+
+[1] DFRobot, "HUSKYLENS2," product page, <https://www.dfrobot.com/product-2995.html>

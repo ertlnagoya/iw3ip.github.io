@@ -1,6 +1,6 @@
 # Detect with a USB webcam (OpenCV)
 
-Without a HUSKYLENS2, a generic USB webcam plus OpenCV is enough to emit `person_detected` and `possible_littering` events.
+Without a HUSKYLENS2, a generic USB webcam plus OpenCV [1] is enough to emit `person_detected` and `possible_littering` events.
 
 > **What you'll do**: Detect a person and littering candidates from a USB webcam, emit events
 >
@@ -25,11 +25,6 @@ Generate `person_detected` / `possible_littering` events with only a USB webcam,
 - camera index and camera ownership are common first-run failures
 - lighting and framing strongly affect the heuristic output
 - detections can be generated while the downstream pipeline still fails to pick them up
-
-## Official links
-
-- OpenCV: <https://opencv.org/>
-- Webcam overview (reference): <https://en.wikipedia.org/wiki/Webcam>
 
 ## Prerequisites
 
@@ -176,3 +171,7 @@ This detection is a simple rule of thumb (heuristic) for learning, not a strict 
   - Check: `mediator-owner` is running
   - Check: the output path matches `mediator-owner/raw_data/output`
   - Check: the course repository is up to date (after `git pull`, restart `mediator-owner`)
+
+## References
+
+[1] OpenCV, "OpenCV," <https://opencv.org/>

@@ -12,9 +12,9 @@ SSI、DID、VC は一緒に登場することが多く、最初は区別しに�
 
 ### 用語
 
-- SSI: 利用者が自分の識別情報・資格情報を主体的に管理する考え方
-- DID: 分散型識別子（例: `did:example:alice`）
-- VC: Verifiable Credential。検証可能な資格情報（このサイトでは Consent VC を利用）
+- SSI: 利用者が自分の識別情報・資格情報を主体的に管理する考え方。標準化と実装の取り組みは Decentralized Identity Foundation [1] で追える
+- DID: 分散型識別子（例: `did:example:alice`）[2]
+- VC: Verifiable Credential。検証可能な資格情報（このサイトでは Consent VC を利用）[3]
 
 ### 3つの関係
 
@@ -99,8 +99,10 @@ Phase 1 のサンプル（Consent VC に相当する JSON を `/consents` に登
 - DID解決（DID Document参照）
 - PEP（Policy Enforcement Point。ポリシー判定の結果に従ってアクセスを許可・遮断する箇所）を publisher の前段に置く
 
-## 出典
+## 参考文献
 
-- W3C DID Core: <https://www.w3.org/TR/did-core/>
-- W3C Verifiable Credentials Data Model 2.0: <https://www.w3.org/TR/vc-data-model-2.0/>
-- DIF (Decentralized Identity Foundation): <https://identity.foundation/>
+[1] Decentralized Identity Foundation, <https://identity.foundation/>
+
+[2] W3C, "Decentralized Identifiers (DIDs) v1.0," W3C Recommendation, 2022, <https://www.w3.org/TR/did-core/>
+
+[3] W3C, "Verifiable Credentials Data Model v2.0," W3C Recommendation, 2025, <https://www.w3.org/TR/vc-data-model-2.0/>

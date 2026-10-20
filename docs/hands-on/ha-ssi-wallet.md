@@ -11,7 +11,7 @@
 > **所要時間**: 約 60 分
 
 !!! note "使用するウォレット"
-    本ページでは、Sphereon mobile-wallet を fork した
+    本ページでは、Sphereon mobile-wallet [1] を fork した
     [`iw3ip-wallet`](https://github.com/ertlnagoya/iw3ip-wallet) を使います。
 
 !!! tip "dataset の選択"
@@ -34,11 +34,11 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 
 このページで使う用語:
 
-- **OID4VCI** (OpenID for Verifiable Credential Issuance): VC を発行してウォレットに渡す手順の仕様
-- **OID4VP** (OpenID for Verifiable Presentations): ウォレットが VC を提示する手順の仕様
+- **OID4VCI** (OpenID for Verifiable Credential Issuance): VC を発行してウォレットに渡す手順の仕様 [2]
+- **OID4VP** (OpenID for Verifiable Presentations): ウォレットが VC を提示する手順の仕様 [3]
 - **Issuer / Verifier**: VC を発行する側 / 提示された VC を検証する側。本ハンズオンではどちらも publisher が担う
-- **Presentation Definition (PD)**: Verifier が「どの VC のどの項目を提示してほしいか」を記述した要求。PEX (Presentation Exchange) 仕様で定義されている
-- **SD-JWT VC**: 必要な項目だけを選んで開示できる JWT 形式の VC
+- **Presentation Definition (PD)**: Verifier が「どの VC のどの項目を提示してほしいか」を記述した要求。PEX (Presentation Exchange) 仕様で定義されている (実装の例: `@sphereon/pex` [4])
+- **SD-JWT VC**: 必要な項目だけを選んで開示できる JWT 形式の VC [5]
 - **did:jwk**: 公開鍵 (JWK) をそのまま識別子にした DID
 - **PolicyToken**: VC の提示が検証された後に publisher が発行する、短命の認可トークン
 
@@ -61,14 +61,6 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 - SD-JWT VC・W3C VC-JWT・mdoc には互換性がないため、1 つの形式に固定する
 - スマホと PC が別ネットワークだと QR 経由の redirect が届かない
   （[スマホでマーケットを開いて購入する (v1)](mobile-viewer.md) と同じ前提）
-
-## 公式リンク
-
-- Sphereon mobile-wallet（upstream）: <https://github.com/Sphereon-Opensource/mobile-wallet>
-- `@sphereon/pex`（Presentation Exchange）: <https://github.com/Sphereon-Opensource/pex>
-- OpenID for Verifiable Presentations 仕様: <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html>
-- OpenID for Verifiable Credential Issuance 仕様: <https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html>
-- SD-JWT VC: <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
 
 ## 前提
 
@@ -343,3 +335,15 @@ docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_tok
   - 確認: 時刻ずれ（`iat` / `exp`）が大きすぎないか
 - 症状: QR が開けない
   - 確認: スマホと PC が同じ LAN か（[スマホでマーケットを開いて購入する (v1)](mobile-viewer.md) 参照）
+
+## 参考文献
+
+[1] Sphereon, "mobile-wallet," GitHub repository, <https://github.com/Sphereon-Opensource/mobile-wallet>
+
+[2] OpenID Foundation, "OpenID for Verifiable Credential Issuance 1.0," <https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html>
+
+[3] OpenID Foundation, "OpenID for Verifiable Presentations 1.0," <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html>
+
+[4] Sphereon, "pex," GitHub repository, <https://github.com/Sphereon-Opensource/pex>
+
+[5] IETF, "SD-JWT-based Verifiable Credentials (SD-JWT VC)," Internet-Draft, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>

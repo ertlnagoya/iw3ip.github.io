@@ -1,17 +1,11 @@
 # Docs (MkDocs)
 
-This website is built with MkDocs.
+This website is built with MkDocs [1]. It uses Material for MkDocs [2] as the theme and mkdocs-static-i18n [3] for switching between Japanese and English.
 
 ## Who this page is for
 
 - people previewing the site locally for the first time
 - people editing and publishing documentation
-
-Main tools used here:
-
-- MkDocs: <https://www.mkdocs.org/>
-- Material for MkDocs: <https://squidfunk.github.io/mkdocs-material/>
-- mkdocs-static-i18n: <https://ultrabug.github.io/mkdocs-static-i18n/>
 
 ## Local preview
 
@@ -42,3 +36,11 @@ mkdocs build --strict
 Published URL:
 
 - <https://www.ertl.jp/iw3ip.github.io/>
+
+## References
+
+[1] MkDocs, "MkDocs," <https://www.mkdocs.org/>
+
+[2] M. Donath, "Material for MkDocs," <https://squidfunk.github.io/mkdocs-material/>
+
+[3] Ultrabug, "mkdocs-static-i18n," <https://ultrabug.github.io/mkdocs-static-i18n/>

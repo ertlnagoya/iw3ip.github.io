@@ -36,7 +36,7 @@ Pipeline:
 ## What this page covers
 
 - Why "write VC" and "read VC" are separated
-- Issuing ViewerVC via OID4VCI and presenting via OID4VP
+- Issuing ViewerVC via OID4VCI [1] and presenting via OID4VP [2]
 - ViewerToken's 60-second TTL, and that it can be used any number of times within the TTL
 - How `/platform/data` reads are recorded in the audit log
 
@@ -45,12 +45,6 @@ Pipeline:
 - ConsentVC and ViewerVC are **distinct**. Presenting a ConsentVC won't unlock `/platform/data`
 - `/platform/data` only accepts ViewerToken (PolicyToken is rejected)
 - ViewerToken TTL is 60 s. After expiry, present again
-
-## Spec links
-
-- OpenID for Verifiable Presentations: <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html>
-- DCQL: <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-digital-credentials-query-l>
-- SD-JWT VC: <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
 
 ## Prerequisites
 
@@ -252,3 +246,9 @@ ViewerVC reads use a **directly specified dataset_id**. Other forms of authoriza
   - Check: the publisher was not recreated after presenting (ViewerTokens and the written data live in the publisher's memory and are lost on recreate; redo the write in §2, then present again in §4)
 - Symptom: `/platform/data` returns 401 viewer_token_expired
   - Action: the TTL (60 s) has expired. Present again from §4
+
+## References
+
+[1] OpenID Foundation, "OpenID for Verifiable Credential Issuance 1.0," <https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html>
+
+[2] OpenID Foundation, "OpenID for Verifiable Presentations 1.0," <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html>

@@ -11,7 +11,7 @@ This is a design document, not a step-by-step. For the walk-through, see
 
 - How the new **DataUserVC** relates to the existing five VCs
   (ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC)
-- How the trustScore logic from Li et al.'s `DataUserVerifier.sol` is folded
+- How the trustScore logic from `DataUserVerifier.sol`, implemented by Li et al., the authors of [1], is folded
   into the Phase 2 Publisher
 - The unidirectional flow: purchase claim attributes (`data_user_attrs`) → trustScore → allowed_views
 - Separation of concerns between data sources (HA / RaspberryPi / USB
@@ -443,3 +443,7 @@ At the initial implementation this added 16 cases, kept independent from the exi
 - A **VLM cache layer**: reuse descriptions across uploads keyed by
   source image sha256 (mirrors the existing image dedup)
 - VLM **cost gating**: throttle calls per DataUserVC tier
+
+## References
+
+[1] L. Li, Y. Yasue, and Y. Matsubara, "SSI-Enabled Authentication and Enhanced Metadata Search in Blockchain-based Decentralized IoT Data Platforms," in Proc. 2025 7th International Conference on Blockchain Computing and Applications (BCCA), 1st International Workshop on Blockchain for Decentralized Trust and Digital Identity (B4TI), Dubrovnik, Croatia, pp. 829–837, Oct. 2025. DOI: [10.1109/BCCA66705.2025.11229590](https://doi.org/10.1109/BCCA66705.2025.11229590)

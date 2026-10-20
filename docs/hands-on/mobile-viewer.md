@@ -1,6 +1,6 @@
 # スマホでマーケットを開いて購入する (v1)
 
-v1 マーケットプレイス (MetaMask で購入し、データは simple-storage (:3000) 経由で受け渡す) を、スマホのブラウザで開いて購入するところまで確かめます。VC 連携 (v2) の動線は別ページです。
+v1 マーケットプレイス (MetaMask [1] で購入し、データは simple-storage (:3000) 経由で受け渡す) を、スマホのブラウザで開いて購入するところまで確かめます。VC 連携 (v2) の動線は別ページです。
 
 > **やること**: スマホのブラウザでマーケットプレイス画面を開き、購入操作まで確かめる
 >
@@ -37,11 +37,6 @@ v1 マーケットプレイス (MetaMask で購入し、データは simple-stor
 - PC 側を `0.0.0.0` で公開していないとスマホから届かない
 - 同じ Wi-Fi に見えてもネットワークが分かれていると接続できない
 - 購入操作は MetaMask モバイルのブラウザ経由でないと進みにくい
-
-## 公式リンク
-
-- MetaMask Mobile: <https://metamask.io/>
-- Vite（`npm run dev` の開発サーバで使用）: <https://vite.dev/>
 
 ## 前提
 
@@ -116,7 +111,7 @@ cp .env.example .env.local
     `mediator-owner` と `mediator-buyer` も再起動してください。以前の商品アドレスは使えません。
     USB ウェブカメラ (または HUSKYLENS2) の mock をもう一度動かし、新しく表示された `Product deployed` のアドレスを使います。
 
-`.env.local` を変更したら、フロント (`npm run dev`) を再起動して反映します。
+`.env.local` を変更したら、フロント (`npm run dev` で起動する Vite の開発サーバー [2]) を再起動して反映します。
 
 ### 1. PC側をLAN公開で起動
 
@@ -201,3 +196,9 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
   - 確認: その商品を、同じアカウントですでに購入していないか (1.3 で買った商品は、もう一度は買えない。まだ買っていない `Product deployed` のアドレスを使う)
   - 対処: [最短起動](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ Account #2 の Private Key をインポートし、そのアカウントで購入し直す
   - 詳しくは [トラブルシュート](../operations/troubleshooting.md) の「購入できない」項目を参照
+
+## 参考文献
+
+[1] MetaMask, "MetaMask," <https://metamask.io/>
+
+[2] Vite, "Vite," <https://vite.dev/>

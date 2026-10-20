@@ -35,7 +35,7 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 ## このページで分かること
 
 - 「書き込み VC」と「読み出し VC」を分ける理由
-- ViewerVC を OID4VCI で発行し、OID4VP で提示する
+- ViewerVC を OID4VCI [1] で発行し、OID4VP [2] で提示する
 - ViewerToken の TTL (有効期間) は 60 秒で、TTL 内は何度でも使えること
 - `/platform/data` で取得した行が監査ログに残る様子
 
@@ -44,12 +44,6 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 - ConsentVC と ViewerVC は別の VC で、ConsentVC を提示しても `/platform/data` は読めない
 - `/platform/data` は ViewerToken のみ受け付ける（PolicyToken は通らない）
 - ViewerToken は TTL 60 秒。連続閲覧で期限が切れたら再提示が必要
-
-## 公式リンク
-
-- OpenID for Verifiable Presentations 仕様: <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html>
-- DCQL: <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-digital-credentials-query-l>
-- SD-JWT VC: <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
 
 ## 前提
 
@@ -254,3 +248,9 @@ ViewerVC は **dataset を直接指定して読む** 形でした。ほかの認
   - 確認: 提示のあとで publisher を作り直していないか (ViewerToken と書き込んだデータは publisher のメモリにあり、作り直すと消える。§2 の書き込みからやり直し、§4 で提示し直す)
 - 症状: `/platform/data` が 401 viewer_token_expired
   - 対応: TTL (60 秒) が切れている。§4 の提示からやり直す
+
+## 参考文献
+
+[1] OpenID Foundation, "OpenID for Verifiable Credential Issuance 1.0," <https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html>
+
+[2] OpenID Foundation, "OpenID for Verifiable Presentations 1.0," <https://openid.net/specs/openid-4-verifiable-presentations-1_0.html>

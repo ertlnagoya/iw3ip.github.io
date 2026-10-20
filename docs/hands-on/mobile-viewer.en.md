@@ -1,6 +1,6 @@
 # Open the marketplace and buy on a phone (v1)
 
-Open the v1 marketplace (purchase with MetaMask; data is handed over through simple-storage on :3000) in a phone browser and go as far as buying an item. The v2 VC flow is a separate page.
+Open the v1 marketplace (purchase with MetaMask [1]; data is handed over through simple-storage on :3000) in a phone browser and go as far as buying an item. The v2 VC flow is a separate page.
 
 > **What you'll do**: Open the marketplace screen in a phone browser and walk through a purchase
 >
@@ -36,11 +36,6 @@ Confirm that you can open the marketplace from a smartphone and buy an item.
 - if the PC side is not exposed on `0.0.0.0`, the smartphone cannot reach it
 - even on what looks like the same Wi-Fi, a split network prevents the connection
 - purchase actions do not progress well unless done through the MetaMask Mobile browser
-
-## Official links
-
-- MetaMask Mobile: <https://metamask.io/>
-- Vite (used by `npm run dev`): <https://vite.dev/>
 
 ## Prerequisites
 
@@ -113,7 +108,7 @@ Edit `.env.local` and set the host for your scenario.
     and restart `mediator-owner` and `mediator-buyer` as well. Earlier item addresses no longer work.
     Run the USB webcam (or HUSKYLENS2) mock again and use the newly shown `Product deployed` address.
 
-Restart the frontend (`npm run dev`) after editing `.env.local`.
+Restart the frontend (the Vite dev server [2] started by `npm run dev`) after editing `.env.local`.
 
 ### 1. Start the PC side on the LAN
 
@@ -198,3 +193,9 @@ If you cannot connect or the purchase does not proceed, check the troubleshootin
   - Check: whether you already bought that item with the same account (an item bought in §1.3 cannot be bought again; use a `Product deployed` address you have not bought yet)
   - Fix: import the same Account #2 Private Key as in [Quickstart](../setup/quickstart.md#metamask-local-chain-setup) and buy again with that account
   - See the "Purchase does not succeed" item in [Troubleshooting](../operations/troubleshooting.md)
+
+## References
+
+[1] MetaMask, "MetaMask," <https://metamask.io/>
+
+[2] Vite, "Vite," <https://vite.dev/>

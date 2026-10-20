@@ -1,6 +1,6 @@
 # Detect a person on an AI camera (HUSKYLENS2)
 
-Turn detections from the HUSKYLENS2 AI camera into event files.
+Turn detections from the HUSKYLENS2 AI camera [1] into event files.
 
 > **What you'll do**: Generate event files from HUSKYLENS2 (or mock) detections and confirm they are registered as merchandise
 >
@@ -26,11 +26,6 @@ Aggregate HUSKYLENS2 (or mock) detections every few seconds and write them out a
 - serial port naming and permissions often block the first run
 - event files cannot be written if the output folder does not exist
 - when real hardware is unstable, it is better to verify the pipeline in `mock` mode first
-
-## Official links
-
-- HUSKYLENS2 product page: <https://www.dfrobot.com/product-2995.html>
-- DFRobot official site: <https://www.dfrobot.com/>
 
 ## Prerequisites
 
@@ -186,3 +181,7 @@ python3 huskylens_bridge.py \
   - Check: `mediator-owner` is running
   - Check: the output path matches `mediator-owner/raw_data/output`
   - Check: the course repository is up to date (after `git pull`, restart `mediator-owner`)
+
+## References
+
+[1] DFRobot, "HUSKYLENS2," product page, <https://www.dfrobot.com/product-2995.html>

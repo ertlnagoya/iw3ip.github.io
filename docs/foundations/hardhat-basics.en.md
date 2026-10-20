@@ -7,11 +7,13 @@ It is not for production; it is an environment for running and verifying smart c
 
 ### What is Hardhat?
 
-Hardhat is a development environment for Ethereum smart contracts.
+Hardhat is a development environment for Ethereum smart contracts [1].
 
 In this site, it is used as a **local development blockchain** for safe and reproducible exercises.
 
 ### What You Can Do
+
+The main operations are as follows [2].
 
 - start local chain (`npx hardhat node`)
 - deploy contracts (`npx hardhat run ... --network localhost`)
@@ -67,7 +69,8 @@ Keep this difference in mind so you do not confuse a learning-oriented local cha
 - Hardhat is mainly for development and education
 - production use requires separate consideration for network operations, gas costs, incident handling, and key management
 
-## Sources
+## References
 
-- Hardhat official docs: <https://hardhat.org/docs>
-- Hardhat getting started: <https://hardhat.org/hardhat-runner/docs/getting-started>
+[1] Nomic Foundation, "Hardhat Documentation," <https://hardhat.org/docs>
+
+[2] Nomic Foundation, "Getting started with Hardhat," <https://hardhat.org/hardhat-runner/docs/getting-started>

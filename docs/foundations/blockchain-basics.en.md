@@ -17,11 +17,11 @@ At minimum, these four terms cover the essentials.
 - Ledger: a record of transactions
 - Block: a unit that groups transactions
 - Hash: fixed-size digest used for integrity checks
-- Smart Contract: program executed on-chain
+- Smart Contract: program executed on-chain [1]
 
 ### How Blockchain Builds Trust
 
-Instead of keeping records on a single server, blockchain has multiple participants share the same history and links each block with hashes, which makes the record hard to rewrite after the fact.  
+Instead of keeping records on a single server, blockchain has multiple participants share the same history and links each block with hashes, which makes the record hard to rewrite after the fact [2].  
 The point is not that tampering is impossible, but that **tampering is easy to detect and history can be reconciled across participants.**
 
 ```mermaid
@@ -88,7 +88,8 @@ IW3IP separates information suited to verification and audit trails from informa
   - large media files
   - high-frequency sensor streams
 
-## Sources
+## References
 
-- Ethereum documentation: <https://ethereum.org/en/developers/docs/>
-- Bitcoin Whitepaper: <https://bitcoin.org/bitcoin.pdf>
+[1] Ethereum Foundation, "Ethereum development documentation," <https://ethereum.org/en/developers/docs/>
+
+[2] S. Nakamoto, "Bitcoin: A Peer-to-Peer Electronic Cash System," 2008, <https://bitcoin.org/bitcoin.pdf>

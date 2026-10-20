@@ -17,12 +17,12 @@
 - 台帳（Ledger）: 取引履歴を記録するデータ構造
 - ブロック: 複数の取引をまとめた単位
 - ハッシュ: データを固定長に要約した値（改ざん検知に使う）
-- スマートコントラクト: 台帳上で実行されるプログラム
+- スマートコントラクト: 台帳上で実行されるプログラム [1]
 
 ### どのように信頼を作るか
 
 ブロックチェーンは、1台のサーバだけに記録を置くのではなく、複数の参加者が同じ履歴を共有し、
-各ブロックをハッシュでつなぐことで「あとから勝手に書き換えにくい」状態を作ります。
+各ブロックをハッシュでつなぐことで「あとから勝手に書き換えにくい」状態を作ります [2]。
 
 「絶対に改ざんできない」わけではありません。**改ざんを検出しやすく、参加者間で履歴を照合できる** ことが特徴です。
 
@@ -89,7 +89,8 @@ C --> E[Auditable History]
   - 動画や画像などの大きなファイル
   - 高頻度なセンサストリーム
 
-## 出典
+## 参考文献
 
-- Ethereum documentation: <https://ethereum.org/en/developers/docs/>
-- Bitcoin Whitepaper: <https://bitcoin.org/bitcoin.pdf>
+[1] Ethereum Foundation, "Ethereum development documentation," <https://ethereum.org/en/developers/docs/>
+
+[2] S. Nakamoto, "Bitcoin: A Peer-to-Peer Electronic Cash System," 2008, <https://bitcoin.org/bitcoin.pdf>

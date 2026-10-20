@@ -46,18 +46,13 @@ Phase 3 では、その先として、次の流れを扱います。
 
 ## 前提
 
-- Docker / Docker Compose が使える
+- Docker / Docker Compose が使える [1]
 - `curl` が使える
 - ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使う
 
-参考:
-
-- [Docker 公式サイト](https://docs.docker.com/get-docker/)
-- [FastAPI 公式サイト](https://fastapi.tiangolo.com/)
-
 ## 対応するソースコード
 
-この Hands-on では、次のファイルを使います。
+この Hands-on では、次のファイルを使います。`assistant/app/main.py` は FastAPI [2] で作った API サーバーです。
 
 - [assistant/app/main.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/main.py)
 - [assistant/app/rule_based_planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/rule_based_planner.py)
@@ -289,3 +284,9 @@ docker compose -f infra/docker-compose.yml stop assistant
 
 - Phase 2 からつなげて理解したい場合: [検知イベントだけを共有する](webcam-event-sharing.md)
 - Phase 1 の基礎から見直したい場合: [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md)
+
+## 参考文献
+
+[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-docker/>
+
+[2] FastAPI, "FastAPI," <https://fastapi.tiangolo.com/>

@@ -7,11 +7,13 @@
 
 ### Hardhatとは
 
-Hardhatは、Ethereum系スマートコントラクトの開発・テスト・デプロイを行うための開発環境です。
+Hardhatは、Ethereum系スマートコントラクトの開発・テスト・デプロイを行うための開発環境です [1]。
 
 このサイトでは、**ローカル開発チェーン**として使い、実験を安全かつ再現可能に行います。
 
 ### 何ができるか
+
+主な操作は次のとおりです [2]。
 
 - ローカルノード起動（`npx hardhat node`）
 - コントラクトデプロイ（`npx hardhat run ... --network localhost`）
@@ -66,7 +68,8 @@ sequenceDiagram
 - Hardhat はあくまで開発・学習用
 - 本番では、ネットワーク運用、ガスコスト、障害対応、秘密鍵管理を別途考える必要がある
 
-## 出典
+## 参考文献
 
-- Hardhat official docs: <https://hardhat.org/docs>
-- Hardhat getting started: <https://hardhat.org/hardhat-runner/docs/getting-started>
+[1] Nomic Foundation, "Hardhat Documentation," <https://hardhat.org/docs>
+
+[2] Nomic Foundation, "Getting started with Hardhat," <https://hardhat.org/hardhat-runner/docs/getting-started>

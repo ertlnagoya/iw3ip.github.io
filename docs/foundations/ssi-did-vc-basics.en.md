@@ -12,9 +12,9 @@ This chapter separates their roles and then reconnects them inside the IW3IP des
 
 ### Terms
 
-- SSI: users manage identity credentials under user control
-- DID: decentralized identifier (example: `did:example:alice`)
-- VC: Verifiable Credential; here used as Consent VC
+- SSI: users manage identity credentials under user control. Standardization and implementation work can be followed at the Decentralized Identity Foundation [1]
+- DID: decentralized identifier (example: `did:example:alice`) [2]
+- VC: Verifiable Credential; here used as Consent VC [3]
 
 ### Relationship Between the Three
 
@@ -100,8 +100,10 @@ Stating these simplifications explicitly makes it easier to distinguish the purp
 - DID resolution against DID Documents
 - PEP in front of publisher
 
-## Sources
+## References
 
-- W3C DID Core: <https://www.w3.org/TR/did-core/>
-- W3C Verifiable Credentials Data Model 2.0: <https://www.w3.org/TR/vc-data-model-2.0/>
-- DIF (Decentralized Identity Foundation): <https://identity.foundation/>
+[1] Decentralized Identity Foundation, <https://identity.foundation/>
+
+[2] W3C, "Decentralized Identifiers (DIDs) v1.0," W3C Recommendation, 2022, <https://www.w3.org/TR/did-core/>
+
+[3] W3C, "Verifiable Credentials Data Model v2.0," W3C Recommendation, 2025, <https://www.w3.org/TR/vc-data-model-2.0/>

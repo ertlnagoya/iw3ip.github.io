@@ -481,21 +481,26 @@ This sample is the entry point for understanding the basic IW3IP path with Home 
 
 ### FIWARE
 
-FIWARE is an IoT platform family centered on `Context Broker` and `IoT Agent` components for cities, facilities, and multi-organization data flows. It is heavier than Home Assistant, but it is a strong candidate when you want to study cross-system sharing and subscription-based notification.
-
-- Official site: <https://www.fiware.org/>
-- Tutorials: <https://fiware-tutorials.readthedocs.io/en/latest/>
+FIWARE is an IoT platform family centered on `Context Broker` and `IoT Agent` components for cities, facilities, and multi-organization data flows [1]. It is heavier than Home Assistant, but it is a strong candidate when you want to study cross-system sharing and subscription-based notification. Its official tutorials [2] walk through the components step by step.
 
 ### Eclipse Ditto
 
-Eclipse Ditto is a digital-twin platform for device state and command handling. Combined with IW3IP Phase 3, it is useful when you want to trace not only shared events but also later state updates and control results.
-
-- Official site: <https://eclipse.dev/ditto/>
-- MQTT binding: <https://eclipse.dev/ditto/connectivity-protocol-bindings-mqtt.html>
+Eclipse Ditto is a digital-twin platform for device state and command handling [3]. Combined with IW3IP Phase 3, it is useful when you want to trace not only shared events but also later state updates and control results. Connecting devices over MQTT is described in [4].
 
 ### CARLA
 
-CARLA is a simulator for urban spaces, vehicles, pedestrians, and virtual sensors. It is much heavier than Home Assistant, but it becomes useful when you want advanced event-generation scenarios for safety, disaster response, and mobility in Phase 2 or Phase 3.
+CARLA is a simulator for urban spaces, vehicles, pedestrians, and virtual sensors [5]. It is much heavier than Home Assistant, but it becomes useful when you want advanced event-generation scenarios for safety, disaster response, and mobility in Phase 2 or Phase 3. Its usage is described in the documentation [6].
 
-- Official site: <https://carla.org/>
-- Documentation: <https://carla.readthedocs.io/>
+## References
+
+[1] FIWARE Foundation, "FIWARE," <https://www.fiware.org/>
+
+[2] FIWARE Foundation, "FIWARE Step-By-Step Tutorials," <https://fiware-tutorials.readthedocs.io/en/latest/>
+
+[3] Eclipse Foundation, "Eclipse Ditto," <https://eclipse.dev/ditto/>
+
+[4] Eclipse Foundation, "Eclipse Ditto Documentation: MQTT protocol binding," <https://eclipse.dev/ditto/connectivity-protocol-bindings-mqtt.html>
+
+[5] CARLA Team, "CARLA Simulator," <https://carla.org/>
+
+[6] CARLA Team, "CARLA Simulator Documentation," <https://carla.readthedocs.io/>

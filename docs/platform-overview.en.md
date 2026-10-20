@@ -242,10 +242,10 @@ Blockchain, Hardhat, SSI, DID, and VC are each independent technologies, but IW3
 
 The issues discussed on this page are not purely hypothetical. Publicly available sources show related real-world problems.
 
-- The National Police Agency of Japan reported 82,563 missing-person reports received in 2024.
-- The National Police Agency also provides online procedures for lost-property reporting and search, showing that everyday "lost and found" problems remain important at scale.
-- Materials from the Personal Information Protection Commission discuss the usefulness of facial-recognition-enabled cameras for crime prevention while also pointing out privacy risks due to remote identification.
-- Research on municipal surveillance-camera deployment has identified recurring issues such as installation cost, communication and maintenance cost, accountability, and public acceptance.
+- The National Police Agency of Japan reported 82,563 missing-person reports received in 2024 [1].
+- The National Police Agency also provides online procedures for lost-property reporting and search, showing that everyday "lost and found" problems remain important at scale [2], [3].
+- Materials from the Personal Information Protection Commission discuss the usefulness of facial-recognition-enabled cameras for crime prevention while also pointing out privacy risks due to remote identification [4]. Research has also discussed installing security cameras in harmony with privacy [5].
+- Research on municipal surveillance-camera deployment has identified recurring issues such as installation cost, communication and maintenance cost, accountability, and public acceptance [6].
 
 Taken together, these sources indicate a three-way challenge:
 
@@ -303,17 +303,16 @@ This is why they connect naturally to IW3IP features such as **Consent VC-based 
 3. To observe actual behavior: [Hands-on](hands-on/index.md)
 4. To study the research in more depth: [Publications](publications.md), [References and Further Reading](foundations/references.md)
 
-## Public sources referenced on this page
+## References
 
-- National Police Agency of Japan, "Status of Missing Person Reports in 2024"  
-  <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
-- National Police Agency of Japan, "Guidance for Online Applications"  
-  <https://www.npa.go.jp/policies/application/shinseisys/>
-- National Police Agency of Japan, "Lost Property Report and Search"  
-  <https://www.npa.go.jp/bureau/soumu/ishitsubutsu/ishitsu-todokedekensaku.html>
-- Personal Information Protection Commission, materials on legal and policy issues for surveillance cameras with facial recognition  
-  <https://www.ppc.go.jp/files/pdf/20220128_shiryou-2_kentoukadai.pdf>
-- Hisamichi Chiba, Kimihiro Hino, "A Study on the Ideal Way of Installing Security Cameras in Urban Space Harmonized with Privacy", 2017  
-  <https://www.jstage.jst.go.jp/article/reportscpij/16/2/16_124/_article/-char/ja/>
-- D. Muranaka, M. Amemiya, T. Ohyama, "地方自治体による公共空間への防犯カメラ大規模設置事業の取り組み実態と評価" (in Japanese), Journal of the City Planning Institute of Japan, Vol.51, No.3, pp.357-364, 2016  
-  <https://www.jstage.jst.go.jp/article/journalcpij/51/3/51_357/_pdf>
+[1] National Police Agency of Japan, 「令和6年における行方不明者届受理等の状況」 [Status of missing person reports in 2024] (in Japanese), <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
+
+[2] National Police Agency of Japan, 「オンラインでの申請等の案内」 [Guidance for online applications] (in Japanese), <https://www.npa.go.jp/policies/application/shinseisys/>
+
+[3] National Police Agency of Japan, 「落とし物の届出・検索」 [Lost property report and search] (in Japanese), <https://www.npa.go.jp/bureau/soumu/ishitsubutsu/ishitsu-todokedekensaku.html>
+
+[4] Personal Information Protection Commission, Japan, 「顔識別機能付き防犯カメラの利用に関する法的整理と検討課題」 [Legal issues on the use of security cameras with facial recognition] (in Japanese), 2022, <https://www.ppc.go.jp/files/pdf/20220128_shiryou-2_kentoukadai.pdf>
+
+[5] N. Chiba and K. Hino, "CCTV installation in public areas balancing privacy and security" (in Japanese), Reports of the City Planning Institute of Japan, vol. 16, no. 2, pp. 124–128, 2017. DOI: [10.11361/reportscpij.16.2_124](https://doi.org/10.11361/reportscpij.16.2_124)
+
+[6] H. Muranaka, M. Amemiya, and T. Ohyama, "Survey and evaluation of large-scale installation of CCTV in public space by local governments" (in Japanese), Journal of the City Planning Institute of Japan, vol. 51, no. 3, pp. 357–364, 2016. DOI: [10.11361/journalcpij.51.357](https://doi.org/10.11361/journalcpij.51.357)

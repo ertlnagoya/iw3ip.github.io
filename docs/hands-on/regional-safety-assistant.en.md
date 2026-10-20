@@ -46,18 +46,13 @@ Branches after that:
 
 ## Prerequisites
 
-- Docker / Docker Compose
+- Docker / Docker Compose [1]
 - `curl`
 - the `main` branch of the `Blockchain_IoT_Marketplace` repository
 
-References:
-
-- [Docker official site](https://docs.docker.com/get-docker/)
-- [FastAPI official site](https://fastapi.tiangolo.com/)
-
 ## Matching source files
 
-This hands-on uses the following files.
+This hands-on uses the following files. `assistant/app/main.py` is an API server built with FastAPI [2].
 
 - [assistant/app/main.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/main.py)
 - [assistant/app/rule_based_planner.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/assistant/app/rule_based_planner.py)
@@ -289,3 +284,9 @@ docker compose -f infra/docker-compose.yml stop assistant
 
 - To connect this back to Phase 2: [Share detections, not raw frames](webcam-event-sharing.md)
 - To review the Phase 1 foundation: [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
+
+## References
+
+[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-docker/>
+
+[2] FastAPI, "FastAPI," <https://fastapi.tiangolo.com/>
