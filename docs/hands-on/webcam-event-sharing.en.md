@@ -50,7 +50,7 @@ Branches after that:
 - you understand [Detect with a USB webcam (OpenCV)](webcam.md)
 - you can run [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
 - Docker / Docker Compose is available
-- If the IPFS from the [Quickstart](../setup/quickstart.en.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
+- If the IPFS from the [Quickstart](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - `curl` is available
 
 Matching sample files:

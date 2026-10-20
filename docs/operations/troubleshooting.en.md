@@ -3,7 +3,7 @@
 This page groups common failures by symptom and then lists the checks and actions to take.  
 Even when several causes are possible, it is usually easiest to start from the closest symptom and work through the checks in order.
 
-## `host.docker.internal` connection issues
+## 1. `host.docker.internal` connection issues
 
 - Symptom: the mediators (`mediator-owner` / `mediator-buyer`) or the frontend cannot reach `host.docker.internal` and DNS resolution fails
   - Example log: `ConnectError("dns error", ... "failed to lookup address information: nodename nor servname provided, or not known")`
@@ -43,7 +43,7 @@ If you cannot change the hosts file, replace `host.docker.internal` with `localh
 
 Run the mediators and frontend on the DevContainer / Docker side, where `host.docker.internal` resolves as intended. Choose this if you prefer not to change the settings.
 
-## IPFS container keeps restarting
+## 2. IPFS container keeps restarting
 
 - Symptom: running `docker compose ps` in the `ipfs` directory shows the `ipfs` STATUS stuck at `Restarting`
   - Check: read the error with `docker compose logs ipfs`
@@ -52,14 +52,14 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
   - Check: whether the publisher is running. Both use port 8080 ([Port conflicts](#port-conflicts))
   - Action: stop the publisher (`cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml stop publisher`), then run `docker compose up -d` again in the `ipfs` directory. There is no need to delete any data
 
-## `http://<HOST_IP>:5173/` not reachable from smartphone
+## 3. `http://<HOST_IP>:5173/` not reachable from smartphone
 
 - Symptom: the phone browser cannot open `http://<HOST_IP>:5173/` (`<HOST_IP>` is the PC's LAN IP)
   - Check: the frontend was started with `npm run dev -- --host 0.0.0.0 --port 5173`
   - Check: both devices are on the same Wi-Fi network
   - Check: the firewall allows `5173`
 
-## Product does not appear
+## 4. Product does not appear
 
 - Symptom: no merchandise is shown at <http://localhost:5173>
   - The top page is a search screen. "Run Search" lists only items whose video metadata `mediator-owner` registered in IPFS and PostgreSQL (the `ipfs_records` table). Items created from event files and the 5 items registered by the deployment do not appear in the search. Open `http://localhost:5173/merchandise/<item address>` directly.
@@ -67,14 +67,14 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
   - Check: the `mediator-owner` terminal shows `Watching raw_data/output for new event files`. If not, update the course repository (`git pull`) and restart it
   - Check: when an event file is written, `Product deployed: 0x... for file ...` is printed. The address shown is the one to use in the merchandise page URL
 
-## Purchase does not succeed
+## 5. Purchase does not succeed
 
 - Symptom: purchase does not succeed
   - Check: MetaMask is connected with Account #2 (`0x3C44...`). A purchase requires the buyer's public key to be registered in the PubKey contract. Keys are registered only for Account #2 (by `mediator-buyer` at startup) and Account #1 (by `mediator-owner`). A purchase from any other account reverts. If you buy an item registered by `mediator-owner` (a `Product deployed` item) with Account #1, `mediator-owner` also acts as the buyer and saves the data to `mediator-owner/downloads` (nothing appears in `mediator-buyer`). The hands-on buys with Account #2
   - Check: whether you already bought that item with the same account. One account can buy an item only once (a repeat purchase reverts). An item whose delivery is in progress (from the purchase until the data delivery completes) cannot be bought by any account. Use an item from a `Product deployed: 0x...` line in the `mediator-owner` terminal that you have not bought yet, or restart the node and redeploy
   - Action: after restarting the local chain, clear stale MetaMask state and reconnect
 
-## Events are rejected with `no_matching_consent`
+## 6. Events are rejected with `no_matching_consent`
 
 - Symptom: in the HA Demo Simulator (or similar), some datasets never appear in `/platform/ingest`. In `audit/logs` they show `action: deny` / `reason: no_matching_consent` / `subject_did: "unknown"`
   - Example log:
@@ -107,7 +107,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 - After editing, re-register the consents (confirm each response contains `"status":"stored"`), re-send the events, then check `/platform/ingest` again.
 - Existing `deny` entries remain in the log as history. Always verify with **a new event sent after the consent was registered**.
 
-## Merchandise page returns 500 (iot-market-ui endpoint)
+## 7. Merchandise page returns 500 (iot-market-ui endpoint)
 
 - Symptom: the list page (`/`) opens, but an individual merchandise page `http://localhost:5173/merchandise/<address>` returns **HTTP 500**
   - Cause: the frontend (`iot-market-ui`) reads its RPC and publisher endpoints from `iot-market-ui/.env.local`. If that endpoint **cannot reach the running Hardhat node** (someone else's IP, a wrong port such as `8546`, or a host that is not up), the merchandise page fails to fetch data and returns 500. The list page has a timeout and still renders, so the failure first surfaces on the detail page.
@@ -130,7 +130,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 - Restart the frontend (`npm run dev`) after editing.
 - Note: if a contract-address mismatch is suspected, stop and restart the Hardhat node (`npx hardhat node`) and redeploy so the addresses align with the defaults. If they still differ, update `iot-market-ui/src/lib/contracts/IoTMarket.ts` and `PubKey.ts` to the deployed addresses.
 
-## Cannot add the network to MetaMask
+## 8. Cannot add the network to MetaMask
 
 - Symptom: adding a `http://...:8545` network to MetaMask (on a phone or PC) is rejected no matter how many times you try
   - Cause: MetaMask validates the network by connecting to the RPC when you add it. If the endpoint is unreachable, it is rejected. From a phone in particular, the default `npx hardhat node` only listens on `127.0.0.1`, so the phone cannot reach it.
@@ -145,13 +145,13 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
   npx hardhat node --hostname 0.0.0.0
   ```
 
-  Restarting empties the chain. Redo step 2 (deploy) of the [Quickstart](../setup/quickstart.en.md) and restart `mediator-owner` and `mediator-buyer`. If MetaMask shows a nonce error, reset the account (Settings → Advanced → Clear activity tab data).
+  Restarting empties the chain. Redo step 2 (deploy) of the [Quickstart](../setup/quickstart.md) and restart `mediator-owner` and `mediator-buyer`. If MetaMask shows a nonce error, reset the account (Settings → Advanced → Clear activity tab data).
 
 - Use the **PC's LAN IP** for the RPC URL in MetaMask (e.g. `http://192.168.1.20:8545`), with chain ID `31337`.
 - Confirm the PC firewall allows `8545` and that the PC and phone are on the same Wi-Fi.
 - If you use the frontend from the phone, set `iot-market-ui/.env.local` to the same LAN IP (see the previous item).
 
-## `GET /platform/ingest` returns 404
+## 9. `GET /platform/ingest` returns 404
 
 - Symptom: `curl http://localhost:8080/platform/ingest` returns `{"detail":"platform_ingest_read_disabled"}` (404)
   - Cause: `GET /platform/ingest` is a demo-only API that returns every row without authentication, and it is disabled by default.
@@ -162,7 +162,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
     PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
     ```
 
-## Port conflicts
+## 10. Port conflicts { #port-conflicts }
 
 - Symptom: a process does not start and prints `address already in use` or `port is already allocated`
   - Check: find the process that holds the port (macOS / Linux).

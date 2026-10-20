@@ -4,7 +4,7 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
 
 > **What you'll do**: analyze a webcam image with a local VLM and distribute the generated semantic data (descriptions) over the platform
 >
-> **Prerequisites**: [Environment setup](../setup/index.en.md) and [Quickstart](../setup/quickstart.en.md) completed
+> **Prerequisites**: [Environment setup](../setup/index.md) and [Quickstart](../setup/quickstart.md) completed
 >
 > **What you need**: laptop PC + USB webcam + Docker (including the VLM)
 >
@@ -45,8 +45,8 @@ Instead of distributing raw images, distribute the **semantic derivatives** a lo
 
 ## Prerequisites
 
-- you can start the v1 stack from [Quickstart](../setup/quickstart.en.md)
-- If the IPFS from the [Quickstart](../setup/quickstart.en.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
+- you can start the v1 stack from [Quickstart](../setup/quickstart.md)
+- If the IPFS from the [Quickstart](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - a USB webcam is recognized by the PC (trying [Detect with a USB webcam (OpenCV)](webcam.md) first makes this easier)
 - A Python 3 virtual environment at the top of the course repository with OpenCV installed (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`). In every new terminal, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate`. With Homebrew Python and similar setups, `pip install` outside a venv fails
 - Docker can use the `--profile vlm` profile (the first model pull downloads several GB)
@@ -261,6 +261,6 @@ Without a template, implement one of these yourself:
 
 ## Related pages
 
-- Prerequisites: [Detect with a USB webcam (OpenCV)](webcam.md) / [Quickstart](../setup/quickstart.en.md)
+- Prerequisites: [Detect with a USB webcam (OpenCV)](webcam.md) / [Quickstart](../setup/quickstart.md)
 - Deep dive: DataUserVC × tiered access ([§8 media integration](data-user-vc-tiered-media.md#8-real-data-integration-option-b--http-media-gateway), [§12 VLM tier](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur)) / [Let an AI plan the steps (LLM Planner)](llm-planner.md)
 - Design: [Tiered access design spec (tier extension: semantic-level redaction)](data-user-vc-tiered-spec.md)

@@ -4,7 +4,7 @@ Build a minimal setup that receives Home Assistant state over MQTT and decides w
 
 > **What you'll do**: MQTT → publisher → Consent VC check → audit log
 >
-> **Prerequisites**: [Quickstart](../setup/quickstart.en.md), ideally [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
+> **Prerequisites**: [Quickstart](../setup/quickstart.md), ideally [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
 >
 > **What you need**: PC (Docker)
 >
@@ -50,7 +50,7 @@ Branches after that:
 
 - Docker / Docker Compose
 - `curl`
-- if IPFS started in [Quickstart](../setup/quickstart.en.md) is still running, stop it first from the source repository with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` (IPFS and the publisher both use port 8080)
+- if IPFS started in [Quickstart](../setup/quickstart.md) is still running, stop it first from the source repository with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` (IPFS and the publisher both use port 8080)
 
 Matching sample files:
 

@@ -4,7 +4,7 @@ Open the v1 marketplace (purchase with MetaMask [1]; data is handed over through
 
 > **What you'll do**: Open the marketplace screen in a phone browser and walk through a purchase
 >
-> **Prerequisites**: v1 stack running ([Quickstart](../setup/quickstart.en.md))
+> **Prerequisites**: v1 stack running ([Quickstart](../setup/quickstart.md))
 >
 > **What you need**: PC + smartphone on the same network
 >
@@ -104,7 +104,7 @@ Edit `.env.local` and set the host for your scenario.
     `npx hardhat node --hostname 0.0.0.0` and allow `8545` through the PC firewall.
 
     Restarting the node resets the chain and the deployed contracts are gone.
-    After restarting, redo step 2 (deploy) of the [Quickstart](../setup/quickstart.en.md)
+    After restarting, redo step 2 (deploy) of the [Quickstart](../setup/quickstart.md)
     and restart `mediator-owner` and `mediator-buyer` as well. Earlier item addresses no longer work.
     Run the USB webcam (or HUSKYLENS2) mock again and use the newly shown `Product deployed` address.
 
@@ -112,7 +112,7 @@ Restart the frontend (the Vite dev server [2] started by `npm run dev`) after ed
 
 ### 1. Start the PC side on the LAN
 
-First stop the `npm run dev` running in Terminal 3 of the [Quickstart](../setup/quickstart.en.md) with Ctrl+C (it uses the same port 5173; otherwise the new server starts on another port). Then run this in the terminal you moved into `iot-market-ui` in step 0.
+First stop the `npm run dev` running in Terminal 3 of the [Quickstart](../setup/quickstart.md) with Ctrl+C (it uses the same port 5173; otherwise the new server starts on another port). Then run this in the terminal you moved into `iot-market-ui` in step 0.
 
 ```bash
 npm run dev -- --host 0.0.0.0 --port 5173

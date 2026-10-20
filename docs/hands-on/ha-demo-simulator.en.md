@@ -4,7 +4,7 @@ A page that runs data generation through sharing in a minimal setup, using Home 
 
 > **What you'll do**: Stream Home Assistant demo data into the publisher and watch it in the browser
 >
-> **Prerequisites**: [Environment Setup](../setup/index.en.md) is done
+> **Prerequisites**: [Environment Setup](../setup/index.md) is done
 >
 > **What you need**: PC only (Docker is enough)
 >
@@ -57,7 +57,7 @@ Branches:
 - Docker / Docker Compose
 - a browser that can open `http://localhost:8123`
 - `curl`
-- if IPFS started in [Quickstart](../setup/quickstart.en.md) is still running, stop it first from the source repository with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` (IPFS and the publisher both use port 8080)
+- if IPFS started in [Quickstart](../setup/quickstart.md) is still running, stop it first from the source repository with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` (IPFS and the publisher both use port 8080)
 
 This hands-on assumes the source-code repository `Blockchain_IoT_Marketplace` on the `main` branch.
 

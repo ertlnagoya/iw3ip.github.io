@@ -243,7 +243,7 @@ Reference (network add screen):
 - [ ] MetaMask is on the `Hardhat Local` network
 - [ ] The MetaMask account shows about `10000 ETH` (9999.99… is fine)
 
-All checked → start [hands-on Part 1](../hands-on/index.en.md).
+All checked → start [hands-on Part 1](../hands-on/index.md).
 
 ## Simpler alternative: a minimal stack with docker compose only
 

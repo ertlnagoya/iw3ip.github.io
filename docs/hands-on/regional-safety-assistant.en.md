@@ -4,7 +4,7 @@ The basic Phase 3 sample: using a sample file of events like those shared in Pha
 
 > **What you'll do**: Free-form request → plan → execute
 >
-> **Prerequisites**: [Share detections, not raw frames](webcam-event-sharing.en.md)
+> **Prerequisites**: [Share detections, not raw frames](webcam-event-sharing.md)
 >
 > **What you need**: PC only
 >

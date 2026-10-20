@@ -4,7 +4,7 @@ Turn detections from DFRobot's [1] HUSKYLENS2 AI camera [2] into event files.
 
 > **What you'll do**: Generate event files from HUSKYLENS2 (or mock) detections and confirm they are registered as merchandise
 >
-> **Prerequisites**: [Environment Setup](../setup/index.en.md) + [Quickstart](../setup/quickstart.en.md)
+> **Prerequisites**: [Environment Setup](../setup/index.md) + [Quickstart](../setup/quickstart.md)
 >
 > **What you need**: PC + HUSKYLENS2 (no device → use [Detect with a USB webcam (OpenCV)](webcam.md) instead)
 >

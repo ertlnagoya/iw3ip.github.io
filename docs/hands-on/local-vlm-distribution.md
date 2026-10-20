@@ -38,8 +38,8 @@
                                                │ description_full / summary
                                                ▼
                                      ┌────────────────────┐
-                                     │ /platform/ingest へ │
-                                     │ (意味データを流通)     │
+                                     │ /platform/ingest へ│
+                                     │ (意味データを流通) │
                                      └────────────────────┘
 ```
 

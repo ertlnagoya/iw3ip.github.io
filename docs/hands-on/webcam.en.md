@@ -4,7 +4,7 @@ Without a HUSKYLENS2, a generic USB webcam plus OpenCV [1] is enough to emit `pe
 
 > **What you'll do**: Detect a person and littering candidates from a USB webcam, emit events
 >
-> **Prerequisites**: [Environment Setup](../setup/index.en.md) + [Quickstart](../setup/quickstart.en.md)
+> **Prerequisites**: [Environment Setup](../setup/index.md) + [Quickstart](../setup/quickstart.md)
 >
 > **What you need**: PC + USB webcam
 >

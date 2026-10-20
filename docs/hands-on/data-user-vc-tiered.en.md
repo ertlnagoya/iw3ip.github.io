@@ -4,7 +4,7 @@ Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC).
 
 > **What you'll do**: Watch the response narrow from video → image → event only as the trust level drops
 >
-> **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.en.md) and [Share detections, not raw frames](webcam-event-sharing.en.md)
+> **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) and [Share detections, not raw frames](webcam-event-sharing.md)
 >
 > **What you need**: PC + smartphone (iw3ip-wallet)
 >

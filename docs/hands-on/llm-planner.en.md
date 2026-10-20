@@ -1,10 +1,10 @@
 # Let an AI plan the steps (LLM Planner)
 
-Replace the rule-based planner in [Run the regional safety assistant](regional-safety-assistant.en.md) with one based on a large language model (LLM), in three stages.
+Replace the rule-based planner in [Run the regional safety assistant](regional-safety-assistant.md) with one based on a large language model (LLM), in three stages.
 
 > **What you'll do**: Swap planner via stub provider first, check it in the frontend demo, then use a real LLM
 >
-> **Prerequisites**: [Run the regional safety assistant](regional-safety-assistant.en.md)
+> **Prerequisites**: [Run the regional safety assistant](regional-safety-assistant.md)
 >
 > **What you need**: PC (real LLM step needs an API key or a local LLM)
 >
