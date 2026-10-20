@@ -134,7 +134,7 @@ PolicyToken のように 2 回目で `403 policy_token_already_consumed` には�
 ## 5. write_count を audit log で確認
 
 ```bash
-curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool | head -60
+curl -s "http://$HOST_IP:8080/audit/logs?limit=5" | python3 -m json.tool
 ```
 
 各 ingest が次の形で記録されます:

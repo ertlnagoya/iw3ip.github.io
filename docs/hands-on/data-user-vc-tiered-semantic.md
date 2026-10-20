@@ -176,8 +176,8 @@ publisher は内部で次の順に処理します。
 4. 同じ extension で再エンコード → publisher 自身の `/media/upload` に POST
 5. 戻ってきた URL/CID を `image_url_redacted` / `image_cid_redacted` に設定
 
-同じ画像に対する 2 回目以降のリクエストでは、sha256 による重複排除が働き、
-**ブラー済み画像の生成も省略**されます。
+ぼかしの処理は、リクエストのたびに行われます。同じ画像から作ったブラー済み画像は、`/media/upload` の sha256 による重複排除で、
+**同じものが重ねて保存されることはありません**。
 
 !!! note "MVP（最小構成の実装）の制限"
     Haar cascade は **正面顔のみ**検出します。横顔・遮蔽された顔・低解像度の顔は
@@ -527,7 +527,7 @@ audit テーブルに記録しません（audit テーブルの記録を「実�
 
 | 観点 | §12 VLM tier | §13 semantic pipeline |
 |---|---|---|
-| 信頼度の決定方法 | DataUserVC の `allowed_views` フィールドが claim 段階で決まる | `allowed_views` から実行時に派生 + 既定で legacy 動作 |
+| 信頼度の決定方法 | `/marketplace/claim` の `data_user_attrs` から `allowed_views` を算出し、PurchaseViewerVC に書き込む | `allowed_views` から実行時に派生 + 既定で legacy 動作 |
 | 派生データの形式 | テキスト (description_full / summary) + 顔ブラー画像 | 構造化 SIR (bbox + sensitive_regions + events) |
 | マスク粒度 | 顔のみ (`image_url_redacted`) | 顔 + テキスト + 画面 + 白板 + 書類 + 名札 + ID + プレート + unknown_sensitive |
 | 受信側での切替 | claim mint 時に固定 | `/viewer` トグルで実行時切替可能 |

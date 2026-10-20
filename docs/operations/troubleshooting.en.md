@@ -36,7 +36,7 @@ If you cannot change the hosts file, replace `host.docker.internal` with `localh
   rpc_url: "http://localhost:8545"
   ```
 
-- Apply the same change to the corresponding `mediator-buyer` settings and to the frontend (`iot-market-ui`) RPC endpoint configuration. If you cannot find where the endpoint is set, grep the repository for `host.docker.internal`.
+- Apply the same change to the corresponding `mediator-buyer` settings and to `src/routes/api/sql-query/+server.ts` of the frontend (`iot-market-ui`), where the IPFS and PostgreSQL hosts are fixed to `host.docker.internal`. The frontend RPC endpoint defaults to `http://127.0.0.1:8545`, so it needs no change. If you cannot find where the endpoint is set, grep the repository for `host.docker.internal`.
 - Restart each process after editing.
 
 ### Fix B — run inside containers
@@ -52,7 +52,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 ## `http://<HOST_IP>:5173/` not reachable from smartphone
 
 - Symptom: the phone browser cannot open `http://<HOST_IP>:5173/` (`<HOST_IP>` is the PC's LAN IP)
-  - Check: the frontend was started with `--host 0.0.0.0`
+  - Check: the frontend was started with `npm run dev -- --host 0.0.0.0 --port 5173`
   - Check: both devices are on the same Wi-Fi network
   - Check: the firewall allows `5173`
 
@@ -68,6 +68,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 
 - Symptom: purchase does not succeed
   - Check: MetaMask is connected with Account #2 (`0x3C44...`). A purchase requires the buyer's public key to be registered in the PubKey contract. `mediator-buyer` registers the key of Account #2 at startup, so a purchase from another account reverts
+  - Check: whether the item has already been bought. An item can be bought only once (after a purchase it is no longer for sale, and a repeat purchase by the same buyer also reverts). Use an item from a `Product deployed: 0x...` line in the `mediator-owner` terminal that you have not bought yet, or restart the node and redeploy
   - Action: after restarting the local chain, clear stale MetaMask state and reconnect
 
 ## Events are rejected with `no_matching_consent`
@@ -96,6 +97,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 - Move `valid_to` to a later date and re-register. Example that rewrites `valid_to` in every file at once (macOS `sed` needs `-i ''`):
 
   ```bash
+  cd ~/program/Blockchain_IoT_Marketplace
   sed -i '' 's/"valid_to": "[^"]*"/"valid_to": "2035-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
   ```
 

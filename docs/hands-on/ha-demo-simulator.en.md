@@ -256,7 +256,7 @@ Look at `action` / `dataset_id` / `reason` / `subject_did`.
 
 ??? question "What should you be able to read off?"
     - `possible_littering` has `action: "deny"`, `reason: "no_matching_consent"`, and `subject_did: "unknown"`.
-    - `suspicious_activity` has `action: "allow"`, `reason: "sent"`, and the issuer DID in `subject_did`.
+    - `suspicious_activity` has `action: "allow"`, `reason: "sent"`, and `subject_did` holds the data subject DID of the matching consent (`did:example:ha-demo-operator`).
     - So the problem is not that a consent is missing, but that no *matching* consent is found.
 
 #### Step 3. Find the cause

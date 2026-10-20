@@ -311,12 +311,13 @@ through. That's Stage T's whole point.
 When the verifier rejects a presented VC, `/verifier/status` returns a
 `reason` code together with a human-readable `human_message_ja` /
 `human_message_en` pair. The `/buyer/start` page picks that up during
-its long-poll and replaces the QR with a red banner plus a "re-present
-from /buyer/start" link (see `publisher/app/ssi/verifier_routes.py`).
+its long-poll and replaces the QR with a red box headed "データを閲覧する権限がありません" (you are not allowed to view the data),
+the message, a `reason code:` line, and a "このページをリロード" (reload this page) link
+(see `publisher/app/viewer_routes.py` and `publisher/app/ssi/verifier_routes.py`).
 
-Main reason codes and their banner copy:
+Main reason codes and their messages (the page shows `human_message_ja` when it is present):
 
-| reason | EN banner | JA |
+| reason | EN message | JA message |
 |---|---|---|
 | `dataset_mismatch` | The presented VC is bound to a different dataset. | 提示された VC のデータセットが、要求されたデータセットと一致しません。 |
 | `action_not_allowed` | The presented VC does not include the required action (read). | 提示された VC では、このデータの読み取り権限がありません。 |
@@ -330,7 +331,7 @@ Main reason codes and their banner copy:
 2. Suppose a wallet sends a PurchaseViewerVC bound to a *different* dataset (e.g. `home/event/another_dataset`). A normal wallet does not offer such a card and shows "No Available Credential" instead.
 3. publisher receives `/verifier/response` and records `{"verified": false, "reason": "dataset_mismatch"}`.
 4. The PC's `/verifier/status` long-poll returns a `result` holding `verified: false`, the `reason`, and the `human_message_*` strings.
-5. The page replaces the QR with `<div class="deny-banner">The presented VC is bound to a different dataset.</div>` plus a re-present link to `/buyer/start?ds=...`.
+5. The page replaces the QR with a `<div class="err">` holding "データを閲覧する権限がありません" and the Japanese message "提示された VC のデータセットが、要求されたデータセットと一致しません。", then shows `reason code: dataset_mismatch` and a "このページをリロード" (reload this page) link.
 6. `/audit/logs` gains a row with `raw_topic` `oid4vp/response`, `action` `deny`, and `reason` `dataset_mismatch` (check with `curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'`).
 
 In normal use this denial does not happen. The presentation request includes the target dataset, and the wallet does not offer cards that do not match (it shows "No Available Credential" instead). The flow above is the publisher's defence in case a wallet sends a non-matching card anyway.
@@ -463,7 +464,7 @@ Deny cases:
 | dataset (resolved from topic) not in `licensed_datasets[]` | 403 | `seller_token_dataset_not_licensed` |
 | topic not recognised by `normalize()` | 400 | `unsupported_topic:...` |
 
-All denials are recorded in `/audit/logs` with `action=deny`.
+The `seller_token_*` errors (401 and 403) are recorded in `/audit/logs` with `action=deny`. The 401 for a missing `Authorization` header and the 400 for `unsupported_topic` are returned before any audit write, so they are not recorded.
 
 ### 11.5 Confirm from the receiver side
 

@@ -94,6 +94,7 @@ flowchart TB
 起動コマンド:
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d
 ```
 
@@ -115,6 +116,7 @@ Phase 3 の最短デモとして `assistant-demo` を使うと、1 コマンド�
 起動コマンド:
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
 ```
 

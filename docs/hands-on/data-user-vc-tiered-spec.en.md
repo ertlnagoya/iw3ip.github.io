@@ -13,7 +13,7 @@ This is a design document, not a step-by-step. For the walk-through, see
   (ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC)
 - How the trustScore logic from Li et al.'s `DataUserVerifier.sol` is folded
   into the Phase 2 Publisher
-- The unidirectional flow: VC verification → trustScore → allowed_views
+- The unidirectional flow: purchase claim attributes (`data_user_attrs`) → trustScore → allowed_views
 - Separation of concerns between data sources (HA / RaspberryPi / USB
   Webcam) and the Publisher
 
@@ -24,8 +24,9 @@ This is a design document, not a step-by-step. For the walk-through, see
   Python** instead.
 - trustScore is **not** a simple sum: `full` requires
   `score >= 80 AND entityType ∈ {GovernmentOrganization, Police}`.
-- `allowed_views` on ViewerVC / PurchaseViewerVC is **frozen at token
-  mint time**; we never promote it after the fact.
+- `allowed_views` on a PurchaseViewerVC is **frozen when the VC is
+  issued**; we never promote it after the fact. A ViewerVC carries no
+  `allowed_views`, so its view is always `event` only.
 
 ## Goal
 
@@ -59,18 +60,14 @@ we do not call it on-chain. See "Why no on-chain call" below.
 ## Architecture
 
 ```
-[Wallet (holds DataUserVC)]
-        | OID4VP (DCQL: DataUserVC)
-        v
-[Publisher /verifier/*]
-        | post-PEX checks
+[/marketplace/claim (data_user_attrs = the five DataUserVC attributes)]
         v
 [trust_score.evaluate(entityType, purpose, legalCompliance,
                       dataHandlingPolicy, misuseRecord)]
         | -> trust_score: int, access_level: full/access/denied,
         |    allowed_views: subset of {event, image, video}
         v
-[/marketplace/claim] -> MarketplaceClaim.allowed_views
+[MarketplaceClaim.allowed_views]
         v
 [PurchaseViewerVC issuance] -> VC.claims.allowed_views
         v
@@ -81,15 +78,17 @@ we do not call it on-chain. See "Why no on-chain call" below.
 [/platform/data] selects image_cid / video_cid / video_duration_sec
 ```
 
-`DataUserVC` alone mints **no token**. It is the *credential material*
-for issuing ViewerVC / PurchaseViewerVC.
+`DataUserVC` alone mints **no token**. The same attributes are the *material*
+for issuing a PurchaseViewerVC.
+
+The original design had the wallet present the DataUserVC over OID4VP and derive the trust level from that check. There is no presentation definition for DataUserVC yet, so this path is not used today; the trust level comes from the `data_user_attrs` passed to `/marketplace/claim`.
 
 ## Relation to the five existing VCs
 
 | VC | Role | Token | Carries allowed_views |
 |---|---|---|---|
 | ConsentVC | Provider consent | PolicyToken (5 min, single) | no |
-| ViewerVC | Restricted viewer | ViewerToken (60 s, multi) | yes |
+| ViewerVC | Restricted viewer | ViewerToken (60 s, multi) | no (always event only) |
 | ServiceVC | Service provider | ServiceToken (1 h, multi) | no |
 | PurchaseViewerVC | Post-purchase view | ViewerToken (60 s, multi) | yes |
 | SellerVC | Seller | SellerToken (24 h, multi) | no |
@@ -186,9 +185,9 @@ wallet) ask for the five attributes above (plus `subject_id`).
 
 ### `POST /verifier/*` (presentation endpoints)
 
-When a `DataUserVC` is presented:
+When a `DataUserVC` is presented (as the note above says, this path is not reachable today because there is no presentation definition):
 
-- post-PEX checks the five claims are present
+- post-PEX checks that the three claims `entityType`, `purpose` and `dataHandlingPolicy` are present
 - **no token is minted**
 - response: `{trust_score, access_level, allowed_views, holder_did}`
 
@@ -258,7 +257,7 @@ At the initial implementation, `tests/test_data_user_vc_tiered.py` covered 13 ca
    - even with score ≥ 80, non-gov/police never reaches full
 2. `evaluate_from_claims()` wrapper (1)
 3. Issuer metadata lists `DataUserVC` (1)
-4. `/issuer/offer?type=DataUserVC` requires the five attributes (1)
+4. `/issuer/offer?type=DataUserVC` requires its attributes (400 without them; four are required, `purpose` is optional) (1)
 5. `/marketplace/claim` trust promotion / default to event-only (2)
 6. `PurchaseViewerVC` inherits `allowed_views` from the claim (1)
 7. `/platform/data` projects Tier 1 / 2 / 3 (3)
@@ -352,11 +351,11 @@ provider page
   ├── /media/upload stores the source image (existing)
   └── POST /provider/publish
         └── pipeline.process_message
+              ├── existing: consent / policy evaluation (stops here on deny)
               ├── (new) VLMClient.describe(image_url)
-              │     -> {description_full, description_summary, model, generated_at}
+              │     -> {description_full, description_summary, description_model, description_generated_at}
               ├── (new) ImageRedactor.blur_pii(image_url)
               │     -> {image_url_redacted, image_cid_redacted}
-              ├── existing: consent / policy evaluation
               └── existing: platform_client.send(envelope)
 ```
 

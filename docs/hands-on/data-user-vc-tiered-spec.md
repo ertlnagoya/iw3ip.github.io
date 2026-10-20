@@ -13,7 +13,7 @@ Publisher が公開するカメラ視野を **イベント／画像／動画** �
   6 種類目として追加する **DataUserVC** の関係
 - Li らのスマートコントラクト `ssi/contracts/DataUserVerifier.sol`（[論文](../publications.md) 1 の著者による実装）に書かれた trustScore（信頼度スコア）算出ロジックを
   Phase 2 の Publisher にどのように取り込むか
-- 「VC 検証 → trustScore → allowed_views」という単方向データフロー
+- 「購入の申告の属性 (`data_user_attrs`) → trustScore → allowed_views」という単方向データフロー
 - データ供給側（HA / RaspberryPi / USB Webcam）と Publisher の責務分離
 
 ## つまずきやすい点
@@ -22,8 +22,8 @@ Publisher が公開するカメラ視野を **イベント／画像／動画** �
   オフラインでは失敗します。今回の実装は **Publisher 側の Python で評価**します
 - アクセスレベルは trustScore（属性ごとの点数の和）だけでは決まりません。`full` になるのは、
   entityType が高信頼の区分（`GovernmentOrganization` / `Police`）で、かつ score>=80 のときだけです
-- ViewerVC / PurchaseViewerVC が持つ `allowed_views` は **Token を発行する時点**で
-  確定し、以後は変えません（発行後に権限を引き上げません）
+- PurchaseViewerVC が持つ `allowed_views` は **VC を発行する時点**で
+  確定し、以後は変えません（発行後に権限を引き上げません）。ViewerVC は `allowed_views` を持たず、閲覧範囲は常に `event` だけです
 
 ## 目的
 
@@ -55,18 +55,14 @@ Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/d
 ## アーキテクチャ
 
 ```
-[Wallet (DataUserVC 保持)]
-        | OID4VP (DCQL: DataUserVC)
-        v
-[Publisher /verifier/*]
-        | post-PEX checks
+[/marketplace/claim (data_user_attrs = DataUserVC と同じ 5 属性)]
         v
 [trust_score.evaluate(entityType, purpose, legalCompliance,
                       dataHandlingPolicy, misuseRecord)]
         | -> trust_score: int, access_level: "full"/"access"/"denied",
         |    allowed_views: ["event"|"image"|"video", ...]
         v
-[/marketplace/claim]  -> MarketplaceClaim.allowed_views
+[MarketplaceClaim.allowed_views]
         v
 [PurchaseViewerVC issuance]  -> VC.claims.allowed_views
         v
@@ -77,17 +73,17 @@ Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/d
 [/platform/data] image_cid / video_cid / video_duration_sec を選別投影
 ```
 
-`DataUserVC` 単体では token を発行しません。**ViewerVC / PurchaseViewerVC を
-発行するときの判断材料**として使います。
+`DataUserVC` 単体では token を発行しません。DataUserVC と同じ属性が、**PurchaseViewerVC を
+発行するときの判断材料**になります。
 
-図中の post-PEX checks は、提示された VC が要求条件に合うことを照合した後に行う追加の検証を指します。
+当初の設計では、ウォレットから DataUserVC を OID4VP で提示し、その検証結果から信頼度を決める予定でした。DataUserVC 用の提示の条件 (presentation definition) がまだ無いため、現在はこの経路を使わず、`/marketplace/claim` に渡す `data_user_attrs` から信頼度を決めています。
 
 ## 既存 5 種 VC との関係
 
 | VC | 役割 | Token 発行 | allowed_views を持つ |
 |---|---|---|---|
 | ConsentVC | データ提供同意 | PolicyToken (5min/single) | × |
-| ViewerVC | 限定閲覧者 | ViewerToken (60s/multi) | ✓ |
+| ViewerVC | 限定閲覧者 | ViewerToken (60s/multi) | × (常に event のみ) |
 | ServiceVC | サービス提供者 | ServiceToken (1h/multi) | × |
 | PurchaseViewerVC | 購入後の閲覧 | ViewerToken (60s/multi) | ✓ |
 | SellerVC | 出品者 | SellerToken (24h/multi) | × |
@@ -183,9 +179,9 @@ score >= 60                               -> "access"
 
 ### `POST /verifier/*`（提示エンドポイント）
 
-`DataUserVC` が提示されたときの動作は次のとおりです。
+`DataUserVC` が提示されたときの動作は次のとおりです (上の注のとおり、現在は提示の条件が無いため、この経路には到達しません)。
 
-- post-PEX checks で 5 属性が claim に存在するか検証
+- post-PEX checks で `entityType`・`purpose`・`dataHandlingPolicy` の 3 属性が claim に存在するか検証
 - **token を発行しない**
 - レスポンス: `{trust_score, access_level, allowed_views, holder_did}`
 
@@ -254,7 +250,7 @@ score >= 60                               -> "access"
    - score>=80 でも entity が gov/police でなければ full にならない
 2. `evaluate_from_claims()` のラッパテスト（1）
 3. issuer metadata に `DataUserVC` が含まれる（1）
-4. `/issuer/offer?type=DataUserVC` が 5 属性を必須化（1）
+4. `/issuer/offer?type=DataUserVC` が属性を必須化 (属性なしは 400。必須は 4 属性で、`purpose` は省略可)（1）
 5. `/marketplace/claim` の trust 昇格 / 既定 event のみ（2）
 6. `PurchaseViewerVC` が claim の `allowed_views` を継承（1）
 7. `/platform/data` の Tier 1/2/3 投影（3）
@@ -347,11 +343,11 @@ provider page
   ├── /media/upload で image を保存（既存）
   └── POST /provider/publish
         └── pipeline.process_message
+              ├── 既存: consent / policy 評価 (拒否ならここで終わる)
               ├── (新) VLMClient.describe(image_url)
-              │     -> {description_full, description_summary, model, generated_at}
+              │     -> {description_full, description_summary, description_model, description_generated_at}
               ├── (新) ImageRedactor.blur_pii(image_url)
               │     -> {image_url_redacted, image_cid_redacted}
-              ├── 既存: consent / policy 評価
               └── 既存: platform_client.send(envelope)
 ```
 

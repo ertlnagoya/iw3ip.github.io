@@ -261,7 +261,7 @@ MetaMask をローカル Hardhat に接続します。
 |---|---|---|
 | `npx: command not found` | Node.js が入っていない | [事前準備](prerequisites.md) の Node.js を再確認 |
 | `cargo: command not found` | Rust が入っていない | 同上、Rust を再インストール |
-| `port 5173 already in use` | 別アプリがポート占有 | 占有プロセスを止めるか別ポートで起動 |
+| `Port 5173 is in use, trying another one...` と出て、5174 などで起動する | 別アプリが 5173 番を使っている | 占有しているプロセスを止めて起動し直す。そのまま使う場合は、表示された URL (`http://localhost:5174/` など) を開く |
 | IPFS のコンテナが起動しない / publisher が起動しない | IPFS のゲートウェイと publisher が、どちらもポート 8080 を使う | 同時には起動できない。publisher を使うハンズオンの前に、`ipfs` ディレクトリで `docker compose down` を実行する |
 | 仲介プロセスが `dns error` や接続エラーで止まる | `host.docker.internal` を引けない | 手順 0.5 を実施 |
 | `error connecting to docker` | Docker Desktop 未起動 | Docker Desktop を起動 |

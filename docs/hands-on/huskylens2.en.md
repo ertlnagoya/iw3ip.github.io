@@ -62,11 +62,11 @@ Branches after that:
 
 - If you only want to confirm the pipeline: `mock` mode is enough
 - If you want to confirm the real device path: continue with `serial` mode
-- If serial mode fails early: jump to the troubleshooting section first
+- If serial mode fails early: check [Troubleshooting](#4-troubleshooting) first
 
 ## Phase 1: Confirm the pipeline in mock mode
 
-## Mock first
+### 1. Mock first
 
 Run in the `sensor-bridge` folder of the course repository (the first `cd` below moves there). Mock mode generates simulated detections in place of a device.
 
@@ -144,15 +144,22 @@ Once event files are generated in mock mode, the next step is to try the physica
 
 ## Phase 1: Try the same flow with serial input
 
-## Real device (serial)
+### 2. Real device (serial)
 
-For `--serial-port`, give the name of the port the HUSKYLENS2 is connected to. On macOS, replace it with the name you find with `ls /dev/tty.usb*` (on Linux it is something like `/dev/ttyUSB0`). Run serial mode in the `sensor-bridge` folder with the venv from the prerequisites (with `pyserial`) active.
+For `--serial-port`, give the name of the port the HUSKYLENS2 is connected to. On macOS, replace it with the name you find with `ls /dev/tty.usb*` (on Linux it is something like `/dev/ttyUSB0`). Run serial mode in the `sensor-bridge` folder with the venv from the prerequisites (with `pyserial`) active (the first two lines below do this).
 
 ```bash
-python3 huskylens_bridge.py --mode serial --serial-port /dev/tty.usbserial-XXXX --output-dir ../mediator-owner/raw_data/output
+cd ~/program/Blockchain_IoT_Marketplace/sensor-bridge
+source ../.venv/bin/activate
+python3 huskylens_bridge.py \
+  --mode serial \
+  --serial-port /dev/tty.usbserial-XXXX \
+  --baudrate 115200 \
+  --camera-id 301 \
+  --output-dir ../mediator-owner/raw_data/output
 ```
 
-## Expected
+### 3. Checkpoints
 
 - `301_huskylens_*.txt` appears under `raw_data/output`
 - `labels` in the file lists what was detected (person, etc.) with counts
@@ -162,13 +169,17 @@ python3 huskylens_bridge.py --mode serial --serial-port /dev/tty.usbserial-XXXX 
 
 - mock mode generates event files without hardware
 - serial mode keeps generating files as detections arrive
+- you can open the merchandise page and go as far as purchasing
 
-## Troubleshooting
+### 4. Troubleshooting
 
 - Symptom: `pyserial` is missing
   - Action: activate the venv (`source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate`), run `pip install pyserial`, and rerun in the same terminal
 - Symptom: the serial port is unknown
   - Check: on macOS, run `ls /dev/tty.usb*` to find `/dev/tty.usbserial-…` or `/dev/tty.usbmodem…`; on Linux, `/dev/ttyUSB0`; or the OS device manager
+- Symptom: the device cannot be read
+  - Check: the cable carries data, not only power
+  - Check: macOS / Linux permissions and the port name are correct
 - Symptom: no event file is created
   - Check: the output folder (`../mediator-owner/raw_data/output`) exists. If not, create it with `mkdir -p ../mediator-owner/raw_data/output`
 - Symptom: events are not registered as merchandise (`Product deployed` is not printed)

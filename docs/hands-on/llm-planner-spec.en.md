@@ -174,7 +174,7 @@ Roles:
 - `llm_prompt.py`
   - builds the system prompt and user prompt
 - `plan_validator.py`
-  - checks allow lists and pydantic validation
+  - checks against the allow lists (pydantic shape validation is done by `ExecutionPlan.model_validate` in `llm_planner.py`)
 - `planner_factory.py`
   - switches between `rule_based` and `llm`
 

@@ -450,9 +450,14 @@ At this point, `planner_diagnostics` can be read from both the API and the UI. T
 
 ### 5. Switch to an OpenAI-compatible API
 
-Copy `.env.local.example`, set `ASSISTANT_LLM_API_KEY` (and, if needed, `ASSISTANT_LLM_MODEL` and `ASSISTANT_LLM_API_BASE_URL`) in `.env.local` to your own values, then start the server. Stop any other assistant on port 8090 first (`assistant`, `assistant-demo`, or the host `uvicorn`).
+Copy `.env.local.example`, set `ASSISTANT_LLM_API_KEY` (and, if needed, `ASSISTANT_LLM_MODEL` and `ASSISTANT_LLM_API_BASE_URL`) in `.env.local` to your own values, then start the server. Stop any other assistant on port 8090 first. If you run `uvicorn` on the host, press Ctrl+C in that terminal.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+git pull --ff-only
+# stop the Docker assistants started in §3.5 etc. (nothing happens if they are not running)
+docker compose -f infra/docker-compose.yml --profile assistant-demo down
+docker compose -f infra/docker-compose.yml --profile assistant down
 cp .env.local.example .env.local
 # edit ASSISTANT_LLM_API_KEY etc. in .env.local
 docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
@@ -500,6 +505,12 @@ Docker Compose example:
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-mock
+```
+
+Either way, check from another terminal that the mock server responds. A JSON reply such as `{"status":"ok"}` means it is up.
+
+```bash
+curl http://127.0.0.1:18000/health
 ```
 
 In another terminal, start the assistant (the commands below move to the repository top and activate the venv). Stop any other assistant on port 8090 first (the Docker `assistant`, `assistant-demo`, or `assistant-llm`):
@@ -567,7 +578,7 @@ Points to check:
 
 - if `planner_name` differs from the expected value, a fallback may have occurred
 - actions outside the allow list are not executed as-is
-- `/assistant/executions` retains `planner_diagnostics.error_type` and `planner_diagnostics.error_message`
+- the reason for a fallback is in `planner_diagnostics.error_type` and `planner_diagnostics.error_message` of the `/assistant/plan` response (plans run with `POST /assistant/execute` are also kept in `/assistant/executions`)
 
 ## Success criteria
 
@@ -584,27 +595,37 @@ This hands-on is successful if you can confirm:
 
 - a real API call will not work while `REPLACE_WITH_YOUR_API_KEY` is still present
 
-### `401 Unauthorized`
+When the LLM API cannot be used, `/assistant/plan` does not fail; it returns the rule-based planner's plan (fallback). The reason is in `code` and `error_message` of `planner_diagnostics` in the response.
+
+### `error_message` is `LLM API returned HTTP 401`
 
 - check `ASSISTANT_LLM_API_KEY`
 
-### `404` or `405`
+### `error_message` is `LLM API returned HTTP 404` or `405`
 
 - check whether `ASSISTANT_LLM_API_BASE_URL` points to an OpenAI-compatible `/chat/completions` endpoint
+- check the model name in `ASSISTANT_LLM_MODEL`
+
+### `error_message` is `could not reach LLM API (ConnectError)`
+
+- check that the host and port of `ASSISTANT_LLM_API_BASE_URL` are reachable. For the §5.2 mock server, use `curl http://127.0.0.1:18000/health`
+
+### `error_message` is `missing api_key` or another `missing ...`
+
+- make sure `ASSISTANT_LLM_API_KEY`, `ASSISTANT_LLM_API_BASE_URL` and `ASSISTANT_LLM_MODEL` in `.env.local` are not empty
+
+### `error_message` is `model response is not valid JSON`, or `code` is `llm_output_invalid`
+
+- the model did not return a JSON plan. Use a model that supports JSON mode (`response_format`)
+
+### An LLM error gives `Internal Server Error` (HTTP 500)
+
+- with an old course repository, HTTP and connection errors give a 500 instead of a fallback. Run `git pull`, then restart with `--build` for Docker or restart `uvicorn` on the host
 
 ### `docker compose --profile assistant-llm up` fails
 
-- make sure `.env.local` exists
-- make sure `ASSISTANT_LLM_API_KEY` is not empty in `.env.local`
-
-### A real API always falls back instead of returning the LLM plan
-
-Check:
-
-- API key
-- base URL
-- model name
-- whether the returned content is valid JSON
+- make sure `.env.local` exists (an empty key still starts; you then get `missing api_key` above)
+- if it says `port is already allocated`, stop the other assistants on port 8090 with the commands in §5
 
 ### `station-front` does not appear
 

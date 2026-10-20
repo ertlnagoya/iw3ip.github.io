@@ -197,8 +197,8 @@ Internally the publisher:
 6. surfaces the resulting URL/CID as `image_url_redacted` /
    `image_cid_redacted`
 
-Subsequent uploads of the same source skip the blur entirely — the
-sha256 dedup hits.
+The blur runs on every request. Blurred images made from the same source are
+**not stored twice**, thanks to the sha256 dedup in `/media/upload`.
 
 !!! note "MVP limitations"
     The Haar cascade catches **frontal faces only**. Side profiles,
@@ -502,7 +502,7 @@ only actual disclosures.
 
 | Aspect | §12 VLM tier | §13 semantic pipeline |
 |---|---|---|
-| Trust derivation | DataUserVC `allowed_views` baked at claim time | derived at runtime from `allowed_views`; legacy default kept |
+| Trust derivation | `allowed_views` computed from `data_user_attrs` in `/marketplace/claim` and baked into the PurchaseViewerVC | derived at runtime from `allowed_views`; legacy default kept |
 | Derivative shape | text + face-blurred image | structured SIR (bbox + sensitive_regions + events) |
 | Mask granularity | face only (`image_url_redacted`) | face + text + screen + whiteboard + document + id_card + name_tag + plate + unknown_sensitive |
 | Receiver toggle | fixed at claim mint | runtime via `/viewer` 🔬 toggle |

@@ -256,7 +256,7 @@ curl 'http://localhost:8080/audit/logs?limit=20'
 
 ??? question "何が読み取れればよい?"
     - `possible_littering` は `action: "deny"`、`reason: "no_matching_consent"`、`subject_did: "unknown"` になっています。
-    - `suspicious_activity` は `action: "allow"`、`reason: "sent"` で、`subject_did` に発行者の DID が入っています。
+    - `suspicious_activity` は `action: "allow"`、`reason: "sent"` で、`subject_did` に、一致した consent のデータ主体の DID (`did:example:ha-demo-operator`) が入っています。
     - consent は登録されているのに、一致するものが見つからない状態です。
 
 #### Step 3. 原因を確かめる

@@ -104,7 +104,7 @@ details:
 {"event_type": "possible_littering", "event_time_utc": "...", "event_score": 0.801, "summary": "Bottle remained on ground area for long duration", "object": {...}}
 ```
 
-Each file is one event. `event_type` is the kind of event, `event_score` is its confidence, and `details` holds the underlying detection.
+Mock mode outputs either `possible_littering` or `person_detected` at random. A `person_detected` file has `person_count` instead of `object`, so it is fine if your first file differs from the example above. Each file is one event. `event_type` is the kind of event, `event_score` is its confidence, and `details` holds the underlying detection.
 
 ### Confirm registration as merchandise
 
@@ -166,6 +166,7 @@ This detection is a simple rule of thumb (heuristic) for learning, not a strict 
 - Symptom: the camera cannot be opened
   - Check: another application is not using the camera
   - Check: another `--camera-index` was tried
+  - Check (macOS): System Settings → Privacy & Security → Camera allows your terminal app. Restart the terminal after allowing it (without the permission, `[webcam-bridge] error: failed to open webcam index=0` is printed)
 - Symptom: the expected event does not appear
   - Check: lighting and framing are appropriate
   - Check: the pipeline works in mock mode first

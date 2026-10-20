@@ -105,7 +105,7 @@ details:
 {"event_type": "possible_littering", "event_time_utc": "...", "event_score": 0.801, "summary": "Bottle remained on ground area for long duration", "object": {...}}
 ```
 
-1 ファイルが 1 件のイベントです。`event_type` がイベントの種類、`event_score` が確からしさ、`details` が元になった検知の内容です。
+mock モードは、`possible_littering` と `person_detected` のどちらかをランダムに出力します。`person_detected` のファイルは、`object` の代わりに `person_count` を持つので、最初のファイルが上の例と違っていても問題ありません。1 ファイルが 1 件のイベントです。`event_type` がイベントの種類、`event_score` が確からしさ、`details` が元になった検知の内容です。
 
 ### 商品として登録されることを確認する
 
@@ -167,6 +167,7 @@ python3 webcam_litter_bridge.py \
 - 症状: カメラが開けない
   - 確認: 別アプリがカメラを占有していないか
   - 確認: `--camera-index 0` を `1` などに変えて試したか
+  - 確認 (macOS): システム設定 → プライバシーとセキュリティ → カメラ で、使っているターミナルのアプリが許可されているか。許可したあとはターミナルを起動し直す (許可が無いと `[webcam-bridge] error: failed to open webcam index=0` と表示される)
 - 症状: 期待イベントが出ない
   - 確認: 照明条件や画角が適切か
   - 確認: mock モードでパイプライン自体が動くか

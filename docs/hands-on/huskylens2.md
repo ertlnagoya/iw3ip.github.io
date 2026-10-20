@@ -146,9 +146,11 @@ mock でイベントファイルが生成されることを確認できたら、
 
 ### 2. 実機（serial）
 
-`--serial-port` には、HUSKYLENS2 をつないだポートの名前を指定します。macOS では `ls /dev/tty.usb*` で確かめた名前に置き換えます (Linux では `/dev/ttyUSB0` などです)。serial モードは、前提で作った venv (`pyserial` 入り) を有効にした `sensor-bridge` フォルダで実行します。
+`--serial-port` には、HUSKYLENS2 をつないだポートの名前を指定します。macOS では `ls /dev/tty.usb*` で確かめた名前に置き換えます (Linux では `/dev/ttyUSB0` などです)。serial モードは、前提で作った venv (`pyserial` 入り) を有効にして、`sensor-bridge` フォルダで実行します (下のコマンドの最初の 2 行で行います)。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace/sensor-bridge
+source ../.venv/bin/activate
 python3 huskylens_bridge.py \
   --mode serial \
   --serial-port /dev/tty.usbserial-XXXX \

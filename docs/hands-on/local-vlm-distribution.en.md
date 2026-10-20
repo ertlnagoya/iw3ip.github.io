@@ -98,7 +98,7 @@ curl -s http://localhost:8080/health | jq .
 
 ## 2. Capture one frame from the webcam
 
-Grab a single still image from the USB webcam and save it as `snapshot.jpg`. The script uses OpenCV, so run it in a terminal with the venv from the prerequisites active (`opencv-python<5` is installed because OpenCV 5 removed `cv2.CascadeClassifier`).
+Grab a single still image from the USB webcam and save it as `snapshot.jpg`. Save the script below as `capture_snapshot.py` at the top of the course repository (`~/program/Blockchain_IoT_Marketplace`) and run it there. The script uses OpenCV, so activate the venv from the prerequisites (`opencv-python<5` is installed because OpenCV 5 removed `cv2.CascadeClassifier`).
 
 ```python
 # capture_snapshot.py
@@ -114,6 +114,8 @@ print("saved snapshot.jpg")
 ```
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 python3 capture_snapshot.py
 ```
 
@@ -127,6 +129,7 @@ python3 capture_snapshot.py
 POST the captured image to the publisher's `/semantic/analyze`. The local model analyzes it and returns only a structured **Semantic Intermediate Representation (SIR)** — **never the raw pixels**. No wallet or VC is required, so you can try it immediately.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 curl -s -X POST http://localhost:8080/semantic/analyze \
   -F "file=@snapshot.jpg" \
   -F "source_device_id=laptop-webcam-01" \
@@ -199,6 +202,8 @@ Implement the two TODOs in `problem_program.py`.
 - **TODO 2 `build_event()`**: build the event payload that carries the uploaded image (`image_url`) into the platform
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 python3 examples/hands_on/local_vlm_distribution/problem_program.py \
   --base-url http://localhost:8080 --image snapshot.jpg
 ```
@@ -233,7 +238,7 @@ Without a template, implement one of these yourself:
 - the first model pull is large and slow → wait for completion in the `vlm-pull` logs; do it when you have bandwidth to spare
 - inference is slow / times out on CPU → use the lightweight `VLM_MODEL=moondream`, or raise `VLM_TIMEOUT_SEC`
 - `processing_warnings` shows `vlm_unavailable` → check that the `vlm` service is up and the model pull is complete (`docker compose -f infra/docker-compose.yml --profile vlm ps` / `docker compose -f infra/docker-compose.yml logs vlm-pull`)
-- the camera cannot be opened → change the camera index or stop the process holding it (see [Detect with a USB webcam (OpenCV)](webcam.md))
+- the camera cannot be opened → change the camera index, stop the process holding it, or on macOS allow camera access for your terminal app (see [Detect with a USB webcam (OpenCV)](webcam.md))
 
 ## Related pages
 

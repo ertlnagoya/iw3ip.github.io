@@ -450,9 +450,14 @@ defineProps<{
 
 ### 5. OpenAI 互換 API に切り替える
 
-`.env.local.example` をコピーし、`.env.local` の `ASSISTANT_LLM_API_KEY` (必要なら `ASSISTANT_LLM_MODEL` と `ASSISTANT_LLM_API_BASE_URL` も) を自分の値に書き換えてから起動します。8090 番ポートを使うほかの assistant (`assistant`、`assistant-demo`、ホストの `uvicorn`) は先に止めておきます。
+`.env.local.example` をコピーし、`.env.local` の `ASSISTANT_LLM_API_KEY` (必要なら `ASSISTANT_LLM_MODEL` と `ASSISTANT_LLM_API_BASE_URL` も) を自分の値に書き換えてから起動します。8090 番ポートを使うほかの assistant は先に止めておきます。ホストで `uvicorn` を動かしている場合は、そのターミナルで Ctrl+C を押します。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+git pull --ff-only
+# §3.5 などで起動した Docker の assistant を止める (起動していなければ何も起きない)
+docker compose -f infra/docker-compose.yml --profile assistant-demo down
+docker compose -f infra/docker-compose.yml --profile assistant down
 cp .env.local.example .env.local
 # エディタで .env.local の ASSISTANT_LLM_API_KEY などを書き換える
 docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
@@ -500,6 +505,12 @@ Docker Compose を使う場合は次を実行します。
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile llm-mock up --build -d llm-mock
+```
+
+どちらの場合も、別のターミナルで mock server が応答することを確かめます。`{"status":"ok"}` のような JSON が返れば起動しています。
+
+```bash
+curl http://127.0.0.1:18000/health
 ```
 
 別ターミナルで assistant を起動します (下のコマンドで、リポジトリのトップに移って venv を有効にします)。8090 番ポートを使うほかの assistant (Docker の `assistant`、`assistant-demo`、`assistant-llm`) は先に止めておきます。
@@ -567,7 +578,7 @@ LLM の出力はそのまま採用せず、次を必ず検証します。
 
 - `planner_name` が期待値と違う場合は、フォールバックした可能性がある
 - 許可外の action がそのまま実行されない
-- `/assistant/executions` に `planner_diagnostics.error_type` と `planner_diagnostics.error_message` が残る
+- フォールバックした理由は、`/assistant/plan` の応答の `planner_diagnostics.error_type` と `planner_diagnostics.error_message` で分かる (`POST /assistant/execute` で実行した計画は、`/assistant/executions` にも残る)
 
 ## 成功判定
 
@@ -584,27 +595,37 @@ LLM の出力はそのまま採用せず、次を必ず検証します。
 
 - `REPLACE_WITH_YOUR_API_KEY` のままでは実 API は使えません
 
-### `401 Unauthorized`
+LLM API を使えないとき、`/assistant/plan` はエラーにならず、rule-based planner の計画を返します (fallback)。理由は応答の `planner_diagnostics` の `code` と `error_message` に出ます。
+
+### `error_message` が `LLM API returned HTTP 401`
 
 - `ASSISTANT_LLM_API_KEY` を確認してください
 
-### `404` または `405`
+### `error_message` が `LLM API returned HTTP 404` または `405`
 
 - `ASSISTANT_LLM_API_BASE_URL` が OpenAI 互換の `/chat/completions` を提供しているか確認してください
+- `ASSISTANT_LLM_MODEL` のモデル名が正しいか確認してください
+
+### `error_message` が `could not reach LLM API (ConnectError)`
+
+- `ASSISTANT_LLM_API_BASE_URL` のホストとポートに届くか確認してください。§5.2 の mock server なら `curl http://127.0.0.1:18000/health` で確かめます
+
+### `error_message` が `missing api_key` などの `missing ...`
+
+- `.env.local` の `ASSISTANT_LLM_API_KEY`・`ASSISTANT_LLM_API_BASE_URL`・`ASSISTANT_LLM_MODEL` が空でないか確認してください
+
+### `error_message` が `model response is not valid JSON`、または `code` が `llm_output_invalid`
+
+- モデルが JSON の計画を返していません。JSON モード (`response_format`) に対応したモデルを使ってください
+
+### LLM のエラーなのに `Internal Server Error` (HTTP 500) になる
+
+- 教材リポジトリが古いと、HTTP のエラーや接続のエラーで fallback せず 500 になります。`git pull` してから、Docker なら `--build` を付けて、ホストなら `uvicorn` を起動し直してください
 
 ### `docker compose --profile assistant-llm up` が失敗する
 
-- `.env.local` を作成したか確認してください
-- `.env.local` の `ASSISTANT_LLM_API_KEY` が空でないか確認してください
-
-### 実 API で `planned` が返らず、いつも fallback になる
-
-- API key
-- base URL
-- model 名
-- 返ってきた content が JSON か
-
-を確認してください。
+- `.env.local` を作成したか確認してください (キーが空でも起動はします。その場合は上の `missing api_key` になります)
+- `port is already allocated` なら、8090 番ポートを使うほかの assistant を §5 のコマンドで止めてください
 
 ### `station-front` にならない
 

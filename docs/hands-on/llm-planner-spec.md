@@ -174,7 +174,7 @@ LLM の呼び出しは本体に直接書かず、adapter、validator、fallback 
 - `llm_prompt.py`
   - system prompt と user prompt の組み立て
 - `plan_validator.py`
-  - 許可リストと pydantic 検証
+  - 許可リストとの照合 (pydantic での形式の検証は `llm_planner.py` の `ExecutionPlan.model_validate` で行う)
 - `planner_factory.py`
   - `rule_based` / `llm` の切り替え
 

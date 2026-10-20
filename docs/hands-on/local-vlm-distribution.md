@@ -97,7 +97,7 @@ curl -s http://localhost:8080/health | jq .
 
 ## 2. ウェブカメラから 1 枚撮る
 
-USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。OpenCV を使うので、前提で作った venv を有効にしたターミナルで実行します（OpenCV 5 では `cv2.CascadeClassifier` が外れているため、`opencv-python<5` を入れています）。
+USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。下のスクリプトを教材リポジトリのトップ (`~/program/Blockchain_IoT_Marketplace`) に `capture_snapshot.py` として保存し、そこで実行します。OpenCV を使うので、前提で作った venv を有効にします（OpenCV 5 では `cv2.CascadeClassifier` が外れているため、`opencv-python<5` を入れています）。
 
 ```python
 # capture_snapshot.py
@@ -113,6 +113,8 @@ print("saved snapshot.jpg")
 ```
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 python3 capture_snapshot.py
 ```
 
@@ -126,6 +128,7 @@ python3 capture_snapshot.py
 撮影した画像を publisher の `/semantic/analyze` に送ると、ローカルモデルが画像を解析し、**生のピクセルを返さずに**構造化された意味データ（SIR: Semantic Intermediate Representation）だけを返します。ウォレットや VC は不要で、すぐに試せます。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 curl -s -X POST http://localhost:8080/semantic/analyze \
   -F "file=@snapshot.jpg" \
   -F "source_device_id=laptop-webcam-01" \
@@ -196,6 +199,8 @@ README の「Big picture」で、3 つの関数の役割を押さえます。`an
 - **TODO 2 `build_event()`**: アップロードした画像（`image_url`）を運ぶイベントペイロードを組み立てる
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
 python3 examples/hands_on/local_vlm_distribution/problem_program.py \
   --base-url http://localhost:8080 --image snapshot.jpg
 ```
@@ -230,7 +235,7 @@ python3 examples/hands_on/local_vlm_distribution/problem_program.py \
 - 初回のモデル pull が重く時間がかかる → `vlm-pull` のログで取得完了を待つ。回線に余裕のあるときに実施する。
 - CPU で推論が遅い / タイムアウトする → 軽量な `VLM_MODEL=moondream` を使う、`VLM_TIMEOUT_SEC` を延ばす。
 - `processing_warnings` に `vlm_unavailable` が出る → `vlm` サービスが起動しているか、モデル pull が完了しているかを確認（`docker compose -f infra/docker-compose.yml --profile vlm ps` / `docker compose -f infra/docker-compose.yml logs vlm-pull`）。
-- カメラが開けない → カメラ index の変更や占有プロセスの停止（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を参照）。
+- カメラが開けない → カメラ index の変更や占有プロセスの停止、macOS ではターミナルのアプリへのカメラの許可（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を参照）。
 
 ## 関連ページ
 

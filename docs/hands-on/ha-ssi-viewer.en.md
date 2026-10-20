@@ -248,4 +248,7 @@ ViewerVC reads use a **directly specified dataset_id**. Other forms of authoriza
   - Check: passed `vc_kind=ViewerVC` to `/verifier/request`
 - Symptom: `/platform/data` returns 401 viewer_token_unknown
   - Check: not accidentally using a write-side PolicyToken
-  - Check: TTL (60 s) has not expired
+  - Check: the ViewerToken was copied correctly (not cut off)
+  - Check: the publisher was not recreated after presenting (ViewerTokens live in the publisher's memory and are lost on recreate; present again from §4)
+- Symptom: `/platform/data` returns 401 viewer_token_expired
+  - Action: the TTL (60 s) has expired. Present again from §4

@@ -291,7 +291,7 @@ Internally, `dataset_id` is looked up from the Merchandise, and the data is retr
 
 ### 8.2 Bridge side (new, not implemented)
 
-→ The two endpoints below are not implemented. The implemented bridge only subscribes to Purchase events and calls `/marketplace/claim`; it has no HTTP server. iot-market-ui checks the state with the publisher's `GET /marketplace/claim/{claim_id}`.
+→ The two endpoints below are not implemented. The implemented bridge only subscribes to Purchase events and calls `/marketplace/claim`; it has no HTTP server. The claim state can be checked with the publisher's `GET /marketplace/claim/{claim_id}` (the current iot-market-ui does not call it; its `/purchased` page only POSTs `/marketplace/claim`).
 
 #### `POST /bridge/notify` (optional)
 

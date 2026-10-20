@@ -307,9 +307,9 @@ ViewerToken の発行ログ（`viewer_token_issued ... views=...`）と
       `display.name` が変わるようにしました（修正済み）
     - `/simulate/publish` で `image_cid` を渡しても `/platform/data` の応答に出ない。
       pipeline が `image_cid` を payload の最上位（top-level）に移すようにしました（修正済み）
-    - `/marketplace/claim` の応答に含まれる `deeplink` をウォレットで直接開くと、
-      claim との対応付けが確実に保たれます。`/issuer/offer?claim_id=...` を
-      自分で呼び出す方法より確実です
+    - `/marketplace/claim` の応答に含まれる `deeplink` をウォレットで直接開くのが、いちばん簡単です。
+      修正後は、§4b のように `/issuer/offer?claim_id=...` (`offer_url`) を開いても、
+      claim と同じ tier のカードを受け取れます
 
 ## 次に進む
 

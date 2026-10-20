@@ -34,7 +34,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
   rpc_url: "http://localhost:8545"
   ```
 
-- 購入者側 `mediator-buyer` の対応する設定、およびフロント (`iot-market-ui`) の RPC 接続先設定にも同様に適用します。接続先が見当たらない場合は、リポジトリ内を `host.docker.internal` で grep して洗い出してください。
+- 購入者側 `mediator-buyer` の対応する設定、および、フロント (`iot-market-ui`) の `src/routes/api/sql-query/+server.ts` (IPFS と PostgreSQL の接続先が `host.docker.internal` に固定されている) にも同様に適用します。フロントの RPC 接続先は、既定で `http://127.0.0.1:8545` なので変更不要です。接続先が見当たらない場合は、リポジトリ内を `host.docker.internal` で grep して洗い出してください。
 - 変更後、各プロセスを再起動します。
 
 ### 対処 B — コンテナ内で動かす
@@ -66,6 +66,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 
 - 症状: 購入できない
   - 確認: MetaMask の接続アカウントが Account #2 (`0x3C44...`) か。購入には、購入者の公開鍵が PubKey コントラクトに登録されている必要があります。`mediator-buyer` が起動時に Account #2 の公開鍵を登録するので、他のアカウントでは購入が取り消されます (revert)
+  - 確認: その商品を、すでに購入していないか。商品は一度しか買えません (購入後は販売中でなくなり、同じ購入者がもう一度買うことも取り消されます)。`mediator-owner` のターミナルに出た、まだ買っていない `Product deployed: 0x...` の商品を使うか、ノードを起動し直してデプロイし直します
   - 対応: ローカルチェーン再起動後は MetaMask のキャッシュをクリア
 
 ## 6. イベントが共有されず `no_matching_consent` で拒否される
@@ -94,6 +95,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 - consent ファイルの `valid_to` を先の日付に延ばし、登録し直します。すべてのファイルの `valid_to` をまとめて書き換える例 (macOS の `sed` は `-i ''` が必要):
 
   ```bash
+  cd ~/program/Blockchain_IoT_Marketplace
   sed -i '' 's/"valid_to": "[^"]*"/"valid_to": "2035-12-31T23:59:59Z"/' examples/ha_demo/consent_*.json
   ```
 

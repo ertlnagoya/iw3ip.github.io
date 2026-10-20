@@ -135,7 +135,7 @@ Unlike PolicyToken, the second call doesn't trigger `403 policy_token_already_co
 ## 5. Inspect write_count in the audit log
 
 ```bash
-curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool | head -60
+curl -s "http://$HOST_IP:8080/audit/logs?limit=5" | python3 -m json.tool
 ```
 
 Each ingest produces:

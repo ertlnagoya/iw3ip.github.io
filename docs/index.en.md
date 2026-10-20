@@ -86,7 +86,7 @@ Small devices such as a Raspberry Pi with a camera can also serve as data source
 
 ## If You Want To Run One Demo First
 
-If you want the simplest Phase 1 / Phase 2 entry without physical devices, `ha-demo-simulator` is the best starting point.
+If you want the simplest Phase 1 / Phase 2 entry without physical devices, `ha-demo-simulator` is the best starting point. Phases 1–3 are the development stages of the platform, described in [Phase structure in the platform overview](platform-overview.md#phase-structure).
 
 - Matching page: [Home Assistant Demo Simulator sample](hands-on/ha-demo-simulator.md)
 - What you can confirm:
@@ -98,6 +98,7 @@ If you want the simplest Phase 1 / Phase 2 entry without physical devices, `ha-d
 Start command:
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d
 ```
 
@@ -119,6 +120,7 @@ Matching page:
 Start command:
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
 ```
 

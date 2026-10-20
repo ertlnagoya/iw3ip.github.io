@@ -301,12 +301,12 @@ iPhone（iw3ip-wallet）で一連の流れを実行したときの `/viewer` 画
 
 verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに `reason` コードと
 `human_message_ja` / `human_message_en`（人が読むためのメッセージ）が含まれます。
-`/buyer/start` ページはロングポーリング中にこれを検出して、QR の代わりに赤バナーと
-「購入画面から再提示」リンクを表示します（実装: `publisher/app/ssi/verifier_routes.py`）。
+`/buyer/start` ページはロングポーリング中にこれを検出して、QR の代わりに赤枠の「データを閲覧する権限がありません」と
+メッセージ、`reason code:` の行、「このページをリロード」のリンクを表示します（実装: `publisher/app/viewer_routes.py`、`publisher/app/ssi/verifier_routes.py`）。
 
 主要な reason コードと表示文（JA / EN）:
 
-| reason | JA バナー文言 | EN |
+| reason | JA メッセージ | EN |
 |---|---|---|
 | `dataset_mismatch` | 提示された VC のデータセットが、要求されたデータセットと一致しません。 | The presented VC is bound to a different dataset. |
 | `action_not_allowed` | 提示された VC では、このデータの読み取り権限がありません。 | The presented VC does not include the required action (read). |
@@ -320,7 +320,7 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 2. ウォレットが、**異なる dataset にバインドされた** PurchaseViewerVC（例: `home/event/another_dataset`）を送ってきたとする (通常のウォレットはこのカードを候補に出さず、「No Available Credential」と表示します)
 3. publisher は `/verifier/response` を受け取り、`{"verified": false, "reason": "dataset_mismatch"}` を記録
 4. PC の `/verifier/status` ロングポーリングが、`result` に `verified: false`、`reason`、`human_message_ja` を入れて返す
-5. PC ページは QR を `<div class="deny-banner">提示された VC のデータセットが、要求されたデータセットと一致しません。</div>` に置き換え、`/buyer/start?ds=...` への再提示リンクを表示
+5. PC ページは QR を、「データを閲覧する権限がありません」と「提示された VC のデータセットが、要求されたデータセットと一致しません。」を入れた `<div class="err">` に置き換え、`reason code: dataset_mismatch` と「このページをリロード」のリンクを表示
 6. 同時に `/audit/logs` に、`raw_topic` が `oid4vp/response`、`action` が `deny`、`reason` が `dataset_mismatch` の行が記録される（`curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'` で確認できる）
 
 通常の操作では、この拒否は起きません。提示の要求には対象のデータセットが含まれていて、ウォレットは合わないカードを候補に出さないためです (候補が無いと「No Available Credential」と表示されます)。上の流れは、ウォレットが合わないカードを送ってきた場合に備えた publisher 側の防御です。
@@ -451,7 +451,7 @@ POST します。
 | `topic` から導出した dataset が `licensed_datasets[]` に無い | 403 | `seller_token_dataset_not_licensed` |
 | `topic` が `normalize()` で受け付けられない | 400 | `unsupported_topic:...` |
 
-すべて `/audit/logs` に `action=deny` で記録されます。
+`seller_token_*` のエラー (401 と 403) は、`/audit/logs` に `action=deny` で記録されます。`Authorization` ヘッダーが無いときの 401 と、`unsupported_topic` の 400 は、監査ログに書き込む前に返るので記録されません。
 
 ### 11.5 受信側で確認
 

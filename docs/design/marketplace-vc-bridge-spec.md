@@ -289,7 +289,7 @@ iot-market-ui がポーリングする。`status: pending|delivered|expired` を
 
 ### 8.2 bridge 側 (新設、未実装)
 
-→ 以下の 2 つは未実装である。実装の bridge は Purchase イベントを購読して `/marketplace/claim` を呼ぶだけで、HTTP サーバを持たない。iot-market-ui は publisher の `GET /marketplace/claim/{claim_id}` で状態を確かめる。
+→ 以下の 2 つは未実装である。実装の bridge は Purchase イベントを購読して `/marketplace/claim` を呼ぶだけで、HTTP サーバを持たない。claim の状態は publisher の `GET /marketplace/claim/{claim_id}` で確かめられる (現在の iot-market-ui はこれを呼ばず、`/purchased` のページで `/marketplace/claim` を POST するだけである)。
 
 #### `POST /bridge/notify` (任意)
 
