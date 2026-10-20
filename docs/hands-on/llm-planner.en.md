@@ -220,7 +220,7 @@ If you want a one-command path including the local mock LLM, stop the `assistant
 
 ```bash
 docker compose -f infra/docker-compose.yml stop assistant
-docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
+docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d assistant-demo llm-mock assistant-ui
 ```
 
 This profile starts:

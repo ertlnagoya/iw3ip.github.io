@@ -71,7 +71,6 @@ Bearer ヘッダで添えて `/platform/ingest` を呼び出す想定です。
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
-PUB=$(docker ps -qf name=publisher)
 
 # ServiceVC が含まれていることを確認 (現在のリリースでは ConsentVC /
 # ViewerVC / ServiceVC / DataUserVC / SellerVC / PurchaseViewerVC の 6 種類。

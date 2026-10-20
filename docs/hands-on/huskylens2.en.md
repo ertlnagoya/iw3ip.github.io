@@ -1,6 +1,6 @@
 # Detect a person on an AI camera (HUSKYLENS2)
 
-Turn detections from the HUSKYLENS2 AI camera [1] into event files.
+Turn detections from the HUSKYLENS2 AI camera [2] made by DFRobot [1] into event files.
 
 > **What you'll do**: Generate event files from HUSKYLENS2 (or mock) detections and confirm they are registered as merchandise
 >
@@ -184,4 +184,6 @@ python3 huskylens_bridge.py \
 
 ## References
 
-[1] DFRobot, "HUSKYLENS2," product page, <https://www.dfrobot.com/product-2995.html>
+[1] DFRobot, "DFRobot," <https://www.dfrobot.com/>
+
+[2] DFRobot, "HUSKYLENS2," product page, <https://www.dfrobot.com/product-2995.html>

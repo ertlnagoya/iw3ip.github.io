@@ -220,7 +220,7 @@ docker compose -f infra/docker-compose.yml --profile assistant-ui up --build -d 
 
 ```bash
 docker compose -f infra/docker-compose.yml stop assistant
-docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
+docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d assistant-demo llm-mock assistant-ui
 ```
 
 この profile で起動されるもの:

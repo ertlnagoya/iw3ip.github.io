@@ -335,6 +335,9 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
    ```bash
    cd ~/program/Blockchain_IoT_Marketplace
    docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued | tail -n 1
+   ```
+   Replace `<value after token=>` with the value after `token=` that is printed, and run:
+   ```bash
    POLICY=<value after token=>
    ```
    If 5 minutes have passed or `policy_token_expired` is returned, redo the presentation and use the `token=` value from the last line printed above.

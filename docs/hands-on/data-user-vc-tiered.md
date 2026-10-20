@@ -309,8 +309,8 @@ ViewerToken の発行ログ（`viewer_token_issued ... views=...`）と
       pipeline が `image_cid` を payload の最上位（top-level）に移すようにしました（修正済み）
     - 修正後は、§4b のように `/issuer/offer?claim_id=...` (`offer_url`) を開くと、
       claim と同じ tier のカードを受け取れます。`/marketplace/claim` の応答の `deeplink` は、
-      claim を送ったときのホストを接続先に使います。このページのように `localhost` に送った claim の
-      `deeplink` はスマホから届かないので、`offer_url` を使います (bridge が `BRIDGE_PUBLIC_PUBLISHER_URL` で送る場合は `deeplink` も使えます)
+      既定の設定 (`SSI_ISSUER_BASE_URL` が publisher の内部の名前) では、claim を送ったときのホストを接続先に使います。このページのように `localhost` に送った claim の
+      `deeplink` はスマホから届かないので、`offer_url` を使います。bridge を `BRIDGE_PUBLIC_PUBLISHER_URL=http://<HOST_IP>:8080` で起動した場合は、bridge がこの URL を publisher に伝えるので、`deeplink` も使えます
 
 ## 次に進む
 

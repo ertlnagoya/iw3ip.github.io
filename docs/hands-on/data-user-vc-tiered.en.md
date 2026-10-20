@@ -313,8 +313,8 @@ share the same VCT.
       the envelope's top level.
     - Since the fix, opening `/issuer/offer?claim_id=...` (`offer_url`) as in §4b
       gives you a card of the same tier as the claim. The `deeplink` in the `/marketplace/claim`
-      response uses the host the claim was sent to. A claim sent to `localhost`, as on this page,
-      yields a `deeplink` the phone cannot reach, so use `offer_url` (the `deeplink` also works when the bridge posts via `BRIDGE_PUBLIC_PUBLISHER_URL`).
+      response uses, with the default setting (`SSI_ISSUER_BASE_URL` set to the publisher's internal name), the host the claim was sent to. A claim sent to `localhost`, as on this page,
+      yields a `deeplink` the phone cannot reach, so use `offer_url`. When the bridge is started with `BRIDGE_PUBLIC_PUBLISHER_URL=http://<HOST_IP>:8080`, it passes that URL to the publisher, so the `deeplink` works too.
 
 ## Where to go next
 

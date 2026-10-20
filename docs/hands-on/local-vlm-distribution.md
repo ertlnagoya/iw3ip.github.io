@@ -38,7 +38,7 @@
                                                │ description_full / summary
                                                ▼
                                      ┌────────────────────┐
-                                     │ /platform/data で受信 │
+                                     │ /platform/ingest へ │
                                      │ (意味データを流通)     │
                                      └────────────────────┘
 ```
@@ -155,7 +155,15 @@ curl -s -X POST http://localhost:8080/semantic/analyze \
 
 ## 4. 意味データを基盤に流通させる
 
-画像を publisher に投入し、その画像を指すイベントを発行して、AI 由来の意味データを流通パイプラインに載せます。次節の演習プログラムが、consent 登録 → `/media/upload` → `/simulate/publish` を一括で行います。
+画像を publisher に投入し、その画像を指すイベントを発行して、AI 由来の意味データを流通パイプラインに載せます。次節の演習プログラムの解答 (`answer_program.py`) に `--distribute` を付けて実行すると、consent 登録 → `/media/upload` → `/simulate/publish` を一括で行います。§5 の確認の前に、§2 で撮った `snapshot.jpg` で実行しておきます。
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
+python3 examples/hands_on/local_vlm_distribution/answer_program.py \
+  --base-url http://localhost:8080 --image snapshot.jpg --distribute
+```
+
 
 §1 のとおり `VLM_BACKEND` を設定して起動していれば、publisher はこのとき VLM を呼び出し、行に `description_full` / `description_summary` / `description_model` / `description_generated_at` を付与します。VLM や顔ブラーが失敗したときだけ、`processing_warnings` (`vlm_unavailable` など) も付きます。
 

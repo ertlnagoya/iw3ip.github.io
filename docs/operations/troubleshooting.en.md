@@ -47,9 +47,10 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 
 - Symptom: running `docker compose ps` in the `ipfs` directory shows the `ipfs` STATUS stuck at `Restarting`
   - Check: read the error with `docker compose logs ipfs`
+  - Action: if the stored data is broken, delete it together with the volumes with `docker compose down -v`, then recreate with `docker compose up -d`. The IPFS and PostgreSQL data are lost. Recreate the `ipfs_records` table as described in `ipfs/README.md`, then restart `mediator-owner` so it registers the data again
 - Symptom: `docker compose up -d` prints `Bind for 0.0.0.0:8080 failed: port is already allocated` and IPFS does not start
   - Check: whether the publisher is running. Both use port 8080 ([Port conflicts](#port-conflicts))
-  - Action: if the stored data is broken, delete it together with the volumes with `docker compose down -v`, then recreate with `docker compose up -d`. The IPFS and PostgreSQL data are lost. Recreate the `ipfs_records` table as described in `ipfs/README.md`, then restart `mediator-owner` so it registers the data again
+  - Action: stop the publisher (`cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml stop publisher`), then run `docker compose up -d` again in the `ipfs` directory. There is no need to delete any data
 
 ## `http://<HOST_IP>:5173/` not reachable from smartphone
 
@@ -69,7 +70,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 ## Purchase does not succeed
 
 - Symptom: purchase does not succeed
-  - Check: MetaMask is connected with Account #2 (`0x3C44...`). A purchase requires the buyer's public key to be registered in the PubKey contract. `mediator-buyer` registers the key of Account #2 at startup, so a purchase from another account reverts
+  - Check: MetaMask is connected with Account #2 (`0x3C44...`). A purchase requires the buyer's public key to be registered in the PubKey contract. Keys are registered only for Account #2 (by `mediator-buyer` at startup) and Account #1 (by `mediator-owner`). A purchase from any other account reverts. With Account #1 the purchase goes through, but no data arrives
   - Check: whether you already bought that item with the same account. One account can buy an item only once (a repeat purchase reverts). An item whose delivery is in progress (from the purchase until the data delivery completes) cannot be bought by any account. Use an item from a `Product deployed: 0x...` line in the `mediator-owner` terminal that you have not bought yet, or restart the node and redeploy
   - Action: after restarting the local chain, clear stale MetaMask state and reconnect
 

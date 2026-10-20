@@ -47,10 +47,10 @@ JSON 登録      │ /consents POST  │ —              │ —          │ �
 ウォレット (M2M)│ —               │ ServiceVC      │ —          │ —
 ─────────────────────────────────────────────────────────────────
 出品ガバナンス  │ —               │ —              │ —          │ —
- (横断)        │   ↓ SellerVC が "/marketplace/register" を gate
+ (横断)        │   ↓ SellerVC が "/marketplace/register" (と "/provider/publish") を gate
 ```
 
-**SellerVC は data API を直接 gate しない**。ただし、実装では SellerToken は Stage T の `POST /provider/publish` (データ提供者の PWA からの書き込み) にも使え、そのたびに `register_count` が増える。代わりに出品時の身元証跡を audit log に残し、buyer の `/platform/data?merchandise=` レスポンスに `seller_did` として含まれる。
+**SellerVC はデータを読み出す API を gate しない**。代わりに出品時の身元証跡を audit log に残し、buyer の `/platform/data?merchandise=` レスポンスに `seller_did` として含まれる。なお、実装では SellerToken は Stage T の `POST /provider/publish` (データ提供者の PWA からの書き込み) にも使え、そのたびに `register_count` が増える。
 
 ## 5. ハンズオンの段階 (Stage 0〜7, T, A)
 

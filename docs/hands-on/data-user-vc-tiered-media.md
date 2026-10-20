@@ -320,10 +320,10 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 
 1. PC で `/buyer/start?ds=home/event/possible_littering` を開く → QR が出る
 2. ウォレットが、**異なる dataset にバインドされた** PurchaseViewerVC（例: `home/event/another_dataset`）を送ってきたとする (通常のウォレットはこのカードを候補に出さず、「No Available Credential」と表示します)
-3. publisher は `/verifier/response` を受け取り、`{"verified": false, "reason": "dataset_mismatch"}` を記録
+3. publisher は `/verifier/response` を受け取り、提示の条件 (presentation definition) の `$.dataset_id` の値と合わないので、`{"verified": false, "reason": "field_mismatch:$.dataset_id"}` を記録 (既定の流れでは、`dataset_mismatch` を調べる前にこの照合で拒否されます)
 4. PC の `/verifier/status` ロングポーリングが、`result` に `verified: false`、`reason`、`human_message_ja` を入れて返す
-5. PC ページは QR を、「データを閲覧する権限がありません」と「提示された VC のデータセットが、要求されたデータセットと一致しません。」を入れた `<div class="err">` に置き換え、`reason code: dataset_mismatch` と「このページをリロード」のリンクを表示
-6. 同時に `/audit/logs` に、`raw_topic` が `oid4vp/response`、`action` が `deny`、`reason` が `dataset_mismatch` の行が記録される（`curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'` で確認できる）
+5. PC ページは QR を、「データを閲覧する権限がありません」と「提示が拒否されました (field_mismatch:$.dataset_id)。」を入れた `<div class="err">` に置き換え、`reason code: field_mismatch:$.dataset_id` と「このページをリロード」のリンクを表示
+6. 同時に `/audit/logs` に、`raw_topic` が `oid4vp/response`、`action` が `deny`、`reason` が `field_mismatch:$.dataset_id` の行が記録される（`curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'` で確認できる）
 
 通常の操作では、この拒否は起きません。提示の要求には対象のデータセットが含まれていて、ウォレットは合わないカードを候補に出さないためです (候補が無いと「No Available Credential」と表示されます)。上の流れは、ウォレットが合わないカードを送ってきた場合に備えた publisher 側の防御です。
 
@@ -433,7 +433,7 @@ POST します。
 
 サーバー側では次の順に処理します。
 
-1. `schemas.normalize(topic, payload)` で **dataset_id を導出** (`homeassistant/event/...` の topic では、payload の `event_type` から `home/event/<event_type>` を作る。このページは `event_type` を `possible_littering` に固定している)
+1. `schemas.normalize(topic, payload)` で **dataset_id を導出** (`homeassistant/event/...` の topic では、payload の `event_type` から `home/event/<event_type>` を作る。このページは `event_type` を `possible_littering` に固定している。ただし「extra payload keys」に `event_type` を入れると上書きされる)
 2. `ssi_state.use_seller_token(token, dataset_id=<resolved>)` で
    **`licensed_datasets[]` に `dataset_id` が含まれること**を検証
 3. 検証に通ったら `processor.process_message` を呼ぶ（`/simulate/publish` と同じ経路）
@@ -490,7 +490,7 @@ POST します。
 | `/provider/start` の QR を読んだウォレットに「No Available Credential」と出る | 先に `/issuer/offer?type=SellerVC&seller_id=...&licensed_datasets=...` でウォレットに SellerVC を入れる必要があります |
 | iPhone Safari で「📷 カメラで撮影」がファイルピッカーになる | iOS のバージョンによっては `accept="image/*,video/*" capture="environment"` が組み合わせで効かないことがあります。`accept="video/*"` だけにすると、カメラが直接起動します |
 | 「🔴 ブラウザで録画」のボタンが反応しない | `getUserMedia` は HTTPS / `localhost` でしか動きません。LAN の IP（`http://192.168.x.x`）で開いた場合はブラウザがマイク/カメラ権限を拒否します。`localhost:8080` か HTTPS 経由でアクセスしてください |
-| `/provider/publish` が 403 `seller_token_dataset_not_licensed` | SellerVC の `licensed_datasets[]` に、導出される dataset_id が含まれていません。このページは `event_type` を `possible_littering` に固定しているので、`homeassistant/event/` のどの topic でも dataset_id は `home/event/possible_littering` になります。SellerVC にこれを含めます |
+| `/provider/publish` が 403 `seller_token_dataset_not_licensed` | SellerVC の `licensed_datasets[]` に、導出される dataset_id が含まれていません。このページは `event_type` を `possible_littering` に固定しているので (extra payload keys で上書きしない限り)、`homeassistant/event/` のどの topic でも dataset_id は `home/event/possible_littering` になります。SellerVC にこれを含めます |
 | Publish レスポンスに `status: send_error` | publisher の `PLATFORM_API_URL` が到達不能。SellerToken のゲートは通っており、`register_count` も上がっているはずです（処理は許可、配信が失敗）|
 | `/provider/publish` が 401 `seller_token_unknown` | `SSIStateStore` はインメモリのため publisher container を再起動するとすべての token が消えます。`/provider/start` から再度 SellerVC を提示すれば新しい SellerToken で復旧します（SellerVC 自体はウォレットに残っているので追加発行は不要です）。ハンズオンで container を再起動する場合はこの再提示を 1 回挟みます |
 | ウォレットで「Retrieving access token failed: 400 / Error Screen」 | OID4VCI の offer は 1 回しか使えません（**single-use**）。Sphereon 系のウォレットは内部で `/issuer/token` をリトライすることがあり、2 回目の呼び出しは `invalid_grant` で 400 になります。**1 回目の呼び出しで VC はウォレットに発行済み**なので、エラー画面を Dismiss してウォレットの credential 一覧を確認してください。新しいカードが追加されています |
@@ -616,7 +616,7 @@ DevTools コンソールで次を実行します。
   .filter(m => MediaRecorder.isTypeSupported(m))
 ```
 
-期待値は `["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]` です
+期待値は `["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm", "video/mp4"]` です
 （先頭の要素が実際に使われます）。
 
 #### C. PC ブラウザ録画 — Firefox（VP8 フォールバック）

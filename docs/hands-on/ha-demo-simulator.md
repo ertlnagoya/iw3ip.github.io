@@ -242,6 +242,12 @@ sed 's/"valid_to": "2030-12-31T23:59:59Z"/"valid_to": "2026-05-01T00:00:00Z"/' e
 
 レスポンスが `"status":"stored"` で、`valid_to` が `2026-05-01T00:00:00Z` になっていることを確認します。
 
+[USB カメラのイベントを共有する](webcam-event-sharing.md) を先に済ませている場合は、同じ `possible_littering` に有効な consent (`consent-littering-001`) が残っていて、拒否が起きません。`curl http://localhost:8080/consents` で確かめ、残っていれば次のコマンドで削除します。このワークのあとで使う場合は、`examples/consent_possible_littering.json` を登録し直します。
+
+```bash
+curl -X DELETE http://localhost:8080/consents/consent-littering-001
+```
+
 続けて、手順4の `script.iw3ip_publish_demo_possible_littering` と `script.iw3ip_publish_demo_suspicious_activity` を実行します。
 
 #### Step 2. 監査ログで「拒否」を確認する

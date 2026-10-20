@@ -200,7 +200,7 @@ STEP 3 / 3 - 準備完了
 0. MetaMask Mobile を準備する (初回のみ。[Stage 5 の Step 5](marketplace-vc-bridge.md#step-5-metamask-設定) と同じ設定です)
     - ネットワークを追加: Network Name `Hardhat localhost`、RPC URL `http://<HOST_IP>:8545`、Chain ID `31337`、Currency `ETH`
     - 追加後、`Hardhat localhost` に切り替える
-    - アカウントメニュー → 「秘密鍵をインポート」→ Account #2 の秘密鍵 (Stage 5 の Step 1 でメモしたもの) を入れる。PubKey を登録済みのアカウント (Stage 5 の Step 3) でないと購入できません
+    - アカウントメニュー → 「秘密鍵をインポート」→ Account #2 の秘密鍵 (Stage 5 の Step 1 でメモしたもの) を入れる。PubKey を登録済みのアカウント (Stage 6 の Step E0。Hardhat を起動し直していなければ Stage 5 の Step 3) でないと購入できません
 1. MetaMask Mobile を開く → 内蔵ブラウザ (右下のグローブアイコン) で
    `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
    を開く (deploy script が作る Merchandise #0。#1 は Stage 5 で購入済みのことがあるため使わない)

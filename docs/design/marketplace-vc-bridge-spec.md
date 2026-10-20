@@ -278,7 +278,7 @@ Response:
 }
 ```
 
-→ 実装の応答には、ほかに `merchandise_address`・`buyer_eth_addr`・`tx_hash`・`created` も入る。`created` は、同じ `tx_hash` の申告をもう一度受けたときに `false` になる (前回の claim をそのまま返す)。
+→ 実装の `offer_url` と `deeplink` は `publisher:8080` ではなく、外から届く URL (bridge が伝える `BRIDGE_PUBLIC_PUBLISHER_URL`、ないしはリクエストのホスト) を使う。応答には、ほかに `merchandise_address`・`buyer_eth_addr`・`tx_hash`・`created` も入る。`created` は、同じ `tx_hash` の申告をもう一度受けたときに `false` になる (前回の claim をそのまま返す)。
 
 #### `GET /marketplace/claim/{claim_id}`
 

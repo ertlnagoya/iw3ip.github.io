@@ -318,7 +318,7 @@ Then follow the procedure of the [Stage 5 hands-on](marketplace-vc-bridge.md): p
 → obtain a ViewerToken → fetch. The ViewerToken expires after 60 seconds, so run the next commands right after presenting; if you get `viewer_token_expired`, present again.
 
 ```bash
-TOKEN=<the buyer's ViewerToken>
+TOKEN=<buyer ViewerToken>
 curl -s -H "Authorization: Bearer $TOKEN" \
   "http://$HOST_IP:8080/platform/data?merchandise=$MERCH" | python3 -m json.tool
 ```

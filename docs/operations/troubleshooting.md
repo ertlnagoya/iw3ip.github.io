@@ -45,9 +45,10 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 
 - 症状: `ipfs` ディレクトリで `docker compose ps` を実行すると、`ipfs` の STATUS が `Restarting` のままになる
   - 確認: `docker compose logs ipfs` でエラーの内容を見ます
+  - 対応: 保存データが壊れている場合は、`docker compose down -v` でボリュームごと削除し、`docker compose up -d` で作り直します。IPFS と PostgreSQL のデータは消えます。`ipfs/README.md` の手順で `ipfs_records` テーブルを作り直し、`mediator-owner` を起動し直して登録し直します
 - 症状: `docker compose up -d` で `Bind for 0.0.0.0:8080 failed: port is already allocated` と出て、IPFS が起動しない
   - 確認: publisher が動いていないか確認します。どちらもポート 8080 を使います ([10. ポートが競合する](#10-ポートが競合する))
-  - 対応: 保存データが壊れている場合は、`docker compose down -v` でボリュームごと削除し、`docker compose up -d` で作り直します。IPFS と PostgreSQL のデータは消えます。`ipfs/README.md` の手順で `ipfs_records` テーブルを作り直し、`mediator-owner` を起動し直して登録し直します
+  - 対応: publisher を止めてから (`cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml stop publisher`)、`ipfs` ディレクトリで `docker compose up -d` をもう一度実行します。データを消す必要はありません
 
 ## 3. スマホから `http://<HOST_IP>:5173/` が開けない
 
@@ -67,7 +68,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 ## 5. 購入できない
 
 - 症状: 購入できない
-  - 確認: MetaMask の接続アカウントが Account #2 (`0x3C44...`) か。購入には、購入者の公開鍵が PubKey コントラクトに登録されている必要があります。`mediator-buyer` が起動時に Account #2 の公開鍵を登録するので、他のアカウントでは購入が取り消されます (revert)
+  - 確認: MetaMask の接続アカウントが Account #2 (`0x3C44...`) か。購入には、購入者の公開鍵が PubKey コントラクトに登録されている必要があります。公開鍵が登録されているのは、`mediator-buyer` が起動時に登録する Account #2 と、`mediator-owner` が登録する Account #1 だけです。ほかのアカウントでは購入が取り消されます (revert)。Account #1 では購入は通りますが、データは届きません
   - 確認: その商品を、同じアカウントですでに購入していないか。同じアカウントは同じ商品を一度しか買えません (もう一度買うと取り消されます)。また、受け渡しの途中 (購入してから、データの受け渡しが終わるまで) の商品は、ほかのアカウントでも買えません。`mediator-owner` のターミナルに出た、まだ買っていない `Product deployed: 0x...` の商品を使うか、ノードを起動し直してデプロイし直します
   - 対応: ローカルチェーン再起動後は MetaMask のキャッシュをクリア
 

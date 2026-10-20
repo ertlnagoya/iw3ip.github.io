@@ -242,6 +242,12 @@ sed 's/"valid_to": "2030-12-31T23:59:59Z"/"valid_to": "2026-05-01T00:00:00Z"/' e
 
 Confirm the response has `"status":"stored"` and `valid_to` is `2026-05-01T00:00:00Z`.
 
+If you have already done [Share USB camera events](webcam-event-sharing.md), a valid consent for the same `possible_littering` (`consent-littering-001`) remains and no denial happens. Check with `curl http://localhost:8080/consents`, and if it is there, delete it with the command below. Register `examples/consent_possible_littering.json` again if you need it after this exercise.
+
+```bash
+curl -X DELETE http://localhost:8080/consents/consent-littering-001
+```
+
 Then run `script.iw3ip_publish_demo_possible_littering` and `script.iw3ip_publish_demo_suspicious_activity` from step 4.
 
 #### Step 2. Confirm the denial in the audit log

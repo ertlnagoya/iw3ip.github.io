@@ -326,6 +326,7 @@ curl で送る**ことを勧めます。
 まず `ssi-wallet` プロファイルを付けて起動し直します。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 ```
 
@@ -341,7 +342,11 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
 3. PolicyToken を取得し、本編と同じ形のイベントを 1 件 ingest。
    PolicyToken は publisher のログの `policy_token_issued` 行にある `token=` の後ろの値です。コピーして `POLICY` に入れます (有効期限 5 分):
    ```bash
+   cd ~/program/Blockchain_IoT_Marketplace
    docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued | tail -n 1
+   ```
+   表示された `token=` の後ろの値で `<token= の後ろの値>` を置き換えて実行します。
+   ```bash
    POLICY=<token= の後ろの値>
    ```
    期限 (5 分) を過ぎた場合や `policy_token_expired` が返る場合は、提示をやり直し、上のコマンドで出た最後の行の `token=` の値を使います。

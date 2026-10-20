@@ -48,10 +48,10 @@ Wallet (human)    │ ConsentVC       │ —              │ ViewerVC   │ Pu
 Wallet (M2M)      │ —               │ ServiceVC      │ —          │ —
 ────────────────────────────────────────────────────────────────────────────────────
 Listing governance│ —               │ —              │ —          │ —
- (cross-cutting)  │   ↓ SellerVC gates "/marketplace/register"
+ (cross-cutting)  │   ↓ SellerVC gates "/marketplace/register" (and "/provider/publish")
 ```
 
-**SellerVC does not gate the data APIs directly.** In the implementation, however, the SellerToken also works for `POST /provider/publish` in Stage T (writes from the data-provider PWA), and each use increments `register_count`. Instead, it leaves evidence of the seller's identity at listing time in the audit log, and that identity is included as `seller_did` in the buyer's `/platform/data?merchandise=` response.
+**SellerVC does not gate the data-read APIs.** Instead, it leaves evidence of the seller's identity at listing time in the audit log, and that identity is included as `seller_did` in the buyer's `/platform/data?merchandise=` response. In the implementation, the SellerToken also works for `POST /provider/publish` in Stage T (writes from the data-provider PWA), and each use increments `register_count`.
 
 ## 5. Hands-on stages (Stages 0–7, T, A)
 

@@ -280,7 +280,7 @@ Response:
 }
 ```
 
-→ The implemented response also has `merchandise_address`, `buyer_eth_addr`, `tx_hash` and `created`. `created` is `false` when a claim with the same `tx_hash` arrives again (the earlier claim is returned as is).
+→ In the implementation, `offer_url` and `deeplink` use an externally reachable URL (the `BRIDGE_PUBLIC_PUBLISHER_URL` passed by the bridge, or the request host), not `publisher:8080`. The response also has `merchandise_address`, `buyer_eth_addr`, `tx_hash` and `created`. `created` is `false` when a claim with the same `tx_hash` arrives again (the earlier claim is returned as is).
 
 #### `GET /marketplace/claim/{claim_id}`
 

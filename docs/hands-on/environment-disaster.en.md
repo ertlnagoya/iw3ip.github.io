@@ -329,6 +329,7 @@ A phone wallet cannot reach the PC's `localhost`, so open the URLs below in a PC
 First, restart with the `ssi-wallet` profile.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 ```
 
@@ -344,7 +345,11 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
 3. Take the PolicyToken and POST a Stage-0-shaped event.
    The PolicyToken is the value after `token=` on the `policy_token_issued` line in the publisher log. Copy it into `POLICY` (valid for 5 minutes):
    ```bash
+   cd ~/program/Blockchain_IoT_Marketplace
    docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued | tail -n 1
+   ```
+   Replace `<value after token=>` with the value after `token=` that is printed, and run:
+   ```bash
    POLICY=<value after token=>
    ```
    If 5 minutes have passed or `policy_token_expired` is returned, redo the presentation and use the `token=` value from the last line printed above.

@@ -1,7 +1,7 @@
 # LLM Planner replacement spec
 
 This is a specification for replacing the planner in [Run the regional safety assistant](regional-safety-assistant.md) with an **LLM-based planner** (LLM: large language model).  
-It is not an implementation procedure but a design document that defines **what to fix and where to replace**.
+The implementation steps are covered in [Let an AI plan the steps (LLM Planner)](llm-planner.md); this page is a design document that defines **what to fix and where to replace**.
 
 ## What this page covers
 

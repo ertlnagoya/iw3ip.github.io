@@ -38,8 +38,8 @@ Instead of distributing raw images, distribute the **semantic derivatives** a lo
                                                │ description_full / summary
                                                ▼
                                      ┌────────────────────┐
-                                     │ received via         │
-                                     │ /platform/data       │
+                                     │ distributed to       │
+                                     │ /platform/ingest     │
                                      └────────────────────┘
 ```
 
@@ -157,7 +157,15 @@ With the default stub, the following fixed values come back regardless of the im
 
 ## 4. Distribute the semantic data over the platform
 
-Submit the image to the publisher and publish an event that points at it, so the AI-derived data enters the distribution pipeline. The exercise program in the next section runs consent registration → `/media/upload` → `/simulate/publish` in one go.
+Submit the image to the publisher and publish an event that points at it, so the AI-derived data enters the distribution pipeline. Running the answer program of the next section (`answer_program.py`) with `--distribute` does consent registration → `/media/upload` → `/simulate/publish` in one go. Run it with the `snapshot.jpg` taken in §2 before the checks in §5.
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
+python3 examples/hands_on/local_vlm_distribution/answer_program.py \
+  --base-url http://localhost:8080 --image snapshot.jpg --distribute
+```
+
 
 If you started with `VLM_BACKEND` set as in §1, the publisher also calls the VLM here and attaches `description_full` / `description_summary` / `description_model` / `description_generated_at` to the row. Only when the VLM or the face blur fails is `processing_warnings` (such as `vlm_unavailable`) attached as well.
 

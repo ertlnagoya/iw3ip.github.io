@@ -189,7 +189,7 @@ When a `DataUserVC` is presented (as the note above says, this path is not reach
 
 - the presentation match (`_local_pex_fallback`, used for DCQL or when the sidecar is absent) checks that all five claims are present, and the post-PEX checks then check `entityType`, `purpose` and `dataHandlingPolicy` again
 - **no token is minted**
-- response: `{trust_score, access_level, allowed_views, holder_did}`
+- response: `{status, vc_kind, trust_score, access_level, allowed_views, holder_did}`
 
 ### `POST /marketplace/claim` (extended)
 
@@ -363,7 +363,7 @@ Degrade policy when VLM is missing or fails:
 
 | Condition | Publisher behaviour |
 |---|---|
-| VLM extension off (`VLM_BACKEND` empty) | derivative keys are **not generated** (legacy behaviour — Tier 1/2 fall back to the old "key drop" model) |
+| VLM extension off (`VLM_BACKEND` empty) | description keys are **not generated** (legacy behaviour — Tier 1/2 fall back to the old "key drop" model). With `IMAGE_REDACTION_BACKEND` set, the face blur still runs and `image_url_redacted` is attached, but the legacy projection never shows it |
 | extension on, VLM call failed | description keys omitted; `image_url_redacted` is still attempted (face blur doesn't need the VLM) |
 | extension on, blur failed | redacted-image keys omitted; descriptions still ship. Tier 2 receivers get text without a redacted image |
 | extension on, both succeed | all keys generated |

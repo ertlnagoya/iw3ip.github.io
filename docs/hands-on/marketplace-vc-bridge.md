@@ -690,7 +690,17 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up --build -d bri
 ```bash
 ipconfig getifaddr en0
 ```
-変わっていれば `infra/.env` の `BRIDGE_PUBLIC_PUBLISHER_URL` を更新して bridge 再起動。
+変わっていれば、新しい IP に合わせて次をすべて直す。
+
+- 各ターミナルの `export HOST_IP=<新しい IP>`
+- `iot-market-ui/.env.local` の `VITE_RPC_URL` と `VITE_PUBLISHER_URL`。直したら `npm run dev` を起動し直す
+- スマホの MetaMask に追加したネットワークの RPC URL
+- `infra/.env` の `BRIDGE_PUBLIC_PUBLISHER_URL`。直したら bridge を作り直す (`docker restart` では `.env` を読み直さない)
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
+```
 
 ---
 

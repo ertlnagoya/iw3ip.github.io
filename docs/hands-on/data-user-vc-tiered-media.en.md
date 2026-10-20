@@ -221,7 +221,7 @@ PC Chrome:      http://<HOST_IP>:8080/buyer/start?ds=home/event/possible_litteri
 1. Open the URL in Safari.
 2. The page calls `/verifier/request` to fetch a deeplink.
 3. `window.location = deeplink` launches **iw3ip-wallet** automatically.
-4. In the wallet, pick "Purchase Viewer (Tier 3 / Full)" and present.
+4. In the wallet, pick "IW3IP Purchase Viewer (Full • event + image + video)" and present.
 5. The wallet receives `redirect_uri = /viewer?vt=...&ds=...` and...
 6. ...Safari **resumes automatically and the image / video renders**.
 
@@ -253,7 +253,7 @@ human-readable nudge to "reload from /buyer/start."
 
 #### Wallet side: three distinct cards
 
-After receiving the three deeplinks, iw3ip-wallet (Sphereon mobile-wallet fork)
+After receiving the three PurchaseViewerVCs, iw3ip-wallet (Sphereon mobile-wallet fork)
 shows the PurchaseViewerVCs as three independent cards — same VCT, different
 `credential_configuration_id`, different display name.
 
@@ -331,10 +331,10 @@ Main reason codes and their messages (the page shows `human_message_ja` when it 
 
 1. PC opens `/buyer/start?ds=home/event/possible_littering` → QR appears.
 2. Suppose a wallet sends a PurchaseViewerVC bound to a *different* dataset (e.g. `home/event/another_dataset`). A normal wallet does not offer such a card and shows "No Available Credential" instead.
-3. publisher receives `/verifier/response` and records `{"verified": false, "reason": "dataset_mismatch"}`.
+3. publisher receives `/verifier/response`; the value does not match `$.dataset_id` in the presentation definition, so it records `{"verified": false, "reason": "field_mismatch:$.dataset_id"}` (on the default path this check rejects it before `dataset_mismatch` is examined).
 4. The PC's `/verifier/status` long-poll returns a `result` holding `verified: false`, the `reason`, and the `human_message_*` strings.
-5. The page replaces the QR with a `<div class="err">` holding "データを閲覧する権限がありません" and the Japanese message "提示された VC のデータセットが、要求されたデータセットと一致しません。", then shows `reason code: dataset_mismatch` and a "このページをリロード" (reload this page) link.
-6. `/audit/logs` gains a row with `raw_topic` `oid4vp/response`, `action` `deny`, and `reason` `dataset_mismatch` (check with `curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'`).
+5. The page replaces the QR with a `<div class="err">` holding "データを閲覧する権限がありません" and the generic message "提示が拒否されました (field_mismatch:$.dataset_id)。", then shows `reason code: field_mismatch:$.dataset_id` and a "このページをリロード" (reload this page) link.
+6. `/audit/logs` gains a row with `raw_topic` `oid4vp/response`, `action` `deny`, and `reason` `field_mismatch:$.dataset_id` (check with `curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'`).
 
 In normal use this denial does not happen. The presentation request includes the target dataset, and the wallet does not offer cards that do not match (it shows "No Available Credential" instead). The flow above is the publisher's defence in case a wallet sends a non-matching card anyway.
 
@@ -445,7 +445,7 @@ Once an upload completes, the Publish button enables. The form holds:
 Click **Publish event**. The browser POSTs to `/provider/publish` with
 `Authorization: Bearer <seller_token>`. Server-side:
 
-1. `schemas.normalize(topic, payload)` derives `dataset_id` (for a `homeassistant/event/...` topic it builds `home/event/<event_type>` from the payload's `event_type`; this page fixes `event_type` to `possible_littering`).
+1. `schemas.normalize(topic, payload)` derives `dataset_id` (for a `homeassistant/event/...` topic it builds `home/event/<event_type>` from the payload's `event_type`; this page fixes `event_type` to `possible_littering`, unless an `event_type` in the extra payload keys overrides it).
 2. `ssi_state.use_seller_token(token, dataset_id=<resolved>)` enforces
    that `dataset_id ∈ licensed_datasets[]`.
 3. On success it calls `processor.process_message` (same path as
@@ -505,7 +505,7 @@ a **two-tab** experience in the browser.
 | The wallet shows "No Available Credential" after scanning the `/provider/start` QR | Issue one first: `/issuer/offer?type=SellerVC&seller_id=...&licensed_datasets=...` and scan the offer URI from the wallet |
 | 📷 Camera capture opens the file picker on iPhone Safari | Some iOS versions don't honor the combination `accept="image/*,video/*" capture="environment"`. Switching `accept` to `video/*` only forces the camera reliably |
 | 🔴 Browser recorder button does nothing | `getUserMedia` only works on HTTPS or `localhost`. Opening over a LAN IP (`http://192.168.x.x`) makes the browser deny camera/mic permission. Use `localhost:8080` or run behind HTTPS |
-| `/provider/publish` returns 403 `seller_token_dataset_not_licensed` | The derived dataset_id isn't in your SellerVC's `licensed_datasets[]`. This page fixes `event_type` to `possible_littering`, so any `homeassistant/event/` topic gives `home/event/possible_littering`. Include it in the SellerVC |
+| `/provider/publish` returns 403 `seller_token_dataset_not_licensed` | The derived dataset_id isn't in your SellerVC's `licensed_datasets[]`. This page fixes `event_type` to `possible_littering` (unless overridden in the extra payload keys), so any `homeassistant/event/` topic gives `home/event/possible_littering`. Include it in the SellerVC |
 | Publish response has `status: send_error` | The publisher's `PLATFORM_API_URL` is unreachable. The SellerToken gate did pass and `register_count` did increment — auth was OK, downstream delivery failed |
 | `/provider/publish` returns 401 `seller_token_unknown` | `SSIStateStore` is in-memory; restarting the publisher container wipes every token. Re-present the SellerVC at `/provider/start` to mint a fresh one (the SellerVC itself stays in the wallet, no re-issuance needed). For hands-on sessions that bounce the container, plan one extra OID4VP loop after each restart |
 | Wallet shows "Retrieving access token failed: 400 / Error Screen" | OID4VCI offers are **single-use**. Sphereon-family wallets retry `/issuer/token` internally; the second call fails with `invalid_grant` (400). The **first call already issued the VC into the wallet** — the error screen is misleading. Dismiss it and check the wallet's credential list; the new card should be there |
@@ -633,7 +633,7 @@ In DevTools console:
   .filter(m => MediaRecorder.isTypeSupported(m))
 ```
 
-Expected: `["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]`
+Expected: `["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm", "video/mp4"]`
 (first entry = the one actually picked).
 
 #### C. PC browser recording — Firefox (VP8 fallback)

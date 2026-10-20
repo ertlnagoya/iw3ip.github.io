@@ -1,6 +1,6 @@
 # AI カメラで人物を検知する (HUSKYLENS2)
 
-HUSKYLENS2 という小型 AI カメラ [1] からイベントを取り出し、マーケットに出品するまでの一連を試します。
+DFRobot [1] の小型 AI カメラ HUSKYLENS2 [2] からイベントを取り出し、マーケットに出品するまでの一連を試します。
 
 > **やること**: HUSKYLENS2 (または mock) の検知結果からイベントファイルを生成し、商品として登録されることを確認する
 >
@@ -184,4 +184,6 @@ python3 huskylens_bridge.py \
 
 ## 参考文献
 
-[1] DFRobot, "HUSKYLENS2," product page, <https://www.dfrobot.com/product-2995.html>
+[1] DFRobot, "DFRobot," <https://www.dfrobot.com/>
+
+[2] DFRobot, "HUSKYLENS2," product page, <https://www.dfrobot.com/product-2995.html>

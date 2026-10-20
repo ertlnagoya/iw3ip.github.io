@@ -72,7 +72,6 @@ every `/platform/ingest` call.
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
-PUB=$(docker ps -qf name=publisher)
 
 # Confirm ServiceVC is registered (the current release has 6 VC types:
 # ConsentVC / ViewerVC / ServiceVC / DataUserVC / SellerVC / PurchaseViewerVC.
