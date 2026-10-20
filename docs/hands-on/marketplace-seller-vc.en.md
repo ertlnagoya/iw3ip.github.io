@@ -157,7 +157,7 @@ PUB=$(docker ps -qf name=publisher)
 docker logs $PUB 2>&1 | grep "seller_token_issued" | tail -1
 ```
 
-→
+→ (each publisher log line is JSON; its `"message"` holds the following)
 
 ```
 seller_token_issued jti=... token=... seller_id=ertl-seller-001 licensed=['home/env/temperature', 'home/env/humidity'] ttl=86400s

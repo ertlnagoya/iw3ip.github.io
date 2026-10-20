@@ -251,6 +251,6 @@ ViewerVC は **dataset を直接指定して読む** 形でした。ほかの認
 - 症状: `/platform/data` が 401 viewer_token_unknown
   - 確認: PolicyToken (write 用) を間違えて使っていないか
   - 確認: ViewerToken を正しくコピーしたか (途中で切れていないか)
-  - 確認: 提示のあとで publisher を作り直していないか (ViewerToken は publisher のメモリにあり、作り直すと消える。§4 の提示からやり直す)
+  - 確認: 提示のあとで publisher を作り直していないか (ViewerToken と書き込んだデータは publisher のメモリにあり、作り直すと消える。§2 の書き込みからやり直し、§4 で提示し直す)
 - 症状: `/platform/data` が 401 viewer_token_expired
   - 対応: TTL (60 秒) が切れている。§4 の提示からやり直す

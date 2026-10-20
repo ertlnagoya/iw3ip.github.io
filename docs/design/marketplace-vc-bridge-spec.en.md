@@ -278,11 +278,13 @@ Response:
 }
 ```
 
+→ The implemented response also has `merchandise_address`, `buyer_eth_addr`, `tx_hash` and `created`. `created` is `false` when a claim with the same `tx_hash` arrives again (the earlier claim is returned as is).
+
 #### `GET /marketplace/claim/{claim_id}`
 
 Polled by iot-market-ui. Returns `status: pending|delivered|expired`.
 
-→ In the implementation, `status` is only `pending` (VC not yet received) or `delivered` (received). There is no `expired`. When the claim does not exist, it returns 404 (`claim_not_found`).
+→ In the implementation, `status` is only `pending` (VC not yet received) or `delivered` (received). The current iot-market-ui does not poll this endpoint. There is no `expired`. When the claim does not exist, it returns 404 (`claim_not_found`).
 
 #### `GET /platform/data?merchandise=<addr>`
 
@@ -325,7 +327,7 @@ These are added to the existing audit_log table with `ALTER TABLE ... ADD COLUMN
 - `marketplace/issued`: `reason=eth_did_bound:claim=<claim_id>:eth=<buyer_eth_addr>:tx=<tx_hash>`
 - The `raw_topic` for data reads is `platform/data`, not `marketplace/data` (`reason=viewer_token_used:<jti>:<read_count>:views=...`)
 
-No columns are added with `ALTER TABLE`. `buyer_eth_addr` and `tx_hash` are carried in the reason string as shown above.
+`vc_hash` in the `marketplace/issued` row is empty (null). No columns are added with `ALTER TABLE`. `buyer_eth_addr` and `tx_hash` are carried in the reason string as shown above.
 
 ## 10. Test strategy
 

@@ -25,7 +25,7 @@ Design rationale: see [Tiered access design spec, "Tier extension"](data-user-vc
 | Tier | access level | Example (score) | Derivatives shipped |
 |---|---|---|---|
 | **3** Full | `full` | gov + crime + ISO27001 (80) | raw image / video + redacted image + full text + summary text |
-| **2** Access | `access` | enterprise + research + ISO27001 (75) | **face/PII-blurred image** + **detailed text** (named entities) + summary |
+| **2** Access | `access` | enterprise + research + ISO27001 (75) | **face-blurred image** + **detailed text** (named entities) + summary |
 | **1** Summary | `summary` (new) | enterprise + unknown purpose + legalCompliance only (50–59) | **summary text only** (PII-redacted, no image) |
 | 0 Denied | `denied` | unqualified (<50) | events only (no image, video, or description) |
 
@@ -36,7 +36,7 @@ still `denied`, even if Ollama is running under `--profile vlm`. The `/platform/
 
 | Key | Content | Visible at tier |
 |---|---|---|
-| `image_url_redacted` | URL of an image with faces / people / license plates blurred | 2 + 3 |
+| `image_url_redacted` | URL of an image with faces blurred (frontal faces only in the MVP) | 2 + 3 |
 | `image_cid_redacted` | IPFS CID of the redacted image (when option C is on) | 2 + 3 |
 | `description_full` | VLM-generated detailed description (named entities present) | 2 + 3 |
 | `description_summary` | VLM-generated summary (PII-redacted) | 1 + 2 + 3 |

@@ -163,7 +163,9 @@ If you started with `VLM_BACKEND` set as in §1, the publisher also calls the VL
 
 !!! info "Consumer-side retrieval is tier-gated"
     To read the attached `description_*` on the consumer side you need a
-    ViewerToken obtained by presenting a DataUserVC (`/platform/data` returns 401
+    ViewerToken, obtained by presenting the PurchaseViewerVC issued by `/marketplace/claim`.
+    The `data_user_attrs` passed to the claim decide its tier (see §3 of
+    [Tier the response by trust](data-user-vc-tiered.md#3-three-marketplaceclaim-calls)) (`/platform/data` returns 401
     for a plain GET). Projecting `description_full` / `description_summary` per
     trust tier is covered in §12 of [Tier by semantic level](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur).
     The core of this page is "camera → local model semantic enrichment →

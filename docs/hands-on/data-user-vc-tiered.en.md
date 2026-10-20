@@ -311,9 +311,9 @@ share the same VCT.
     - `image_cid` invisible at `/platform/data` even when supplied via
       `/simulate/publish` → the pipeline now hoists the media CIDs to
       the envelope's top level.
-    - Always use the `deeplink` returned from `/marketplace/claim`
-      directly. Driving the wallet from `/issuer/offer?claim_id=...` is
-      now also OK after the fix, but the deeplink path is the simplest.
+    - Opening the `deeplink` returned from `/marketplace/claim` directly in
+      the wallet is the simplest. Since the fix, opening `/issuer/offer?claim_id=...`
+      (`offer_url`) as in §4b also gives you a card of the same tier as the claim.
 
 ## Where to go next
 

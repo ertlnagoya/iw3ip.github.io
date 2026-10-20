@@ -152,7 +152,7 @@ Each ingest produces:
 }
 ```
 
-The trailing number in `reason` is `write_count`. Five calls produce 1〜5.
+The trailing number in `reason` is `write_count`. Five calls list 5 down to 1, newest first.
 
 ## 6. Error cases
 

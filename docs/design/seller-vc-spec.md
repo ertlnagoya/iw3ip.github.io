@@ -47,6 +47,8 @@ publisher が検証し、検証に成功したときだけ marketplace 側で「
 v6 との互換性は完全に保つ。SellerVC を提示しない seller は v6 の経路で
 従来通り動作する (publisher 側で seller_did = "unknown" として記録する)。
 
+→ 実装では何も記録しない。seller が結び付いていない Merchandise について、`/platform/data` の応答で `seller_did` を `"unknown"` として返す。
+
 ## 3. SellerVC のスキーマ
 
 ```json
@@ -65,6 +67,8 @@ v6 との互換性は完全に保つ。SellerVC を提示しない seller は v6
   "cnf": { "jwk": { ... } }
 }
 ```
+
+→ 実装の SellerVC に `sub` は無い。holder の DID は、選択的開示の `subject_id` として入る。
 
 ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC との比較:
 
@@ -226,6 +230,8 @@ Authorization: Bearer <SellerToken>
 
 MVP では `/seller` は簡単なページに留める (Hardhat console を使う
 代替手順をハンズオンで案内する)。
+
+→ 実装の `/seller` は、SellerVC の発行、SellerVC の提示、`/marketplace/register` の 3 つの手順だけを持つ。Merchandise のデプロイのフォームは無く、SellerToken も保持しない (取り出した SellerToken を手で貼り付ける)。
 
 ## 8. audit log の追加形
 

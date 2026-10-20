@@ -494,7 +494,7 @@ echo "TOKEN=$TOKEN"
 TOKEN=oJVsNtb5Un1NginSyyCcJavThu9WkTxRT6b8uhmWjRc
 ```
 
-(ログの行全体は次の形です: `viewer_token_issued vc_kind=PurchaseViewerVC jti=cc38f06e... token=... dataset=home/env/temperature ttl=60s views=event`)
+(publisher のログは 1 行が JSON で、その `"message"` に次の内容が入ります: `viewer_token_issued vc_kind=PurchaseViewerVC jti=cc38f06e... token=... dataset=home/env/temperature ttl=60s views=event`)
 
 ---
 
@@ -587,7 +587,7 @@ buyer の MetaMask 側でも従来通りの暗号化 URI が見えます。
 | --- | --- | --- |
 | 配信形態 | encryptURI (公開鍵暗号) | publisher API (Bearer) |
 | 鍵の管理 | MetaMask の ETH 鍵 | wallet の did:jwk |
-| データ取得元 | IPFS (or 任意) | publisher の `/platform/data` |
+| データ取得元 | simple-storage (`mediator-owner` 経由。IPFS にはメタデータだけ) | publisher の `/platform/data` |
 | 監査ログ | on-chain Upload event のみ | publisher audit log (eth_did_bound 込み) |
 | 撤回 | 鍵の漏洩で再暗号化 | wallet で VC 破棄 |
 
@@ -699,8 +699,8 @@ ipconfig getifaddr en0   # 現在の LAN IP
 - **eth_addr ↔ did:jwk のなりすまし対策**: 現在の最小実装は bridge / フロント
   からの POST を信用するだけです。本番では EIP-712 署名で「この tx は
   私のもの」と holder に証明させる必要がある (詳細は[設計仕様 §7.2](../design/marketplace-vc-bridge-spec.md))
-- **dataset_id の発見**: 現状フロントで query string にハードコード。
-  Merchandise の `additionalInfo` から動的に読む拡張は [Stage 6](marketplace-vc-end-to-end.md) で扱う
+- **dataset_id の発見**: iot-market-ui と bridge は、Merchandise の `additionalInfo` から `dataset_id` を読む
+  (見つからないときは `home/env/temperature`)。商品ごとにデータセットが違うことは [Stage 6](marketplace-vc-end-to-end.md) で確かめる
 - **ServiceVC との統合**: 連続する MQTT の書き込みを VC で認可する仕組み (Stage 4 prep) と、
   購入に連動して読み出す仕組み (Stage 5) は独立している。両方を組み合わせるシナリオは
   [Stage 6](marketplace-vc-end-to-end.md) で扱う

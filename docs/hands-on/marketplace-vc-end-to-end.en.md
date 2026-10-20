@@ -408,7 +408,7 @@ the holder_did is identical. In real operation they are separate devices and sep
 | Aspect | v1 (`emitUpload`) | v2 / Stage 6 |
 | --- | --- | --- |
 | Seller identity | implicit (owner of the Merchandise) | holder_did of the ServiceVC |
-| Seller writes | (uploaded to IPFS off-line) | ingest to the publisher (left in the audit log) |
+| Seller writes | (`mediator-owner` puts it in simple-storage) | ingest to the publisher (left in the audit log) |
 | Buyer identity | MetaMask eth address only | eth + did:jwk (bound by eth_did_bound) |
 | Data delivery | encryptURI decryption | publisher API (Bearer ViewerToken) |
 | Audit coverage | on-chain Upload event only | 10 rows in the publisher audit log (seller presentation 1 + writes 5 + bridge claim 1 + VC issuance 1 + buyer presentation 1 + read 1) |
@@ -417,9 +417,9 @@ the holder_did is identical. In real operation they are separate devices and sep
 
 ## Troubleshooting
 
-### A. In Step E2, a fallback value appears instead of `dataset=home/env/temperature`
+### A. `dataset=` in the bridge log does not match the item's dataset
 
-**Cause**: The Merchandise is from an old deployment and has no `dataset_id` (a deployment from before Stage 6 case B).
+**Cause**: The Merchandise is from an old deployment and has no `dataset_id` (a deployment from before Stage 6 case B). The bridge then uses the default `home/env/temperature`. For the temperature items (#1, #3) the log looks the same, so to tell them apart buy #2 (`home/event/possible_littering`) or #4 (`home/event/flood_risk_high`) and check that `dataset=` is not `home/env/temperature`. You can also check `additionalInfo` on the `/merchandise/<address>` page.
 
 **Fix**: Restart the Hardhat node (`Ctrl+C` → `npx hardhat node --hostname 0.0.0.0`) and then
 redeploy with the latest `deployMerchandiseWithIoTMarket.ts`. MetaMask

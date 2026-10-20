@@ -260,7 +260,7 @@ This alone is enough to try the first section of Part 1. If IPFS from step 5 is 
 |---|---|---|
 | `npx: command not found` | Node.js missing | revisit Node.js in [Prerequisites](prerequisites.md) |
 | `cargo: command not found` | Rust missing | revisit Rust in [Prerequisites](prerequisites.md) |
-| `Port 5173 is in use, trying another one...` is printed and it starts on 5174 or another port | Another app holds 5173 | stop that process and restart, or open the URL that is printed (such as `http://localhost:5174/`) |
+| `Port 5173 is in use, trying another one...` is printed and it starts on 5174 or another port | Another app holds 5173 | stop that process and restart, or open the URL that is printed (such as `http://127.0.0.1:5174/`) |
 | The IPFS container or the publisher does not start | The IPFS gateway and the publisher both use port 8080 | They cannot run at the same time. Before a hands-on that uses the publisher, run `docker compose down` in the `ipfs` directory |
 | A mediator stops with `dns error` or a connection error | `host.docker.internal` does not resolve | Do step 0.5 |
 | `error connecting to docker` | Docker Desktop not running | start Docker Desktop |

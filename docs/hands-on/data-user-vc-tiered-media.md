@@ -295,7 +295,7 @@ iPhone（iw3ip-wallet）で一連の流れを実行したときの `/viewer` 画
 | PC で QR が表示されない | ブラウザが CDN（`cdn.jsdelivr.net`）に到達できるか確認。オフライン環境ではエラーになる |
 | PC のロングポーリングが終わらない | ウォレット側で正しい VC を提示できているか `docker compose -f infra/docker-compose.yml logs publisher` で `/verifier/response` の 200 を確認 |
 | `/viewer` が 401 | ViewerToken TTL 60 秒切れ。`/buyer/start` から再開 |
-| `/buyer/start` に「データセットが一致しません」バナー | §10.8 の deny UX を参照 |
+| `/buyer/start` に赤枠の「データを閲覧する権限がありません」が出る | §10.8 の deny UX を参照 |
 
 ### 10.8 deny UX（提示拒否時の振る舞い）
 
@@ -311,7 +311,7 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 | `dataset_mismatch` | 提示された VC のデータセットが、要求されたデータセットと一致しません。 | The presented VC is bound to a different dataset. |
 | `action_not_allowed` | 提示された VC では、このデータの読み取り権限がありません。 | The presented VC does not include the required action (read). |
 | `purpose_mismatch` | 提示された VC の許可目的に、今回の用途が含まれていません。 | The presented VC's allowed_purposes does not cover this purpose. |
-| `missing_entityType` 等 | DataUserVC に *XXX* が含まれていません。 | DataUserVC is missing *XXX*. |
+| `missing_entityType` / `missing_purpose` / `missing_dataHandlingPolicy` | DataUserVC に *XXX* が含まれていません。 (`missing_legalCompliance` と `missing_misuseRecord` は「提示が拒否されました (reason)。」) | DataUserVC is missing *XXX*. |
 | `verification_failed` | VC の署名検証に失敗しました。 | VC verification failed. |
 
 **publisher 側の動作（実機では未確認で、実装から読み取った内容です。下の注のとおり、通常のウォレットでは手順 2 は起こりません）:**

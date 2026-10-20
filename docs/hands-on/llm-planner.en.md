@@ -455,9 +455,8 @@ Copy `.env.local.example`, set `ASSISTANT_LLM_API_KEY` (and, if needed, `ASSISTA
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git pull --ff-only
-# stop the Docker assistants started in §3.5 etc. (nothing happens if they are not running)
-docker compose -f infra/docker-compose.yml --profile assistant-demo down
-docker compose -f infra/docker-compose.yml --profile assistant down
+# stop only the Docker assistants started in §3.5 etc. (the publisher and others keep running)
+docker compose -f infra/docker-compose.yml stop assistant assistant-demo llm-mock assistant-ui
 cp .env.local.example .env.local
 # edit ASSISTANT_LLM_API_KEY etc. in .env.local
 docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
@@ -487,10 +486,11 @@ Reference screenshot:
 
 If you do not want to call a real API yet, you can check just the HTTP path with an OpenAI-compatible mock server.
 
-If `assistant-demo` from §3.5 is still running, its `llm-mock` already holds port 18000. Stop it first (`assistant-demo` also uses port 8090, so stop it either way):
+If `assistant-demo` from §3.5 is still running, its `llm-mock` already holds port 18000. Stop it first. Also stop here the Docker assistants that use port 8090, including `assistant-llm` from §5:
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile assistant-demo down
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml stop assistant assistant-demo assistant-llm llm-mock assistant-ui
 ```
 
 Start the mock server:
@@ -606,7 +606,9 @@ When the LLM API cannot be used, `/assistant/plan` does not fail; it returns the
 - check whether `ASSISTANT_LLM_API_BASE_URL` points to an OpenAI-compatible `/chat/completions` endpoint
 - check the model name in `ASSISTANT_LLM_MODEL`
 
-### `error_message` is `could not reach LLM API (ConnectError)`
+### `error_message` is `could not reach LLM API (ConnectError)` or similar
+
+- the name in parentheses is the exception type: `ConnectError` when the connection fails, `ReadTimeout` and the like when no reply comes in time
 
 - check that the host and port of `ASSISTANT_LLM_API_BASE_URL` are reachable. For the §5.2 mock server, use `curl http://127.0.0.1:18000/health`
 
@@ -614,9 +616,17 @@ When the LLM API cannot be used, `/assistant/plan` does not fail; it returns the
 
 - make sure `ASSISTANT_LLM_API_KEY`, `ASSISTANT_LLM_API_BASE_URL` and `ASSISTANT_LLM_MODEL` in `.env.local` are not empty
 
-### `error_message` is `model response is not valid JSON`, or `code` is `llm_output_invalid`
+### `error_message` is `LLM API response is not JSON`
+
+- the API reply itself is not JSON. Check that `ASSISTANT_LLM_API_BASE_URL` points to the API, not to a web page (HTML)
+
+### `error_message` is `model response is not valid JSON`
 
 - the model did not return a JSON plan. Use a model that supports JSON mode (`response_format`)
+
+### `code` is `llm_output_invalid`
+
+- the model returned JSON, but it failed the plan shape check (`ExecutionPlan`) or the allow-list check. `error_message` names the missing field or the area / event / action that is not allowed
 
 ### An LLM error gives `Internal Server Error` (HTTP 500)
 

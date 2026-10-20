@@ -37,7 +37,7 @@ score 50〜59 が `summary` になります。`VLM_BACKEND` が空なら、`--pr
 
 | キー | 内容 | 露出する tier |
 |---|---|---|
-| `image_url_redacted` | 顔・人物・ナンバープレート等をブラーした image URL | 2 + 3 |
+| `image_url_redacted` | 顔をブラーした image (MVP では正面の顔だけ) URL | 2 + 3 |
 | `image_cid_redacted` | 同 IPFS CID（案 C 有効時） | 2 + 3 |
 | `description_full` | VLM が生成した詳細記述（人名・固有名詞あり） | 2 + 3 |
 | `description_summary` | VLM が生成した概要（PII redact 済） | 1 + 2 + 3 |

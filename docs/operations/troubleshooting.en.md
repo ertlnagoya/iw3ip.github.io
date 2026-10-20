@@ -68,7 +68,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 
 - Symptom: purchase does not succeed
   - Check: MetaMask is connected with Account #2 (`0x3C44...`). A purchase requires the buyer's public key to be registered in the PubKey contract. `mediator-buyer` registers the key of Account #2 at startup, so a purchase from another account reverts
-  - Check: whether the item has already been bought. An item can be bought only once (after a purchase it is no longer for sale, and a repeat purchase by the same buyer also reverts). Use an item from a `Product deployed: 0x...` line in the `mediator-owner` terminal that you have not bought yet, or restart the node and redeploy
+  - Check: whether you already bought that item with the same account. One account can buy an item only once (a repeat purchase reverts). An item whose delivery is in progress (from the purchase until the data delivery completes) cannot be bought by any account. Use an item from a `Product deployed: 0x...` line in the `mediator-owner` terminal that you have not bought yet, or restart the node and redeploy
   - Action: after restarting the local chain, clear stale MetaMask state and reconnect
 
 ## Events are rejected with `no_matching_consent`

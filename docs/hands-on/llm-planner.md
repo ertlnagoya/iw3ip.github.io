@@ -455,9 +455,8 @@ defineProps<{
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git pull --ff-only
-# §3.5 などで起動した Docker の assistant を止める (起動していなければ何も起きない)
-docker compose -f infra/docker-compose.yml --profile assistant-demo down
-docker compose -f infra/docker-compose.yml --profile assistant down
+# §3.5 などで起動した Docker の assistant だけを止める (publisher などはそのまま動き続ける)
+docker compose -f infra/docker-compose.yml stop assistant assistant-demo llm-mock assistant-ui
 cp .env.local.example .env.local
 # エディタで .env.local の ASSISTANT_LLM_API_KEY などを書き換える
 docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
@@ -487,10 +486,11 @@ curl -X POST http://localhost:8090/assistant/plan \
 
 実 API をまだ使いたくない場合は、OpenAI 互換のモックサーバで HTTP 経路だけ確認できます。
 
-§3.5 で `assistant-demo` を起動したままの場合は、その中の `llm-mock` が 18000 番ポートを使っています。先に止めます (`assistant-demo` も 8090 番ポートを使うので、どちらにしても止めておきます)。
+§3.5 で `assistant-demo` を起動したままの場合は、その中の `llm-mock` が 18000 番ポートを使っています。先に止めます。§5 の `assistant-llm` を含め、8090 番ポートを使う Docker の assistant もここで止めます。
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile assistant-demo down
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml stop assistant assistant-demo assistant-llm llm-mock assistant-ui
 ```
 
 まず mock server を起動します。
@@ -606,7 +606,9 @@ LLM API を使えないとき、`/assistant/plan` はエラーにならず、rul
 - `ASSISTANT_LLM_API_BASE_URL` が OpenAI 互換の `/chat/completions` を提供しているか確認してください
 - `ASSISTANT_LLM_MODEL` のモデル名が正しいか確認してください
 
-### `error_message` が `could not reach LLM API (ConnectError)`
+### `error_message` が `could not reach LLM API (ConnectError)` など
+
+- かっこの中は例外の種類です。`ConnectError` は接続できないとき、`ReadTimeout` などは応答が時間内に返らないときに出ます
 
 - `ASSISTANT_LLM_API_BASE_URL` のホストとポートに届くか確認してください。§5.2 の mock server なら `curl http://127.0.0.1:18000/health` で確かめます
 
@@ -614,9 +616,17 @@ LLM API を使えないとき、`/assistant/plan` はエラーにならず、rul
 
 - `.env.local` の `ASSISTANT_LLM_API_KEY`・`ASSISTANT_LLM_API_BASE_URL`・`ASSISTANT_LLM_MODEL` が空でないか確認してください
 
-### `error_message` が `model response is not valid JSON`、または `code` が `llm_output_invalid`
+### `error_message` が `LLM API response is not JSON`
+
+- API の応答そのものが JSON ではありません。`ASSISTANT_LLM_API_BASE_URL` が API ではなく Web ページ (HTML) を指していないか確認してください
+
+### `error_message` が `model response is not valid JSON`
 
 - モデルが JSON の計画を返していません。JSON モード (`response_format`) に対応したモデルを使ってください
+
+### `code` が `llm_output_invalid`
+
+- モデルは JSON を返しましたが、計画の形式の検証 (`ExecutionPlan`) か許可リストの検証に通りませんでした。`error_message` に、足りない項目や許可されていないエリア・イベント・アクションが出ます
 
 ### LLM のエラーなのに `Internal Server Error` (HTTP 500) になる
 

@@ -514,7 +514,7 @@ echo "TOKEN=$TOKEN"
 TOKEN=oJVsNtb5Un1NginSyyCcJavThu9WkTxRT6b8uhmWjRc
 ```
 
-(The full log line is also emitted: `viewer_token_issued vc_kind=PurchaseViewerVC jti=cc38f06e... token=... dataset=home/env/temperature ttl=60s views=event`)
+(Each publisher log line is JSON, and its `"message"` holds: `viewer_token_issued vc_kind=PurchaseViewerVC jti=cc38f06e... token=... dataset=home/env/temperature ttl=60s views=event`)
 
 ---
 
@@ -611,7 +611,7 @@ the buyer's MetaMask side still sees the encrypted URI as before.
 | --- | --- | --- |
 | Delivery form | encryptURI (public-key encryption) | publisher API (Bearer) |
 | Key management | ETH key in MetaMask | did:jwk in the wallet |
-| Data source | IPFS (or anything else) | the publisher's `/platform/data` |
+| Data source | simple-storage (via `mediator-owner`; only the metadata goes to IPFS) | the publisher's `/platform/data` |
 | Audit log | on-chain Upload event only | publisher audit log (including eth_did_bound) |
 | Revocation | re-encrypt on key leakage | discard the VC in the wallet |
 
@@ -726,8 +726,8 @@ If it has changed, update `BRIDGE_PUBLIC_PUBLISHER_URL` in `infra/.env` and rest
 - **Protection against impersonation of eth_addr ↔ did:jwk**: the current minimal implementation simply
   trusts the POST from the bridge / front end. In production, the holder must prove
   "this tx is mine" with an EIP-712 signature (for details, see [design spec §7.2](../design/marketplace-vc-bridge-spec.md))
-- **Discovering the dataset_id**: currently hardcoded in the query string by the front end.
-  The extension that reads it dynamically from the Merchandise `additionalInfo` is covered in [Stage 6](marketplace-vc-end-to-end.md)
+- **Discovering the dataset_id**: iot-market-ui and the bridge read `dataset_id` from the Merchandise `additionalInfo`
+  (falling back to `home/env/temperature`). [Stage 6](marketplace-vc-end-to-end.md) checks that each item carries its own dataset
 - **Integration with ServiceVC**: the mechanism that authorizes continuous MQTT writes with a VC (Stage 4 prep) and
   the mechanism that reads data in connection with a purchase (Stage 5) are independent. A scenario that combines both is
   covered in [Stage 6](marketplace-vc-end-to-end.md)

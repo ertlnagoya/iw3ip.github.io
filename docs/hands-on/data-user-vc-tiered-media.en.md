@@ -304,7 +304,7 @@ through. That's Stage T's whole point.
 | PC doesn't show a QR | The browser couldn't reach the CDN (`cdn.jsdelivr.net`). Plug in. |
 | PC poll never finishes | Confirm the wallet actually presented a valid VC: `docker compose -f infra/docker-compose.yml logs publisher` should show a `200 /verifier/response` |
 | `/viewer` returns 401 | ViewerToken TTL (60 s) lapsed. Reload `/buyer/start` |
-| `/buyer/start` shows a "dataset mismatch" red banner | See §10.8 below |
+| `/buyer/start` shows a red box headed "データを閲覧する権限がありません" | See §10.8 below |
 
 ### 10.8 Deny UX (when the verifier rejects a presentation)
 
@@ -322,7 +322,7 @@ Main reason codes and their messages (the page shows `human_message_ja` when it 
 | `dataset_mismatch` | The presented VC is bound to a different dataset. | 提示された VC のデータセットが、要求されたデータセットと一致しません。 |
 | `action_not_allowed` | The presented VC does not include the required action (read). | 提示された VC では、このデータの読み取り権限がありません。 |
 | `purpose_mismatch` | The presented VC's allowed_purposes does not cover this purpose. | 提示された VC の許可目的に、今回の用途が含まれていません。 |
-| `missing_entityType` etc. | DataUserVC is missing *XXX*. | DataUserVC に *XXX* が含まれていません。 |
+| `missing_entityType` / `missing_purpose` / `missing_dataHandlingPolicy` | DataUserVC is missing *XXX*. (`missing_legalCompliance` and `missing_misuseRecord` give a generic "presentation denied (reason)" message) | DataUserVC に *XXX* が含まれていません。 |
 | `verification_failed` | VC verification failed. | VC の署名検証に失敗しました。 |
 
 **Publisher-side flow (not yet validated on a real device — read from the implementation; as noted below, step 2 does not happen with a normal wallet):**

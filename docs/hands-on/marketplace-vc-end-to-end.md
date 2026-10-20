@@ -401,7 +401,7 @@ holder_did は同一になります。実運用では別端末・別 did:jwk に
 | 観点 | v1 (`emitUpload`) | v2 / Stage 6 |
 | --- | --- | --- |
 | seller の身元 | 暗黙 (Merchandise の owner) | ServiceVC の holder_did |
-| seller の書き込み | (off-line で IPFS に upload) | publisher への ingest (audit 残る) |
+| seller の書き込み | (`mediator-owner` が simple-storage に置く) | publisher への ingest (audit 残る) |
 | buyer の身元 | MetaMask の eth address のみ | eth + did:jwk (eth_did_bound で紐付け) |
 | データ配信 | encryptURI 復号 | publisher API (Bearer ViewerToken) |
 | 監査の網羅性 | on-chain Upload event のみ | publisher の audit log に 10 行 (Seller の提示 1 + 書き込み 5 + bridge の claim 1 + VC 発行 1 + Buyer の提示 1 + 読み出し 1) |
@@ -410,9 +410,9 @@ holder_did は同一になります。実運用では別端末・別 did:jwk に
 
 ## トラブルシューティング
 
-### A. Step E2 で `dataset=home/env/temperature` ではなく fallback の値が出る
+### A. bridge のログの `dataset=` が、商品のデータセットと合わない
 
-**原因**: Merchandise が古いデプロイで `dataset_id` を持っていない (Stage 6 case B 以前のデプロイ)。
+**原因**: Merchandise が古いデプロイで `dataset_id` を持っていない (Stage 6 case B 以前のデプロイ)。このとき bridge は既定値の `home/env/temperature` を使います。温度の商品 (#1・#3) ではログが同じに見えるので、見分けるときは #2 (`home/event/possible_littering`) か #4 (`home/event/flood_risk_high`) を買って、`dataset=` が `home/env/temperature` になっていないか確かめます。`/merchandise/<アドレス>` のページで `additionalInfo` を見ても確かめられます。
 
 **対処**: Hardhat ノードを再起動 (`Ctrl+C` → `npx hardhat node --hostname 0.0.0.0`) してから
 最新の `deployMerchandiseWithIoTMarket.ts` で再デプロイ。MetaMask は

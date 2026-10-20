@@ -176,9 +176,9 @@ For `DataUserVC`, `entity_type`, `legal_compliance`,
 
 ### `GET /verifier/request` / `GET /verifier/request_object`
 
-`GET /verifier/request?vc_kind=DataUserVC` creates the presentation
-request. The DCQL `claims` in `/verifier/request_object` (fetched by the
-wallet) ask for the five attributes above (plus `subject_id`).
+In the original design, `GET /verifier/request?vc_kind=DataUserVC` would create the presentation
+request, and the DCQL `claims` in `/verifier/request_object` (fetched by the
+wallet) would ask for the five attributes above (plus `subject_id`).
 
 !!! note "Current implementation"
     The publisher's presentation check has code for DataUserVC, but the course repository does not yet provide a presentation definition for DataUserVC. So `GET /verifier/request?vc_kind=DataUserVC` returns 404. The hands-on passes the same five attributes directly in the `data_user_attrs` of `/marketplace/claim` to decide the trust level.
@@ -187,7 +187,7 @@ wallet) ask for the five attributes above (plus `subject_id`).
 
 When a `DataUserVC` is presented (as the note above says, this path is not reachable today because there is no presentation definition):
 
-- post-PEX checks that the three claims `entityType`, `purpose` and `dataHandlingPolicy` are present
+- the presentation match (`_local_pex_fallback`) checks that all five claims are present, and the post-PEX checks then check `entityType`, `purpose` and `dataHandlingPolicy` again
 - **no token is minted**
 - response: `{trust_score, access_level, allowed_views, holder_did}`
 
@@ -285,7 +285,7 @@ recipient can know *what happened* without learning *who did it*.
 | Tier | access level | Example (score) | Derivatives shipped |
 |---|---|---|---|
 | **3** Full | `full` | gov + crime + ISO27001 (80) | raw image / video + every text derivative |
-| **2** Access | `access` | enterprise + research + ISO27001 (75) | **face/PII-blurred image** + **detailed text** (named entities present) |
+| **2** Access | `access` | enterprise + research + ISO27001 (75) | **face-blurred image** + **detailed text** (named entities present) |
 | **1** Summary | `summary` (new) | enterprise + unknown purpose + legalCompliance only (50–59) | **summary text only** (PII-redacted, no image) |
 | 0 Denied | `denied` | unqualified (<50) | events only (the current implementation does not reject the claim) |
 
@@ -299,7 +299,7 @@ semantics are unchanged — `score < 60` is still judged `denied` and can view e
 
 | Key | Content | Visible at tier |
 |---|---|---|
-| `image_url_redacted` | URL of an image with faces / people / license plates blurred | 2 + 3 |
+| `image_url_redacted` | URL of an image with faces blurred (frontal faces only in the MVP) | 2 + 3 |
 | `image_cid_redacted` | IPFS CID of the redacted image (when option C — IPFS delivery, [hands-on §9](data-user-vc-tiered-media.md#9-option-c-local-kubo-ipfs-daemon-for-distributed-delivery) — is on) | 2 + 3 |
 | `description_full` | VLM-generated detailed description (named entities present) | 2 + 3 |
 | `description_summary` | VLM-generated summary (PII-redacted) | 1 + 2 + 3 |
@@ -387,9 +387,10 @@ so the receiver can tell what was skipped.
   detection), ID badges, etc., as plug-ins behind a `RedactionPipeline`
   interface
 
-If the source content_type is video, the MVP **does not produce a
-redacted image** (frame extraction + per-frame blur is future work).
-Tier 3 sees the video as before; Tier 2 just gets the text derivatives.
+In the MVP, the VLM and the face blur take only the image (`image_url`) as input
+(frame extraction + per-frame blur is future work). When both an image and a video
+are present, the derivatives are made from the image. With a video only, neither the
+VLM nor the blur runs: Tier 3 sees the video as before, and Tier 2 gets the event only.
 
 ### Redaction-leak detection (research TODO)
 

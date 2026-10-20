@@ -47,6 +47,8 @@ Here, the current configuration up to Stage 6 is called v6, and the configuratio
 Compatibility with v6 is fully preserved. A seller that does not present a SellerVC
 keeps working through the v6 path as before (the publisher records seller_did = "unknown").
 
+→ In the implementation nothing is recorded. For a Merchandise with no bound seller, the `/platform/data` response returns `seller_did` as `"unknown"`.
+
 ## 3. SellerVC schema
 
 ```json
@@ -65,6 +67,8 @@ keeps working through the v6 path as before (the publisher records seller_did = 
   "cnf": { "jwk": { ... } }
 }
 ```
+
+→ The implemented SellerVC has no `sub`. The holder DID is carried as the selectively disclosed `subject_id`.
 
 Comparison with ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC:
 
@@ -228,6 +232,8 @@ New route `/seller`:
 
 In the MVP, `/seller` stays a simple page (the hands-on describes an alternative
 procedure that uses the Hardhat console).
+
+→ The implemented `/seller` has only three steps: issue a SellerVC, present it, and call `/marketplace/register`. There is no Merchandise deploy form, and it does not hold the SellerToken (you paste the extracted SellerToken by hand).
 
 ## 8. Additions to the audit log
 

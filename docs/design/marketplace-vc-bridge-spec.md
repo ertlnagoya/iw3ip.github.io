@@ -276,11 +276,13 @@ Response:
 }
 ```
 
+→ 実装の応答には、ほかに `merchandise_address`・`buyer_eth_addr`・`tx_hash`・`created` も入る。`created` は、同じ `tx_hash` の申告をもう一度受けたときに `false` になる (前回の claim をそのまま返す)。
+
 #### `GET /marketplace/claim/{claim_id}`
 
 iot-market-ui がポーリングする。`status: pending|delivered|expired` を返す。
 
-→ 実装では `status` は `pending` (VC 未受領) か `delivered` (受領済み) の 2 つだけである。`expired` は無い。claim が無いときは 404 (`claim_not_found`) を返す。
+→ 実装では `status` は `pending` (VC 未受領) か `delivered` (受領済み) の 2 つだけである。現在の iot-market-ui はこの endpoint をポーリングしない。`expired` は無い。claim が無いときは 404 (`claim_not_found`) を返す。
 
 #### `GET /platform/data?merchandise=<addr>`
 
@@ -323,7 +325,7 @@ claim の進行状況を返す。
 - `marketplace/issued`: `reason=eth_did_bound:claim=<claim_id>:eth=<buyer_eth_addr>:tx=<tx_hash>`
 - データ取得時の `raw_topic` は `marketplace/data` ではなく `platform/data` (`reason=viewer_token_used:<jti>:<read_count>:views=...`)
 
-`ALTER TABLE` による列の追加は行っていない。`buyer_eth_addr` と `tx_hash` は上のとおり reason の文字列に入る。
+`marketplace/issued` の行の `vc_hash` は空 (null) である。`ALTER TABLE` による列の追加は行っていない。`buyer_eth_addr` と `tx_hash` は上のとおり reason の文字列に入る。
 
 ## 10. テスト戦略
 

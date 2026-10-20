@@ -160,8 +160,8 @@ curl -s -X POST http://localhost:8080/semantic/analyze \
 §1 のとおり `VLM_BACKEND` を設定して起動していれば、publisher はこのとき VLM を呼び出し、行に `description_full` / `description_summary` / `description_model` / `processing_warnings` を付与します。
 
 !!! info "受信側での取得には ViewerToken が必要"
-    付与された `description_*` を受信側で取り出すには、DataUserVC を提示して得た
-    ViewerToken が必要です（`/platform/data` は素の GET では 401 になります）。信頼度
+    付与された `description_*` を受信側で取り出すには、ViewerToken が必要です。ViewerToken は、
+    `/marketplace/claim` で発行された PurchaseViewerVC を提示して得ます。どの tier の PurchaseViewerVC になるかは、claim に渡す `data_user_attrs` で決まります ([信頼度に応じて見せる中身を変える](data-user-vc-tiered.md#3-marketplaceclaim-を-3-通り呼び出す) の §3)（`/platform/data` は素の GET では 401 になります）。信頼度
     ごとに `description_full` / `description_summary` を出し分ける流れは
     [意味レベルで段階化する](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。本ページで扱うのは
     「カメラ → ローカルモデルで意味づけ → 基盤へ流通」までです。

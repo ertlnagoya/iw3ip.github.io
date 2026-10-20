@@ -151,7 +151,7 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=5" | python3 -m json.tool
 }
 ```
 
-`reason` 末尾の数字は `write_count` です。5 回 ingest すれば 1〜5 まで並びます。
+`reason` 末尾の数字は `write_count` です。5 回 ingest すれば、新しい順に 5〜1 が並びます。
 
 ## 6. エラーケース
 

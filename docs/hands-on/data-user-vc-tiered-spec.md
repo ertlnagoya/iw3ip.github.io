@@ -170,8 +170,8 @@ score >= 60                               -> "access"
 
 ### `GET /verifier/request` / `GET /verifier/request_object`
 
-`GET /verifier/request?vc_kind=DataUserVC` で提示要求を作ります。ウォレットが取得する
-`/verifier/request_object` の DCQL の `claims` で、上記の 5 属性（と `subject_id`）を要求します。
+当初の設計では、`GET /verifier/request?vc_kind=DataUserVC` で提示要求を作り、ウォレットが取得する
+`/verifier/request_object` の DCQL の `claims` で、上記の 5 属性（と `subject_id`）を要求する予定でした。
 
 !!! note "現在の実装"
     publisher の提示の検証には DataUserVC を扱う処理がありますが、DataUserVC 用の提示の条件 (presentation definition) は教材リポジトリにまだ用意されていません。そのため、`GET /verifier/request?vc_kind=DataUserVC` は 404 になります。ハンズオンでは、同じ 5 属性を `/marketplace/claim` の `data_user_attrs` に直接渡して信頼度を決めます。
@@ -181,7 +181,7 @@ score >= 60                               -> "access"
 
 `DataUserVC` が提示されたときの動作は次のとおりです (上の注のとおり、現在は提示の条件が無いため、この経路には到達しません)。
 
-- post-PEX checks で `entityType`・`purpose`・`dataHandlingPolicy` の 3 属性が claim に存在するか検証
+- 提示の照合 (`_local_pex_fallback`) で 5 属性すべてが claim に存在するか検証し、続く post-PEX checks で `entityType`・`purpose`・`dataHandlingPolicy` の 3 属性をもう一度確かめる
 - **token を発行しない**
 - レスポンス: `{trust_score, access_level, allowed_views, holder_did}`
 
@@ -279,7 +279,7 @@ score >= 60                               -> "access"
 | Tier | アクセスレベル | 例 (score) | 出力する派生データ |
 |---|---|---|---|
 | **3** Full | `full` | 政府機関 + crime + ISO27001 (80) | 生の image / video + 全テキスト派生 |
-| **2** Access | `access` | 企業 + research + ISO27001 (75) | **顔/PII ブラー済 image** + **詳細テキスト**（人名・物体名あり） |
+| **2** Access | `access` | 企業 + research + ISO27001 (75) | **顔ブラー済 image** + **詳細テキスト**（人名・物体名あり） |
 | **1** Summary | `summary`（新） | 企業 + 不明な purpose + legalCompliance のみ (50〜59) | **概要テキストのみ**（PII redact 済、image 無し） |
 | 0 Denied | `denied` | 不適格 (<50) | イベントのみ (現在の実装では claim は拒否されない) |
 
@@ -292,7 +292,7 @@ score >= 60                               -> "access"
 
 | キー | 内容 | 露出する tier |
 |---|---|---|
-| `image_url_redacted` | 顔・人物・ナンバープレート等をブラーした image の URL | 2 + 3 |
+| `image_url_redacted` | 顔をブラーした image (MVP では正面の顔だけ) の URL | 2 + 3 |
 | `image_cid_redacted` | 同 IPFS CID（[ハンズオン §9](data-user-vc-tiered-media.md#9-案-cローカル-kubo-ipfs-daemon-で分散配信) の案 C、IPFS 配信が有効な場合） | 2 + 3 |
 | `description_full` | VLM が生成した詳細記述（人名・固有名詞あり） | 2 + 3 |
 | `description_summary` | VLM が生成した概要（PII redact 済） | 1 + 2 + 3 |
@@ -377,9 +377,7 @@ degrade 時はレスポンスに **`processing_warnings: ["vlm_unavailable", ...
   順次追加。検出器は `RedactionPipeline` の plug-in として差し込めるよう interface を
   切る
 
-入力の content_type が動画の場合、MVP では **Tier 2 用の redacted は生成しません**
-（動画のフレーム抽出とフレームごとのブラーは将来課題です）。動画は Tier 3 にだけ出力し、
-Tier 2 には description_full のテキストだけを渡します。
+MVP の VLM と顔ブラーは、画像 (`image_url`) だけを入力にします（動画のフレーム抽出とフレームごとのブラーは将来課題です）。画像と動画の両方があるときは、画像から派生データを作ります。動画だけの入力では VLM も顔ブラーも動かないため、動画は Tier 3 にだけ出力し、Tier 2 にはイベントだけが届きます。
 
 ### redact 失敗の検出（研究課題）
 
