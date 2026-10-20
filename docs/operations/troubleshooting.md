@@ -34,7 +34,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
   rpc_url: "http://localhost:8545"
   ```
 
-- 購入者側 `mediator-buyer` の対応する設定、および、フロント (`iot-market-ui`) の `src/routes/api/sql-query/+server.ts` (IPFS と PostgreSQL の接続先が `host.docker.internal` に固定されている) にも同様に適用します。フロントの RPC 接続先は、既定で `http://127.0.0.1:8545` なので変更不要です。接続先が見当たらない場合は、リポジトリ内を `host.docker.internal` で grep して洗い出してください。
+- 購入者側 `mediator-buyer` (設定ファイルは無く、`mediator-buyer/src/main.rs` の定数 `API_URL` と `RPC_URL` に書かれている)、および、フロント (`iot-market-ui`) の `src/routes/api/sql-query/+server.ts` (IPFS と PostgreSQL の接続先が `host.docker.internal` に固定されている) にも同様に適用します。フロントの RPC 接続先は、既定で `http://127.0.0.1:8545` なので変更不要です。接続先が見当たらない場合は、リポジトリ内を `host.docker.internal` で grep して洗い出してください。
 - 変更後、各プロセスを再起動します。
 
 ### 対処 B — コンテナ内で動かす
@@ -44,7 +44,9 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 ## 2. IPFS コンテナが再起動を繰り返す
 
 - 症状: `ipfs` ディレクトリで `docker compose ps` を実行すると、`ipfs` の STATUS が `Restarting` のままになる
-  - 確認: `docker compose logs ipfs` でエラーの内容を見ます。ポート 8080 が使用中と出る場合は、publisher が動いていないか確認します ([10. ポートが競合する](#10-ポートが競合する))
+  - 確認: `docker compose logs ipfs` でエラーの内容を見ます
+- 症状: `docker compose up -d` で `Bind for 0.0.0.0:8080 failed: port is already allocated` と出て、IPFS が起動しない
+  - 確認: publisher が動いていないか確認します。どちらもポート 8080 を使います ([10. ポートが競合する](#10-ポートが競合する))
   - 対応: 保存データが壊れている場合は、`docker compose down -v` でボリュームごと削除し、`docker compose up -d` で作り直します。IPFS と PostgreSQL のデータは消えます。`ipfs/README.md` の手順で `ipfs_records` テーブルを作り直し、`mediator-owner` を起動し直して登録し直します
 
 ## 3. スマホから `http://<HOST_IP>:5173/` が開けない

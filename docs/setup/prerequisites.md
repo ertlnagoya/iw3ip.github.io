@@ -127,6 +127,15 @@ git version 2.x.x
 
 `command not found` が出るツールは、上のセクションに戻って入れ直してください。
 
+### ターミナルの設定 (macOS の zsh)
+
+ハンズオンのコマンドには、`#` で始まるコメントの行が含まれています。macOS の標準のシェル (zsh) は、そのままでは貼り付けたコメントの行で `zsh: command not found: #` と表示します。次のコマンドで、コメントを無視する設定にしておきます (一度だけ実行します)。
+
+```bash
+echo 'setopt interactive_comments' >> ~/.zshrc
+source ~/.zshrc
+```
+
 ### Docker が動くか確認
 
 ```bash

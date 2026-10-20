@@ -2,7 +2,7 @@
 
 [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md)（§0〜§7）と [画像・動画を段階アクセスで配信する](data-user-vc-tiered-media.md)（§8〜§11）の続きです。映像を意味的中間表現に変換し、受信者の信頼度に応じて出力を変えるレンダリング（trust-aware rendering）までを扱います。節番号は 1 ページ目からの通し番号（§12〜§13）です。
 
-> **やること**: VLM による推論と顔 / PII のブラー処理で派生データを生成して tier 別に出し分け、意味的中間表現 (SIR) による信頼度別レンダリングを動かす
+> **やること**: VLM による推論と顔のブラー処理で派生データを生成して tier 別に出し分け、意味的中間表現 (SIR) による信頼度別レンダリングを動かす
 >
 > **前提**: [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) の §0〜§7 と、[画像・動画を段階アクセスで配信する](data-user-vc-tiered-media.md) の §8〜§11 を済ませていること
 >
@@ -15,7 +15,7 @@
 §1〜§11（[1 ページ目](data-user-vc-tiered.md)と [2 ページ目](data-user-vc-tiered-media.md)）のアクセス制御は、**メディアのキーを応答から省く**方式でした（Tier 2 では
 動画のキー、Tier 1 では画像のキーも含まれません）。§12 では、同じ素材に
 VLM（Vision Language Model。画像を入力に取れる言語モデル）による推論と、
-顔 / PII（個人を特定できる情報）のブラー処理を適用して**派生データを生成し、tier 別に
+顔のブラー処理 (MVP では正面の顔) を適用して**派生データを生成し、tier 別に
 出し分ける**仕組みを動かします。これにより Tier 1 の受信者にも、
 **プライバシー情報を除いた要約テキスト**を渡せます。
 
@@ -159,7 +159,7 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 
 summary tier の claim でも、ウォレットに届くカードは「イベントのみ」(`PurchaseViewerVC.event`) の名前で表示されます。発行される VC の `allowed_views` には `description_summary` が入っているので、`/platform/data` で見える内容は summary tier のとおりです。
 
-### 12.5 顔/PII ブラーの確認方法
+### 12.5 顔ブラーの確認方法
 
 Tier 2 で受信した `image_url_redacted` の URL をブラウザで開くと、
 **元画像（`image_url`）と同じ構図で、人物の顔がぼかされた**画像が返ります。
@@ -176,7 +176,7 @@ publisher は内部で次の順に処理します。
 4. 同じ extension で再エンコード → publisher 自身の `/media/upload` に POST
 5. 戻ってきた URL/CID を `image_url_redacted` / `image_cid_redacted` に設定
 
-ぼかしの処理は、リクエストのたびに行われます。同じ画像から作ったブラー済み画像は、`/media/upload` の sha256 による重複排除で、
+ぼかしの処理は、イベントを publish するたびに行われます (`/platform/data` で読むときには行いません)。同じ画像から作ったブラー済み画像は、`/media/upload` の sha256 による重複排除で、
 **同じものが重ねて保存されることはありません**。
 
 !!! note "MVP（最小構成の実装）の制限"

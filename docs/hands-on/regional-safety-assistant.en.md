@@ -281,7 +281,8 @@ However, the **module boundary that converts a natural-language request into a s
 ### 8. Stop services
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile assistant down
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml stop assistant
 ```
 
 ## Next steps

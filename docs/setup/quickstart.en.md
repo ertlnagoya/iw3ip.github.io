@@ -77,7 +77,7 @@ Terminal 1:
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
-npm install   # first time only
+npm install
 npx hardhat node
 ```
 
@@ -120,7 +120,7 @@ Terminal 3:
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
-npm install   # first time only
+npm install
 npm run dev
 ```
 

@@ -30,7 +30,7 @@ VCs are issued as SD-JWT VC (`vct: https://iw3ip.example/credentials/<Kind>/v1`)
 | **PolicyToken** | 5 min | Single | `POST /platform/ingest` | ConsentVC |
 | **ViewerToken** | 60 s | Multiple within TTL | `GET /platform/data` | ViewerVC / **PurchaseViewerVC** |
 | **ServiceToken** | 1 h | Multiple within TTL | `POST /platform/ingest` | ServiceVC |
-| **SellerToken** | 24 h | Multiple within TTL | `POST /marketplace/register` | SellerVC |
+| **SellerToken** | 24 h | Multiple within TTL | `POST /marketplace/register`, `POST /provider/publish` | SellerVC |
 
 ViewerToken is issued from both ViewerVC and PurchaseViewerVC, but **the namespace is the same** (once issued, the two are treated identically). Otherwise each token kind has its own namespace and cannot be reused elsewhere (for example, using a SellerToken on ingest returns 401).
 
@@ -51,7 +51,7 @@ Listing governance│ —               │ —              │ —          �
  (cross-cutting)  │   ↓ SellerVC gates "/marketplace/register"
 ```
 
-**SellerVC does not gate the data APIs directly.** Instead, it leaves evidence of the seller's identity at listing time in the audit log, and that identity is included as `seller_did` in the buyer's `/platform/data?merchandise=` response.
+**SellerVC does not gate the data APIs directly.** In the implementation, however, the SellerToken also works for `POST /provider/publish` in Stage T (writes from the data-provider PWA), and each use increments `register_count`. Instead, it leaves evidence of the seller's identity at listing time in the audit log, and that identity is included as `seller_did` in the buyer's `/platform/data?merchandise=` response.
 
 ## 5. Hands-on stages (Stages 0–7, T, A)
 
@@ -136,7 +136,7 @@ Each token is **valid only on its dedicated API**:
 | PolicyToken | `POST /platform/ingest` | `/platform/data`: 401 / `/marketplace/register`: 401 |
 | ViewerToken | `GET /platform/data` | `/platform/ingest`: 401 / `/marketplace/register`: 401 |
 | ServiceToken | `POST /platform/ingest` | `/platform/data`: 401 / `/marketplace/register`: 401 |
-| SellerToken | `POST /marketplace/register` | `/platform/ingest`: 401 / `/platform/data`: 401 |
+| SellerToken | `POST /marketplace/register`, `POST /provider/publish` | `/platform/ingest`: 401 / `/platform/data`: 401 |
 
 `/platform/ingest` **accepts both** PolicyToken and ServiceToken, but internally it tries PolicyToken first and falls back to ServiceToken only on failure (`unknown`), for compatibility and uniform error messages.
 

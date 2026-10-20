@@ -324,6 +324,7 @@ A phone wallet cannot reach the PC's `localhost`, so open the URLs from §4–§
 First, restart with the `ssi-wallet` profile. If you forget `PLATFORM_INGEST_READ_ENABLED=true`, the rows you wrote in the main flow are lost and `GET /platform/ingest` returns 404.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 ```
 
@@ -332,6 +333,7 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
    `community_cleaning`, `research`, or `planning`) and obtain a PolicyToken.
    The PolicyToken is the value after `token=` on the `policy_token_issued` line in the publisher log. Copy it into `POLICY` (valid for 5 minutes):
    ```bash
+   cd ~/program/Blockchain_IoT_Marketplace
    docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued | tail -n 1
    POLICY=<value after token=>
    ```

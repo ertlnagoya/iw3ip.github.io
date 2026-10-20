@@ -181,7 +181,7 @@ score >= 60                               -> "access"
 
 `DataUserVC` が提示されたときの動作は次のとおりです (上の注のとおり、現在は提示の条件が無いため、この経路には到達しません)。
 
-- 提示の照合 (`_local_pex_fallback`) で 5 属性すべてが claim に存在するか検証し、続く post-PEX checks で `entityType`・`purpose`・`dataHandlingPolicy` の 3 属性をもう一度確かめる
+- 提示の照合 (DCQL の場合と sidecar が無い場合の `_local_pex_fallback`) で 5 属性すべてが claim に存在するか検証し、続く post-PEX checks で `entityType`・`purpose`・`dataHandlingPolicy` の 3 属性をもう一度確かめる
 - **token を発行しない**
 - レスポンス: `{trust_score, access_level, allowed_views, holder_did}`
 
@@ -203,7 +203,7 @@ score >= 60                               -> "access"
 }
 ```
 
-`merchandise_address`、`buyer_eth_addr`、`tx_hash`、`dataset_id` は必須です。応答は `claim_id`、`offer_url`、`deeplink` で、判定結果 (`allowed_views` など) は応答には含まれません。発行される PurchaseViewerVC の種類 (`PurchaseViewerVC.full` / `.access` / `.event`) に反映されます。
+`merchandise_address`、`buyer_eth_addr`、`tx_hash`、`dataset_id` は必須です。応答は `claim_id`、`offer_url`、`deeplink` (ほかに `merchandise_address`・`buyer_eth_addr`・`tx_hash`・`created`) で、判定結果 (`allowed_views` など) は応答には含まれません。発行される PurchaseViewerVC の種類 (`PurchaseViewerVC.full` / `.access` / `.event`) に反映されます。
 
 `data_user_attrs` を省略した場合は、`allowed_views=["event"]` の最小権限で claim します。
 
@@ -214,8 +214,8 @@ score >= 60                               -> "access"
 | allowed_views に含まれる | 出力フィールド |
 |---|---|
 | `event` | 既存 event JSON 全体 |
-| `image` | `image_cid` 追加 |
-| `video` | `video_cid`, `video_duration_sec` 追加 |
+| `image` | `image_cid`, `image_url` 追加 |
+| `video` | `video_cid`, `video_url`, `video_duration_sec` 追加 |
 
 `allowed_views` に含まれないビューのキーは**応答から省きます**（値を null にするのではなく、キーごと出力しません）。
 
@@ -269,7 +269,7 @@ score >= 60                               -> "access"
 ここまでの設計（[ハンズオン](data-user-vc-tiered.md)の §1〜§7 と、[続きのページ](data-user-vc-tiered-media.md)の §8〜§9 に対応）は、**メディアのキーを応答から省く**方式の
 アクセス制御です（Tier 2 では動画のキー、Tier 1 では画像と動画のキーが含まれません）。
 次の段階として、同じ素材に VLM（Vision Language Model。画像を入力に取れる言語モデル）による推論と
-顔 / PII（個人を特定できる情報）のブラー処理を適用して**派生データを生成し、tier 別に
+顔のブラー処理 (MVP では正面の顔) を適用して**派生データを生成し、tier 別に
 出し分ける**設計に拡張します。Tier 1 には**プライバシー情報を除いた要約テキスト**を
 渡します。信頼度の低い受信者は「何が起きたか」を知ることができますが、
 「誰がやったか」は分かりません。
@@ -370,7 +370,7 @@ degrade 時はレスポンスに **`processing_warnings: ["vlm_unavailable", ...
   への切り替えを `VLM_BACKEND=ollama|openai|anthropic` 環境変数で制御
 - **stub モード** (`VLM_BACKEND=stub`): テスト用。決定的にダミー文字列を返す
 
-### 顔/PII ブラーの実装選択肢
+### 顔ブラーの実装選択肢
 
 - **MVP**: OpenCV Haar cascade で顔検出 → Gaussian blur → 同 sha256 重複排除で再保存
 - **拡張候補**: ナンバープレート（OCR ベース）、画面（鋭い矩形検出）、IDバッジ等を

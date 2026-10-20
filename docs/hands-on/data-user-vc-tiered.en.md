@@ -311,9 +311,10 @@ share the same VCT.
     - `image_cid` invisible at `/platform/data` even when supplied via
       `/simulate/publish` → the pipeline now hoists the media CIDs to
       the envelope's top level.
-    - Opening the `deeplink` returned from `/marketplace/claim` directly in
-      the wallet is the simplest. Since the fix, opening `/issuer/offer?claim_id=...`
-      (`offer_url`) as in §4b also gives you a card of the same tier as the claim.
+    - Since the fix, opening `/issuer/offer?claim_id=...` (`offer_url`) as in §4b
+      gives you a card of the same tier as the claim. The `deeplink` in the `/marketplace/claim`
+      response uses the host the claim was sent to. A claim sent to `localhost`, as on this page,
+      yields a `deeplink` the phone cannot reach, so use `offer_url` (the `deeplink` also works when the bridge posts via `BRIDGE_PUBLIC_PUBLISHER_URL`).
 
 ## Where to go next
 

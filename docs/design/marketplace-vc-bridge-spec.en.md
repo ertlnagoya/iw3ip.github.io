@@ -268,6 +268,8 @@ Request:
 }
 ```
 
+→ The current bridge and iot-market-ui send `"0"` as `purchase_amount_wei` (reading the amount from the transaction is not implemented).
+
 Response:
 
 ```json
@@ -290,6 +292,8 @@ Polled by iot-market-ui. Returns `status: pending|delivered|expired`.
 
 A retrieval method alongside the existing `?dataset_id=`. The Bearer value is the ViewerToken obtained by presenting the PurchaseViewerVC.
 Internally, `dataset_id` is looked up from the Merchandise, and the data is retrieved by the same processing as the existing `?dataset_id=`.
+
+→ The implementation does not read the chain; it uses the Merchandise-to-`dataset_id` mapping kept in memory at `/marketplace/claim` time. Without a claim for that Merchandise (for example after the publisher is recreated), it returns 404 `unknown_merchandise:<addr>`.
 
 ### 8.2 Bridge side (new, not implemented)
 

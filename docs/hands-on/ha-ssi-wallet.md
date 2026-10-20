@@ -256,10 +256,10 @@ PolicyToken の性質:
 - スコープ: 発行時の `dataset_id` と一致する body のみ受け付ける
 - 形式: 不透明文字列（サーバ側 in-memory 管理）
 
-リクエスト例:
+リクエスト例です。`<policy_token>` は、publisher のログの `policy_token_issued` 行にある `token=` の値に置き換えます (この節の最後を参照)。
 
 ```bash
-TOKEN=<policy_token>  # publisher ログの policy_token_issued 行の token= の値 (この節の最後を参照)
+TOKEN=<policy_token>
 
 curl -X POST http://$HOST_IP:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \

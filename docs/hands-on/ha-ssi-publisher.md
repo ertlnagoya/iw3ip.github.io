@@ -195,7 +195,7 @@ curl http://localhost:8080/platform/ingest
 確認ポイント:
 
 - 手順 3 で送った `"dataset_id":"home/env/temperature"` のデータが含まれる (拒否された手順 4 の `home/energy/power` は含まれない)
-- `{"detail":"platform_ingest_read_disabled"}` が返る場合は、手順 1 で `PLATFORM_INGEST_READ_ENABLED=true` を付け忘れています。付けて起動し直してください ([トラブルシュート](../operations/troubleshooting.md) の項目 9)
+- `{"detail":"platform_ingest_read_disabled"}` が返る場合は、手順 1 で `PLATFORM_INGEST_READ_ENABLED=true` を付け忘れています。付けて起動し直してください ([トラブルシュート](../operations/troubleshooting.md) の項目 9)。起動し直すと、publisher のメモリにあるデータは消えるので、手順 3 をもう一度送ってから確かめます
 
 ### 7. 停止
 

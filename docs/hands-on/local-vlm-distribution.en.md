@@ -58,7 +58,7 @@ For a first pass, these four steps are enough.
 1. start the services with `--profile vlm` and wait for the model pull
 2. capture a single still image from the webcam
 3. submit that image to the platform and let the local VLM analyze it
-4. confirm the semantic data (`description_*`) is distributed via `/platform/data`
+4. confirm with `/platform/ingest` that the distributed row carries the semantic data (`description_*`)
 
 ## 1. Start the services with the VLM
 
@@ -71,7 +71,7 @@ export VLM_BACKEND=ollama
 # Use llava (the default) if you want higher quality and have time.
 export VLM_MODEL=moondream
 export IMAGE_REDACTION_BACKEND=opencv
-docker compose -f infra/docker-compose.yml --profile vlm up --build -d \
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile vlm up --build -d \
   publisher mosquitto vlm vlm-pull
 ```
 
@@ -98,7 +98,7 @@ curl -s http://localhost:8080/health | jq .
 
 ## 2. Capture one frame from the webcam
 
-Grab a single still image from the USB webcam and save it as `snapshot.jpg`. Save the script below as `capture_snapshot.py` at the top of the course repository (`~/program/Blockchain_IoT_Marketplace`) and run it there. The script uses OpenCV, so activate the venv from the prerequisites (`opencv-python<5` is installed because OpenCV 5 removed `cv2.CascadeClassifier`).
+Grab a single still image from the USB webcam and save it as `snapshot.jpg`. Save the script below as `capture_snapshot.py` at the top of the course repository (`~/program/Blockchain_IoT_Marketplace`) and run it there. The script uses OpenCV, so activate the venv from the prerequisites.
 
 ```python
 # capture_snapshot.py
@@ -159,7 +159,7 @@ With the default stub, the following fixed values come back regardless of the im
 
 Submit the image to the publisher and publish an event that points at it, so the AI-derived data enters the distribution pipeline. The exercise program in the next section runs consent registration → `/media/upload` → `/simulate/publish` in one go.
 
-If you started with `VLM_BACKEND` set as in §1, the publisher also calls the VLM here and attaches `description_full` / `description_summary` / `description_model` / `processing_warnings` to the row.
+If you started with `VLM_BACKEND` set as in §1, the publisher also calls the VLM here and attaches `description_full` / `description_summary` / `description_model` / `description_generated_at` to the row. Only when the VLM or the face blur fails is `processing_warnings` (such as `vlm_unavailable`) attached as well.
 
 !!! info "Consumer-side retrieval is tier-gated"
     To read the attached `description_*` on the consumer side you need a
@@ -175,7 +175,11 @@ If you started with `VLM_BACKEND` set as in §1, the publisher also calls the VL
 
 - `/semantic/analyze` returns structured semantic data (SIR) only, never the raw image
 - the meaning is produced with the local model only, without sending images to a cloud
-- when `VLM_BACKEND` is set, the distributed row carries `description_*` (descriptions and model ID)
+- when `VLM_BACKEND` is set, the distributed row carries `description_*` (descriptions and model ID). Because §1 started with `PLATFORM_INGEST_READ_ENABLED=true`, you can check the last distributed row with the command below (seeing the content without a ViewerToken works only with this check-only setting)
+
+    ```bash
+    curl -s http://localhost:8080/platform/ingest | jq '.[-1] | {description_full, description_summary, description_model, processing_warnings}'
+    ```
 
 ## Something to think about
 

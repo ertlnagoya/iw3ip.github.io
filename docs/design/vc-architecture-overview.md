@@ -29,7 +29,7 @@ VC は SD-JWT VC (`vct: https://iw3ip.example/credentials/<Kind>/v1`) で発行�
 | **PolicyToken** | 5 分 | 単回 | `POST /platform/ingest` | ConsentVC |
 | **ViewerToken** | 60 秒 | TTL 内多回 | `GET /platform/data` | ViewerVC / **PurchaseViewerVC** |
 | **ServiceToken** | 1 時間 | TTL 内多回 | `POST /platform/ingest` | ServiceVC |
-| **SellerToken** | 24 時間 | TTL 内多回 | `POST /marketplace/register` | SellerVC |
+| **SellerToken** | 24 時間 | TTL 内多回 | `POST /marketplace/register`、`POST /provider/publish` | SellerVC |
 
 ViewerToken は ViewerVC と PurchaseViewerVC の両方から発行されるが、**namespace は同じ** (issue 後は同等に扱う)。それ以外は token 種ごとに独立 namespace で、流用できない (例: SellerToken を ingest に使うと 401)。
 
@@ -50,7 +50,7 @@ JSON 登録      │ /consents POST  │ —              │ —          │ �
  (横断)        │   ↓ SellerVC が "/marketplace/register" を gate
 ```
 
-**SellerVC は data API を直接 gate しない**。代わりに出品時の身元証跡を audit log に残し、buyer の `/platform/data?merchandise=` レスポンスに `seller_did` として含まれる。
+**SellerVC は data API を直接 gate しない**。ただし、実装では SellerToken は Stage T の `POST /provider/publish` (データ提供者の PWA からの書き込み) にも使え、そのたびに `register_count` が増える。代わりに出品時の身元証跡を audit log に残し、buyer の `/platform/data?merchandise=` レスポンスに `seller_did` として含まれる。
 
 ## 5. ハンズオンの段階 (Stage 0〜7, T, A)
 
@@ -135,7 +135,7 @@ Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ
 | PolicyToken | `POST /platform/ingest` | `/platform/data`: 401 / `/marketplace/register`: 401 |
 | ViewerToken | `GET /platform/data` | `/platform/ingest`: 401 / `/marketplace/register`: 401 |
 | ServiceToken | `POST /platform/ingest` | `/platform/data`: 401 / `/marketplace/register`: 401 |
-| SellerToken | `POST /marketplace/register` | `/platform/ingest`: 401 / `/platform/data`: 401 |
+| SellerToken | `POST /marketplace/register`、`POST /provider/publish` | `/platform/ingest`: 401 / `/platform/data`: 401 |
 
 `/platform/ingest` は PolicyToken と ServiceToken の **両方を受理**するが、内部では PolicyToken を先に試し、失敗時 (`unknown`) のみ ServiceToken にフォールバック (互換性とエラーメッセージ統一のため)。
 

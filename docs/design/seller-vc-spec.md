@@ -99,6 +99,8 @@ class SellerToken:
 ServiceToken と同じ使い方 (多回利用で TTL が長い) である。違いは、`licensed_datasets`
 を持つことと、register API でしか使えないことである。
 
+→ 実装では、Stage T の `POST /provider/publish` (データ提供者の PWA からの書き込み) にも使える。そのたびに `register_count` が増える。
+
 ### 4.2 新エンドポイント
 
 #### `POST /marketplace/register`
@@ -139,6 +141,8 @@ Authorization: Bearer <SellerToken>
 - 内部に `merchandise -> seller_did` インデックスを保持
 - 200 + `{registered: true, seller_did, dataset_id}`
 
+→ 実装の応答には、ほかに `merchandise_address`・`tx_hash`・`register_count`・`owner_verify` も入る。
+
 失敗時 (代表例):
 
 | Reason | HTTP |
@@ -171,6 +175,7 @@ Authorization: Bearer <SellerToken>
   "count": 5,
   "read_count": 1,
   "seller_did": "did:jwk:...",
+  "allowed_views": ["event"],
   "rows": [...]
 }
 ```

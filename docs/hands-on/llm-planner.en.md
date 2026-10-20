@@ -458,7 +458,12 @@ git pull --ff-only
 # stop only the Docker assistants started in §3.5 etc. (the publisher and others keep running)
 docker compose -f infra/docker-compose.yml stop assistant assistant-demo llm-mock assistant-ui
 cp .env.local.example .env.local
-# edit ASSISTANT_LLM_API_KEY etc. in .env.local
+```
+
+Edit `ASSISTANT_LLM_API_KEY` and the rest (and `ASSISTANT_LLM_MODEL` and `ASSISTANT_LLM_API_BASE_URL` if needed) in `.env.local`, save it, and then start the server. For a local LLM running on the PC, `localhost` does not reach it from inside the container, so set `ASSISTANT_LLM_API_BASE_URL` to `http://host.docker.internal:<port>/v1`.
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
 ```
 
@@ -599,7 +604,7 @@ When the LLM API cannot be used, `/assistant/plan` does not fail; it returns the
 
 ### `error_message` is `LLM API returned HTTP 401`
 
-- check `ASSISTANT_LLM_API_KEY`
+- check `ASSISTANT_LLM_API_KEY`. After editing `.env.local`, restart with the `up` command in §5
 
 ### `error_message` is `LLM API returned HTTP 404` or `405`
 
@@ -611,6 +616,7 @@ When the LLM API cannot be used, `/assistant/plan` does not fail; it returns the
 - the name in parentheses is the exception type: `ConnectError` when the connection fails, `ReadTimeout` and the like when no reply comes in time
 
 - check that the host and port of `ASSISTANT_LLM_API_BASE_URL` are reachable. For the §5.2 mock server, use `curl http://127.0.0.1:18000/health`
+- when the Docker `assistant-llm` uses a local LLM on the PC, give `host.docker.internal`, not `localhost`
 
 ### `error_message` is `missing api_key` or another `missing ...`
 

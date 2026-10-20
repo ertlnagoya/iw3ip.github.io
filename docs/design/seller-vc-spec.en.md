@@ -99,6 +99,8 @@ class SellerToken:
 It is used in the same way as a ServiceToken (multi-use with a long TTL). The differences are
 that it carries `licensed_datasets` and that it can be used only with the register API.
 
+→ In the implementation it also works for `POST /provider/publish` in Stage T (writes from the data-provider PWA), and each use increments `register_count`.
+
 ### 4.2 New endpoint
 
 #### `POST /marketplace/register`
@@ -141,6 +143,8 @@ On success:
 - Keep a `merchandise -> seller_did` index internally
 - 200 + `{registered: true, seller_did, dataset_id}`
 
+→ The implemented response also has `merchandise_address`, `tx_hash`, `register_count` and `owner_verify`.
+
 On failure (typical cases):
 
 | Reason | HTTP |
@@ -173,6 +177,7 @@ The response of `GET /platform/data?merchandise=<addr>` optionally includes
   "count": 5,
   "read_count": 1,
   "seller_did": "did:jwk:...",
+  "allowed_views": ["event"],
   "rows": [...]
 }
 ```

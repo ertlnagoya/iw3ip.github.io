@@ -195,7 +195,7 @@ curl http://localhost:8080/platform/ingest
 Checkpoints:
 
 - the data from step 3 (`"dataset_id":"home/env/temperature"`) is included (the denied `home/energy/power` from step 4 is not)
-- if `{"detail":"platform_ingest_read_disabled"}` is returned, `PLATFORM_INGEST_READ_ENABLED=true` was missing in step 1. Restart with it (see "`GET /platform/ingest` returns 404" in [Troubleshooting](../operations/troubleshooting.md))
+- if `{"detail":"platform_ingest_read_disabled"}` is returned, `PLATFORM_INGEST_READ_ENABLED=true` was missing in step 1. Restart with it (see "`GET /platform/ingest` returns 404" in [Troubleshooting](../operations/troubleshooting.md)). The restart clears the data held in the publisher's memory, so send step 3 again before checking
 
 ### 7. Stop services
 

@@ -35,7 +35,7 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
 
 - How the `licensed_datasets` of a SellerVC states in the VC
   "which datasets this seller may sell"
-- The SellerToken (24h, multi-use) works only for `/marketplace/register`
+- Calling `/marketplace/register` with the SellerToken (24h, multi-use); the SellerToken also works for `/provider/publish` in §11 of [tiered media](data-user-vc-tiered-media.md)
 - (Optional) When the environment variable `MARKETPLACE_HARDHAT_RPC` is set, the publisher
   verifies on-chain that `Merchandise.getOwner() == seller_eth_addr`
 - A **`marketplace/seller_registered`** row is added to the audit log

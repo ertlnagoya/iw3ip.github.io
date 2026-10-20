@@ -2,7 +2,7 @@
 
 This page continues [Tier the response by trust](data-user-vc-tiered.md) (§0–§7) and [Deliver images and video with tiered access](data-user-vc-tiered-media.md) (§8–§11). It goes all the way to semantic intermediate representation and trust-aware rendering. Section numbers continue from the first page (§12–§13).
 
-> **What you'll do**: Derive new content with VLM inference and face/PII blurring and project it per tier, then run trust-aware rendering on the semantic intermediate representation (SIR)
+> **What you'll do**: Derive new content with VLM inference and face blurring and project it per tier, then run trust-aware rendering on the semantic intermediate representation (SIR)
 >
 > **Prerequisites**: §0–§7 of [Tier the response by trust](data-user-vc-tiered.md) and §8–§11 of [Deliver images and video with tiered access](data-user-vc-tiered-media.md)
 >
@@ -14,7 +14,7 @@ This page continues [Tier the response by trust](data-user-vc-tiered.md) (§0–
 
 §1–§11 (the [first page](data-user-vc-tiered.md) and the [second page](data-user-vc-tiered-media.md)) gate access by **dropping media keys** — Tier 2 hides video,
 Tier 1 hides image and video. §12 derives **new content from the same
-source via VLM inference + face/PII blurring** and projects those
+source via VLM inference + face blurring (frontal faces in the MVP)** and projects those
 derivatives per tier. Tier 1 stops being "you get nothing useful" and
 ships a **PII-redacted summary** instead.
 
@@ -197,7 +197,7 @@ Internally the publisher:
 6. surfaces the resulting URL/CID as `image_url_redacted` /
    `image_cid_redacted`
 
-The blur runs on every request. Blurred images made from the same source are
+The blur runs each time an event is published (not when `/platform/data` is read). Blurred images made from the same source are
 **not stored twice**, thanks to the sha256 dedup in `/media/upload`.
 
 !!! note "MVP limitations"

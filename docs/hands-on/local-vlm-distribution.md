@@ -58,7 +58,7 @@
 1. `--profile vlm` を付けてサービスを起動し、モデルの pull を待つ
 2. ウェブカメラから 1 枚だけ静止画を撮る
 3. その画像を基盤に投入し、ローカル VLM に解析させる
-4. `/platform/data` で `description_*`（意味データ）が流通していることを確認する
+4. `/platform/ingest` で、流通した行に `description_*`（意味データ）が付いていることを確認する
 
 ## 1. VLM 付きでサービスを起動する
 
@@ -71,7 +71,7 @@ export VLM_BACKEND=ollama
 # 品質重視かつ時間に余裕があれば llava（既定）でも可。
 export VLM_MODEL=moondream
 export IMAGE_REDACTION_BACKEND=opencv
-docker compose -f infra/docker-compose.yml --profile vlm up --build -d \
+PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile vlm up --build -d \
   publisher mosquitto vlm vlm-pull
 ```
 
@@ -97,7 +97,7 @@ curl -s http://localhost:8080/health | jq .
 
 ## 2. ウェブカメラから 1 枚撮る
 
-USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。下のスクリプトを教材リポジトリのトップ (`~/program/Blockchain_IoT_Marketplace`) に `capture_snapshot.py` として保存し、そこで実行します。OpenCV を使うので、前提で作った venv を有効にします（OpenCV 5 では `cv2.CascadeClassifier` が外れているため、`opencv-python<5` を入れています）。
+USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。下のスクリプトを教材リポジトリのトップ (`~/program/Blockchain_IoT_Marketplace`) に `capture_snapshot.py` として保存し、そこで実行します。OpenCV を使うので、前提で作った venv を有効にします。
 
 ```python
 # capture_snapshot.py
@@ -157,7 +157,7 @@ curl -s -X POST http://localhost:8080/semantic/analyze \
 
 画像を publisher に投入し、その画像を指すイベントを発行して、AI 由来の意味データを流通パイプラインに載せます。次節の演習プログラムが、consent 登録 → `/media/upload` → `/simulate/publish` を一括で行います。
 
-§1 のとおり `VLM_BACKEND` を設定して起動していれば、publisher はこのとき VLM を呼び出し、行に `description_full` / `description_summary` / `description_model` / `processing_warnings` を付与します。
+§1 のとおり `VLM_BACKEND` を設定して起動していれば、publisher はこのとき VLM を呼び出し、行に `description_full` / `description_summary` / `description_model` / `description_generated_at` を付与します。VLM や顔ブラーが失敗したときだけ、`processing_warnings` (`vlm_unavailable` など) も付きます。
 
 !!! info "受信側での取得には ViewerToken が必要"
     付与された `description_*` を受信側で取り出すには、ViewerToken が必要です。ViewerToken は、
@@ -170,7 +170,11 @@ curl -s -X POST http://localhost:8080/semantic/analyze \
 
 - `/semantic/analyze` が生画像を返さず、構造化された意味データ（SIR）だけを返している
 - クラウドに画像を送らず、ローカルモデルだけで意味づけできている
-- `VLM_BACKEND` を設定して起動したとき、配信した行に `description_*`（説明文とモデル ID）が付与される
+- `VLM_BACKEND` を設定して起動したとき、配信した行に `description_*`（説明文とモデル ID）が付与される。§1 で `PLATFORM_INGEST_READ_ENABLED=true` を付けて起動しているので、次のコマンドで最後に流通した行を確かめられる (ViewerToken なしで中身が見えるのは、この確認用の設定のときだけ)
+
+    ```bash
+    curl -s http://localhost:8080/platform/ingest | jq '.[-1] | {description_full, description_summary, description_model, processing_warnings}'
+    ```
 
 ## 考えてみよう
 

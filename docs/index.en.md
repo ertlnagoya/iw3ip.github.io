@@ -145,7 +145,12 @@ If you get stuck, see [Troubleshooting](operations/troubleshooting.md).
 
 ## Run docs locally
 
+Run this in the folder where you cloned this site's repository (`ertlnagoya/iw3ip.github.io`). The course repository also has a `docs/` folder, but that holds separate, older documents.
+
 ```bash
+cd <folder where you cloned iw3ip.github.io>
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r docs/requirements.txt
 mkdocs serve
 ```

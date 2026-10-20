@@ -180,11 +180,12 @@ python3 problem_program.py --out-dir results_mine
 
 ## 7. 後片付け
 
-ターミナル 2 の模擬クラウドを Ctrl+C で止めてから、撮った画像と、模擬クラウドが受け取ったデータを削除します。`examples/hands_on/privacy_compare` で実行し、教材リポジトリのトップに戻ってからコンテナを止めます。
+ターミナル 2 の模擬クラウドを Ctrl+C で止めてから、撮った画像と、模擬クラウドが受け取ったデータを削除します。`examples/hands_on/privacy_compare` に移って削除し、教材リポジトリのトップに戻ってからコンテナを止めます。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace/examples/hands_on/privacy_compare
 rm -rf results results_mine received
-cd ../../..
+cd ~/program/Blockchain_IoT_Marketplace
 docker rm -f iw3ip-ollama
 docker compose -f infra/docker-compose.yml --profile vlm down
 ```

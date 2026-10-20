@@ -315,10 +315,10 @@ http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=P
 
 QR code → in the wallet, select the **PurchaseViewerVC** (do not confuse it with the ServiceVC or the ViewerVC) and present it.
 
-The ViewerToken expires after 60 seconds. Run the next commands right after presenting; if you get `viewer_token_expired`, present again.
+The ViewerToken expires after 60 seconds. Run the next commands right after presenting; if you get `viewer_token_expired`, present again. The first line is needed when you run this in a different terminal from Step E1.
 
 ```bash
-PUB=$(docker ps -qf name=publisher)   # needed when running in a different terminal from Step E1
+PUB=$(docker ps -qf name=publisher)
 TOKEN=$(docker logs $PUB 2>&1 | grep "viewer_token_issued vc_kind=PurchaseViewerVC" | tail -1 | sed -E 's/.*token=([^ ]+).*/\1/')
 echo "TOKEN=$TOKEN"
 
@@ -419,7 +419,7 @@ the holder_did is identical. In real operation they are separate devices and sep
 
 ### A. `dataset=` in the bridge log does not match the item's dataset
 
-**Cause**: The Merchandise is from an old deployment and has no `dataset_id` (a deployment from before Stage 6 case B). The bridge then uses the default `home/env/temperature`. For the temperature items (#1, #3) the log looks the same, so to tell them apart buy #2 (`home/event/possible_littering`) or #4 (`home/event/flood_risk_high`) and check that `dataset=` is not `home/env/temperature`. You can also check `additionalInfo` on the `/merchandise/<address>` page.
+**Cause**: The Merchandise is from an old deployment and has no `dataset_id` (a deployment from before Stage 6 case B). The bridge then uses the default `home/env/temperature`. For the temperature items (#0, #1, #3) the log looks the same, so to tell them apart buy #2 (`home/event/possible_littering`) or #4 (`home/event/flood_risk_high`) and check that `dataset=` is not `home/env/temperature`. You can also check `additionalInfo` on the `/merchandise/<address>` page.
 
 **Fix**: Restart the Hardhat node (`Ctrl+C` → `npx hardhat node --hostname 0.0.0.0`) and then
 redeploy with the latest `deployMerchandiseWithIoTMarket.ts`. MetaMask

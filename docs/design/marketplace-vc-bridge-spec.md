@@ -267,6 +267,8 @@ Request:
 }
 ```
 
+→ 現在の bridge と iot-market-ui は、`purchase_amount_wei` に `"0"` を送る (取引から金額を読む処理は未実装)。
+
 Response:
 ```json
 {
@@ -288,6 +290,8 @@ iot-market-ui がポーリングする。`status: pending|delivered|expired` を
 
 既存の `?dataset_id=` と並ぶ取得方法である。Bearer には PurchaseViewerVC の提示で得た ViewerToken を指定する。
 内部では Merchandise から `dataset_id` を逆引きし、既存の `?dataset_id=` と同じ処理で取得する。
+
+→ 実装ではチェーンを読まず、`/marketplace/claim` のときにメモリに覚えた Merchandise と `dataset_id` の対応から引く。その Merchandise の claim が無い (publisher を作り直した等) と、404 `unknown_merchandise:<addr>` になる。
 
 ### 8.2 bridge 側 (新設、未実装)
 

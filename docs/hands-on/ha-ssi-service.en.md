@@ -106,7 +106,14 @@ http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=S
 
 `vc_kind=ServiceVC` is required; without it the ConsentVC PD is selected.
 
-Right after presentation, the publisher log (`docker logs $PUB`) shows:
+After presenting, check the publisher log.
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep service_token_issued | tail -n 1
+```
+
+Each log line is JSON, and its `"message"` holds:
 
 ```
 service_token_issued jti=... token=... dataset=home/env/temperature ttl=3600s

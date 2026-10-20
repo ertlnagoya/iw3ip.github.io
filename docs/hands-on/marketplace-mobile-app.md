@@ -101,7 +101,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 ### 操作
 
-ターミナル D (iot-market-ui):
+ターミナル D (iot-market-ui)。Stage 5・6 の iot-market-ui がまだ動いていれば、先に Ctrl+C で止めます (5173 番が使われたままだと、Vite が別の番号で起動します):
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace

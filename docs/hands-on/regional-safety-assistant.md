@@ -281,7 +281,8 @@ Phase 3 は **「イベント共有」から「要求に応じた判断・行動
 ### 8. 停止
 
 ```bash
-docker compose -f infra/docker-compose.yml --profile assistant down
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml stop assistant
 ```
 
 ## 次の学習

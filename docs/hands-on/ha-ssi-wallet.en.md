@@ -255,10 +255,10 @@ PolicyToken properties:
 - Scope: only accepts a body whose `dataset_id` matches the issuance time
 - Format: opaque string (server-side in-memory)
 
-Request:
+Request. Replace `<policy_token>` with the value after `token=` in the `policy_token_issued` line of the publisher log (see the end of this section).
 
 ```bash
-TOKEN=<policy_token>  # value after token= in the publisher log line policy_token_issued (see end of this section)
+TOKEN=<policy_token>
 
 curl -X POST http://$HOST_IP:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \

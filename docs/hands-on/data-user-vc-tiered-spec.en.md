@@ -187,7 +187,7 @@ wallet) would ask for the five attributes above (plus `subject_id`).
 
 When a `DataUserVC` is presented (as the note above says, this path is not reachable today because there is no presentation definition):
 
-- the presentation match (`_local_pex_fallback`) checks that all five claims are present, and the post-PEX checks then check `entityType`, `purpose` and `dataHandlingPolicy` again
+- the presentation match (`_local_pex_fallback`, used for DCQL or when the sidecar is absent) checks that all five claims are present, and the post-PEX checks then check `entityType`, `purpose` and `dataHandlingPolicy` again
 - **no token is minted**
 - response: `{trust_score, access_level, allowed_views, holder_did}`
 
@@ -209,7 +209,7 @@ When a `DataUserVC` is presented (as the note above says, this path is not reach
 }
 ```
 
-`merchandise_address`, `buyer_eth_addr`, `tx_hash`, and `dataset_id` are required. The response carries `claim_id`, `offer_url`, and `deeplink`; the verdict (`allowed_views` etc.) is not in the response. It is reflected in the kind of PurchaseViewerVC that gets issued (`PurchaseViewerVC.full` / `.access` / `.event`).
+`merchandise_address`, `buyer_eth_addr`, `tx_hash`, and `dataset_id` are required. The response carries `claim_id`, `offer_url`, and `deeplink` (plus `merchandise_address`, `buyer_eth_addr`, `tx_hash` and `created`); the verdict (`allowed_views` etc.) is not in the response. It is reflected in the kind of PurchaseViewerVC that gets issued (`PurchaseViewerVC.full` / `.access` / `.event`).
 
 If `data_user_attrs` is omitted, we claim with the minimum
 `allowed_views=["event"]`.
@@ -221,8 +221,8 @@ Filtered by `ViewerToken.allowed_views`:
 | allowed_views contains | Output fields |
 |---|---|
 | `event` | the event JSON itself |
-| `image` | adds `image_cid` |
-| `video` | adds `video_cid`, `video_duration_sec` |
+| `image` | adds `image_cid`, `image_url` |
+| `video` | adds `video_cid`, `video_url`, `video_duration_sec` |
 
 Keys not allowed are **omitted** (not nulled).
 
@@ -275,7 +275,7 @@ At the initial implementation, the suite totalled 88 tests (75 existing + 13 new
 
 The design so far (matching §1–§7 of the [hands-on page](data-user-vc-tiered.md) and §8–§9 of its [follow-up page](data-user-vc-tiered-media.md)) gates access by **dropping media keys** (Tier 2 hides video,
 Tier 1 hides image and video). The next step is to **derive new content
-from the same source via VLM inference + face/PII blurring and project
+from the same source via VLM inference + face blurring (frontal faces in the MVP) and project
 those derivatives per tier**. Tier 1 is no longer "you get nothing
 useful"; it now ships a **PII-redacted summary** so a low-trust
 recipient can know *what happened* without learning *who did it*.
@@ -379,7 +379,7 @@ so the receiver can tell what was skipped.
 - **stub** (`VLM_BACKEND=stub`): test mode that returns deterministic
   dummy strings
 
-### Face / PII blur
+### Face blur
 
 - **MVP**: OpenCV Haar cascade face detection + Gaussian blur, dedup on
   the resulting bytes' sha256 so re-runs are free

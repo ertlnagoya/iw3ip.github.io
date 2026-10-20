@@ -47,7 +47,7 @@ The final `[publish]` output should show `"status": "allowed"`. If it says `deni
 
 ### 8.2 Receiver (unchanged — same Tier 3 / 2 / 1 flow as §3–§7)
 
-After re-running [§6 + §7](data-user-vc-tiered.md#6-cross-check-with-tests) with the new event in flight you should see:
+Use the [§3–§7](data-user-vc-tiered.md#3-three-marketplaceclaim-calls) flow as is. Fetching `/platform/data` per tier gives:
 
 - **Tier 3 (gov full)** → `event` + `image_url` + `video_url` + `video_duration_sec`
 - **Tier 2 (enterprise)** → `event` + `image_url` only
@@ -325,6 +325,8 @@ Main reason codes and their messages (the page shows `human_message_ja` when it 
 | `missing_entityType` / `missing_purpose` / `missing_dataHandlingPolicy` | DataUserVC is missing *XXX*. (`missing_legalCompliance` and `missing_misuseRecord` give a generic "presentation denied (reason)" message) | DataUserVC に *XXX* が含まれていません。 |
 | `verification_failed` | VC verification failed. | VC の署名検証に失敗しました。 |
 
+`/buyer/start` asks only for a PurchaseViewerVC, so the `missing_*` rows (for DataUserVC) do not appear on this page. `verification_failed` appears only when the sidecar returns no reason. With a bad signature on the default path, the reason is `verify_error:...` and the page shows the generic "提示が拒否されました (verify_error:...)。" message.
+
 **Publisher-side flow (not yet validated on a real device — read from the implementation; as noted below, step 2 does not happen with a normal wallet):**
 
 1. PC opens `/buyer/start?ds=home/event/possible_littering` → QR appears.
@@ -443,7 +445,7 @@ Once an upload completes, the Publish button enables. The form holds:
 Click **Publish event**. The browser POSTs to `/provider/publish` with
 `Authorization: Bearer <seller_token>`. Server-side:
 
-1. `schemas.normalize(topic, payload)` derives `dataset_id` from the topic.
+1. `schemas.normalize(topic, payload)` derives `dataset_id` (for a `homeassistant/event/...` topic it builds `home/event/<event_type>` from the payload's `event_type`; this page fixes `event_type` to `possible_littering`).
 2. `ssi_state.use_seller_token(token, dataset_id=<resolved>)` enforces
    that `dataset_id ∈ licensed_datasets[]`.
 3. On success it calls `processor.process_message` (same path as
@@ -461,7 +463,7 @@ Deny cases:
 | missing `Authorization` header | 401 | `missing_authorization_header` |
 | unknown SellerToken | 401 | `seller_token_unknown` |
 | expired SellerToken | 401 | `seller_token_expired` |
-| dataset (resolved from topic) not in `licensed_datasets[]` | 403 | `seller_token_dataset_not_licensed` |
+| derived dataset not in `licensed_datasets[]` | 403 | `seller_token_dataset_not_licensed` |
 | topic not recognised by `normalize()` | 400 | `unsupported_topic:...` |
 
 The `seller_token_*` errors (401 and 403) are recorded in `/audit/logs` with `action=deny`. The 401 for a missing `Authorization` header and the 400 for `unsupported_topic` are returned before any audit write, so they are not recorded.
@@ -500,10 +502,10 @@ a **two-tab** experience in the browser.
 
 | Symptom | Fix |
 |---|---|
-| `/provider/start` says no SellerVC offer received | Issue one first: `/issuer/offer?type=SellerVC&seller_id=...&licensed_datasets=...` and scan the offer URI from the wallet |
+| The wallet shows "No Available Credential" after scanning the `/provider/start` QR | Issue one first: `/issuer/offer?type=SellerVC&seller_id=...&licensed_datasets=...` and scan the offer URI from the wallet |
 | 📷 Camera capture opens the file picker on iPhone Safari | Some iOS versions don't honor the combination `accept="image/*,video/*" capture="environment"`. Switching `accept` to `video/*` only forces the camera reliably |
 | 🔴 Browser recorder button does nothing | `getUserMedia` only works on HTTPS or `localhost`. Opening over a LAN IP (`http://192.168.x.x`) makes the browser deny camera/mic permission. Use `localhost:8080` or run behind HTTPS |
-| `/provider/publish` returns 403 `seller_token_dataset_not_licensed` | The dataset_id derived from `topic` isn't in your SellerVC's `licensed_datasets[]`. Example: `topic=homeassistant/event/possible_littering` → dataset_id is `home/event/possible_littering` |
+| `/provider/publish` returns 403 `seller_token_dataset_not_licensed` | The derived dataset_id isn't in your SellerVC's `licensed_datasets[]`. This page fixes `event_type` to `possible_littering`, so any `homeassistant/event/` topic gives `home/event/possible_littering`. Include it in the SellerVC |
 | Publish response has `status: send_error` | The publisher's `PLATFORM_API_URL` is unreachable. The SellerToken gate did pass and `register_count` did increment — auth was OK, downstream delivery failed |
 | `/provider/publish` returns 401 `seller_token_unknown` | `SSIStateStore` is in-memory; restarting the publisher container wipes every token. Re-present the SellerVC at `/provider/start` to mint a fresh one (the SellerVC itself stays in the wallet, no re-issuance needed). For hands-on sessions that bounce the container, plan one extra OID4VP loop after each restart |
 | Wallet shows "Retrieving access token failed: 400 / Error Screen" | OID4VCI offers are **single-use**. Sphereon-family wallets retry `/issuer/token` internally; the second call fails with `invalid_grant` (400). The **first call already issued the VC into the wallet** — the error screen is misleading. Dismiss it and check the wallet's credential list; the new card should be there |

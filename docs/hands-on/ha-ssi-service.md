@@ -105,7 +105,14 @@ http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=S
 
 `vc_kind=ServiceVC` は必須です (指定しないと ConsentVC 用の Presentation Definition が選ばれます)。
 
-提示すると、publisher のログ (`docker logs $PUB`) に次の行が出ます。
+提示したら、publisher のログを確かめます。
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep service_token_issued | tail -n 1
+```
+
+ログは 1 行が JSON で、その `"message"` に次の内容が入ります。
 
 ```
 service_token_issued jti=... token=... dataset=home/env/temperature ttl=3600s

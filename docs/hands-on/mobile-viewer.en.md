@@ -74,7 +74,7 @@ Branches after that:
   (use the `Product deployed: 0x…` address shown in the `mediator-owner` terminal (created by running the USB webcam sample in mock mode as in §1.3 of the [Hands-on overview](index.md); the 5 items deployed in step 2 of the Quickstart deliver no data when bought))
 - **Purchase path**: open the same URL in MetaMask Mobile
 - **VC-mediated path (v2)**: go to [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md)
-- If the connection fails early: jump to the troubleshooting section first
+- If the connection fails early: check [Troubleshooting](#troubleshooting) first
 
 ## Prepare the connection baseline
 

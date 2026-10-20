@@ -309,10 +309,10 @@ http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=P
 
 QR → wallet で **PurchaseViewerVC** (ServiceVC や ViewerVC と間違えないこと) を選んで提示。
 
-ViewerToken の有効期限は 60 秒です。提示したらすぐに次のコマンドを実行し、`viewer_token_expired` が出たら提示からやり直してください。
+ViewerToken の有効期限は 60 秒です。提示したらすぐに次のコマンドを実行し、`viewer_token_expired` が出たら提示からやり直してください。1 行目は、Step E1 と別のターミナルで実行する場合に必要です。
 
 ```bash
-PUB=$(docker ps -qf name=publisher)   # Step E1 と別のターミナルで実行する場合に必要
+PUB=$(docker ps -qf name=publisher)
 TOKEN=$(docker logs $PUB 2>&1 | grep "viewer_token_issued vc_kind=PurchaseViewerVC" | tail -1 | sed -E 's/.*token=([^ ]+).*/\1/')
 echo "TOKEN=$TOKEN"
 
@@ -412,7 +412,7 @@ holder_did は同一になります。実運用では別端末・別 did:jwk に
 
 ### A. bridge のログの `dataset=` が、商品のデータセットと合わない
 
-**原因**: Merchandise が古いデプロイで `dataset_id` を持っていない (Stage 6 case B 以前のデプロイ)。このとき bridge は既定値の `home/env/temperature` を使います。温度の商品 (#1・#3) ではログが同じに見えるので、見分けるときは #2 (`home/event/possible_littering`) か #4 (`home/event/flood_risk_high`) を買って、`dataset=` が `home/env/temperature` になっていないか確かめます。`/merchandise/<アドレス>` のページで `additionalInfo` を見ても確かめられます。
+**原因**: Merchandise が古いデプロイで `dataset_id` を持っていない (Stage 6 case B 以前のデプロイ)。このとき bridge は既定値の `home/env/temperature` を使います。温度の商品 (#0・#1・#3) ではログが同じに見えるので、見分けるときは #2 (`home/event/possible_littering`) か #4 (`home/event/flood_risk_high`) を買って、`dataset=` が `home/env/temperature` になっていないか確かめます。`/merchandise/<アドレス>` のページで `additionalInfo` を見ても確かめられます。
 
 **対処**: Hardhat ノードを再起動 (`Ctrl+C` → `npx hardhat node --hostname 0.0.0.0`) してから
 最新の `deployMerchandiseWithIoTMarket.ts` で再デプロイ。MetaMask は

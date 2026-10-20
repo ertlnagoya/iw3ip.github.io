@@ -77,7 +77,7 @@ ping -c 1 host.docker.internal
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
-npm install   # 初回のみ
+npm install
 npx hardhat node
 ```
 
@@ -120,7 +120,7 @@ npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/iot-market-ui
-npm install   # 初回のみ
+npm install
 npm run dev
 ```
 

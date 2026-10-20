@@ -458,7 +458,12 @@ git pull --ff-only
 # §3.5 などで起動した Docker の assistant だけを止める (publisher などはそのまま動き続ける)
 docker compose -f infra/docker-compose.yml stop assistant assistant-demo llm-mock assistant-ui
 cp .env.local.example .env.local
-# エディタで .env.local の ASSISTANT_LLM_API_KEY などを書き換える
+```
+
+エディタで `.env.local` の `ASSISTANT_LLM_API_KEY` など (必要なら `ASSISTANT_LLM_MODEL` と `ASSISTANT_LLM_API_BASE_URL` も) を書き換えて保存してから、起動します。PC で動かしているローカル LLM を使う場合、コンテナの中からは `localhost` で届かないので、`ASSISTANT_LLM_API_BASE_URL` は `http://host.docker.internal:<ポート>/v1` にします。
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile assistant-llm up --build -d assistant-llm
 ```
 
@@ -599,7 +604,7 @@ LLM API を使えないとき、`/assistant/plan` はエラーにならず、rul
 
 ### `error_message` が `LLM API returned HTTP 401`
 
-- `ASSISTANT_LLM_API_KEY` を確認してください
+- `ASSISTANT_LLM_API_KEY` を確認してください。`.env.local` を書き換えたあとは、§5 の `up` のコマンドで起動し直します
 
 ### `error_message` が `LLM API returned HTTP 404` または `405`
 
@@ -611,6 +616,7 @@ LLM API を使えないとき、`/assistant/plan` はエラーにならず、rul
 - かっこの中は例外の種類です。`ConnectError` は接続できないとき、`ReadTimeout` などは応答が時間内に返らないときに出ます
 
 - `ASSISTANT_LLM_API_BASE_URL` のホストとポートに届くか確認してください。§5.2 の mock server なら `curl http://127.0.0.1:18000/health` で確かめます
+- Docker の `assistant-llm` から PC のローカル LLM を使う場合は、`localhost` ではなく `host.docker.internal` を指定します
 
 ### `error_message` が `missing api_key` などの `missing ...`
 

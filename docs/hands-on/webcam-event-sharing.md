@@ -323,6 +323,7 @@ curl で送る**ことを勧めます。
 まず `ssi-wallet` プロファイルを付けて起動し直します。`PLATFORM_INGEST_READ_ENABLED=true` を付け忘れると、本編で書き込んだ行が消えるうえ、`GET /platform/ingest` が 404 になります。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 ```
 
@@ -332,6 +333,7 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
    `research` / `planning` のいずれか)。
    PolicyToken は publisher のログの `policy_token_issued` 行にある `token=` の後ろの値です。コピーして `POLICY` に入れます (有効期限 5 分):
    ```bash
+   cd ~/program/Blockchain_IoT_Marketplace
    docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_token_issued | tail -n 1
    POLICY=<token= の後ろの値>
    ```

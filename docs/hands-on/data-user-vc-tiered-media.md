@@ -314,6 +314,8 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 | `missing_entityType` / `missing_purpose` / `missing_dataHandlingPolicy` | DataUserVC に *XXX* が含まれていません。 (`missing_legalCompliance` と `missing_misuseRecord` は「提示が拒否されました (reason)。」) | DataUserVC is missing *XXX*. |
 | `verification_failed` | VC の署名検証に失敗しました。 | VC verification failed. |
 
+`/buyer/start` は PurchaseViewerVC の提示だけを求めるので、`missing_*` の行 (DataUserVC 用) はこのページでは出ません。`verification_failed` は、sidecar が理由を返さなかったときだけ出ます。既定の流れで署名が不正なときは、reason が `verify_error:...` になり、「提示が拒否されました (verify_error:...)。」と表示されます。
+
 **publisher 側の動作（実機では未確認で、実装から読み取った内容です。下の注のとおり、通常のウォレットでは手順 2 は起こりません）:**
 
 1. PC で `/buyer/start?ds=home/event/possible_littering` を開く → QR が出る
@@ -431,7 +433,7 @@ POST します。
 
 サーバー側では次の順に処理します。
 
-1. `schemas.normalize(topic, payload)` で **dataset_id を topic から導出**
+1. `schemas.normalize(topic, payload)` で **dataset_id を導出** (`homeassistant/event/...` の topic では、payload の `event_type` から `home/event/<event_type>` を作る。このページは `event_type` を `possible_littering` に固定している)
 2. `ssi_state.use_seller_token(token, dataset_id=<resolved>)` で
    **`licensed_datasets[]` に `dataset_id` が含まれること**を検証
 3. 検証に通ったら `processor.process_message` を呼ぶ（`/simulate/publish` と同じ経路）
@@ -448,7 +450,7 @@ POST します。
 | `Authorization` ヘッダなし | 401 | `missing_authorization_header` |
 | 不明な SellerToken | 401 | `seller_token_unknown` |
 | TTL 切れ SellerToken | 401 | `seller_token_expired` |
-| `topic` から導出した dataset が `licensed_datasets[]` に無い | 403 | `seller_token_dataset_not_licensed` |
+| 導出した dataset が `licensed_datasets[]` に無い | 403 | `seller_token_dataset_not_licensed` |
 | `topic` が `normalize()` で受け付けられない | 400 | `unsupported_topic:...` |
 
 `seller_token_*` のエラー (401 と 403) は、`/audit/logs` に `action=deny` で記録されます。`Authorization` ヘッダーが無いときの 401 と、`unsupported_topic` の 400 は、監査ログに書き込む前に返るので記録されません。
@@ -485,10 +487,10 @@ POST します。
 
 | 症状 | 対処 |
 |---|---|
-| `/provider/start` で「SellerVC のオファーを受け取っていない」 | 先に `/issuer/offer?type=SellerVC&seller_id=...&licensed_datasets=...` でウォレットに SellerVC を入れる必要があります |
+| `/provider/start` の QR を読んだウォレットに「No Available Credential」と出る | 先に `/issuer/offer?type=SellerVC&seller_id=...&licensed_datasets=...` でウォレットに SellerVC を入れる必要があります |
 | iPhone Safari で「📷 カメラで撮影」がファイルピッカーになる | iOS のバージョンによっては `accept="image/*,video/*" capture="environment"` が組み合わせで効かないことがあります。`accept="video/*"` だけにすると、カメラが直接起動します |
 | 「🔴 ブラウザで録画」のボタンが反応しない | `getUserMedia` は HTTPS / `localhost` でしか動きません。LAN の IP（`http://192.168.x.x`）で開いた場合はブラウザがマイク/カメラ権限を拒否します。`localhost:8080` か HTTPS 経由でアクセスしてください |
-| `/provider/publish` が 403 `seller_token_dataset_not_licensed` | SellerVC の `licensed_datasets[]` に `topic` から導出される dataset_id が含まれていません。例: `topic=homeassistant/event/possible_littering` → dataset_id は `home/event/possible_littering` |
+| `/provider/publish` が 403 `seller_token_dataset_not_licensed` | SellerVC の `licensed_datasets[]` に、導出される dataset_id が含まれていません。このページは `event_type` を `possible_littering` に固定しているので、`homeassistant/event/` のどの topic でも dataset_id は `home/event/possible_littering` になります。SellerVC にこれを含めます |
 | Publish レスポンスに `status: send_error` | publisher の `PLATFORM_API_URL` が到達不能。SellerToken のゲートは通っており、`register_count` も上がっているはずです（処理は許可、配信が失敗）|
 | `/provider/publish` が 401 `seller_token_unknown` | `SSIStateStore` はインメモリのため publisher container を再起動するとすべての token が消えます。`/provider/start` から再度 SellerVC を提示すれば新しい SellerToken で復旧します（SellerVC 自体はウォレットに残っているので追加発行は不要です）。ハンズオンで container を再起動する場合はこの再提示を 1 回挟みます |
 | ウォレットで「Retrieving access token failed: 400 / Error Screen」 | OID4VCI の offer は 1 回しか使えません（**single-use**）。Sphereon 系のウォレットは内部で `/issuer/token` をリトライすることがあり、2 回目の呼び出しは `invalid_grant` で 400 になります。**1 回目の呼び出しで VC はウォレットに発行済み**なので、エラー画面を Dismiss してウォレットの credential 一覧を確認してください。新しいカードが追加されています |

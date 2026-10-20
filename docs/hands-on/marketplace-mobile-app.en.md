@@ -102,7 +102,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 
 ### Steps
 
-Terminal D (iot-market-ui):
+Terminal D (iot-market-ui). If the iot-market-ui from Stage 5 or 6 is still running, stop it with Ctrl+C first (while 5173 is taken, Vite starts on another port):
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace

@@ -141,7 +141,12 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 
 ## ローカルでDocsを起動
 
+このサイトのリポジトリ (`ertlnagoya/iw3ip.github.io`) を clone したフォルダで実行します。教材リポジトリにも `docs/` がありますが、そちらは別の古い文書です。
+
 ```bash
+cd <iw3ip.github.io を clone したフォルダ>
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r docs/requirements.txt
 mkdocs serve
 ```

@@ -127,6 +127,15 @@ git version 2.x.x
 
 If you see `command not found`, go back to the section above and reinstall.
 
+### Terminal setting (zsh on macOS)
+
+Some hands-on commands include comment lines that start with `#`. The default macOS shell (zsh) prints `zsh: command not found: #` for pasted comment lines unless told otherwise. Run the following once so comments are ignored.
+
+```bash
+echo 'setopt interactive_comments' >> ~/.zshrc
+source ~/.zshrc
+```
+
 ### Confirm Docker runs
 
 ```bash

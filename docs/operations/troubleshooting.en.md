@@ -36,7 +36,7 @@ If you cannot change the hosts file, replace `host.docker.internal` with `localh
   rpc_url: "http://localhost:8545"
   ```
 
-- Apply the same change to the corresponding `mediator-buyer` settings and to `src/routes/api/sql-query/+server.ts` of the frontend (`iot-market-ui`), where the IPFS and PostgreSQL hosts are fixed to `host.docker.internal`. The frontend RPC endpoint defaults to `http://127.0.0.1:8545`, so it needs no change. If you cannot find where the endpoint is set, grep the repository for `host.docker.internal`.
+- Apply the same change to `mediator-buyer` (it has no settings file; the endpoints are the `API_URL` and `RPC_URL` constants in `mediator-buyer/src/main.rs`) and to `src/routes/api/sql-query/+server.ts` of the frontend (`iot-market-ui`), where the IPFS and PostgreSQL hosts are fixed to `host.docker.internal`. The frontend RPC endpoint defaults to `http://127.0.0.1:8545`, so it needs no change. If you cannot find where the endpoint is set, grep the repository for `host.docker.internal`.
 - Restart each process after editing.
 
 ### Fix B — run inside containers
@@ -46,7 +46,9 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 ## IPFS container keeps restarting
 
 - Symptom: running `docker compose ps` in the `ipfs` directory shows the `ipfs` STATUS stuck at `Restarting`
-  - Check: read the error with `docker compose logs ipfs`. If it says port 8080 is in use, check whether the publisher is running ([Port conflicts](#port-conflicts))
+  - Check: read the error with `docker compose logs ipfs`
+- Symptom: `docker compose up -d` prints `Bind for 0.0.0.0:8080 failed: port is already allocated` and IPFS does not start
+  - Check: whether the publisher is running. Both use port 8080 ([Port conflicts](#port-conflicts))
   - Action: if the stored data is broken, delete it together with the volumes with `docker compose down -v`, then recreate with `docker compose up -d`. The IPFS and PostgreSQL data are lost. Recreate the `ipfs_records` table as described in `ipfs/README.md`, then restart `mediator-owner` so it registers the data again
 
 ## `http://<HOST_IP>:5173/` not reachable from smartphone

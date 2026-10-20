@@ -180,11 +180,12 @@ Things to think about:
 
 ## 7. Clean up
 
-Stop the mock cloud in Terminal 2 with Ctrl+C, then delete the frames you took and the data the mock cloud received. Run this in `examples/hands_on/privacy_compare`; it returns to the top of the course repository before stopping the containers.
+Stop the mock cloud in Terminal 2 with Ctrl+C, then delete the frames you took and the data the mock cloud received. This moves to `examples/hands_on/privacy_compare` to delete them, then returns to the top of the course repository before stopping the containers.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace/examples/hands_on/privacy_compare
 rm -rf results results_mine received
-cd ../../..
+cd ~/program/Blockchain_IoT_Marketplace
 docker rm -f iw3ip-ollama
 docker compose -f infra/docker-compose.yml --profile vlm down
 ```

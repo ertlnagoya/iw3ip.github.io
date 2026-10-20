@@ -714,7 +714,7 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up --build -d bri
 **Fix**:
 
 ```bash
-ipconfig getifaddr en0   # current LAN IP
+ipconfig getifaddr en0
 ```
 
 If it has changed, update `BRIDGE_PUBLIC_PUBLISHER_URL` in `infra/.env` and restart the bridge.

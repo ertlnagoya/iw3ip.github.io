@@ -688,7 +688,7 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up --build -d bri
 
 **対処**:
 ```bash
-ipconfig getifaddr en0   # 現在の LAN IP
+ipconfig getifaddr en0
 ```
 変わっていれば `infra/.env` の `BRIDGE_PUBLIC_PUBLISHER_URL` を更新して bridge 再起動。
 

@@ -35,7 +35,7 @@
 
 - SellerVC の `licensed_datasets` で「この seller はどの dataset を売って良いか」
   を VC に記載する仕組み
-- SellerToken (24 時間、何度でも使える) が `/marketplace/register` 専用で動くこと
+- SellerToken (24 時間、何度でも使える) で `/marketplace/register` を呼ぶこと (SellerToken は、[段階アクセスのメディア](data-user-vc-tiered-media.md) §11 の `/provider/publish` にも使える)
 - (任意) 環境変数 `MARKETPLACE_HARDHAT_RPC` 設定時、publisher が
   on-chain で `Merchandise.getOwner() == seller_eth_addr` を検証すること
 - 監査ログに **`marketplace/seller_registered`** 行が追加されること
