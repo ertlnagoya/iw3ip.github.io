@@ -12,6 +12,8 @@ This website is built with MkDocs [1]. It uses Material for MkDocs [2] as the th
 First, install dependencies.
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r docs/requirements.txt
 mkdocs serve
 ```

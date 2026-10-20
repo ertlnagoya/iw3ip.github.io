@@ -672,7 +672,7 @@ Error: VM Exception while processing transaction: reverted with an unrecognized 
 the default `http://host.docker.internal:8080`, which the iPhone cannot reach.
 
 **Fix**: Set `BRIDGE_PUBLIC_PUBLISHER_URL=http://<HOST_IP>:8080` in `infra/.env` and
-restart the bridge (Step 4). Fetch the deeplink again and confirm that the `credential_issuer` inside it
+restart the bridge (Step 4). The recreated bridge only sees purchases made after it starts, and the deeplink of a purchase already claimed does not change, so buy a Merchandise you have not bought yet as in Step 6, then confirm that the `credential_issuer` inside the new deeplink
 is the LAN IP:
 
 ```bash
@@ -721,7 +721,7 @@ If it changed, update all of the following to the new IP.
 
 - `export HOST_IP=<new IP>` in each terminal
 - `VITE_RPC_URL` and `VITE_PUBLISHER_URL` in `iot-market-ui/.env.local`; then restart `npm run dev`
-- the RPC URL of the network added to MetaMask on the phone
+- the RPC URL of the network added to MetaMask (the PC browser extension, and MetaMask Mobile if you did Stage A)
 - `BRIDGE_PUBLIC_PUBLISHER_URL` in `infra/.env`; then recreate the bridge (`docker restart` does not re-read `.env`)
 
 ```bash

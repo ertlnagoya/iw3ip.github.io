@@ -171,7 +171,7 @@ All checked → head to [Quickstart](quickstart.md).
 ### Windows
 
 - Recommended: **WSL2 + Docker Desktop**.
-- Reference: <https://learn.microsoft.com/windows/wsl/>
+- Installing WSL: <https://learn.microsoft.com/windows/wsl/>
 - If path-separator issues bite, prefer doing everything inside WSL2.
 
 ### macOS

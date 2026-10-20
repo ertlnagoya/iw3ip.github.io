@@ -648,7 +648,7 @@ Error: VM Exception while processing transaction: reverted with an unrecognized 
 既定値の `http://host.docker.internal:8080` になっており、iPhone から到達不能。
 
 **対処**: `infra/.env` に `BRIDGE_PUBLIC_PUBLISHER_URL=http://<HOST_IP>:8080` を設定して
-bridge を再起動 (Step 4)。deeplink を再取得して、内部にある `credential_issuer` が
+bridge を再起動 (Step 4)。作り直した bridge は起動後の購入しか検知せず、すでに申告した購入の deeplink も変わらないので、まだ買っていない Merchandise を Step 6 の手順でもう一度購入してから、新しい deeplink の `credential_issuer` が
 LAN IP になっていることを確認:
 
 ```bash
@@ -694,7 +694,7 @@ ipconfig getifaddr en0
 
 - 各ターミナルの `export HOST_IP=<新しい IP>`
 - `iot-market-ui/.env.local` の `VITE_RPC_URL` と `VITE_PUBLISHER_URL`。直したら `npm run dev` を起動し直す
-- スマホの MetaMask に追加したネットワークの RPC URL
+- MetaMask に追加したネットワークの RPC URL (PC のブラウザの MetaMask 拡張。Stage A を行った場合はスマホの MetaMask Mobile も)
 - `infra/.env` の `BRIDGE_PUBLIC_PUBLISHER_URL`。直したら bridge を作り直す (`docker restart` では `.env` を読み直さない)
 
 ```bash

@@ -55,7 +55,7 @@ projection layers**. We reuse:
 - All device-side code (Webcam / HA / Demo simulator) — unchanged
 
 **`DataUserVerifier.sol` is treated as the canonical *logic source***;
-we do not call it on-chain. See "Why no on-chain call" below.
+we do not call it on-chain (see [Why no on-chain call](#why-no-on-chain-call)).
 
 ## Architecture
 
@@ -429,6 +429,8 @@ A new file `tests/test_data_user_vc_tiered_vlm.py` covers (case counts at the in
    - Tier 1: description_summary only
    - Tier 0 (denied): events only (the original design rejected the claim with 403; the current implementation does not)
 4. Degrade matrix when VLM call fails (2)
+   - VLM fails → face blur succeeds → no description keys; Tier 2 gets image_redacted only
+   - both fail → neither Tier 1 nor Tier 2 gets description_summary (purely degraded)
 5. `processing_warnings` propagation (2)
 
 At the initial implementation this added 16 cases, kept independent from the existing 88 (this file now has 29 tests). The most important check is that nothing changes when the VLM extension is off.

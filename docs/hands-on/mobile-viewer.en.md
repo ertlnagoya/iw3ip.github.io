@@ -154,7 +154,7 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 - Add the local chain network to MetaMask Mobile beforehand:
     - RPC URL: `http://<HOST_IP>:8545` (e.g. `http://192.168.1.20:8545`)
     - Chain ID: `31337` / Currency symbol: `ETH`
-- Also import the **Account #2 Private Key** into MetaMask Mobile and buy with that account (the same key as in [Quickstart](../setup/quickstart.md#metamask-local-chain-setup)). Only Account #1 (`mediator-owner`) and Account #2 (`mediator-buyer`) have a registered public key. The buyer-side mediator runs as Account #2, so buying from any other account either reverts or never delivers the data
+- Also import the **Account #2 Private Key** into MetaMask Mobile and buy with that account (the same key as in [Quickstart](../setup/quickstart.md#metamask-local-chain-setup)). Only Account #1 (`mediator-owner`) and Account #2 (`mediator-buyer`) have a registered public key. The buyer-side mediator runs as Account #2. Buying with Account #1 delivers the data to `downloads` of `mediator-owner`, and any other account reverts
 - If MetaMask rejects the network, confirm the node was started with `--hostname 0.0.0.0` and that both `.env.local` and the MetaMask RPC use the **PC's LAN IP, not 127.0.0.1**
 
 ### 5. What to check
@@ -189,7 +189,7 @@ If you cannot connect or the purchase does not proceed, check the troubleshootin
   - Check: the MetaMask RPC and the node's exposure match (`--hostname 0.0.0.0` + LAN IP)
   - See the "Cannot add the network to MetaMask" item in [Troubleshooting](../operations/troubleshooting.md)
 - Symptom: the purchase transaction fails (revert) / `mediator-buyer` never prints `You bought a product of`
-  - Check: the account selected in MetaMask Mobile is Account #2 (other accounts have no registered public key and cannot buy)
+  - Check: the account selected in MetaMask Mobile is Account #2 (accounts other than #1 and #2 have no registered public key and cannot buy; data bought with Account #1 goes to `mediator-owner`, not `mediator-buyer`)
   - Check: whether you already bought that item with the same account (an item bought in §1.3 cannot be bought again; use a `Product deployed` address you have not bought yet)
   - Fix: import the same Account #2 Private Key as in [Quickstart](../setup/quickstart.md#metamask-local-chain-setup) and buy again with that account
   - See the "Purchase does not succeed" item in [Troubleshooting](../operations/troubleshooting.md)

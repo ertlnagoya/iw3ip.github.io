@@ -205,7 +205,7 @@ tapping "もう入っています" (Already installed) twice takes you to STEP 3
 0. Set up MetaMask Mobile (first time only; the same settings as [Stage 5 Step 5](marketplace-vc-bridge.md#step-5-configure-metamask))
     - Add a network: Network Name `Hardhat localhost`, RPC URL `http://<HOST_IP>:8545`, Chain ID `31337`, Currency `ETH`
     - After adding it, switch to `Hardhat localhost`
-    - Account menu → "Import private key" → enter the private key of Account #2 (noted in Stage 5 Step 1). Only an account whose PubKey is registered (Stage 6 Step E0, or Stage 5 Step 3 if Hardhat has not been restarted) can purchase
+    - Account menu → "Import private key" → enter the private key of Account #2 (noted in Stage 5 Step 1). Only an account whose PubKey is registered (Stage 6 Step E0; if you have restarted Hardhat since, redo E0) can purchase
 1. Open MetaMask Mobile → in the built-in browser (the globe icon at the bottom right), open
    `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
    (Merchandise #0, created by the deploy script. Do not use #1, which may already have been purchased in Stage 5)

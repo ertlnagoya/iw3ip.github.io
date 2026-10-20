@@ -18,7 +18,8 @@ Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to aut
     The examples on this page use `home/env/temperature`. The same steps
     work with `home/event/possible_littering`, the webcam event from Stage 0
     ([Share detections, not raw frames](webcam-event-sharing.md)); substitute the dataset
-    and purpose in that case.
+    and purpose in that case. Stage numbers are explained in the
+    [Hands-on overview](index.md#part-phase-stage).
 
 ## Goal
 
@@ -265,7 +266,7 @@ curl -X POST http://$HOST_IP:8080/platform/ingest \
 Expected result:
 
 ```json
-{"status":"received","count":1}
+{"status":"received","count":N}
 ```
 
 The audit log gains a PolicyToken consumption entry:

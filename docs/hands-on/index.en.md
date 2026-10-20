@@ -37,7 +37,7 @@ Design detail: [Marketplace VC Bridge — v1 / v2 design spec](../design/marketp
 This site uses three kinds of numbering.
 
 - **Part 1–3**: the learning order on this site (Basic, Feature Extensions, Intelligence Integration).
-- **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see [Platform Overview](../platform-overview.md)).
+- **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see [Phase structure in the platform overview](../platform-overview.md#phase-structure)).
 - **Stage 0–7, A, T**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0). Each page assumes the earlier Stages are done. There is no Stage 2.
 
 | Stage | Hands-on | VC |

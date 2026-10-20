@@ -313,6 +313,6 @@ This is why they connect naturally to IW3IP features such as **Consent VC-based 
 
 [4] Personal Information Protection Commission, Japan, 「顔識別機能付き防犯カメラの利用に関する法的整理と検討課題」 [Legal issues on the use of security cameras with facial recognition] (in Japanese), 2022, <https://www.ppc.go.jp/files/pdf/20220128_shiryou-2_kentoukadai.pdf>
 
-[5] N. Chiba and K. Hino, "CCTV installation in public areas balancing privacy and security" (in Japanese), Reports of the City Planning Institute of Japan, vol. 16, no. 2, pp. 124–128, 2017. DOI: [10.11361/reportscpij.16.2_124](https://doi.org/10.11361/reportscpij.16.2_124)
+[5] N. Chiba and K. Hino, "CCTV installation in public areas balancing privacy and security: Analysis of the issues, case law, and newspaper articles" (in Japanese), Reports of the City Planning Institute of Japan, vol. 16, no. 2, pp. 124–128, 2017. DOI: [10.11361/reportscpij.16.2_124](https://doi.org/10.11361/reportscpij.16.2_124)
 
 [6] H. Muranaka, M. Amemiya, and T. Ohyama, "Survey and evaluation of large-scale installation of CCTV in public space by local governments" (in Japanese), Journal of the City Planning Institute of Japan, vol. 51, no. 3, pp. 357–364, 2016. DOI: [10.11361/journalcpij.51.357](https://doi.org/10.11361/journalcpij.51.357)

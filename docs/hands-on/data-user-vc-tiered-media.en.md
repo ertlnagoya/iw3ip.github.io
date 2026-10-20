@@ -325,7 +325,7 @@ Main reason codes and their messages (the page shows `human_message_ja` when it 
 | `missing_entityType` / `missing_purpose` / `missing_dataHandlingPolicy` | DataUserVC is missing *XXX*. (`missing_legalCompliance` and `missing_misuseRecord` give a generic "presentation denied (reason)" message) | DataUserVC に *XXX* が含まれていません。 |
 | `verification_failed` | VC verification failed. | VC の署名検証に失敗しました。 |
 
-`/buyer/start` asks only for a PurchaseViewerVC, so the `missing_*` rows (for DataUserVC) do not appear on this page. `verification_failed` appears only when the sidecar returns no reason. With a bad signature on the default path, the reason is `verify_error:...` and the page shows the generic "提示が拒否されました (verify_error:...)。" message.
+`/buyer/start` asks only for a PurchaseViewerVC, so the `missing_*` rows (for DataUserVC) and `purpose_mismatch` (for ConsentVC) do not appear on this page. A dataset or VC-type mismatch is rejected by the presentation-definition match before `dataset_mismatch` is checked, and shows as `field_mismatch:$.dataset_id` or `field_mismatch:$.vct` with the generic message "提示が拒否されました (reason)。". `verification_failed` appears only when the sidecar returns no reason. With a bad signature on the default path, the reason is `verify_error:...` and the page shows the generic "提示が拒否されました (verify_error:...)。" message.
 
 **Publisher-side flow (not yet validated on a real device — read from the implementation; as noted below, step 2 does not happen with a normal wallet):**
 
@@ -519,7 +519,7 @@ environments. Screenshots live under
 | Scenario | Environment | Status | Observation |
 |---|---|---|---|
 | **A** iPhone camera capture (`capture="environment"`) | iPhone Safari (iOS 18.x) | verified (2026-04-30) | upload `video/quicktime` 273KB → Publish `status=allowed` → receiver `/viewer` plays the `.MOV` inline (macOS Safari) |
-| **B** PC browser recording (MediaRecorder) | macOS Chrome 147 | codec confirmed (2026-04-30) | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9**. Recording + Publish pending wallet rebuild |
+| **B** PC browser recording (MediaRecorder) | macOS Chrome 147 | codec confirmed (2026-04-30) | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9**. Recording + Publish to be verified after switching the wallet's IP |
 | **C** Firefox VP8 fallback | macOS Firefox 139 | **verified (2026-04-30)** | Supports 2: `vp8,opus` / `webm` (no VP9 — Firefox MediaRecorder lacks VP9 support) → **VP8 selected**. Recording → upload → Publish round-trip completed: `media_uploaded ext=.webm bytes=89909` (WebM/VP8, 89KB) + `POST /provider/publish 200 OK`. The `pickRecorderMime()` VP8 fallback path is exercised end-to-end |
 | **D** ~~macOS Safari MP4 fallback~~ macOS Safari WebM/VP9 | macOS Safari 17+ | **verified (2026-04-30)** | Supports all 4: `vp9,opus` / `vp8,opus` / `webm` / `mp4` → preference picks **VP9** (not MP4). Recording → upload → Publish round-trip completed: `seller_token_issued ertl-bcd-final` + `POST /provider/publish 200 OK`. **Safari 17+ has native WebM/VP9 support**; the original "Safari falls back to MP4" assumption applies only to Safari 16 and earlier |
 

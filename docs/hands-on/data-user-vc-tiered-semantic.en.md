@@ -148,7 +148,7 @@ score = 20 + 5 + 15 + 0 + 10 = 50 -> summary (only when `VLM_BACKEND` is set)
 
 #### 12.3.d Tier 0 (denied) — same as §2c
 
-With the VLM extension on there are four tiers: summary is Tier 1 and denied is Tier 0. "Tier 1 (denied)" in §2c is the name used with three tiers (extension off) and refers to the same profile. `denied` is the name of the trustScore verdict. In the current implementation a `denied` verdict does not reject the purchase report (`/marketplace/claim`). A PurchaseViewerVC that can view events only (`PurchaseViewerVC.event`) is issued, and images, video, and descriptions are left out of the response.
+With the VLM extension on there are four tiers: summary is Tier 1 and denied is Tier 0. "Tier 1 (denied)" in [§2c](data-user-vc-tiered.md#2c-tier-1-denied--enterprise--research--no-policy--misuse) is the name used with three tiers (extension off) and refers to the same profile. `denied` is the name of the trustScore verdict. In the current implementation a `denied` verdict does not reject the purchase report (`/marketplace/claim`). A PurchaseViewerVC that can view events only (`PurchaseViewerVC.event`) is issued, and images, video, and descriptions are left out of the response.
 
 ```
 http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpose=Research&legal_compliance=false&data_handling_policy=Other&misuse_record=true
@@ -156,7 +156,7 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 
 ### 12.4 Four `/marketplace/claim` calls + `/platform/data` comparison
 
-Same routine as [§3](data-user-vc-tiered.md#3-three-marketplaceclaim-calls): claim → PurchaseViewerVC → present → ViewerToken → fetch.
+Same routine as [§3–§4](data-user-vc-tiered.md#3-three-marketplaceclaim-calls): claim → PurchaseViewerVC → present → ViewerToken → fetch.
 The rows are the ones published in §12.2.1.
 
 If the cards you received in §4 of the first page are still in the wallet, they appear under the same names as the cards you receive here. Presenting an old card shows no VLM descriptions or redacted image. Delete the old cards from the wallet first, or after presenting check `views=` in `docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`: Tier 3 is `event+image+video+image_redacted+description_full+description_summary`, Tier 2 is `event+image_redacted+description_full+description_summary`, Tier 1 is `event+description_summary`, and Tier 0 is `event`.
@@ -170,7 +170,7 @@ With `VLM_BACKEND` set:
 | 12.3.c Tier 1 (summary) | yes | **no** | **no** | **no** | **no** | yes |
 | 12.3.d Tier 0 (denied) | yes (events only) | **no** | **no** | **no** | **no** | **no** |
 
-With `VLM_BACKEND` **empty** the legacy 3-tier projection runs (no derivative
+With `VLM_BACKEND` **empty** the legacy 3-tier projection runs (same as [§4](data-user-vc-tiered.md#4-issue-purchaseviewervc-present-fetch-platformdata); no derivative
 keys appear). Claim 12.3.c then resolves to `denied` since `summary`
 is used only when `VLM_BACKEND` is set.
 
@@ -297,6 +297,8 @@ inline warning banner per row when `processing_warnings[]` is set
 
 ### 12.10 Real-device validation log
 
+Same format as [§11.8](data-user-vc-tiered-media.md#118-real-device-validation-log), recording the VLM + face blur runs on real devices.
+
 | Scenario | Environment | Status | Observations |
 |---|---|---|---|
 | **V1** Tier 3 has every key | macOS Chrome + Ollama (llava) | partial (2026-04-30) | Pipeline logs confirm `vlm_describe_done full_len=280 summary_len=172` + `opencv_blur_faces detected=1`. **Per-tier `/platform/data` projection deferred — needs the iPhone OID4VP loop** |
@@ -361,6 +363,8 @@ The trust policy maps a `ViewerTrustLevel` × SIR pair to allowed
 output kinds, and the renderer is the only place that ever combines
 the source bytes with the policy decision. Low-trust receivers
 cannot reach raw bytes by construction (fail-closed by design).
+
+For the detailed design rationale, see the [tiered access design spec](data-user-vc-tiered-spec.md) (the spec has no chapter for §13 yet; one is planned).
 
 ### 13.1 Architecture
 
@@ -429,7 +433,7 @@ The claims, ViewerTokens, and event rows kept in memory are cleared, so before
 
 ### 13.4 /provider §1.5 "Run analysis" panel
 
-After upload completes, the §1.5 panel becomes available on the
+Right after uploading media as in [§11.3](data-user-vc-tiered-media.md#113-three-ways-to-provide-data), the §1.5 panel becomes available on the
 `/provider` page ("§1.5" is a section number inside that page, not a
 section of this document). Pressing
 "分析を実行":
@@ -445,7 +449,7 @@ unknown_sensitive over-reach early.
 ### 13.5 /viewer 🔬 toggle
 
 The receiver-side `/viewer` gains an opt-in **🔬 「意味的レンダリングを使う (実験)」**
-checkbox. Off (default) preserves the legacy projection byte-for-byte.
+checkbox. Off (default) preserves the legacy projection of [§10](data-user-vc-tiered-media.md#10-pwa-viewer-one-ux-for-phone-and-pc) byte-for-byte.
 On switches to the semantic pipeline:
 
 - The page derives a trust level from the existing `allowed_views`:
@@ -513,6 +517,8 @@ The two coexist. The 🔬 toggle leaves the legacy Stage T projection
 intact; it merely offers an opt-in alternative path.
 
 ### 13.10 Real-device validation log
+
+Recorded in the same format as [§11.8](data-user-vc-tiered-media.md#118-real-device-validation-log) / §12.10.
 
 | Scenario | Environment | Status | Verification point |
 |---|---|---|---|

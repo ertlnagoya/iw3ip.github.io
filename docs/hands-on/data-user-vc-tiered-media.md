@@ -216,7 +216,7 @@ PC Chrome:      http://<HOST_IP>:8080/buyer/start?ds=home/event/possible_litteri
 1. 上記 URL を Safari で開く
 2. ページが内部で `/verifier/request` を呼び出して deeplink を取得
 3. `window.location = deeplink` で **iw3ip-wallet が自動起動**
-4. ウォレットで「購入閲覧（Tier 3 / 動画まで）」を選んで提示
+4. ウォレットで「IW3IP 購入閲覧（Tier 3 / 動画まで）」を選んで提示
 5. ウォレットが `redirect_uri=/viewer?vt=...&ds=...` を受け取る
 6. **Safari に自動で戻り、画像/動画が描画される**
 
@@ -314,7 +314,7 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 | `missing_entityType` / `missing_purpose` / `missing_dataHandlingPolicy` | DataUserVC に *XXX* が含まれていません。 (`missing_legalCompliance` と `missing_misuseRecord` は「提示が拒否されました (reason)。」) | DataUserVC is missing *XXX*. |
 | `verification_failed` | VC の署名検証に失敗しました。 | VC verification failed. |
 
-`/buyer/start` は PurchaseViewerVC の提示だけを求めるので、`missing_*` の行 (DataUserVC 用) はこのページでは出ません。`verification_failed` は、sidecar が理由を返さなかったときだけ出ます。既定の流れで署名が不正なときは、reason が `verify_error:...` になり、「提示が拒否されました (verify_error:...)。」と表示されます。
+`/buyer/start` は PurchaseViewerVC の提示だけを求めるので、`missing_*` の行 (DataUserVC 用) と `purpose_mismatch` (ConsentVC 用) はこのページでは出ません。データセットや VC の種類が合わないときは、`dataset_mismatch` より先に提示の条件の照合で拒否され、`field_mismatch:$.dataset_id` ないしは `field_mismatch:$.vct` が汎用のメッセージ「提示が拒否されました (reason)。」で表示されます。`verification_failed` は、sidecar が理由を返さなかったときだけ出ます。既定の流れで署名が不正なときは、reason が `verify_error:...` になり、「提示が拒否されました (verify_error:...)。」と表示されます。
 
 **publisher 側の動作（実機では未確認で、実装から読み取った内容です。下の注のとおり、通常のウォレットでは手順 2 は起こりません）:**
 

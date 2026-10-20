@@ -171,7 +171,7 @@ cd Blockchain_IoT_Marketplace
 ### Windows
 
 - **WSL2 + Docker Desktop** の組み合わせを推奨します。
-- 参考: <https://learn.microsoft.com/windows/wsl/>
+- WSL の導入方法: <https://learn.microsoft.com/windows/wsl/>
 - パスの区切りなどで問題が起きる場合は、WSL2 内でハンズオンの作業をしてください。
 
 ### macOS

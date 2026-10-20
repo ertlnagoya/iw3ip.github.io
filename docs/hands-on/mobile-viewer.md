@@ -157,7 +157,7 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 - MetaMask モバイルにローカルチェーンのネットワークを追加しておく:
     - RPC URL: `http://<HOST_IP>:8545` (例: `http://192.168.1.20:8545`)
     - チェーン ID: `31337` / 通貨記号: `ETH`
-- MetaMask モバイルにも **Account #2 の Private Key** をインポートし、そのアカウントで購入する ([最短起動](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ鍵)。公開鍵が登録されているのは、仲介プロセスが使う Account #1 (`mediator-owner`) と Account #2 (`mediator-buyer`) だけです。購入者側の仲介プロセスは Account #2 として動くため、ほかのアカウントで購入すると、取引が失敗 (revert) するか、データが届きません
+- MetaMask モバイルにも **Account #2 の Private Key** をインポートし、そのアカウントで購入する ([最短起動](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ鍵)。公開鍵が登録されているのは、仲介プロセスが使う Account #1 (`mediator-owner`) と Account #2 (`mediator-buyer`) だけです。購入者側の仲介プロセスは Account #2 として動きます。Account #1 で買うとデータは `mediator-owner` の `downloads` に届き、それ以外のアカウントでは取引が失敗 (revert) します
 - ネットワーク追加が拒否される場合は、ノードを `--hostname 0.0.0.0` で起動しているか、`.env.local` と MetaMask の RPC が **127.0.0.1 ではなく PC の LAN IP** になっているかを確認
 
 ### 5. 確認ポイント
@@ -192,7 +192,7 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
   - 確認: MetaMask の RPC とノードの公開設定が一致しているか (`--hostname 0.0.0.0` + LAN IP)
   - 詳しくは [トラブルシュート](../operations/troubleshooting.md) の「MetaMask にネットワークを追加できない」項目を参照
 - 症状: 購入の取引が失敗する (revert) / `mediator-buyer` に `You bought a product of` が出ない
-  - 確認: MetaMask モバイルで選んでいるアカウントが Account #2 か (別のアカウントは公開鍵が登録されていないため購入できない)
+  - 確認: MetaMask モバイルで選んでいるアカウントが Account #2 か (Account #1 と #2 以外は公開鍵が登録されていないため購入できない。Account #1 で買ったデータは `mediator-buyer` ではなく `mediator-owner` に届く)
   - 確認: その商品を、同じアカウントですでに購入していないか (1.3 で買った商品は、もう一度は買えない。まだ買っていない `Product deployed` のアドレスを使う)
   - 対処: [最短起動](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ Account #2 の Private Key をインポートし、そのアカウントで購入し直す
   - 詳しくは [トラブルシュート](../operations/troubleshooting.md) の「購入できない」項目を参照

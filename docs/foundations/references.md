@@ -52,7 +52,7 @@ IW3IP に関する発表論文は [論文](../publications.md) のページに�
 
 [1] 個人情報保護委員会, 「顔識別機能付き防犯カメラの利用に関する法的整理と検討課題」, 2022, <https://www.ppc.go.jp/files/pdf/20220128_shiryou-2_kentoukadai.pdf>
 
-[2] 千葉尚路, 樋野公宏, 「プライバシーと調和する都市空間の防犯カメラ設置のあり方に関する研究」, 都市計画報告集, Vol.16, No.2, pp.124–128, 2017. DOI: [10.11361/reportscpij.16.2_124](https://doi.org/10.11361/reportscpij.16.2_124)
+[2] 千葉尚路, 樋野公宏, 「プライバシーと調和する都市空間の防犯カメラ設置のあり方に関する研究 論点・裁判例の整理と新聞記事分析」, 都市計画報告集, Vol.16, No.2, pp.124–128, 2017. DOI: [10.11361/reportscpij.16.2_124](https://doi.org/10.11361/reportscpij.16.2_124)
 
 [3] 村中大輝, 雨宮護, 大山智也, 「地方自治体による公共空間への防犯カメラ大規模設置事業の取り組み実態と評価」, 都市計画論文集, Vol.51, No.3, pp.357–364, 2016. DOI: [10.11361/journalcpij.51.357](https://doi.org/10.11361/journalcpij.51.357)
 
@@ -66,9 +66,9 @@ IW3IP に関する発表論文は [論文](../publications.md) のページに�
 
 [8] S. Nakamoto, "Bitcoin: A Peer-to-Peer Electronic Cash System," 2008, <https://bitcoin.org/bitcoin.pdf>
 
-[9] Nomic Foundation, "Hardhat Documentation," <https://hardhat.org/docs>
+[9] Nomic Foundation, "Hardhat 2 Documentation," <https://v2.hardhat.org/docs>
 
-[10] Nomic Foundation, "Getting started with Hardhat," <https://hardhat.org/hardhat-runner/docs/getting-started>
+[10] Nomic Foundation, "Getting started with Hardhat (Hardhat 2)," <https://v2.hardhat.org/hardhat-runner/docs/getting-started>
 
 [11] W3C, "Decentralized Identifiers (DIDs) v1.0," W3C Recommendation, 2022, <https://www.w3.org/TR/did-core/>
 

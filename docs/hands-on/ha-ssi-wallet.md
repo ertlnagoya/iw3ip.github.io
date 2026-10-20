@@ -266,7 +266,7 @@ curl -X POST http://$HOST_IP:8080/platform/ingest \
 期待結果:
 
 ```json
-{"status":"received","count":1}
+{"status":"received","count":N}
 ```
 
 監査ログには PolicyToken 消費イベントが追加されます。
