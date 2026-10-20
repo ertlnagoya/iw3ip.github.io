@@ -72,9 +72,9 @@ Bearer ヘッダで添えて `/platform/ingest` を呼び出す想定です。
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 
-# ServiceVC が含まれていることを確認 (現在のリリースでは ConsentVC /
+# ServiceVC が含まれていることを確認。現在のリリースでは ConsentVC /
 # ViewerVC / ServiceVC / DataUserVC / SellerVC / PurchaseViewerVC の 6 種類。
-# PurchaseViewerVC には Tier 別の .full / .access / .event もあり、項目は計 9 個並ぶ)
+# PurchaseViewerVC には Tier 別の .full / .access / .event もあり、項目は計 9 個並ぶ
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ServiceVC
 ```
 

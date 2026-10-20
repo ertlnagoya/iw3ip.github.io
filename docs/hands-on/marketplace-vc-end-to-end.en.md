@@ -101,12 +101,12 @@ npx hardhat node --hostname 0.0.0.0
 When `Started HTTP and WebSocket JSON-RPC server` appears, continue in Terminal B.
 
 ```bash
-# Deploy (latest version, in which Merchandise holds dataset_id in additionalInfo)
+# Deploy the latest version, in which Merchandise holds dataset_id in additionalInfo
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
 npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
 # Note IoTMarket = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 and the addresses of Merchandise #0..4
 
-# Register a PubKey (buyer = Account #2)
+# Register a PubKey for the buyer, Account #2
 npx hardhat console --network localhost
 ```
 
@@ -127,13 +127,21 @@ cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 
 # Hardhat was restarted, so recreate the bridge and the publisher
-# (the bridge watches from the block number at its startup; the publisher keeps the old chain's claims in memory
-#  and would return an already used code for a purchase with the same transaction ID)
+# The bridge watches from the block number at its startup. The publisher keeps the claims of the old chain in memory
+# and would return an already used code for a purchase with the same transaction ID
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge
 
 # Check the bridge log
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
-# → bridge: listening to 5 merchandise(s)
+```
+
+Expected output:
+
+```text
+bridge: listening to 5 merchandise(s)
+```
+
+```bash
 
 ```
 
@@ -263,7 +271,12 @@ Confirm that the dataset is obtained from on-chain and is not a hardcoded value.
 
 ```bash
 docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1
-# → extract the jti and the deeplink
+```
+
+Expected output:
+
+```text
+extract the jti and the deeplink
 ```
 
 ---

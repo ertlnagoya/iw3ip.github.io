@@ -242,7 +242,7 @@ sed 's/"valid_to": "2030-12-31T23:59:59Z"/"valid_to": "2026-05-01T00:00:00Z"/' e
 
 Confirm the response has `"status":"stored"` and `valid_to` is `2026-05-01T00:00:00Z`.
 
-If you have already done [Share detections, not raw frames](webcam-event-sharing.md) or [Enrich camera data with a local VLM](local-vlm-distribution.md), a valid consent for the same `possible_littering` (`consent-littering-001` or `local-vlm-distribution-consent-webcam-001`) remains and no denial happens. Check with `curl http://localhost:8080/consents`, and if it is there, delete it with the command below. Register `examples/consent_possible_littering.json` again if you need it after this exercise.
+If you have already done [Share detections, not raw frames](webcam-event-sharing.md) [Enrich camera data with a local VLM](local-vlm-distribution.md), or the tiered-access pages (such as [Tier the response by trust](data-user-vc-tiered.md)), a valid consent for the same `possible_littering` (`consent-littering-001` or `local-vlm-distribution-consent-webcam-001`) remains and no denial happens. Check with `curl http://localhost:8080/consents`, and if it is there, delete it with the command below. Register `examples/consent_possible_littering.json` again if you need it after this exercise.
 
 ```bash
 curl -X DELETE http://localhost:8080/consents/consent-littering-001
@@ -502,11 +502,11 @@ CARLA is a simulator for urban spaces, vehicles, pedestrians, and virtual sensor
 
 [1] FIWARE Foundation, "FIWARE," <https://www.fiware.org/>
 
-[2] FIWARE Foundation, "FIWARE Step-By-Step Tutorials," <https://fiware-tutorials.readthedocs.io/en/latest/>
+[2] FIWARE Foundation, "FIWARE Step-By-Step Tutorials (NGSI-v2 Step-by-Step)," <https://fiware-tutorials.readthedocs.io/en/latest/>
 
 [3] Eclipse Foundation, "Eclipse Ditto," <https://eclipse.dev/ditto/>
 
-[4] Eclipse Foundation, "Eclipse Ditto Documentation: MQTT protocol binding," <https://eclipse.dev/ditto/connectivity-protocol-bindings-mqtt.html>
+[4] Eclipse Foundation, "Eclipse Ditto Documentation: MQTT 3.1.1 protocol binding," <https://eclipse.dev/ditto/connectivity-protocol-bindings-mqtt.html>
 
 [5] CARLA Team, "CARLA Simulator," <https://carla.org/>
 

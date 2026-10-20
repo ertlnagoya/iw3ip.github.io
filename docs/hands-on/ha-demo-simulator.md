@@ -242,7 +242,7 @@ sed 's/"valid_to": "2030-12-31T23:59:59Z"/"valid_to": "2026-05-01T00:00:00Z"/' e
 
 レスポンスが `"status":"stored"` で、`valid_to` が `2026-05-01T00:00:00Z` になっていることを確認します。
 
-[検知イベントだけを共有する](webcam-event-sharing.md) や [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) を先に済ませている場合は、同じ `possible_littering` に有効な consent (`consent-littering-001` ないしは `local-vlm-distribution-consent-webcam-001`) が残っていて、拒否が起きません。`curl http://localhost:8080/consents` で確かめ、残っていれば次のコマンドで削除します。このワークのあとで使う場合は、`examples/consent_possible_littering.json` を登録し直します。
+[検知イベントだけを共有する](webcam-event-sharing.md) や [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md)、段階アクセスのページ ([信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) など) を先に済ませている場合は、同じ `possible_littering` に有効な consent (`consent-littering-001` ないしは `local-vlm-distribution-consent-webcam-001`) が残っていて、拒否が起きません。`curl http://localhost:8080/consents` で確かめ、残っていれば次のコマンドで削除します。このワークのあとで使う場合は、`examples/consent_possible_littering.json` を登録し直します。
 
 ```bash
 curl -X DELETE http://localhost:8080/consents/consent-littering-001
@@ -501,11 +501,11 @@ docker compose -f infra/docker-compose.yml --profile ha-demo --profile ha-demo-p
 
 [1] FIWARE Foundation, "FIWARE," <https://www.fiware.org/>
 
-[2] FIWARE Foundation, "FIWARE Step-By-Step Tutorials," <https://fiware-tutorials.readthedocs.io/en/latest/>
+[2] FIWARE Foundation, "FIWARE Step-By-Step Tutorials (NGSI-v2 Step-by-Step)," <https://fiware-tutorials.readthedocs.io/en/latest/>
 
 [3] Eclipse Foundation, "Eclipse Ditto," <https://eclipse.dev/ditto/>
 
-[4] Eclipse Foundation, "Eclipse Ditto Documentation: MQTT protocol binding," <https://eclipse.dev/ditto/connectivity-protocol-bindings-mqtt.html>
+[4] Eclipse Foundation, "Eclipse Ditto Documentation: MQTT 3.1.1 protocol binding," <https://eclipse.dev/ditto/connectivity-protocol-bindings-mqtt.html>
 
 [5] CARLA Team, "CARLA Simulator," <https://carla.org/>
 

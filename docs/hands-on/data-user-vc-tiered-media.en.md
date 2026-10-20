@@ -31,7 +31,15 @@ cd ~/program/Blockchain_IoT_Marketplace
 curl -s -X POST localhost:8080/consents \
   -H 'content-type: application/json' \
   -d @examples/consent_possible_littering.json | jq .status
-# -> "stored"
+```
+
+Expected output:
+
+```text
+"stored"
+```
+
+```bash
 python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
@@ -325,7 +333,7 @@ Main reason codes and their messages (the page shows `human_message_ja` when it 
 | `missing_entityType` / `missing_purpose` / `missing_dataHandlingPolicy` | DataUserVC is missing *XXX*. (`missing_legalCompliance` and `missing_misuseRecord` give a generic "presentation denied (reason)" message) | DataUserVC に *XXX* が含まれていません。 |
 | `verification_failed` | VC verification failed. | VC の署名検証に失敗しました。 |
 
-`/buyer/start` asks only for a PurchaseViewerVC, so the `missing_*` rows (for DataUserVC) and `purpose_mismatch` (for ConsentVC) do not appear on this page. A dataset or VC-type mismatch is rejected by the presentation-definition match before `dataset_mismatch` is checked, and shows as `field_mismatch:$.dataset_id` or `field_mismatch:$.vct` with the generic message "提示が拒否されました (reason)。". `verification_failed` appears only when the sidecar returns no reason. With a bad signature on the default path, the reason is `verify_error:...` and the page shows the generic "提示が拒否されました (verify_error:...)。" message.
+`/buyer/start` asks only for a PurchaseViewerVC, so the `missing_*` rows (for DataUserVC) and `purpose_mismatch` (for ConsentVC) do not appear on this page. Every PurchaseViewerVC this issuer mints has `read`, so `action_not_allowed` does not appear either. A dataset or VC-type mismatch is rejected by the presentation-definition match before `dataset_mismatch` is checked (so `dataset_mismatch` does not appear either), and shows as `field_mismatch:$.dataset_id` or `field_mismatch:$.vct` with the generic message "提示が拒否されました (reason)。". `verification_failed` appears only when the sidecar returns no reason. With a bad signature on the default path, the reason is `verify_error:...` and the page shows the generic "提示が拒否されました (verify_error:...)。" message.
 
 **Publisher-side flow (not yet validated on a real device — read from the implementation; as noted below, step 2 does not happen with a normal wallet):**
 

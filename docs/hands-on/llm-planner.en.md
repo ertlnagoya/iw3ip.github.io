@@ -450,7 +450,7 @@ Copy `.env.local.example`, set `ASSISTANT_LLM_API_KEY` (and, if needed, `ASSISTA
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git pull --ff-only
-# stop only the Docker assistants started in §3.5 etc. (the publisher and others keep running)
+# stop only the Docker assistants started in §3.5 etc., the publisher and others keep running
 docker compose -f infra/docker-compose.yml stop assistant assistant-demo llm-mock assistant-ui
 cp .env.local.example .env.local
 ```

@@ -219,7 +219,7 @@ registered for: 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
 
-# bridge 用 env (LAN IP は ipconfig getifaddr en0 で確認した値)
+# bridge 用 env。LAN IP は ipconfig getifaddr en0 で確認した値
 cat > infra/.env <<EOF
 BRIDGE_HARDHAT_RPC=http://host.docker.internal:8545
 BRIDGE_IOT_MARKET_ADDRESS=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
@@ -648,13 +648,18 @@ Error: VM Exception while processing transaction: reverted with an unrecognized 
 既定値の `http://host.docker.internal:8080` になっており、iPhone から到達不能。
 
 **対処**: `infra/.env` に `BRIDGE_PUBLIC_PUBLISHER_URL=http://<HOST_IP>:8080` を設定して
-bridge を再起動 (Step 4)。作り直した bridge は起動後の購入しか検知せず、すでに申告した購入の deeplink も変わらないので、まだ買っていない Merchandise を Step 6 の手順でもう一度購入してから、新しい deeplink の `credential_issuer` が
+bridge を再起動 (Step 4)。作り直した bridge は起動後の購入しか検知せず、すでに申告した購入の deeplink も変わらないので、まだ買っていない温度の Merchandise (#0 `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0` ないしは #3 `0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6`) を Step 6 の手順で購入してから (Step 7 以降も温度のデータセットを前提にしているため。Step 9 の `MERCHANDISE` もそのアドレスに置き換える)、新しい deeplink の `credential_issuer` が
 LAN IP になっていることを確認:
 
 ```bash
 DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1 | sed -E 's/.*deeplink=//')
 echo "$DEEPLINK" | python3 -c "import sys,urllib.parse,json; d=urllib.parse.unquote(sys.stdin.read().split('credential_offer=',1)[1]); print(json.loads(d)['credential_issuer'])"
-# → http://<HOST_IP>:8080  (host.docker.internal:8080 ではなく)
+```
+
+期待する出力:
+
+```text
+http://<HOST_IP>:8080  (host.docker.internal:8080 ではなく)
 ```
 
 **原因 2**: wallet が `No script URL provided` エラー画面を出している = Metro bundler 未起動。

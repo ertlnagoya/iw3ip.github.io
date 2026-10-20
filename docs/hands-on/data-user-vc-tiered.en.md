@@ -2,7 +2,7 @@
 
 Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC). Delivering the actual image / video bytes (§8–§11) continues in [Deliver images and video with tiered access](data-user-vc-tiered-media.md), and semantic intermediate representation and trust-aware rendering (§12–§13) in [Tier by semantic level](data-user-vc-tiered-semantic.md) — long but thorough across the three pages.
 
-> **What you'll do**: Watch the response narrow from video → image → summary as the trust level drops
+> **What you'll do**: Watch the response narrow from video → image → event only as the trust level drops
 >
 > **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.en.md) and [Share detections, not raw frames](webcam-event-sharing.en.md)
 >
@@ -29,7 +29,7 @@ The DataUserVC is issued to the wallet so you can inspect it. The course reposit
 
 1. Bring up the publisher
 2. Issue **DataUserVC** with three different profiles (gov-full, enterprise-access, low-deny)
-3. Hit `/marketplace/claim` for each and compare `allowed_views`
+3. Hit `/marketplace/claim` for each and compare the PurchaseViewerVC kind in the deeplink (`credential_configuration_ids`)
 4. Publish one event with image / video, present PurchaseViewerVC, and inspect `/platform/data` differences
 
 ## What you'll learn
@@ -93,9 +93,14 @@ Sanity check:
 curl -s localhost:8080/health | jq .
 curl -s localhost:8080/.well-known/openid-credential-issuer \
   | jq '.credential_configurations_supported | keys'
-# -> ["ConsentVC", "DataUserVC", "PurchaseViewerVC",
-#     "PurchaseViewerVC.access", "PurchaseViewerVC.event", "PurchaseViewerVC.full",
-#     "SellerVC", "ServiceVC", "ViewerVC"]
+```
+
+Expected output:
+
+```text
+["ConsentVC", "DataUserVC", "PurchaseViewerVC",
+"PurchaseViewerVC.access", "PurchaseViewerVC.event", "PurchaseViewerVC.full",
+"SellerVC", "ServiceVC", "ViewerVC"]
 ```
 
 `DataUserVC` must appear in the list.
@@ -155,7 +160,12 @@ The response contains `claim_id`, `offer_url` (the PurchaseViewerVC issuance pag
 ```bash
 jq -r .deeplink /tmp/claim.json \
   | python3 -c "import sys,json,urllib.parse; print(json.loads(urllib.parse.unquote(sys.stdin.read().split('credential_offer=',1)[1]))['credential_configuration_ids'])"
-# -> ['PurchaseViewerVC.full']
+```
+
+Expected output:
+
+```text
+['PurchaseViewerVC.full']
 ```
 
 | Kind | What can be viewed (`allowed_views`) | trustScore |
@@ -236,7 +246,12 @@ The ViewerToken appears in the publisher log. Right after presenting, extract it
 
 ```bash
 docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1
-# -> ... viewer_token_issued vc_kind=PurchaseViewerVC jti=... token=<ViewerToken> dataset=home/event/possible_littering ttl=60s views=event+image+video
+```
+
+Expected output:
+
+```text
+... viewer_token_issued vc_kind=PurchaseViewerVC jti=... token=<ViewerToken> dataset=home/event/possible_littering ttl=60s views=event+image+video
 ```
 
 Put the `token=` value into the shell variable `VIEWER_TOKEN` and run the

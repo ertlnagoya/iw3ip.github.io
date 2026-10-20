@@ -102,12 +102,12 @@ npx hardhat node --hostname 0.0.0.0
 `Started HTTP and WebSocket JSON-RPC server` が表示されたら、ターミナル B で続けます。
 
 ```bash
-# デプロイ (Merchandise が dataset_id を additionalInfo に持つ最新版)
+# デプロイ。Merchandise が dataset_id を additionalInfo に持つ最新版
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
 npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
 # IoTMarket = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512, Merchandise #0..4 のアドレスをメモ
 
-# PubKey 登録 (buyer = Account #2)
+# PubKey 登録。buyer は Account #2
 npx hardhat console --network localhost
 ```
 
@@ -128,13 +128,21 @@ cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 
 # Hardhat を起動し直したので、bridge と publisher を作り直す
-# (bridge は起動時のブロック番号から監視する。publisher は前のチェーンの購入の申告をメモリに持っていて、
-#  同じ取引 ID の購入に使用済みのコードを返してしまう)
+# bridge は起動時のブロック番号から監視する。publisher は前のチェーンの購入の申告をメモリに持っていて、
+# 同じ取引 ID の購入に使用済みのコードを返してしまう
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge
 
 # bridge ログ確認
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
-# → bridge: listening to 5 merchandise(s)
+```
+
+期待する出力:
+
+```text
+bridge: listening to 5 merchandise(s)
+```
+
+```bash
 
 ```
 
@@ -261,7 +269,12 @@ dataset がハードコードされた値ではなく、on-chain から取得さ
 
 ```bash
 docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1
-# → jti と deeplink を取り出す
+```
+
+期待する出力:
+
+```text
+jti と deeplink を取り出す
 ```
 
 ---

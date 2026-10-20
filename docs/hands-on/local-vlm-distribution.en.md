@@ -68,7 +68,7 @@ The VLM is opt-in. Adding `--profile vlm` also starts the Ollama service and `vl
 cd ~/program/Blockchain_IoT_Marketplace
 export VLM_BACKEND=ollama
 # For a CPU-only laptop, the lightweight moondream is recommended.
-# Use llava (the default) if you want higher quality and have time.
+# Use llava, the default, if you want higher quality and have time.
 export VLM_MODEL=moondream
 export IMAGE_REDACTION_BACKEND=opencv
 PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile vlm up --build -d \
@@ -86,7 +86,12 @@ Confirm the publisher is up.
 
 ```bash
 curl -s http://localhost:8080/health | jq .
-# -> {"status": "ok", ...}
+```
+
+Expected output:
+
+```text
+{"status": "ok", ...}
 ```
 
 !!! tip "Choosing a model"

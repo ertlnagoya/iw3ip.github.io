@@ -72,7 +72,7 @@ The papers on IW3IP are listed on the [Publications](../publications.md) page.
 
 [10] Nomic Foundation, "Getting started with Hardhat (Hardhat 2)," <https://v2.hardhat.org/hardhat-runner/docs/getting-started>
 
-[11] W3C, "Decentralized Identifiers (DIDs) v1.0," W3C Recommendation, 2022, <https://www.w3.org/TR/did-core/>
+[11] W3C, "Decentralized Identifiers (DIDs) v1.0," W3C Recommendation, 2022, <https://www.w3.org/TR/did-1.0/>
 
 [12] W3C, "Verifiable Credentials Data Model v2.0," W3C Recommendation, 2025, <https://www.w3.org/TR/vc-data-model-2.0/>
 

@@ -223,7 +223,7 @@ Terminal C:
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
 
-# env for the bridge (LAN IP is the value from ipconfig getifaddr en0)
+# env for the bridge. The LAN IP is the value from ipconfig getifaddr en0
 cat > infra/.env <<EOF
 BRIDGE_HARDHAT_RPC=http://host.docker.internal:8545
 BRIDGE_IOT_MARKET_ADDRESS=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
@@ -672,13 +672,18 @@ Error: VM Exception while processing transaction: reverted with an unrecognized 
 the default `http://host.docker.internal:8080`, which the iPhone cannot reach.
 
 **Fix**: Set `BRIDGE_PUBLIC_PUBLISHER_URL=http://<HOST_IP>:8080` in `infra/.env` and
-restart the bridge (Step 4). The recreated bridge only sees purchases made after it starts, and the deeplink of a purchase already claimed does not change, so buy a Merchandise you have not bought yet as in Step 6, then confirm that the `credential_issuer` inside the new deeplink
+restart the bridge (Step 4). The recreated bridge only sees purchases made after it starts, and the deeplink of a purchase already claimed does not change, so buy a temperature Merchandise you have not bought yet (#0 `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0` or #3 `0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6`) as in Step 6 (Step 7 onward assumes the temperature dataset; also set `MERCHANDISE` in Step 9 to that address), then confirm that the `credential_issuer` inside the new deeplink
 is the LAN IP:
 
 ```bash
 DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1 | sed -E 's/.*deeplink=//')
 echo "$DEEPLINK" | python3 -c "import sys,urllib.parse,json; d=urllib.parse.unquote(sys.stdin.read().split('credential_offer=',1)[1]); print(json.loads(d)['credential_issuer'])"
-# → http://<HOST_IP>:8080  (not host.docker.internal:8080)
+```
+
+Expected output:
+
+```text
+http://<HOST_IP>:8080  (not host.docker.internal:8080)
 ```
 
 **Cause 2**: The wallet shows the `No script URL provided` error screen, which means the Metro bundler is not running.

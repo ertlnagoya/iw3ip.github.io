@@ -103,6 +103,6 @@ Phase 1 のサンプル（Consent VC に相当する JSON を `/consents` に登
 
 [1] Decentralized Identity Foundation, <https://identity.foundation/>
 
-[2] W3C, "Decentralized Identifiers (DIDs) v1.0," W3C Recommendation, 2022, <https://www.w3.org/TR/did-core/>
+[2] W3C, "Decentralized Identifiers (DIDs) v1.0," W3C Recommendation, 2022, <https://www.w3.org/TR/did-1.0/>
 
 [3] W3C, "Verifiable Credentials Data Model v2.0," W3C Recommendation, 2025, <https://www.w3.org/TR/vc-data-model-2.0/>

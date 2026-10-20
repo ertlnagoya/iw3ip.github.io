@@ -74,7 +74,7 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 ## 関連リポジトリ
 
 - `iw3ip-wallet`: <https://github.com/ertlnagoya/iw3ip-wallet>
-  - upstream: Sphereon-Opensource/mobile-wallet
+  - upstream: Sphereon-Opensource/mobile-wallet [1]
   - ブランチ方針: `main` は upstream 追従、`iw3ip/*` で IW3IP 固有改変
 - [Blockchain_IoT_Marketplace](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace): publisher (OID4VCI / OID4VP のエンドポイントを含む。`ssi-wallet` プロファイルで起動)
 
@@ -346,4 +346,4 @@ docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_tok
 
 [4] Sphereon, "pex," GitHub repository, <https://github.com/Sphereon-Opensource/pex>
 
-[5] IETF, "SD-JWT-based Verifiable Credentials (SD-JWT VC)," Internet-Draft, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
+[5] IETF, "SD-JWT-based Verifiable Digital Credentials (SD-JWT VC)," Internet-Draft, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>

@@ -19,7 +19,7 @@ Publisher が公開するカメラ視野を **イベント／画像／動画** �
 ## つまずきやすい点
 
 - 「DataUserVC でカメラ映像が見える／見えない」を**オンチェーンのスマートコントラクト**で判定すると、
-  オフラインでは失敗します。今回の実装は **Publisher 側の Python で評価**します
+  ローカルの Hardhat ノードを起動し直すたびに失敗します。今回の実装は **Publisher 側の Python で評価**します
 - アクセスレベルは trustScore（属性ごとの点数の和）だけでは決まりません。`full` になるのは、
   entityType が高信頼の区分（`GovernmentOrganization` / `Police`）で、かつ score>=80 のときだけです
 - PurchaseViewerVC が持つ `allowed_views` は **VC を発行する時点**で
@@ -356,7 +356,7 @@ VLM が使えない場合（VLM 拡張が無効、または推論に失敗）は
 | 条件 | publisher の挙動 |
 |---|---|
 | VLM 拡張が無効（`VLM_BACKEND` が空） | description のキーを **生成しない**（旧仕様と同じ — Tier 1/2 は従来の挙動にフォールバック）。`IMAGE_REDACTION_BACKEND` を設定していれば顔ブラーは動き、`image_url_redacted` も付くが、従来の投影では表示されない |
-| VLM 拡張が有効 + VLM 呼び出し失敗 | description キーは省略、`image_url_redacted` のみ生成 試行（顔ブラー単体は VLM 不要なため）|
+| VLM 拡張が有効 + VLM 呼び出し失敗 | description キーは省略。`image_url_redacted` の生成は試みる（顔ブラー単体は VLM 不要なため）|
 | VLM 拡張が有効 + 顔ブラー失敗 | redacted 画像キー省略、description のみ。Tier 2 受信者には image 無しで text のみ届く |
 | VLM 拡張が有効 + 両方成功 | 全キー生成 |
 

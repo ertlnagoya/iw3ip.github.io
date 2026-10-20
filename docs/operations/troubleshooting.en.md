@@ -70,7 +70,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 ## Purchase does not succeed
 
 - Symptom: purchase does not succeed
-  - Check: MetaMask is connected with Account #2 (`0x3C44...`). A purchase requires the buyer's public key to be registered in the PubKey contract. Keys are registered only for Account #2 (by `mediator-buyer` at startup) and Account #1 (by `mediator-owner`). A purchase from any other account reverts. If you buy with Account #1, `mediator-owner` also acts as the buyer and saves the data to `mediator-owner/downloads` (nothing appears in `mediator-buyer`). The hands-on buys with Account #2
+  - Check: MetaMask is connected with Account #2 (`0x3C44...`). A purchase requires the buyer's public key to be registered in the PubKey contract. Keys are registered only for Account #2 (by `mediator-buyer` at startup) and Account #1 (by `mediator-owner`). A purchase from any other account reverts. If you buy an item registered by `mediator-owner` (a `Product deployed` item) with Account #1, `mediator-owner` also acts as the buyer and saves the data to `mediator-owner/downloads` (nothing appears in `mediator-buyer`). The hands-on buys with Account #2
   - Check: whether you already bought that item with the same account. One account can buy an item only once (a repeat purchase reverts). An item whose delivery is in progress (from the purchase until the data delivery completes) cannot be bought by any account. Use an item from a `Product deployed: 0x...` line in the `mediator-owner` terminal that you have not bought yet, or restart the node and redeploy
   - Action: after restarting the local chain, clear stale MetaMask state and reconnect
 
@@ -140,7 +140,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
 - Restart the node exposed on the LAN.
 
   ```bash
-  # Stop the running node (Terminal 1 of the Quickstart) with Ctrl+C first
+  # First stop the running node in Terminal 1 of the Quickstart with Ctrl+C
   cd ~/program/Blockchain_IoT_Marketplace/iot-market
   npx hardhat node --hostname 0.0.0.0
   ```

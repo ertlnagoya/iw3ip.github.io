@@ -106,7 +106,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
-# pull したコードで publisher と bridge を作り直す (iot-market-ui からの呼び出しには publisher の CORS 対応が必要)
+# pull したコードで publisher と bridge を作り直す。iot-market-ui からの呼び出しには publisher の CORS 対応が必要
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 
 cd iot-market-ui

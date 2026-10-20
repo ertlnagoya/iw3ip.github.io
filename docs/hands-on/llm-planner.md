@@ -450,7 +450,7 @@ defineProps<{
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git pull --ff-only
-# §3.5 などで起動した Docker の assistant だけを止める (publisher などはそのまま動き続ける)
+# §3.5 などで起動した Docker の assistant だけを止める。publisher などはそのまま動き続ける
 docker compose -f infra/docker-compose.yml stop assistant assistant-demo llm-mock assistant-ui
 cp .env.local.example .env.local
 ```

@@ -101,7 +101,7 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 
 ### 1. サービス起動
 
-ソースコードリポジトリで次を実行します。`PLATFORM_INGEST_READ_ENABLED=true` は、蓄積されたデータを確認するための `GET /platform/ingest` を有効にする指定です。この API は認証なしで全件を返すデモ用の機能で、指定しない場合は無効 (404) です。Part 2 以降では、読み出しに VC を提示して得るトークンを使います。
+ソースコードリポジトリで次を実行します。`PLATFORM_INGEST_READ_ENABLED=true` は、蓄積されたデータを確認するための `GET /platform/ingest` を有効にする指定です。この API は認証なしで全件を返すデモ用の機能で、指定しない場合は無効 (404) です。Part 2 の Stage 3 (データ閲覧者の認証) 以降では、読み出しに VC を提示して得るトークンを使います。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace

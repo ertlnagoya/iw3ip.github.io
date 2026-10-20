@@ -46,7 +46,7 @@
 
 ### 0. 教材リポジトリに移動
 
-教材リポジトリは `~/program/Blockchain_IoT_Marketplace` にある前提です ([前提条件](prerequisites.md) で clone した場所)。新しいターミナルは別のフォルダで開くことがあるので、各ターミナルでは絶対パスで移動します。
+教材リポジトリは `~/program/Blockchain_IoT_Marketplace` にある前提です ([事前準備](prerequisites.md) で clone した場所)。新しいターミナルは別のフォルダで開くことがあるので、各ターミナルでは絶対パスで移動します。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace

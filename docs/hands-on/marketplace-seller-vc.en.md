@@ -85,17 +85,22 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
 
-# (Optional) only when enabling on-chain owner verify
+# Optional: only when enabling on-chain owner verify
 echo "MARKETPLACE_HARDHAT_RPC=http://host.docker.internal:8545" >> infra/.env
 
-# After git pull, rebuild the publisher with --build (otherwise owner verify stays skipped)
+# After git pull, rebuild the publisher with --build, otherwise owner verify stays skipped
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 sleep 5
 
-# Is the fifth VC type exposed?
+# Is the fifth VC type exposed
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer \
   | python3 -m json.tool | grep -A1 SellerVC
-# → "vct": "https://iw3ip.example/credentials/SellerVC/v1"
+```
+
+Expected output:
+
+```text
+"vct": "https://iw3ip.example/credentials/SellerVC/v1"
 ```
 
 When S0 recreates the publisher (when the image changes or when `infra/.env` changes), the claims and ingested rows held in the publisher's memory since Stage 6 are cleared. So `count` in Step S5 can be 0. This does not affect the `seller_did` that Step S5 checks.
@@ -490,7 +495,12 @@ cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 sleep 5
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
-# → bridge: starting poll from block <current number>
+```
+
+Expected output:
+
+```text
+bridge: starting poll from block <current number>
 ```
 
 After that, running `Merchandise.purchase()` again lets the bridge capture the new Purchase event.

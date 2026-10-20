@@ -11,7 +11,7 @@ The implementation steps are covered in [Let an AI plan the steps (LLM Planner)]
 
 ## Common issues
 
-- treating \"adding an LLM\" as \"turning the whole system into AI\" breaks the design
+- treating "adding an LLM" as "turning the whole system into AI" breaks the design
 - at the specification stage, responsibility separation comes before implementation steps
 - the reason for constraining output to structured JSON instead of free text is easy to overlook
 
@@ -251,4 +251,4 @@ The scope for now is only **mapping natural language into the existing plan sche
 
 - learners can treat an LLM as a constrained component rather than an all-purpose generator
 - learners can understand what should stay deterministic when AI is introduced
-- learners learn the mindset of extending Phase 3 steadily, without rushing it into a future Phase 4-style agent
+- learners learn the mindset of extending Phase 3 steadily, without rushing it into a future agent stage (the step after Phase 3)

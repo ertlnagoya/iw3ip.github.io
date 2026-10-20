@@ -68,7 +68,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 ## 5. 購入できない
 
 - 症状: 購入できない
-  - 確認: MetaMask の接続アカウントが Account #2 (`0x3C44...`) か。購入には、購入者の公開鍵が PubKey コントラクトに登録されている必要があります。公開鍵が登録されているのは、`mediator-buyer` が起動時に登録する Account #2 と、`mediator-owner` が登録する Account #1 だけです。ほかのアカウントでは購入が取り消されます (revert)。Account #1 で買うと、`mediator-owner` が購入者としてもデータを受け取り、`mediator-owner/downloads` に保存します (`mediator-buyer` には何も出ません)。ハンズオンでは Account #2 で購入します
+  - 確認: MetaMask の接続アカウントが Account #2 (`0x3C44...`) か。購入には、購入者の公開鍵が PubKey コントラクトに登録されている必要があります。公開鍵が登録されているのは、`mediator-buyer` が起動時に登録する Account #2 と、`mediator-owner` が登録する Account #1 だけです。ほかのアカウントでは購入が取り消されます (revert)。`mediator-owner` が登録した商品 (`Product deployed` の商品) を Account #1 で買うと、`mediator-owner` が購入者としてもデータを受け取り、`mediator-owner/downloads` に保存します (`mediator-buyer` には何も出ません)。ハンズオンでは Account #2 で購入します
   - 確認: その商品を、同じアカウントですでに購入していないか。同じアカウントは同じ商品を一度しか買えません (もう一度買うと取り消されます)。また、受け渡しの途中 (購入してから、データの受け渡しが終わるまで) の商品は、ほかのアカウントでも買えません。`mediator-owner` のターミナルに出た、まだ買っていない `Product deployed: 0x...` の商品を使うか、ノードを起動し直してデプロイし直します
   - 対応: ローカルチェーン再起動後は MetaMask のキャッシュをクリア
 
@@ -138,7 +138,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
 - ノードを LAN 公開で起動し直します。
 
   ```bash
-  # 動いているノード (最短起動のターミナル 1) を Ctrl+C で止めてから
+  # 最短起動のターミナル 1 で動いているノードを Ctrl+C で止めてから
   cd ~/program/Blockchain_IoT_Marketplace/iot-market
   npx hardhat node --hostname 0.0.0.0
   ```

@@ -2,7 +2,7 @@
 
 受信者の信頼度 (DataUserVC) に応じて、見せる中身を Tier 3 / Tier 2 / Tier 1 の 3 段階に切り替えます。画像 / 動画の実体の配信（§8〜§11）は [画像・動画を段階アクセスで配信する](data-user-vc-tiered-media.md) で、映像を意味的中間表現に変換し、受信者の信頼度に応じて出力を変えるレンダリング（trust-aware rendering、§12〜§13）は [意味レベルで段階化する](data-user-vc-tiered-semantic.md) で扱います。3 ページ全体で長めのハンズオンです。
 
-> **やること**: 信頼度ごとに動画 / 画像 / 要約だけを出し分ける動作の確認
+> **やること**: 信頼度ごとに動画 / 画像 / イベントだけを出し分ける動作の確認
 >
 > **前提**: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) と [検知イベントだけを共有する](webcam-event-sharing.md)
 >
@@ -27,7 +27,7 @@ DataUserVC はウォレットに発行して中身を確かめるところまで
 
 1. publisher を起動する
 2. **DataUserVC** を 3 種類のプロファイルで発行する（gov-full / enterprise-access / low-deny）
-3. 各プロファイルで `/marketplace/claim` を呼び出して `allowed_views` を比較する
+3. 各プロファイルで `/marketplace/claim` を呼び出し、deeplink に入った PurchaseViewerVC の種類 (`credential_configuration_ids`) を比較する
 4. 画像・動画つきのイベントを 1 件流し、PurchaseViewerVC を提示して `/platform/data` の出力差を見る
 
 ## このページで分かること
@@ -91,9 +91,14 @@ docker compose -f infra/docker-compose.yml up --build -d publisher mosquitto
 curl -s localhost:8080/health | jq .
 curl -s localhost:8080/.well-known/openid-credential-issuer \
   | jq '.credential_configurations_supported | keys'
-# -> ["ConsentVC", "DataUserVC", "PurchaseViewerVC",
-#     "PurchaseViewerVC.access", "PurchaseViewerVC.event", "PurchaseViewerVC.full",
-#     "SellerVC", "ServiceVC", "ViewerVC"]
+```
+
+期待する出力:
+
+```text
+["ConsentVC", "DataUserVC", "PurchaseViewerVC",
+"PurchaseViewerVC.access", "PurchaseViewerVC.event", "PurchaseViewerVC.full",
+"SellerVC", "ServiceVC", "ViewerVC"]
 ```
 
 `DataUserVC` がリストに出ていれば、起動は完了です。
@@ -153,7 +158,12 @@ curl -s -X POST localhost:8080/marketplace/claim \
 ```bash
 jq -r .deeplink /tmp/claim.json \
   | python3 -c "import sys,json,urllib.parse; print(json.loads(urllib.parse.unquote(sys.stdin.read().split('credential_offer=',1)[1]))['credential_configuration_ids'])"
-# -> ['PurchaseViewerVC.full']
+```
+
+期待する出力:
+
+```text
+['PurchaseViewerVC.full']
 ```
 
 | 種類 | 閲覧できる範囲 (`allowed_views`) | trustScore |
@@ -235,7 +245,12 @@ ViewerToken は publisher のログに出ます。提示の直後に次のコマ
 
 ```bash
 docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1
-# -> ... viewer_token_issued vc_kind=PurchaseViewerVC jti=... token=<ViewerToken> dataset=home/event/possible_littering ttl=60s views=event+image+video
+```
+
+期待する出力:
+
+```text
+... viewer_token_issued vc_kind=PurchaseViewerVC jti=... token=<ViewerToken> dataset=home/event/possible_littering ttl=60s views=event+image+video
 ```
 
 `token=` の値をシェル変数 `VIEWER_TOKEN` に入れて、次を実行します。ViewerToken の有効期間は 60 秒なので、取り出したらすぐに使います。期限が切れたら、もう一度提示します。

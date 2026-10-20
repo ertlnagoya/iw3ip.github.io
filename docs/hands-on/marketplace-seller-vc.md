@@ -85,17 +85,22 @@
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
 
-# (任意) on-chain owner verify を有効にする場合のみ
+# 任意: on-chain owner verify を有効にする場合のみ
 echo "MARKETPLACE_HARDHAT_RPC=http://host.docker.internal:8545" >> infra/.env
 
-# git pull 後は --build で publisher を作り直す (古いままだと owner verify が skipped のまま)
+# git pull 後は --build で publisher を作り直す。古いままだと owner verify が skipped のまま
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 sleep 5
 
 # 5 種目の VC が出ているか
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer \
   | python3 -m json.tool | grep -A1 SellerVC
-# → "vct": "https://iw3ip.example/credentials/SellerVC/v1"
+```
+
+期待する出力:
+
+```text
+"vct": "https://iw3ip.example/credentials/SellerVC/v1"
 ```
 
 S0 で publisher が作り直されると (新しいイメージになったときや、`infra/.env` を変えたとき)、Stage 6 までに publisher のメモリにあった購入の申告と取り込んだ行は消えます。そのため、Step S5 の `count` が 0 になることがあります。Step S5 で確かめる `seller_did` には影響しません。
@@ -484,7 +489,12 @@ cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 sleep 5
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
-# → bridge: starting poll from block <現在の番号>
+```
+
+期待する出力:
+
+```text
+bridge: starting poll from block <現在の番号>
 ```
 
 その後、再度 `Merchandise.purchase()` を実行すると新しい Purchase event

@@ -86,7 +86,12 @@ publisher の起動を確認します。
 
 ```bash
 curl -s http://localhost:8080/health | jq .
-# -> {"status": "ok", ...}
+```
+
+期待する出力:
+
+```text
+{"status": "ok", ...}
 ```
 
 !!! tip "モデルの選び方"

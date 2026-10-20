@@ -57,9 +57,9 @@ cd ~/program/Blockchain_IoT_Marketplace
 export VLM_BACKEND=ollama
 export IMAGE_REDACTION_BACKEND=opencv
 # macOS の Docker ではモデルが CPU で動き、llava は 1 回に 3 分前後かかる。
-# 既定の待ち時間 (180 秒) では足りないので延ばす (軽い moondream にするなら VLM_MODEL=moondream)
+# 既定の待ち時間 180 秒では足りないので延ばす。軽い moondream にするなら VLM_MODEL=moondream
 export VLM_TIMEOUT_SEC=600
-# profile vlm を ON にする。Ollama service と vlm-pull (llava の事前 pull)
+# profile vlm を ON にする。Ollama service と、llava を事前に pull する vlm-pull が起動する
 # が一緒に立ち上がる
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
   publisher mosquitto vlm vlm-pull
@@ -71,14 +71,20 @@ docker compose -f infra/docker-compose.yml --profile vlm up -d \
 
 ```bash
 docker compose -f infra/docker-compose.yml logs -f vlm-pull
-# -> "vlm model llava ready" が出たら抜ける
 ```
+
+"vlm model llava ready" が出たら抜ける
 
 publisher が起動していることを確認します。
 
 ```bash
 curl -s http://localhost:8080/health | jq .
-# -> {"status": "ok", ...}
+```
+
+期待する出力:
+
+```text
+{"status": "ok", ...}
 ```
 
 #### 12.2.1 画像つきのイベントを流す
@@ -218,7 +224,7 @@ afternoon」のような **一般化された語だけ**が出ているはずで
     たとえば、プロンプトの指示に反して人物の服の色や髪型を残す、特定の建物名を
     一般名詞と認識して残す、といった例です。
     仕様では、漏れの検出を後段のチェック処理（post-check）に分け、**研究課題**として
-    記録しています（[仕様の「redact 失敗の検出」](data-user-vc-tiered-spec.md#tier-vlm)）。
+    記録しています（[仕様の「redact 失敗の検出」](data-user-vc-tiered-spec.md#redact-失敗の検出研究課題)）。
     実運用では、Tier 1 の出力を人手でレビューする工程を挟むのが安全です。
 
 ### 12.7 degrade ケース（VLM / blur が停止したとき）
@@ -230,10 +236,10 @@ VLM だけを停止する場合:
 
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
-# provider_with_media.py でイベントを流す (§12.2.1) → /platform/data で
-# processing_warnings: ["vlm_unavailable"] が出る
-# image_url_redacted は生成される (顔ブラーは VLM 不要のため)
-# description_* キーは欠落
+# §12.2.1 の provider_with_media.py でイベントを流すと、/platform/data で
+# processing_warnings に vlm_unavailable が出る
+# 顔ブラーは VLM 不要のため、image_url_redacted は生成される
+# description のキーは欠落
 ```
 
 両方を停止する場合:
@@ -241,8 +247,8 @@ docker compose -f infra/docker-compose.yml stop vlm
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
 # 加えて publisher の IMAGE_REDACTION_BACKEND を空にして再起動
-# /platform/data で processing_warnings: ["vlm_unavailable"]
-# Tier 2 / Tier 1 受信者は画像キーも description_* も受け取らず、event だけになる
+# /platform/data で processing_warnings に vlm_unavailable が出る
+# Tier 2 と Tier 1 の受信者は画像キーも description のキーも受け取らず、event だけになる
 ```
 
 `IMAGE_REDACTION_BACKEND` を空にすると、顔ブラー処理そのものが無効になります。
@@ -447,7 +453,7 @@ Publish ボタンとは独立して動くので、確認だけして Publish せ
    description_* → low
    event のみ / 不明 → anonymous (fail-closed)
    ```
-2. 各 row で **`POST /semantic/render_url`** を呼び、サーバ側で fetch + analyze + policy + render を 1 往復で実行
+2. 画像を持つ各 row で **`POST /semantic/render_url`** を呼び (画像の無い Tier 1/0 の row は文字だけを表示)、サーバ側で fetch + analyze + policy + render を 1 往復で実行
 3. 結果を表示:
    - `[<level>] kinds: redactedImage + textSummary + eventList`
    - 許可された image_b64 を inline `<img>` で展開

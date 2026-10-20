@@ -107,7 +107,7 @@ Terminal D (iot-market-ui). If the iot-market-ui from Stage 5 or 6 is still runn
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
-# Rebuild the publisher and bridge from the pulled code (calls from iot-market-ui need the publisher's CORS support)
+# Rebuild the publisher and bridge from the pulled code. Calls from iot-market-ui need the CORS support of the publisher
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 
 cd iot-market-ui

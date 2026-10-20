@@ -172,7 +172,7 @@ The samples on this site first focus on the core flow so that readers can unders
 
 1. Receive data from Home Assistant or sensors.
 2. Normalize the data into a common schema.
-3. Decide `allow` or `deny` based on a Consent VC.
+3. Decide `allow` or `deny` based on a Consent VC (a verifiable credential that expresses consent conditions; see [SSI/DID/VC Basics](foundations/ssi-did-vc-basics.md)).
 4. Record an audit log.
 
 In other words, the site first demonstrates the minimum foundation for:

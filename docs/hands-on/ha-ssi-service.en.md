@@ -73,9 +73,9 @@ every `/platform/ingest` call.
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet up --build -d
 
-# Confirm ServiceVC is registered (the current release has 6 VC types:
+# Confirm ServiceVC is registered. The current release has 6 VC types:
 # ConsentVC / ViewerVC / ServiceVC / DataUserVC / SellerVC / PurchaseViewerVC.
-# PurchaseViewerVC also has tier entries .full / .access / .event, so 9 entries in total)
+# PurchaseViewerVC also has tier entries .full / .access / .event, so 9 entries in total
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ServiceVC
 ```
 

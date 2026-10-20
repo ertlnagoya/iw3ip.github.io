@@ -74,7 +74,7 @@ Pipeline:
 ## Related repositories
 
 - `iw3ip-wallet`: <https://github.com/ertlnagoya/iw3ip-wallet>
-  - upstream: Sphereon-Opensource/mobile-wallet
+  - upstream: Sphereon-Opensource/mobile-wallet [1]
   - Branch policy: `main` tracks upstream; `iw3ip/*` carries IW3IP-specific changes
 - [Blockchain_IoT_Marketplace](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace): publisher (includes the OID4VCI / OID4VP endpoints; started with the `ssi-wallet` profile)
 
@@ -349,4 +349,4 @@ This hands-on (Stage 1) only covers **single-use write authorization**
 
 [4] Sphereon, "pex," GitHub repository, <https://github.com/Sphereon-Opensource/pex>
 
-[5] IETF, "SD-JWT-based Verifiable Credentials (SD-JWT VC)," Internet-Draft, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
+[5] IETF, "SD-JWT-based Verifiable Digital Credentials (SD-JWT VC)," Internet-Draft, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>

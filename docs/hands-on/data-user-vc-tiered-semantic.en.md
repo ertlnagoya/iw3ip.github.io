@@ -60,9 +60,9 @@ cd ~/program/Blockchain_IoT_Marketplace
 export VLM_BACKEND=ollama
 export IMAGE_REDACTION_BACKEND=opencv
 # Docker on macOS runs the model on the CPU, and llava takes about 3 minutes per call.
-# The default wait (180 s) is not enough, so extend it (or use the lighter VLM_MODEL=moondream)
+# The default wait of 180 s is not enough, so extend it. Or use the lighter VLM_MODEL=moondream
 export VLM_TIMEOUT_SEC=600
-# Turn profile vlm on. The Ollama service and vlm-pull (pre-pulls llava)
+# Turn profile vlm on. This starts the Ollama service and vlm-pull, which pre-pulls llava
 # start together
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
   publisher mosquitto vlm vlm-pull
@@ -76,14 +76,19 @@ Wait for `vlm-pull` to finish pulling `llava` (first time only, multi-GB):
 
 ```bash
 docker compose -f infra/docker-compose.yml logs -f vlm-pull
-# wait for "vlm model llava ready" then exit
+# wait for the line vlm model llava ready, then exit with Ctrl+C
 ```
 
 Check that the publisher is up:
 
 ```bash
 curl -s http://localhost:8080/health | jq .
-# -> {"status": "ok", ...}
+```
+
+Expected output:
+
+```text
+{"status": "ok", ...}
 ```
 
 #### 12.2.1 Publish an event with an image
@@ -234,7 +239,7 @@ The `_full` line keeps the person's name, brand, and place. The
     LLaVA-class VLMs are probabilistic; **`description_summary` may
     structurally still contain PII** (e.g. clothing details that
     re-identify, building names that look generic). The spec
-    [records detection as a research TODO](data-user-vc-tiered-spec.md#tier-vlm)
+    [records detection as a research TODO](data-user-vc-tiered-spec.md#redaction-leak-detection-research-todo)
     (NER diff + PII dictionary). For production, queue Tier 1 outputs
     for human review.
 
@@ -247,10 +252,10 @@ Stop the VLM only:
 
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
-# publish an event with provider_with_media.py (§12.2.1); it still succeeds and /platform/data carries
-# processing_warnings: ["vlm_unavailable"]
-# image_url_redacted is still generated (face blur is VLM-free)
-# description_* keys are absent
+# publish an event with provider_with_media.py as in §12.2.1. It still succeeds, and /platform/data carries
+# processing_warnings with vlm_unavailable
+# image_url_redacted is still generated, because face blur does not need the VLM
+# the description keys are absent
 ```
 
 Stop both:
@@ -258,8 +263,8 @@ Stop both:
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
 # also clear IMAGE_REDACTION_BACKEND on the publisher and restart
-# /platform/data: processing_warnings: ["vlm_unavailable"]
-# Tier 2 / Tier 1 receivers get no image keys and no description_*; only event
+# /platform/data carries processing_warnings with vlm_unavailable
+# Tier 2 and Tier 1 receivers get no image keys and no description keys, only the event
 ```
 
 Clearing `IMAGE_REDACTION_BACKEND` disables face blur entirely. Nothing
@@ -427,7 +432,7 @@ The claims, ViewerTokens, and event rows kept in memory are cleared, so before
 
 | Env var | Value | Effect |
 |---|---|---|
-| `SEMANTIC_ANALYZER_BACKEND` | empty / `stub` | MockSemanticAnalyzer (deterministic) |
+| `SEMANTIC_ANALYZER_BACKEND` | empty / `stub` | MockSemanticAnalyzer (deterministic, always 3 fixed regions) |
 | `SEMANTIC_ANALYZER_BACKEND` | `vision` | OpenCV Haar cascade + MSER |
 | `SEMANTIC_ALLOW_UNKNOWN_AT_HIGH` | `true` | Let HIGH viewers see unknown_sensitive |
 
@@ -456,7 +461,7 @@ On switches to the semantic pipeline:
   `video → high`, `image|image_redacted → medium`,
   `description_* → low`, `event` only / unknown → `anonymous`
   (fail-closed)
-- Each row calls `POST /semantic/render_url` (one round trip to
+- Each row with an image calls `POST /semantic/render_url` (rows without an image, such as Tier 1/0, show text only; one round trip to
   fetch + analyze + render) and renders the result
 - Toggle state persists in `localStorage` so a refresh keeps the
   selection

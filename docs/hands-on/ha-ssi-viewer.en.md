@@ -48,7 +48,7 @@ Pipeline:
 
 ## Prerequisites
 
-- Have completed §1〜§8 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
+- Have completed §1–§8 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
 - Publisher running from the `main` branch
 - `iw3ip-wallet` available on phone
 - `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
@@ -82,7 +82,7 @@ curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m j
 
 ## 2. Write data via ConsentVC (recap)
 
-Follow §5〜§8 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md#5-present-via-verifier-qr)
+Follow §5–§8 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md#5-present-via-verifier-qr)
 to present ConsentVC, get a PolicyToken, and POST to `/platform/ingest`.
 Those rows are what §5 will read back.
 
