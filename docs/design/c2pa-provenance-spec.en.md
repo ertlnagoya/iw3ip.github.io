@@ -142,19 +142,25 @@ The publisher attaches to each Stage T derivative a manifest that references the
 | Tier | Derivative | Action | Ingredient |
 | --- | --- | --- | --- |
 | 3 Full | Raw image / video | (capture manifest as is) | — |
-| 2 Access | Face-blurred image | `c2pa.edited` (recorded as `face_blur` in `jp.ertl.iw3ip.derivation`) | Raw image |
+| 2 Access | Face-blurred image | `c2pa.opened` → `c2pa.edited` (recorded as `face_blur` in `jp.ertl.iw3ip.derivation`) → `c2pa.redacted` | Raw image |
 | 1 Summary | Summary text | — (§5.5) | — |
 
-There is a **privacy pitfall** here. By default, importing an ingredient also puts the following two things into the derived file:
+The actions of a derivative manifest start with `c2pa.opened`. The SDK refuses to sign a manifest whose first action is neither `c2pa.created` nor `c2pa.opened` (§13).
 
-- The ingredient's thumbnail (`c2pa.thumbnail.ingredient`). The specification recommends referencing the ingredient's thumbnail or generating a new one [1], so a thumbnail of the unblurred face ends up in the face-blurred image
+There is a **privacy pitfall** here. By default, importing an ingredient also puts the following two things into the derived file (confirmed in §13):
+
+- A thumbnail of the unblurred image. The specification recommends referencing the thumbnail in the ingredient's manifest [1], and the SDK uses the original manifest's `c2pa.thumbnail.claim` as the ingredient thumbnail. A thumbnail of the unblurred face ends up in the face-blurred image
 - The assertions in the ingredient's manifest. The camera ID and sensor readings become visible to Tier 2 recipients as well
 
 Tier 2 derivatives therefore do the following:
 
-1. Leave out the ingredient thumbnail
-2. Remove `jp.ertl.iw3ip.capture` and `jp.ertl.iw3ip.sensor` from the ingredient's manifest using C2PA assertion redaction [1], and record a `c2pa.redacted` action
-3. The ingredient manifest's signature still validates after redaction, so Tier 2 recipients can be shown only that "this was made from the Tier 3 original"
+1. Do not create a thumbnail for the derivative manifest itself (set the SDK setting `builder.thumbnail.enabled` to `false`)
+2. Remove `c2pa.thumbnail.claim`, `jp.ertl.iw3ip.capture`, and `jp.ertl.iw3ip.sensor` from the ingredient's manifest using C2PA assertion redaction [1]. List them in `redactions` of the manifest definition in the form `self#jumbf=/c2pa/<ingredient manifest identifier>/c2pa.assertions/<label>`
+3. Add the `c2pa.redacted` action yourself. The SDK does not add it automatically
+4. The ingredient manifest's signature still validates after redaction, so Tier 2 recipients can be shown only that "this was made from the Tier 3 original"
+
+!!! warning "How to write redaction URIs"
+    If a URI in `redactions` does not start with `/c2pa/`, the SDK ignores it without raising an error. Always read the derived file back and check that the redacted assertions are gone.
 
 ### 5.4 Handling sensor data
 
@@ -185,6 +191,12 @@ Whether this can be handled within the C2PA specification is left as an open que
 
 The C2PA Interim Trust List stopped receiving updates on January 1, 2026, and was replaced by the C2PA Trust List based on the Conformance Program [7][8]. The research implementation does not obtain a production certificate; it checks the validation flow with a private CA.
 
+Certificates made with the private CA must meet the following conditions (otherwise the SDK refuses to sign):
+
+- The certificates themselves are signed with SHA-256 or stronger. The `openssl` on macOS (LibreSSL) signs with SHA-1 unless `-sha256` is given, which the SDK rejects
+- The signing certificate is issued by the CA, not self-signed
+- The signing certificate carries an extended key usage (EKU) such as `emailProtection`
+
 ### 6.2 Key storage
 
 c2pa-python lets the caller perform signing in its own function (a callback) [3]. This is used to move the key step by step.
@@ -192,9 +204,11 @@ c2pa-python lets the caller perform signing in its own function (a callback) [3]
 1. P0–P2: keep the key as a PEM file (the SDK documentation also says this is for development only)
 2. P4: sign with a TPM 2.0 or secure element so the key never leaves the device
 
+An ES256 callback returns the signature not in DER form but as 64 bytes: r and s, 32 bytes each. If a TPM or similar returns DER, convert it.
+
 ### 6.3 Relation to DIDs
 
-The gateway holds a `did:jwk` as the ServiceVC holder ([Authenticate machines](../hands-on/ha-ssi-service.md)). A C2PA signer is represented by an X.509 certificate, so these are two separate identifiers.
+ServiceVC is a VC stating that a device or service may write continuously ([Authenticate machines](../hands-on/ha-ssi-service.md)). Making the gateway a ServiceVC holder gives it a `did:jwk`. A C2PA signer is represented by an X.509 certificate, so these are two separate identifiers.
 
 The CAWG (Creator Assertions Working Group) identity assertion [4] is one way to bind the two.
 The CAWG identity assertion has a mode signed with an X.509 certificate and a mode that aggregates VCs (identity claims aggregation).
@@ -222,13 +236,16 @@ Adds `c2pa` to the existing response (`{url, sha256, content_type, byte_size, ci
 }
 ```
 
-The publisher reads the manifest with the c2pa-python Reader and records the validation result.
+The publisher reads the manifest with the c2pa-python Reader and records the validation result. The SDK reports the result as one of three states: `Invalid`, `Valid`, or `Trusted`.
 
-| Validation result | Handling in the MVP |
-| --- | --- |
-| No manifest | Accepted as before (`present: false`) |
-| Valid signature, untrusted signer | Accepted (`trusted: false`) |
-| Hash mismatch or broken signature | Rejected with 400 (`c2pa_invalid`) |
+| Validation result | SDK state | Handling in the MVP |
+| --- | --- | --- |
+| No manifest | — | Accepted as before (`present: false`) |
+| Valid signature, untrusted signer | `Valid` (failure code `signingCredential.untrusted`) | Accepted (`trusted: false`) |
+| Valid signature, trusted signer | `Trusted` | Accepted (`trusted: true`) |
+| Hash mismatch or broken signature | `Invalid` | Rejected with 400 (`c2pa_invalid`) |
+
+The CA that the publisher trusts is registered in the SDK setting `trust.user_anchors`.
 
 ### 7.2 `/platform/data` rows
 
@@ -334,6 +351,21 @@ The address of the ProvenanceToken contract goes into the Merchandise's addition
 - [Deliver images and video with tiered access (Stage T)](../hands-on/data-user-vc-tiered-media.md)
 - [Detect with a USB webcam (OpenCV)](../hands-on/webcam.md)
 - [Authenticate machines (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
+
+## 13. Preliminary verification
+
+Before P0, we checked on a Mac whether §5.2, §5.3, §6, and §7.1 of this spec can be realized with the SDK (October 22, 2026). We used c2pa-python 0.38.1 (with c2pa-rs 0.91.3 inside). A generated dummy JPEG stood in for camera images.
+
+| What was checked | Result |
+| --- | --- |
+| ES256 certificate issued by a private CA, signing through a callback | Signing worked. Without registering the CA in `trust.user_anchors` the state is `Valid` (`signingCredential.untrusted`); with it registered the state is `Trusted` |
+| Custom assertions such as `jp.ertl.iw3ip.capture` | Included in the manifest and readable |
+| Derivative manifest referencing an ingredient | With `c2pa.edited` as the first action, signing was refused with `assertion.action.malformed`. Starting with `c2pa.opened` worked |
+| Derived file without countermeasures | The original `jp.ertl.iw3ip.capture`, `jp.ertl.iw3ip.sensor`, and the unblurred thumbnail all remained (confirms the pitfall in §5.3) |
+| Assertion redaction | With URIs starting with `/c2pa/`, all three were removed and the derived file stayed `Trusted`. URIs without the leading `/` were ignored without an error |
+| Tamper detection | Changing one byte of the derived file's pixel data made it `Invalid` (`assertion.dataHash.mismatch`) |
+
+Checking with Content Credentials Verify [11], RTSP cameras, fragmented MP4, and measurements on a Raspberry Pi have not been done yet (they are done in P0–P4).
 
 ## References
 

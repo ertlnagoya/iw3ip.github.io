@@ -142,19 +142,25 @@ Stage T の派生データに、元データを素材として参照するマニ
 | Tier | 派生データ | アクション | 素材 |
 | --- | --- | --- | --- |
 | 3 Full | 生の画像・動画 | (撮影マニフェストのまま) | — |
-| 2 Access | 顔ブラー画像 | `c2pa.edited` (`jp.ertl.iw3ip.derivation` で `face_blur` と記録) | 生の画像 |
+| 2 Access | 顔ブラー画像 | `c2pa.opened` → `c2pa.edited` (`jp.ertl.iw3ip.derivation` で `face_blur` と記録) → `c2pa.redacted` | 生の画像 |
 | 1 Summary | 要約テキスト | — (§5.5) | — |
 
-ここには**プライバシー上の落とし穴**がある。素材を取り込むと、既定では次の 2 つも派生ファイルに入る。
+派生マニフェストのアクションは `c2pa.opened` で始める。SDK は、最初のアクションが `c2pa.created` でも `c2pa.opened` でもないマニフェストに署名しない (§13)。
 
-- 素材のサムネイル (`c2pa.thumbnail.ingredient`)。仕様では、素材のサムネイルを参照するか新しく作ることが推奨されている [1]。顔ブラー画像に、ブラー前の顔のサムネイルが入ってしまう
+ここには**プライバシー上の落とし穴**がある。素材を取り込むと、既定では次の 2 つも派生ファイルに入る (§13 で確かめた)。
+
+- ブラー前の画像のサムネイル。仕様では、素材のマニフェストにあるサムネイルを参照することが推奨されている [1]。SDK も素材のサムネイルとして、元のマニフェストの `c2pa.thumbnail.claim` を参照する。顔ブラー画像に、ブラー前の顔のサムネイルが入ってしまう
 - 素材のマニフェストにあるアサーション。カメラ ID やセンサー値が、Tier 2 の受信者にも見える
 
 そこで、Tier 2 の派生では次のようにする。
 
-1. 素材のサムネイルを入れない
-2. 素材のマニフェストの `jp.ertl.iw3ip.capture` と `jp.ertl.iw3ip.sensor` を、C2PA のアサーションの削除 (redaction) [1] で取り除き、`c2pa.redacted` アクションを記録する
-3. 削除しても素材のマニフェストの署名は検証できる。そのため「Tier 3 の元データから作られた」ことだけを Tier 2 の受信者に示せる
+1. 派生マニフェスト自身のサムネイルを作らない (SDK の設定 `builder.thumbnail.enabled` を `false` にする)
+2. 素材のマニフェストの `c2pa.thumbnail.claim`、`jp.ertl.iw3ip.capture`、`jp.ertl.iw3ip.sensor` を、C2PA のアサーションの削除 (redaction) [1] で取り除く。マニフェストの定義の `redactions` に、`self#jumbf=/c2pa/<素材のマニフェストの識別子>/c2pa.assertions/<ラベル>` の形で指定する
+3. `c2pa.redacted` アクションを自分で加える。SDK は自動では加えない
+4. 削除しても素材のマニフェストの署名は検証できる。そのため「Tier 3 の元データから作られた」ことだけを Tier 2 の受信者に示せる
+
+!!! warning "削除の指定の書き方"
+    `redactions` の URI が `/c2pa/` で始まっていないと、SDK はエラーを出さずに指定を無視する。削除したはずのアサーションが残っていないことを、派生ファイルを読み直して必ず確かめる。
 
 ### 5.4 センサーデータの扱い
 
@@ -185,6 +191,12 @@ C2PA の仕様の範囲で扱えるかどうかは §11 のオープンクエス
 
 C2PA の Interim Trust List は 2026 年 1 月 1 日から更新が止まり、Conformance Program に基づく C2PA Trust List に移った [7][8]。研究用の実装では本番の証明書を取らず、自前の CA で検証の流れを確かめる。
 
+自前の CA で作る証明書は、次の条件を満たす必要がある (満たさないと SDK が署名を拒む)。
+
+- 証明書自体の署名に SHA-256 以上を使う。macOS の `openssl` (LibreSSL) は `-sha256` を付けないと SHA-1 で署名し、SDK に拒まれる
+- 署名用の証明書は自己署名にせず、CA から発行する
+- 署名用の証明書に、拡張鍵用途 (EKU) として `emailProtection` などを付ける
+
 ### 6.2 鍵の保管
 
 c2pa-python は、署名の処理を呼び出し側の関数 (コールバック) で行える [3]。この仕組みを使って、鍵の置き場所を段階的に移す。
@@ -192,9 +204,11 @@ c2pa-python は、署名の処理を呼び出し側の関数 (コールバック
 1. P0〜P2: 鍵を PEM ファイルとして置く (SDK の文書でも開発用に限るとされている)
 2. P4: TPM 2.0 またはセキュアエレメントで署名し、鍵を機器の外に出さない
 
+ES256 のコールバックは、署名を DER 形式ではなく、r と s を 32 バイトずつ並べた 64 バイトで返す。TPM などが DER 形式で返す場合は変換する。
+
 ### 6.3 DID との関係
 
-ゲートウェイは ServiceVC の holder として `did:jwk` を持つ ([機器間での連携認証](../hands-on/ha-ssi-service.md))。C2PA の署名者は X.509 証明書で表すため、この 2 つは別の識別子になる。
+ServiceVC は、機器やサービスが継続して書き込んでよいことを表す VC である ([機器間での連携認証](../hands-on/ha-ssi-service.md))。ゲートウェイを ServiceVC の holder にすれば、ゲートウェイは `did:jwk` を持つ。C2PA の署名者は X.509 証明書で表すため、この 2 つは別の識別子になる。
 
 2 つを結び付ける方法として、CAWG (Creator Assertions Working Group) の identity assertion [4] がある。
 CAWG の identity assertion には、X.509 証明書で署名する方式と、VC を集約する方式 (identity claims aggregation) がある。
@@ -222,13 +236,16 @@ SellerVC を「誰が提供したか」の証明として使うには後者が�
 }
 ```
 
-publisher は c2pa-python の Reader でマニフェストを読み、検証の結果を記録する。
+publisher は c2pa-python の Reader でマニフェストを読み、検証の結果を記録する。SDK は検証の結果を `Invalid`、`Valid`、`Trusted` の 3 つで返す。
 
-| 検証の結果 | MVP での扱い |
-| --- | --- |
-| マニフェストが無い | 従来どおり受け付ける (`present: false`) |
-| 署名は正しいが、署名者が信頼されていない | 受け付ける (`trusted: false`) |
-| ハッシュが一致しない、署名が壊れている | 400 (`c2pa_invalid`) で拒否する |
+| 検証の結果 | SDK の状態 | MVP での扱い |
+| --- | --- | --- |
+| マニフェストが無い | — | 従来どおり受け付ける (`present: false`) |
+| 署名は正しいが、署名者が信頼されていない | `Valid` (失敗コード `signingCredential.untrusted`) | 受け付ける (`trusted: false`) |
+| 署名が正しく、署名者も信頼されている | `Trusted` | 受け付ける (`trusted: true`) |
+| ハッシュが一致しない、署名が壊れている | `Invalid` | 400 (`c2pa_invalid`) で拒否する |
+
+publisher が信頼する CA は、SDK の設定 `trust.user_anchors` に登録する。
 
 ### 7.2 `/platform/data` の行
 
@@ -334,6 +351,21 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 - [画像・動画を段階アクセスで配信する (Stage T)](../hands-on/data-user-vc-tiered-media.md)
 - [USB カメラでポイ捨てを検知する (OpenCV)](../hands-on/webcam.md)
 - [機器間での連携認証 (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
+
+## 13. 予備検証の記録
+
+本仕様の §5.2、§5.3、§6、§7.1 が SDK で実現できるかを、P0 の前に Mac 上で確かめた (2026 年 10 月 22 日)。使ったのは c2pa-python 0.38.1 (内部の c2pa-rs は 0.91.3) である。画像には、カメラの代わりに生成したダミーの JPEG を使った。
+
+| 確かめたこと | 結果 |
+| --- | --- |
+| 自前の CA で発行した ES256 の証明書と、コールバックでの署名 | 署名できた。CA を `trust.user_anchors` に登録しないと `Valid` (`signingCredential.untrusted`)、登録すると `Trusted` |
+| `jp.ertl.iw3ip.capture` などの独自アサーション | マニフェストに入り、読み出せた |
+| 素材を参照する派生マニフェスト | 最初のアクションを `c2pa.edited` にすると、`assertion.action.malformed` で署名を拒まれた。`c2pa.opened` で始めると署名できた |
+| 対策をしない派生ファイル | 元の `jp.ertl.iw3ip.capture`、`jp.ertl.iw3ip.sensor`、ブラー前のサムネイルがすべて残った (§5.3 の落とし穴を確認) |
+| アサーションの削除 | `/c2pa/` で始まる URI で指定すると 3 つとも消え、派生ファイルは `Trusted` のまま。`/` の無い URI は、エラーにならずに無視された |
+| 改ざんの検出 | 派生ファイルの画素データの 1 バイトを変えると、`Invalid` (`assertion.dataHash.mismatch`) になった |
+
+Content Credentials Verify [11] での確認と、RTSP のカメラ、断片化 MP4、Raspberry Pi での計測はまだ行っていない (P0〜P4 で行う)。
 
 ## 参考文献
 
