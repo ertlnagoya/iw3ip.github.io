@@ -278,6 +278,9 @@ Add one `c2pa.redacted` action per redacted assertion (the example above shows o
 
 The derivative manifest's own thumbnail is made from the blurred image, so it can stay.
 
+`jp.ertl.iw3ip.detection` in the ingredient's manifest (the detection event label, score, and detection model) is not redacted and stays in the Tier 2 derivative. In Stage T, detection events reach recipients of every tier (including Tier 0, which receives events only), so nothing new leaks when Tier 2 recipients see them. Knowing "what was detected to cut out this image" also helps Tier 2 recipients judge the image.
+If a detection event carries values that identify a person, such as a name or a licence plate number, this assumption no longer holds, so add `jp.ertl.iw3ip.detection` to the redaction targets as well.
+
 The following two things, however, cannot be removed by redaction and remain in Tier 2 derived files (confirmed in §13). A derived file imports the ingredient manifest's claim and signature as they are.
 
 - The title of the ingredient's manifest (`title`). It remains even when the ingredient title (the `title` passed to `add_ingredient`) is omitted
