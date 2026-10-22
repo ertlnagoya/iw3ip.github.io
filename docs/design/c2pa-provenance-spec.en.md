@@ -154,13 +154,14 @@ There is a **privacy pitfall** here. By default, importing an ingredient also pu
 
 Tier 2 derivatives therefore do the following:
 
-1. Do not create a thumbnail for the derivative manifest itself (set the SDK setting `builder.thumbnail.enabled` to `false`)
-2. Remove `c2pa.thumbnail.claim`, `jp.ertl.iw3ip.capture`, and `jp.ertl.iw3ip.sensor` from the ingredient's manifest using C2PA assertion redaction [1]. List them in `redactions` of the manifest definition in the form `self#jumbf=/c2pa/<ingredient manifest identifier>/c2pa.assertions/<label>`
-3. Add the `c2pa.redacted` action yourself. The SDK does not add it automatically
-4. The ingredient manifest's signature still validates after redaction, so Tier 2 recipients can be shown only that "this was made from the Tier 3 original"
+1. Remove `c2pa.thumbnail.claim`, `jp.ertl.iw3ip.capture`, and `jp.ertl.iw3ip.sensor` from the ingredient's manifest using C2PA assertion redaction [1]. List them in `redactions` of the manifest definition in the form `self#jumbf=/c2pa/<ingredient manifest identifier>/c2pa.assertions/<label>`
+2. Add the `c2pa.redacted` action yourself. The SDK does not add it automatically
+3. The ingredient manifest's signature still validates after redaction, so Tier 2 recipients can be shown only that "this was made from the Tier 3 original"
 
-!!! warning "How to write redaction URIs"
-    If a URI in `redactions` does not start with `/c2pa/`, the SDK ignores it without raising an error. Always read the derived file back and check that the redacted assertions are gone.
+The derivative manifest's own thumbnail is made from the blurred image, so it can stay.
+
+!!! warning "Check the result of redaction"
+    Always read the derived file back and check that the redacted assertions and thumbnail are gone. Trusting the manifest definition alone can miss a leak.
 
 ### 5.4 Handling sensor data
 
@@ -196,6 +197,7 @@ Certificates made with the private CA must meet the following conditions (otherw
 - The certificates themselves are signed with SHA-256 or stronger. The `openssl` on macOS (LibreSSL) signs with SHA-1 unless `-sha256` is given, which the SDK rejects
 - The signing certificate is issued by the CA, not self-signed
 - The signing certificate carries an extended key usage (EKU) such as `emailProtection`
+- The certificates carry key identifiers (SKI and AKI) and the CA carries a key usage (a chain without them was rejected)
 
 ### 6.2 Key storage
 
@@ -203,8 +205,6 @@ c2pa-python lets the caller perform signing in its own function (a callback) [3]
 
 1. P0–P2: keep the key as a PEM file (the SDK documentation also says this is for development only)
 2. P4: sign with a TPM 2.0 or secure element so the key never leaves the device
-
-An ES256 callback returns the signature not in DER form but as 64 bytes: r and s, 32 bytes each. If a TPM or similar returns DER, convert it.
 
 ### 6.3 Relation to DIDs
 
@@ -362,8 +362,10 @@ Before P0, we checked on a Mac whether §5.2, §5.3, §6, and §7.1 of this spec
 | Custom assertions such as `jp.ertl.iw3ip.capture` | Included in the manifest and readable |
 | Derivative manifest referencing an ingredient | With `c2pa.edited` as the first action, signing was refused with `assertion.action.malformed`. Starting with `c2pa.opened` worked |
 | Derived file without countermeasures | The original `jp.ertl.iw3ip.capture`, `jp.ertl.iw3ip.sensor`, and the unblurred thumbnail all remained (confirms the pitfall in §5.3) |
-| Assertion redaction | With URIs starting with `/c2pa/`, all three were removed and the derived file stayed `Trusted`. URIs without the leading `/` were ignored without an error |
+| Assertion redaction | All three were removed and the derived file stayed `Trusted` |
 | Tamper detection | Changing one byte of the derived file's pixel data made it `Invalid` (`assertion.dataHash.mismatch`) |
+
+The check program is in `examples/hands_on/c2pa_provenance/` of the main repository.
 
 Checking with Content Credentials Verify [11], RTSP cameras, fragmented MP4, and measurements on a Raspberry Pi have not been done yet (they are done in P0–P4).
 

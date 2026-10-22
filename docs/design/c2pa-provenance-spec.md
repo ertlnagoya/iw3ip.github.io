@@ -154,13 +154,14 @@ Stage T の派生データに、元データを素材として参照するマニ
 
 そこで、Tier 2 の派生では次のようにする。
 
-1. 派生マニフェスト自身のサムネイルを作らない (SDK の設定 `builder.thumbnail.enabled` を `false` にする)
-2. 素材のマニフェストの `c2pa.thumbnail.claim`、`jp.ertl.iw3ip.capture`、`jp.ertl.iw3ip.sensor` を、C2PA のアサーションの削除 (redaction) [1] で取り除く。マニフェストの定義の `redactions` に、`self#jumbf=/c2pa/<素材のマニフェストの識別子>/c2pa.assertions/<ラベル>` の形で指定する
-3. `c2pa.redacted` アクションを自分で加える。SDK は自動では加えない
-4. 削除しても素材のマニフェストの署名は検証できる。そのため「Tier 3 の元データから作られた」ことだけを Tier 2 の受信者に示せる
+1. 素材のマニフェストの `c2pa.thumbnail.claim`、`jp.ertl.iw3ip.capture`、`jp.ertl.iw3ip.sensor` を、C2PA のアサーションの削除 (redaction) [1] で取り除く。マニフェストの定義の `redactions` に、`self#jumbf=/c2pa/<素材のマニフェストの識別子>/c2pa.assertions/<ラベル>` の形で指定する
+2. `c2pa.redacted` アクションを自分で加える。SDK は自動では加えない
+3. 削除しても素材のマニフェストの署名は検証できる。そのため「Tier 3 の元データから作られた」ことだけを Tier 2 の受信者に示せる
 
-!!! warning "削除の指定の書き方"
-    `redactions` の URI が `/c2pa/` で始まっていないと、SDK はエラーを出さずに指定を無視する。削除したはずのアサーションが残っていないことを、派生ファイルを読み直して必ず確かめる。
+派生マニフェスト自身のサムネイルはブラー後の画像から作られるため、残してよい。
+
+!!! warning "削除の結果を確かめる"
+    削除したはずのアサーションとサムネイルが残っていないことを、派生ファイルを読み直して必ず確かめる。マニフェストの定義を信じるだけでは、漏れを見逃す。
 
 ### 5.4 センサーデータの扱い
 
@@ -196,6 +197,7 @@ C2PA の Interim Trust List は 2026 年 1 月 1 日から更新が止まり、C
 - 証明書自体の署名に SHA-256 以上を使う。macOS の `openssl` (LibreSSL) は `-sha256` を付けないと SHA-1 で署名し、SDK に拒まれる
 - 署名用の証明書は自己署名にせず、CA から発行する
 - 署名用の証明書に、拡張鍵用途 (EKU) として `emailProtection` などを付ける
+- 鍵識別子 (SKI と AKI) と、CA の鍵用途を付ける (付けない証明書の組は拒まれた)
 
 ### 6.2 鍵の保管
 
@@ -203,8 +205,6 @@ c2pa-python は、署名の処理を呼び出し側の関数 (コールバック
 
 1. P0〜P2: 鍵を PEM ファイルとして置く (SDK の文書でも開発用に限るとされている)
 2. P4: TPM 2.0 またはセキュアエレメントで署名し、鍵を機器の外に出さない
-
-ES256 のコールバックは、署名を DER 形式ではなく、r と s を 32 バイトずつ並べた 64 バイトで返す。TPM などが DER 形式で返す場合は変換する。
 
 ### 6.3 DID との関係
 
@@ -362,8 +362,10 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 | `jp.ertl.iw3ip.capture` などの独自アサーション | マニフェストに入り、読み出せた |
 | 素材を参照する派生マニフェスト | 最初のアクションを `c2pa.edited` にすると、`assertion.action.malformed` で署名を拒まれた。`c2pa.opened` で始めると署名できた |
 | 対策をしない派生ファイル | 元の `jp.ertl.iw3ip.capture`、`jp.ertl.iw3ip.sensor`、ブラー前のサムネイルがすべて残った (§5.3 の落とし穴を確認) |
-| アサーションの削除 | `/c2pa/` で始まる URI で指定すると 3 つとも消え、派生ファイルは `Trusted` のまま。`/` の無い URI は、エラーにならずに無視された |
+| アサーションの削除 | 3 つとも消え、派生ファイルは `Trusted` のまま |
 | 改ざんの検出 | 派生ファイルの画素データの 1 バイトを変えると、`Invalid` (`assertion.dataHash.mismatch`) になった |
+
+検証のプログラムは、本体リポジトリの `examples/hands_on/c2pa_provenance/` に置いた。
 
 Content Credentials Verify [11] での確認と、RTSP のカメラ、断片化 MP4、Raspberry Pi での計測はまだ行っていない (P0〜P4 で行う)。
 
