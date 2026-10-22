@@ -280,6 +280,7 @@ Switch the response between Tier 3 (video + everything), Tier 2 (image + derived
 - [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — continues with §8–§11
 - [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — continues with §12–§13
 - [Tiered access design spec](data-user-vc-tiered-spec.md)
+- [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) — sign the images delivered with tiered access with C2PA provenance (no publisher or wallet needed)
 
 ### Done when…
 

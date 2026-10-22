@@ -284,6 +284,7 @@ export HOST_IP=192.168.1.20
 - [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — 続きの §8〜§11
 - [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) — 続きの §12〜§13
 - [段階アクセスの設計仕様](data-user-vc-tiered-spec.md)
+- [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) — 段階アクセスで配る画像に、C2PA の来歴を付けて署名する (publisher やウォレットは不要)
 
 ### Part 2 の成功判定
 

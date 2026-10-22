@@ -75,6 +75,7 @@ plugins:
             "Deliver images and video with tiered access (DataUserVC / Stage T)": 画像・動画を段階アクセスで配信する (DataUserVC / Stage T)
             "Tier by semantic level (VLM and semantic representation / Stage T)": 意味レベルで段階化する (VLM と意味的中間表現 / Stage T)
             "Tiered access design spec": 段階アクセスの設計仕様
+            "Prove where an image came from (C2PA / Stage P)": 画像の来歴を証明する (C2PA / Stage P)
             Design: 設計
             "VC Architecture Overview (Phase 2)": VC アーキテクチャ全体像 (Phase 2)
             "Marketplace VC Bridge (v1/v2 spec)": Marketplace VC Bridge 設計仕様 (v1/v2)
@@ -160,6 +161,7 @@ nav:
               - "Deliver images and video with tiered access (DataUserVC / Stage T)": hands-on/data-user-vc-tiered-media.md
               - "Tier by semantic level (VLM and semantic representation / Stage T)": hands-on/data-user-vc-tiered-semantic.md
               - "Tiered access design spec": hands-on/data-user-vc-tiered-spec.md
+              - "Prove where an image came from (C2PA / Stage P)": hands-on/c2pa-provenance.md
       - "Part 3: Intelligence Integration — Let an AI act on requests":
           - "Enrich camera data with a local VLM": hands-on/local-vlm-distribution.md
           - "Protect camera images before handing them to AI (local vs cloud)": hands-on/privacy-compare.md
