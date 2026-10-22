@@ -98,7 +98,7 @@ Attached by the gateway to files it captures. The following is an example defini
 ```json
 {
   "claim_generator_info": [{ "name": "iw3ip-gateway", "version": "0.1.0" }],
-  "title": "cam01-20261022T101500Z.jpg",
+  "title": "capture.jpg",
   "assertions": [
     {
       "label": "c2pa.actions",
@@ -135,6 +135,8 @@ Attached by the gateway to files it captures. The following is an example defini
 
 `digitalSourceType` uses `digitalCapture` from the IPTC vocabulary [9] to indicate that a camera captured the file.
 
+`title` must not carry meaningful values such as the camera ID or the capture time, because the capture manifest's title cannot be redacted from derived files (§5.3). Put the camera ID and capture time in `jp.ertl.iw3ip.capture`, which can be redacted.
+
 ### 5.3 Derivative manifests (mapping to Stage T)
 
 The publisher attaches to each Stage T derivative a manifest that references the original as an ingredient.
@@ -159,6 +161,14 @@ Tier 2 derivatives therefore do the following:
 3. The ingredient manifest's signature still validates after redaction, so Tier 2 recipients can be shown only that "this was made from the Tier 3 original"
 
 The derivative manifest's own thumbnail is made from the blurred image, so it can stay.
+
+The following two things, however, cannot be removed by redaction and remain in Tier 2 derived files (confirmed in §13). A derived file imports the ingredient manifest's claim and signature as they are.
+
+- The title of the ingredient's manifest (`title`). It remains even when the ingredient title (the `title` passed to `add_ingredient`) is omitted
+- The signer's certificate. Its name (CN) and serial number remain
+
+Both are fixed at capture time, so the gateway keeps meaningful values out of the title (§5.2) and keeps the camera ID out of the certificate name (§6.1).
+The certificate serial number, however, remains with the same value in every derived file from the same gateway, so Tier 2 recipients can tell which files were captured by the same gateway. This is left as an open question in §11.
 
 !!! warning "Check the result of redaction"
     Always read the derived file back and check that the redacted assertions and thumbnail are gone. Trusting the manifest definition alone can miss a leak.
@@ -199,6 +209,8 @@ Certificates made with the private CA must meet the following conditions (otherw
 - The signing certificate carries an extended key usage (EKU) such as `emailProtection`
 - The certificates carry key identifiers (SKI and AKI) and the CA carries a key usage (a chain without them was rejected)
 
+Apart from the SDK's conditions, the signing certificate's name (CN) must not contain the camera ID (for example, `iw3ip-gateway`), because the certificate name cannot be redacted from Tier 2 derived files either (§5.3).
+
 ### 6.2 Key storage
 
 c2pa-python lets the caller perform signing in its own function (a callback) [3]. This is used to move the key step by step.
@@ -230,7 +242,7 @@ Adds `c2pa` to the existing response (`{url, sha256, content_type, byte_size, ci
     "present": true,
     "manifest_label": "urn:c2pa:...",
     "validation_state": "Valid",
-    "signer": "CN=iw3ip-gateway-cam01",
+    "signer": "CN=iw3ip-gateway",
     "trusted": false
   }
 }
@@ -342,6 +354,10 @@ The address of the ProvenanceToken contract goes into the Merchandise's addition
 5. **Who issues the gateway's X.509 certificate**
    - Should the publisher also act as the CA, or a separate authority?
    - Recommendation: the publisher acts as the CA in the MVP (the same policy as SellerVC issuance)
+6. **Linking derived files through the certificate serial number**
+   - The signer's certificate cannot be redacted from derived files (§5.3), so recipients can use the serial number to tell which Tier 2 files the same gateway captured
+   - Issue a short-lived certificate per capture, or use a scheme that hides the signer?
+   - Recommendation: no countermeasure in the MVP; state this limitation in the hands-on
 
 ## 12. Related
 
@@ -364,6 +380,8 @@ Before P0, we checked on a Mac whether §5.2, §5.3, §6, and §7.1 of this spec
 | Derived file without countermeasures | The original `jp.ertl.iw3ip.capture`, `jp.ertl.iw3ip.sensor`, and the unblurred thumbnail all remained (confirms the pitfall in §5.3) |
 | Assertion redaction | All three were removed and the derived file stayed `Trusted` |
 | Tamper detection | Changing one byte of the derived file's pixel data made it `Invalid` (`assertion.dataHash.mismatch`) |
+| Information redaction cannot remove | With the capture manifest titled `cam01-20261022T101500Z.jpg`, the title remained in the Tier 2 derived file even after redacting the ingredient's assertions and omitting the ingredient title. The certificate name `iw3ip-gateway-cam01` and serial number also remained (the countermeasures in §5.2 and §6.1 were added) |
+| Salt on redacted values | The SDK adds a 16-byte salt to each assertion, so redacted values cannot be brute-forced from the hashes left in the derived file |
 
 The check program is in `examples/hands_on/c2pa_provenance/` of the main repository.
 
