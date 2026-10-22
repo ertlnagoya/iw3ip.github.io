@@ -7,7 +7,7 @@
     Stage P builds on the tiered access of Stage T ([Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)) and the SellerVC of Stage 7 ([SellerVC design spec](seller-vc-spec.md)). The P0 part can be run locally in the hands-on [Prove where an image came from](../hands-on/c2pa-provenance.md).
     P0–P5 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation run in the hands-on) corresponds to P0–P2.
 
-In short, this is a design for adding to IW3IP a mechanism that **attaches a résumé to each photo or video — who took it, when, how, and how it was processed — and signs that résumé electronically**. Tampering with the résumé breaks the signature, so whoever receives the file can check for themselves whether it is genuine.
+This spec is a design for adding to IW3IP a mechanism that **attaches to each photo or video a record of who took it, when, how, and how it was processed, and signs that record electronically**. Tampering with the record breaks the signature, so whoever receives the file can check for themselves whether it is genuine.
 
 ## What this page covers
 
@@ -65,11 +65,11 @@ Compatibility with the existing path is preserved. Media without a manifest is h
 C2PA (Coalition for Content Provenance and Authenticity) is a standard for attaching provenance (a record of where a file came from) to files such as images, video, and audio. It is defined by an organization whose members include camera makers, news organizations, and IT companies [1].
 The CAI (Content Authenticity Initiative) is an organization that publishes open-source SDKs (Software Development Kits, libraries used from programs) implementing the C2PA standard [2][3]. This spec uses c2pa-python, the Python version.
 
-Provenance is **embedded inside the file** — the JPEG or MP4 itself — rather than kept in a separate file. Handing over the file therefore hands over its provenance too.
+Provenance is **embedded inside the file**, the JPEG or MP4 itself. Handing over the file therefore hands over its provenance too.
 
 ### 2.2 Structure of a manifest
 
-The bundle of provenance embedded in a file is called a manifest. A manifest is nested like this:
+The bundle of provenance embedded in a file is called a manifest. A manifest is made up as follows:
 
 ```
 Signed JPEG file
@@ -133,7 +133,7 @@ Terms in the diagram:
 - TPM (Trusted Platform Module): a component that signs while keeping the private key locked inside the device (§6.2)
 - kubo: the standard IPFS implementation, used in §9 of [Deliver images and video with tiered access](../hands-on/data-user-vc-tiered-media.md)
 
-Low-cost commercial IP cameras and webcams have neither a signing key nor a signing function (cameras that support C2PA are limited to some expensive models). **The root of trust is therefore the edge gateway, not the camera**. §4 deals with this limitation.
+Low-cost commercial IP cameras and webcams have neither a signing key nor a signing function (cameras that support C2PA are limited to some expensive models). In this spec, therefore, the first device that signs is the **edge gateway** placed next to the camera. Authenticity at capture time can be guaranteed only up to the edge gateway. §4 deals with this limitation.
 
 ## 4. Trust boundaries
 
@@ -210,7 +210,7 @@ Attached by the gateway to files it captures. In c2pa-python, the manifest conte
 ```
 
 `c2pa.actions` is an assertion defined by C2PA that lists the operations performed on the file. `c2pa.created` means "this file was newly created".
-`digitalSourceType` uses `digitalCapture` from the vocabulary of IPTC, an industry body of news organizations [9], to indicate that a camera, not generative AI, captured the file.
+`digitalSourceType` uses `digitalCapture` from the vocabulary of IPTC, an industry body of news organizations [9], to indicate that a camera captured the file (an image made with generative AI uses a different value).
 
 `gateway_did` is only an attribute saying "which gateway captured this". The key used for signing is the X.509 certificate's key, not the DID's key (§6.3).
 
@@ -228,18 +228,44 @@ The publisher attaches to each Stage T derivative a manifest that references the
 
 The three Tier 2 actions mean the following:
 
-1. `c2pa.opened`: an existing file (the ingredient) was opened. It shows that the file was made from an existing file rather than newly captured. C2PA requires the list of actions to start with "created" or "opened", and the SDK refuses to sign a manifest that starts otherwise (§13)
+1. `c2pa.opened`: an existing file (the ingredient) was opened. It shows that this file was made from an existing file. C2PA requires the list of actions to start with "created" or "opened", and the SDK refuses to sign a manifest that starts otherwise (§13)
 2. `c2pa.edited`: the content was processed. The kind of processing (`face_blur`) is recorded in `jp.ertl.iw3ip.derivation`
 3. `c2pa.redacted`: information was removed from the ingredient's manifest (see the steps below)
 
-There is a **privacy pitfall** here. By default, importing an ingredient also puts the following two things into the derived file (confirmed in §13):
+The following diagram shows how each part of the captured image's provenance carries over into the Tier 2 derivative (solid lines: kept; dotted lines: removed by redaction).
+
+```mermaid
+flowchart LR
+  subgraph CAP["Provenance of the captured image (capture manifest)"]
+    A1["c2pa.actions\ncaptured"]
+    A2["jp.ertl.iw3ip.detection\ndetection event"]
+    A3["jp.ertl.iw3ip.capture\ncamera ID, capture time"]
+    A4["jp.ertl.iw3ip.sensor\nsensor readings"]
+    A5["c2pa.thumbnail.claim\nunblurred thumbnail"]
+    A6["Title, signer certificate"]
+  end
+  subgraph T2["Ingredient inside the Tier 2 derivative"]
+    B1["c2pa.actions"]
+    B2["jp.ertl.iw3ip.detection"]
+    B6["Title, signer certificate\n(cannot be redacted)"]
+  end
+  DEL["Removed by redaction"]
+  A1 --> B1
+  A2 --> B2
+  A6 --> B6
+  A3 -.-> DEL
+  A4 -.-> DEL
+  A5 -.-> DEL
+```
+
+There is an **easily overlooked privacy problem** here. By default, importing an ingredient also puts the following two things into the derived file (confirmed in §13):
 
 - A thumbnail of the unblurred image. The specification recommends referencing the thumbnail in the ingredient's manifest [1], and the SDK uses the original manifest's `c2pa.thumbnail.claim` as the ingredient thumbnail. A thumbnail of the unblurred face ends up in the face-blurred image
 - The assertions in the ingredient's manifest. The camera ID and sensor readings become visible to Tier 2 recipients as well
 
 Tier 2 derivatives therefore do the following:
 
-1. Remove `c2pa.thumbnail.claim`, `jp.ertl.iw3ip.capture`, and `jp.ertl.iw3ip.sensor` from the ingredient's manifest using C2PA assertion redaction [1]. List them in `redactions` of the manifest definition in the form `self#jumbf=/c2pa/<ingredient manifest identifier>/c2pa.assertions/<label>`. This notation is the address of an assertion inside the file (JUMBF is the container format C2PA uses to put provenance inside a file)
+1. Remove `c2pa.thumbnail.claim`, `jp.ertl.iw3ip.capture`, and `jp.ertl.iw3ip.sensor` from the ingredient's manifest using C2PA assertion redaction [1]. List them in `redactions` of the manifest definition in the form `self#jumbf=/c2pa/<ingredient manifest identifier>/c2pa.assertions/<label>`. This notation points to the position of an assertion inside the file (JUMBF is the format C2PA uses to store provenance inside a file)
 2. Add the `c2pa.redacted` action yourself. The SDK does not add it automatically
 3. The ingredient manifest's signature still validates after redaction, so Tier 2 recipients can be shown only that "this was made from the Tier 3 original"
 
@@ -408,7 +434,7 @@ Adds new `raw_topic` values:
 
 ### 8.1 What goes on chain
 
-The NFT in this spec (ProvenanceToken) is not for trading; it records in a public place that "this provenance existed at this time". In the MVP, the publisher issues and holds it and does not transfer it.
+The NFT in this spec (ProvenanceToken) is used to record in a public place that "this provenance existed at this time", and is not traded. In the MVP, the publisher issues and holds it and does not transfer it.
 
 Putting surveillance footage on a public chain as is would contradict IW3IP's policy of sharing in stages. Only the following values are recorded on chain.
 
@@ -416,7 +442,7 @@ Putting surveillance footage on a public chain as is would contradict IW3IP's po
 | --- | --- |
 | `manifestLabel` | Identifier of the manifest |
 | `assetSha256` | sha256 of the signed file |
-| `cid` | IPFS CID (the content itself stays behind DataUserVC) |
+| `cid` | IPFS CID (only recipients authorized through DataUserVC can get the content itself) |
 | `sellerDid` | DID of the SellerVC holder (Stage 7) |
 
 `manifestLabel` identifies "which provenance" and `assetSha256` identifies "which file". With `assetSha256`, even someone without C2PA tools can check that a file is the same just by comparing its sha256.
@@ -515,7 +541,7 @@ Before P0, we checked on a Mac whether §5.2, §5.3, §6, and §7.1 of this spec
 | ES256 certificate issued by a private CA, signing through a callback | Signing worked. Without registering the CA in `trust.user_anchors` the state is `Valid` (`signingCredential.untrusted`); with it registered the state is `Trusted` |
 | Custom assertions such as `jp.ertl.iw3ip.capture` | Included in the manifest and readable |
 | Derivative manifest referencing an ingredient | With `c2pa.edited` as the first action, signing was refused with `assertion.action.malformed`. Starting with `c2pa.opened` worked |
-| Derived file without countermeasures | The original `jp.ertl.iw3ip.capture`, `jp.ertl.iw3ip.sensor`, and the unblurred thumbnail all remained (confirms the pitfall in §5.3) |
+| Derived file without countermeasures | The original `jp.ertl.iw3ip.capture`, `jp.ertl.iw3ip.sensor`, and the unblurred thumbnail all remained (confirms the problem in §5.3) |
 | Assertion redaction | All three were removed and the derived file stayed `Trusted` |
 | Tamper detection | Changing one byte of the derived file's pixel data made it `Invalid` (`assertion.dataHash.mismatch`) |
 | Information redaction cannot remove | With the capture manifest titled `cam01-20261022T101500Z.jpg`, the title remained in the Tier 2 derived file even after redacting the ingredient's assertions and omitting the ingredient title. The certificate name `iw3ip-gateway-cam01` and serial number also remained (the countermeasures in §5.2 and §6.1 were added) |

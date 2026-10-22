@@ -1,10 +1,10 @@
 # Prove where an image came from (C2PA / Stage P)
 
-Attach "provenance" that follows the C2PA standard [1] to an image taken with a camera, and sign it electronically. Then make a face-blurred Tier 2 image and confirm that, while the link to the original is kept, neither the camera ID nor the unblurred image leaks.
+Attach "provenance" that follows the C2PA standard [1] to an image taken with a camera, and sign it electronically. Then make a blurred Tier 2 image and confirm that, while the link to the original is kept, neither the camera ID nor the unblurred image leaks.
 
 > **What you do**: sign a captured image with provenance, and confirm that the provenance of the Tier 2 blurred image no longer carries information that points to a person and that tampering is detected
 >
-> **Prerequisites**: Python 3. The publisher, the blockchain, and the phone wallet are not used
+> **Prerequisites**: Python 3.10 or later. The publisher, the blockchain, and the phone wallet are not used
 >
 > **What you use**: a PC (a USB webcam or built-in camera is optional)
 >
@@ -18,14 +18,14 @@ Attach "provenance" that follows the C2PA standard [1] to an image taken with a 
 ## Goal
 
 Sharing surveillance-camera images as crime leads or disaster information requires being able to answer "is this image real?".
-In this hands-on, you attach provenance (a manifest) describing "who took it, when, how, and how it was processed" to an image, sign it, and see that the recipient can check it for themselves.
-You also confirm a pitfall where the provenance itself leaks information that points to a person, and how to prevent it.
+In this hands-on, you attach provenance (a manifest) describing "who took it, when, how, and how it was processed" to an image, sign it, and confirm by actually running it that the recipient can judge for themselves whether the image is genuine.
+You also learn about an easily overlooked problem where the provenance itself leaks information that points to a person, and how to prevent it.
 
 ## What this page covers
 
 - How to attach provenance to an image, sign it, and validate it
 - The difference between the validation results `Valid` and `Trusted`
-- That the provenance of a face-blurred image, by default, carries a thumbnail of the original and the camera ID, and how to remove them (redaction)
+- That the provenance of a blurred image, by default, carries a thumbnail of the original and the camera ID, and how to remove them (redaction)
 - That changing even one byte of the image is caught by validation
 
 ## Common pitfalls
@@ -65,7 +65,7 @@ Next branches:
 
 ## 1. Setup
 
-At the top of the course repository, create a virtual environment and install the Python version of the C2PA SDK (c2pa-python [2]), Pillow for images, and cryptography for keys.
+At the top of the course repository, create a virtual environment and install the Python version of the C2PA SDK (Software Development Kit, a library used from programs; c2pa-python [2]), Pillow for images, and cryptography for keys.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -138,13 +138,28 @@ outputs: .../out/capture.jpg, .../out/tier2.jpg
 all checks passed
 ```
 
-The program works in this order:
+The program works as shown in the following diagram.
+
+```mermaid
+flowchart LR
+  IMG["Image\n(dummy / file / camera)"] --> SIGN["Attach provenance and sign\ncapture.jpg"]
+  SIGN --> V1["Validate\nValid / Trusted"]
+  SIGN --> BLUR["Blur and redact part of the provenance\ntier2.jpg"]
+  BLUR --> V2["Check for leaks and validate"]
+  V2 --> TAMP["Change one byte and validate\nInvalid"]
+```
+
+At each step in the diagram, the program does the following:
 
 1. **Sign the captured image**: attach provenance stating that it was captured (`c2pa.actions`), the camera ID and capture time (`jp.ertl.iw3ip.capture`), and sensor readings (`jp.ertl.iw3ip.sensor`), sign it with the gateway key, and save it as `out/capture.jpg`
 2. **Validate**: without registering the CA, the result is `Valid` (the signature is correct, but whether to trust the signer is unknown); with `ca.pem` registered, it is `Trusted` (lines 1–2)
 3. **Make the Tier 2 blurred image**: blur the whole image, attach provenance that references the original as an "ingredient", and save it as `out/tier2.jpg`. At this point, the thumbnail, camera ID, and sensor readings are redacted from the original's provenance
 4. **Check for leaks**: confirm that the thumbnail of the original, the camera ID, and the sensor readings are not left in the provenance of the Tier 2 image (lines 5–10)
 5. **Check that tampering is detected**: change one byte of the Tier 2 image, validate it, and confirm it becomes `Invalid` (line 11)
+
+The two saved images look like this (left: the dummy captured image; right: the blurred Tier 2 image). The right one only looks blurred, but it contains part of the left image's provenance. §4 prints what is inside.
+
+![The dummy captured image (capture.jpg) and the blurred Tier 2 image (tier2.jpg)](../assets/c2pa-capture-vs-tier2.png)
 
 !!! note "About the blur"
     The program in this hands-on blurs the whole image without detecting faces. Blurring only faces was covered by the face blur in [Tier by semantic level](data-user-vc-tiered-semantic.md).
