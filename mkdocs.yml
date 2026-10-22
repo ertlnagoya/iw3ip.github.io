@@ -79,6 +79,7 @@ plugins:
             "VC Architecture Overview (Phase 2)": VC アーキテクチャ全体像 (Phase 2)
             "Marketplace VC Bridge (v1/v2 spec)": Marketplace VC Bridge 設計仕様 (v1/v2)
             "SellerVC (Stage 7 spec)": SellerVC 設計仕様 (Stage 7)
+            "C2PA Provenance Pipeline (Stage P spec)": C2PA 来歴パイプライン設計仕様 (Stage P)
             "Part 3: Intelligence Integration — Let an AI act on requests": Part 3 知能統合 — AI に要求を解釈させてみよう
             "Enrich camera data with a local VLM": ローカル VLM でカメラデータを意味づけ
             "Protect camera images before handing them to AI (local vs cloud)": AI に渡す前にカメラ画像を守る (ローカルとクラウドの比較)
@@ -169,6 +170,7 @@ nav:
       - VC Architecture Overview (Phase 2): design/vc-architecture-overview.md
       - Marketplace VC Bridge (v1/v2 spec): design/marketplace-vc-bridge-spec.md
       - SellerVC (Stage 7 spec): design/seller-vc-spec.md
+      - "C2PA Provenance Pipeline (Stage P spec)": design/c2pa-provenance-spec.md
   - Operations:
       - Operations Overview: operations/index.md
       - Troubleshooting: operations/troubleshooting.md
