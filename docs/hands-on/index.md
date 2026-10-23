@@ -5,6 +5,8 @@
 
 > 先に [環境構築](../setup/index.md) を済ませてからこのページに進んでください。
 
+この章のページは、コマンドと期待する出力、確認ポイントを順に示す手順書です。各機能の仕組みと設計判断の理由は [設計](../design/index.md) の章に、手順どおりに動かないときの対処は [困ったとき](../operations/index.md) の章にまとめています。
+
 ## 基本 と 機能拡張 の関係
 
 このハンズオンは、マーケットプレイス周辺の機能を **基本 (v1)** と **機能拡張 (v2)** の 2 段階で説明します。
@@ -283,7 +285,7 @@ export HOST_IP=192.168.1.20
 - [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md)
 - [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — 続きの §8〜§11
 - [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) — 続きの §12〜§13
-- [段階アクセスの設計仕様](data-user-vc-tiered-spec.md)
+- 設計の背景: [段階アクセスの設計仕様](data-user-vc-tiered-spec.md) ([設計](../design/index.md) の章)
 - [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) — 段階アクセスで配る画像に、C2PA の来歴を付けて署名する (publisher やウォレットは不要)
 
 ### Part 2 の成功判定
@@ -327,7 +329,7 @@ export HOST_IP=192.168.1.20
 要求を **plan → execute → UI** に分解する設計を確認します。
 
 - [AI に手順を考えさせる (LLM Planner)](llm-planner.md)
-- [LLM Planner 置き換え仕様](llm-planner-spec.md)
+- 設計の背景: [LLM Planner 置き換え仕様](llm-planner-spec.md) ([設計](../design/index.md) の章)
 
 ### Part 3 の成功判定
 

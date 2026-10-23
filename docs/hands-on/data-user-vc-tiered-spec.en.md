@@ -1,5 +1,8 @@
 # Tiered access design spec
 
+!!! abstract "Where this page belongs"
+    This is a design spec in the [Design](../design/index.md) section. It covers the mechanisms and the reasons behind the design decisions, not procedures or commands.
+
 A design document defining how the Publisher narrows the camera view it
 exposes — to **event / image / video** in three tiers — based on the
 trust attributes carried by the data recipient's **DataUserVC**.

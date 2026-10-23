@@ -1,5 +1,8 @@
 # LLM Planner 置き換え仕様
 
+!!! abstract "このページの位置付け"
+    [設計](../design/index.md) の章の設計仕様です。手順やコマンドではなく、仕組みと設計判断の理由を扱います。
+
 [地域安全アシスタントを動かす](regional-safety-assistant.md) の planner を、LLM（Large Language Model、大規模言語モデル）ベースに置き換えるための仕様書です。  
 実装手順は [AI に手順を考えさせる (LLM Planner)](llm-planner.md) で扱い、このページでは何を固定し、どこを差し替えるかを定義します。
 

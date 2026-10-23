@@ -41,11 +41,12 @@ plugins:
             Hardhat Basics: Hardhat基礎
             SSI DID VC Basics: SSI/DID/VC基礎
             References: 参考文献
-            Docs: ドキュメント
+            Docs: サイトの構築と編集
             Environment Setup: 環境構築
             Setup Overview: 環境構築の概要
             Hands-on Overview: ハンズオンの概要
-            Operations Overview: 運用の概要
+            Support Overview: 困ったときの案内
+            Design Overview: 設計の概要
             Prerequisites: 事前準備
             Quickstart: 最短起動
             Facilitator Guide: 講師進行ガイド
@@ -87,7 +88,9 @@ plugins:
             "Run the regional safety assistant": 地域安全アシスタントを動かす
             "Let an AI plan the steps (LLM Planner)": AI に手順を考えさせる (LLM Planner)
             "LLM Planner replacement spec": LLM Planner 置き換え仕様
-            Operations: 運用
+            Support: 困ったとき
+            For Instructors: 授業で使う (講師・TA 向け)
+            About This Site: このサイトについて
             Troubleshooting: トラブルシュート
             FAQ: FAQ
             Contact: 問い合わせ先
@@ -122,14 +125,11 @@ nav:
   - Platform Overview: platform-overview.md
   - Publications: publications.md
   - Learning Foundations:
-      - Course Guide: foundations/course-guide.md
       - Learning Roadmap: foundations/roadmap.md
       - Blockchain Basics: foundations/blockchain-basics.md
       - Hardhat Basics: foundations/hardhat-basics.md
       - SSI DID VC Basics: foundations/ssi-did-vc-basics.md
       - References: foundations/references.md
-  - Docs: docs.md
-  - Contact: contact.md
   - Environment Setup:
       - Setup Overview: setup/index.md
       - Prerequisites: setup/prerequisites.md
@@ -160,24 +160,30 @@ nav:
               - "Tier the response by trust (DataUserVC / Stage T)": hands-on/data-user-vc-tiered.md
               - "Deliver images and video with tiered access (DataUserVC / Stage T)": hands-on/data-user-vc-tiered-media.md
               - "Tier by semantic level (VLM and semantic representation / Stage T)": hands-on/data-user-vc-tiered-semantic.md
-              - "Tiered access design spec": hands-on/data-user-vc-tiered-spec.md
               - "Prove where an image came from (C2PA / Stage P)": hands-on/c2pa-provenance.md
       - "Part 3: Intelligence Integration — Let an AI act on requests":
           - "Enrich camera data with a local VLM": hands-on/local-vlm-distribution.md
           - "Protect camera images before handing them to AI (local vs cloud)": hands-on/privacy-compare.md
           - "Run the regional safety assistant": hands-on/regional-safety-assistant.md
           - "Let an AI plan the steps (LLM Planner)": hands-on/llm-planner.md
-          - "LLM Planner replacement spec": hands-on/llm-planner-spec.md
   - Design:
+      - Design Overview: design/index.md
       - VC Architecture Overview (Phase 2): design/vc-architecture-overview.md
       - Marketplace VC Bridge (v1/v2 spec): design/marketplace-vc-bridge-spec.md
       - SellerVC (Stage 7 spec): design/seller-vc-spec.md
+      - "Tiered access design spec": hands-on/data-user-vc-tiered-spec.md
       - "C2PA Provenance Pipeline (Stage P spec)": design/c2pa-provenance-spec.md
-  - Operations:
-      - Operations Overview: operations/index.md
+      - "LLM Planner replacement spec": hands-on/llm-planner-spec.md
+  - Support:
+      - Support Overview: operations/index.md
       - Troubleshooting: operations/troubleshooting.md
       - FAQ: operations/faq.md
+  - For Instructors:
+      - Course Guide: foundations/course-guide.md
       - Facilitator Guide: operations/facilitator-guide.md
+  - About This Site:
+      - Docs: docs.md
+      - Contact: contact.md
 
 validation:
   links:

@@ -49,6 +49,7 @@ P0 が最優先で、P1、P2 の順に進めます。
 2. [Hardhat基礎](hardhat-basics.md)
 3. [SSI/DID/VC基礎](ssi-did-vc-basics.md)
 4. [参考文献](references.md)
+5. ハンズオンのあとで仕組みを詳しく知りたいときは [設計](../design/index.md)
 
 ## 外部資料の使い方
 

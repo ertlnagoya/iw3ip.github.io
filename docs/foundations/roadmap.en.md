@@ -48,6 +48,7 @@ These six pages complete the basic understanding and the minimum hands-on.
 2. [Hardhat Basics](hardhat-basics.md)
 3. [SSI/DID/VC Basics](ssi-did-vc-basics.md)
 4. [References](references.md)
+5. After the hands-on, if you want the mechanisms in detail: [Design](../design/index.md)
 
 ## How to Use External Materials
 

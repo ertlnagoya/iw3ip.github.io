@@ -1,5 +1,8 @@
 # LLM Planner replacement spec
 
+!!! abstract "Where this page belongs"
+    This is a design spec in the [Design](../design/index.md) section. It covers the mechanisms and the reasons behind the design decisions, not procedures or commands.
+
 This is a specification for replacing the planner in [Run the regional safety assistant](regional-safety-assistant.md) with an **LLM-based planner** (LLM: large language model).  
 The implementation steps are covered in [Let an AI plan the steps (LLM Planner)](llm-planner.md); this page is a design document that defines **what to fix and where to replace**.
 

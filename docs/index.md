@@ -7,7 +7,7 @@ IW3IP の全体像、実装例、ハンズオン手順をまとめたドキュ�
 - コンピュータや情報システムを学ぶ学部学生
 - 演習を担当する講師・TA
 
-全体像は [学習基礎 / 授業ガイド](foundations/course-guide.md) から読むことを推奨します。
+受講者は [学習ロードマップ](foundations/roadmap.md) から、講師・TA は [授業ガイド](foundations/course-guide.md) から読むことを推奨します。
 
 ## 扱う内容
 
@@ -26,11 +26,17 @@ IW3IP の全体像、実装例、ハンズオン手順をまとめたドキュ�
 
 ## サイトの構成
 
-- **学習基礎**: ブロックチェーン、Hardhat、SSI / DID / VC の基礎と、授業での使い方
-- **環境構築**: ツールのインストールと、ハンズオン環境の起動
-- **ハンズオン**: 受講者が手を動かす手順（コマンド、期待結果、確認ポイント）
-- **設計**: VC とトークンの全体像、設計仕様
-- **運用**: トラブルシュート、FAQ、講師向けの進行ガイド
+章ごとに、目的と主な読者が違います。受講者は、学習基礎、環境構築、ハンズオンの順に進み、詰まったときに「困ったとき」を開きます。設計は、ハンズオンを終えて仕組みを詳しく知りたいときや、機能を拡張するときに読む章です。
+
+| 章 | 目的 | 書いてあること | 主な読者 |
+|---|---|---|---|
+| 学習基礎 | 技術の基本を理解する | ブロックチェーン、Hardhat、SSI / DID / VC の考え方と学習の順序 | 受講者 |
+| 環境構築 | 演習の環境を用意する | ツールのインストールと最短起動 | 受講者 |
+| ハンズオン | 動かして理解する | コマンド、期待する出力、確認ポイント | 受講者 |
+| [設計](design/index.md) | 仕組みと設計判断の理由を説明する | VC・トークン・API・データの流れ、選んだ方式と理由、未解決の課題 | 機能を拡張・実装する人、発展学習をする受講者、講師 |
+| [困ったとき](operations/index.md) | 演習中に詰まったときに解決する | トラブルシュート、FAQ | 受講者・TA |
+| 授業で使う | 授業を組み立てて進める | 授業ガイド (コマ数別の構成、評価)、講師進行ガイド | 講師・TA |
+| このサイトについて | サイトを編集する、問い合わせる | サイトの構築と編集、問い合わせ先 | サイトの編集者 |
 
 ## 全体構成
 
@@ -126,18 +132,18 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 
 ## 推奨学習順
 
-1. [授業ガイド](foundations/course-guide.md)
-2. [学習ロードマップ](foundations/roadmap.md)
-3. [ブロックチェーン基礎](foundations/blockchain-basics.md)
-4. [Hardhat基礎](foundations/hardhat-basics.md)
-5. [SSI/DID/VC基礎](foundations/ssi-did-vc-basics.md)
-6. [事前準備](setup/prerequisites.md)
-7. [HA Demo Simulator](hands-on/ha-demo-simulator.md)（実機なしで一通り動かす）
-8. [最短起動](setup/quickstart.md)
-9. [ハンズオン](hands-on/index.md)
+1. [学習ロードマップ](foundations/roadmap.md)
+2. [ブロックチェーン基礎](foundations/blockchain-basics.md)
+3. [Hardhat基礎](foundations/hardhat-basics.md)
+4. [SSI/DID/VC基礎](foundations/ssi-did-vc-basics.md)
+5. [事前準備](setup/prerequisites.md)
+6. [HA Demo Simulator](hands-on/ha-demo-simulator.md)（実機なしで一通り動かす）
+7. [最短起動](setup/quickstart.md)
+8. [ハンズオン](hands-on/index.md)
+9. [設計](design/index.md)（仕組みを詳しく知りたいとき）
 10. [参考文献](foundations/references.md)
 
-途中で詰まったら [トラブルシュート](operations/troubleshooting.md) を参照してください。
+途中で詰まったら [トラブルシュート](operations/troubleshooting.md) を参照してください。講師・TA は、先に [授業ガイド](foundations/course-guide.md) を読んで授業の構成を決めます。
 
 ## ローカルでDocsを起動
 

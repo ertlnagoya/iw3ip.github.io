@@ -5,6 +5,8 @@ This is the chapter where you run IW3IP yourself to understand it.
 
 > Finish the [Environment Setup](../setup/index.md) before moving on to this page.
 
+The pages in this section are step-by-step procedures with commands, expected output and checkpoints. The mechanisms and the reasons behind each feature's design are in the [Design](../design/index.md) section, and what to do when a step does not work is in the [Support](../operations/index.md) section.
+
 ## Basic vs Feature Extensions
 
 The hands-on explains the marketplace stack in two layers: **Basic (v1)** and **Feature Extensions (v2)**.
@@ -279,7 +281,7 @@ Switch the response between Tier 3 (video + everything), Tier 2 (image + derived
 - [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)
 - [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — continues with §8–§11
 - [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — continues with §12–§13
-- [Tiered access design spec](data-user-vc-tiered-spec.md)
+- Design background: [Tiered access design spec](data-user-vc-tiered-spec.md) (in the [Design](../design/index.md) section)
 - [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) — sign the images delivered with tiered access with C2PA provenance (no publisher or wallet needed)
 
 ### Done when…
@@ -323,7 +325,7 @@ Loads a sample event file recording "when / where / what happened" (`examples/ph
 The "request → plan → execute → UI" decomposition pattern.
 
 - [Let an AI plan the steps (LLM Planner)](llm-planner.md)
-- [LLM Planner replacement spec](llm-planner-spec.md)
+- Design background: [LLM Planner replacement spec](llm-planner-spec.md) (in the [Design](../design/index.md) section)
 
 ### Done when…
 

@@ -11,7 +11,7 @@ This documentation site brings together the IW3IP overview, implementation examp
 - Undergraduate students studying computing or information systems
 - Instructors and TAs running practical sessions
 
-For the overall picture, we recommend starting from the [Learning Foundations / Course Guide](foundations/course-guide.md).
+Participants should start from the [Learning Roadmap](foundations/roadmap.md), and instructors and TAs from the [Course Guide](foundations/course-guide.md).
 
 ## What This Site Covers
 
@@ -30,11 +30,17 @@ External websites and papers are positioned as follow-up material for standards,
 
 ## Site structure
 
-- **Learning Foundations**: basics of blockchain, Hardhat, and SSI / DID / VC, plus how to use the material in a course
-- **Environment Setup**: installing the tools and starting the hands-on environment
-- **Hands-on**: participant steps (commands, expected results, checkpoints)
-- **Design**: the overall picture of VCs and tokens, and design specs
-- **Operations**: troubleshooting, FAQ, and the facilitator guide
+Each section has a different purpose and readership. Participants go through Learning Foundations, Environment Setup and Hands-on in that order, and open Support when they get stuck. Design is the section to read after the hands-on, when you want to know the mechanisms in detail or when you extend a feature.
+
+| Section | Purpose | What it contains | Main readers |
+|---|---|---|---|
+| Learning Foundations | Understand the basics of the technology | concepts of blockchain, Hardhat, SSI / DID / VC, and the study order | participants |
+| Environment Setup | Prepare the exercise environment | installing the tools and the quickstart | participants |
+| Hands-on | Understand by running it | commands, expected output, checkpoints | participants |
+| [Design](design/index.md) | Explain the mechanisms and the reasons behind the design | VCs, tokens, APIs, data flows, chosen approaches and reasons, open issues | people extending or implementing features, participants doing advanced study, instructors |
+| [Support](operations/index.md) | Get unstuck during the exercises | troubleshooting, FAQ | participants and TAs |
+| For Instructors | Plan and run a course | Course Guide (plans by number of sessions, assessment), Facilitator Guide | instructors and TAs |
+| About This Site | Edit the site, get in touch | building and editing the site, contact | site editors |
 
 ## System overview
 
@@ -130,18 +136,18 @@ Open:
 
 ## Recommended Learning Order
 
-1. [Course Guide](foundations/course-guide.md)
-2. [Learning Roadmap](foundations/roadmap.md)
-3. [Blockchain Basics](foundations/blockchain-basics.md)
-4. [Hardhat Basics](foundations/hardhat-basics.md)
-5. [SSI/DID/VC Basics](foundations/ssi-did-vc-basics.md)
-6. [Prerequisites](setup/prerequisites.md)
-7. [HA Demo Simulator](hands-on/ha-demo-simulator.md) (run the whole flow without hardware)
-8. [Quickstart](setup/quickstart.md)
-9. [Hands-on](hands-on/index.md)
+1. [Learning Roadmap](foundations/roadmap.md)
+2. [Blockchain Basics](foundations/blockchain-basics.md)
+3. [Hardhat Basics](foundations/hardhat-basics.md)
+4. [SSI/DID/VC Basics](foundations/ssi-did-vc-basics.md)
+5. [Prerequisites](setup/prerequisites.md)
+6. [HA Demo Simulator](hands-on/ha-demo-simulator.md) (run the whole flow without hardware)
+7. [Quickstart](setup/quickstart.md)
+8. [Hands-on](hands-on/index.md)
+9. [Design](design/index.md) (when you want the mechanisms in detail)
 10. [References](foundations/references.md)
 
-If you get stuck, see [Troubleshooting](operations/troubleshooting.md).
+If you get stuck, see [Troubleshooting](operations/troubleshooting.md). Instructors and TAs should first read the [Course Guide](foundations/course-guide.md) to plan the course.
 
 ## Run docs locally
 

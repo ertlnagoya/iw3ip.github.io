@@ -1,5 +1,8 @@
 # Course Guide
 
+!!! abstract "Where this page belongs"
+    This page is in the "For Instructors" section for instructors and TAs. Participants should start from the [Learning Roadmap](roadmap.md).
+
 This chapter explains how IW3IP material can be used in classes, workshops, and practical exercises.
 
 Running the samples in order already teaches the material, but a class runs more smoothly when you decide in advance where to present the overall picture, where to do hands-on work, and where to reflect.
