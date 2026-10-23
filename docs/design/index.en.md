@@ -11,7 +11,7 @@ Read it after the hands-on when you want to know why things behave as they do, w
 | [Hands-on](../hands-on/index.md) | Understand IW3IP by running it | commands, expected output, checkpoints | participants | during the exercises, in order |
 | Design (this section) | Explain the mechanisms and design decisions | VCs, tokens, APIs, data flows, chosen approaches and reasons, open issues | people extending or implementing features, participants doing advanced study, instructors | after the hands-on, or when changing a feature |
 | [Support](../operations/index.md) | Get unstuck during the exercises | checks and fixes per symptom, frequently asked questions | participants and TAs | when a step does not work as described |
-| [For Instructors](../foundations/course-guide.md) | Plan and run a course | plans by number of sessions, assessment, session timing | instructors and TAs | when preparing a course |
+| [Workshop](../foundations/course-guide.md) | Plan and run a course | plans by number of sessions, assessment, session timing | instructors and TAs | when preparing a course |
 
 ## Design specs
 

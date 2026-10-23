@@ -39,7 +39,7 @@ Each section has a different purpose and readership. Participants go through Lea
 | Hands-on | Understand by running it | commands, expected output, checkpoints | participants |
 | [Design](design/index.md) | Explain the mechanisms and the reasons behind the design | VCs, tokens, APIs, data flows, chosen approaches and reasons, open issues | people extending or implementing features, participants doing advanced study, instructors |
 | [Support](operations/index.md) | Get unstuck during the exercises | troubleshooting, FAQ | participants and TAs |
-| For Instructors | Plan and run a course | Course Guide (plans by number of sessions, assessment), Facilitator Guide | instructors and TAs |
+| Workshop | Plan and run a course | Course Guide (plans by number of sessions, assessment), Facilitator Guide | instructors and TAs |
 | About This Site | Edit the site, get in touch | building and editing the site, contact | site editors |
 
 ## System overview

@@ -1,7 +1,7 @@
 # Facilitator Guide
 
 !!! abstract "Where this page belongs"
-    This page is in the "For Instructors" section for instructors and TAs. Planning the whole course is covered in the [Course Guide](../foundations/course-guide.md).
+    This page is in the "Workshop" section for instructors and TAs. Planning the whole course is covered in the [Course Guide](../foundations/course-guide.md).
 
 ## Session goal
 

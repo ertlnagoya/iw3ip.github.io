@@ -89,7 +89,7 @@ plugins:
             "Let an AI plan the steps (LLM Planner)": AI に手順を考えさせる (LLM Planner)
             "LLM Planner replacement spec": LLM Planner 置き換え仕様
             Support: 困ったとき
-            For Instructors: 授業で使う (講師・TA 向け)
+            Workshop: ワークショップ
             About This Site: このサイトについて
             Troubleshooting: トラブルシュート
             FAQ: FAQ
@@ -178,7 +178,7 @@ nav:
       - Support Overview: operations/index.md
       - Troubleshooting: operations/troubleshooting.md
       - FAQ: operations/faq.md
-  - For Instructors:
+  - Workshop:
       - Course Guide: foundations/course-guide.md
       - Facilitator Guide: operations/facilitator-guide.md
   - About This Site:
