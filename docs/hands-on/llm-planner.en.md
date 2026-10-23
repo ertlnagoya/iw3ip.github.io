@@ -38,7 +38,7 @@ Branches after that:
 - the roles of `planner_factory`, `validator`, and `fallback`
 - how to read results and failures using `planner_diagnostics`
 
-## Common issues
+## Common pitfalls
 
 - it is easy to assume that adding an LLM also requires changing the evaluator and actuator
 - the configuration difference between `stub` and `openai_compatible` is concentrated in environment variables
@@ -649,6 +649,6 @@ When the LLM API cannot be used, `/assistant/plan` does not fail; it returns the
 
 ## References
 
-[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-docker/>
+[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-started/get-docker/>
 
 [2] HTTPX, "HTTPX," <https://www.python-httpx.org/>

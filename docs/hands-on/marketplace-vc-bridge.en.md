@@ -446,6 +446,9 @@ Scan the QR code with the iPhone camera. The wallet starts and shows the approva
 !!! warning "QR generation uses an external service"
     The command above sends the content of the deeplink to an external QR generation service (api.qrserver.com). The deeplink contains the code used for VC issuance, so do not use this outside a local hands-on environment.
 
+!!! note "Receive it within 30 minutes of the purchase"
+    The VC issuance code (pre-authorized code) in the deeplink expires 30 minutes after the bridge claims the purchase. Receive the VC in the wallet within 30 minutes of the Step 6 purchase. After it expires, the wallet fails to receive the VC, and the publisher's `/issuer/token` returns `400 invalid_grant`. The publisher records a purchase claim only once per transaction hash (tx_hash), so the same purchase only ever gives you the same (expired) code. If the code has expired, see F in [Troubleshooting](#troubleshooting).
+
 ### Expected result
 
 #### 7-A. Expanding the claims in the wallet's VC list shows the following
@@ -683,8 +686,10 @@ echo "$DEEPLINK" | python3 -c "import sys,urllib.parse,json; d=urllib.parse.unqu
 Expected output:
 
 ```text
-http://<HOST_IP>:8080  (not host.docker.internal:8080)
+http://<HOST_IP>:8080
 ```
+
+If the PC's LAN IP is shown instead of `http://host.docker.internal:8080`, the setting is correct.
 
 **Cause 2**: The wallet shows the `No script URL provided` error screen, which means the Metro bundler is not running.
 
@@ -733,6 +738,20 @@ If it changed, update all of the following to the new IP.
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 ```
+
+### F. The wallet cannot receive the VC, and the publisher's `/issuer/token` returns `400 invalid_grant`
+
+```bash
+docker logs $(docker ps -qf name=publisher) 2>&1 | grep "/issuer/token" | tail -2
+```
+
+```text
+HTTP 400 on POST /issuer/token: invalid_grant
+```
+
+**Cause**: The code in the deeplink (pre-authorized code) has expired (30 minutes after the purchase claim), or you have already received the VC once with the same code. The publisher's `/marketplace/claim` is idempotent per transaction hash (tx_hash) and returns the same code when the same purchase is claimed again. So extracting the deeplink again or recreating the bridge does not help.
+
+**Fix**: Buy a temperature Merchandise you have not bought yet (#0 `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0` or #3 `0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6`) as in Step 6, and receive the VC in the wallet within 30 minutes as in Step 7. Also set `MERCHANDISE` in Step 9 to that address.
 
 ---
 

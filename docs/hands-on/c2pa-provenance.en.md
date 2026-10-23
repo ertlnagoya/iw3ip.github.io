@@ -74,7 +74,12 @@ source .venv/bin/activate
 python -m pip install c2pa-python pillow cryptography
 ```
 
-If `.venv` already exists, run only `python -m pip install ...` after `source .venv/bin/activate`. In a newly opened terminal, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` first.
+If `.venv` already exists, run only `python -m pip install ...` after `source .venv/bin/activate`. In a newly opened terminal, before the commands from §2 on, move to the top of the course repository and then activate the virtual environment. The commands from §2 on name files with paths relative to the top of the course repository.
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+source .venv/bin/activate
+```
 
 We write `python -m pip install` instead of `pip install` because, depending on how the virtual environment was created, it may have no `pip` command, and another `pip` already on the PC gets called instead. `python -m pip` always installs into the virtual environment's Python.
 
@@ -152,10 +157,10 @@ flowchart LR
 At each step in the diagram, the program does the following:
 
 1. **Sign the captured image**: attach provenance stating that it was captured (`c2pa.actions`), the camera ID and capture time (`jp.ertl.iw3ip.capture`), and sensor readings (`jp.ertl.iw3ip.sensor`), sign it with the gateway key, and save it as `out/capture.jpg`
-2. **Validate**: without registering the CA, the result is `Valid` (the signature is correct, but whether to trust the signer is unknown); with `ca.pem` registered, it is `Trusted` (lines 1–2)
+2. **Validate**: without registering the CA, the result is `Valid` (the signature is correct, but whether to trust the signer is unknown); with `ca.pem` registered, it is `Trusted` (checks 1–2)
 3. **Make the Tier 2 blurred image**: blur the whole image, attach provenance that references the original as an "ingredient", and save it as `out/tier2.jpg`. At this point, the thumbnail, camera ID, and sensor readings are redacted from the original's provenance
-4. **Check for leaks**: confirm that the thumbnail of the original, the camera ID, and the sensor readings are not left in the provenance of the Tier 2 image (lines 5–10)
-5. **Check that tampering is detected**: change one byte of the Tier 2 image, validate it, and confirm it becomes `Invalid` (line 11)
+4. **Check for leaks**: confirm that the thumbnail of the original, the camera ID, and the sensor readings are not left in the provenance of the Tier 2 image (checks 5–10)
+5. **Check that tampering is detected**: change one byte of the Tier 2 image, validate it, and confirm it becomes `Invalid` (check 11)
 
 The two saved images look like this (left: the dummy captured image; right: the blurred Tier 2 image). The right one only looks blurred, but it contains part of the left image's provenance. §4 prints what is inside.
 
@@ -212,7 +217,7 @@ The `title` and `signer` of `(ingredient)` cannot be redacted and remain. That i
 
 ## 5. Try tampering
 
-Try by hand what line 11 of §3 did. Make `tampered.jpg` by changing one byte of the pixel data of `tier2.jpg`, and validate it next to the original.
+Try by hand what check 11 of §3 did. Make `tampered.jpg` by changing one byte of the pixel data of `tier2.jpg`, and validate it next to the original.
 
 ```bash
 python - <<'EOF'

@@ -97,11 +97,13 @@ curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer \
   | python3 -m json.tool | grep -A1 SellerVC
 ```
 
-期待する出力:
+期待する出力 (抜粋):
 
 ```text
-"vct": "https://iw3ip.example/credentials/SellerVC/v1"
+            "vct": "https://iw3ip.example/credentials/SellerVC/v1",
 ```
+
+`grep -A1` は、`SellerVC` を含む行とその次の行をすべて表示するので、実際にはこれより多くの行が出ます。その中にこの `vct` の行があれば、SellerVC が発行できる状態です。
 
 S0 で publisher が作り直されると (新しいイメージになったときや、`infra/.env` を変えたとき)、Stage 6 までに publisher のメモリにあった購入の申告と取り込んだ行は消えます。そのため、Step S5 の `count` が 0 になることがあります。Step S5 で確かめる `seller_did` には影響しません。
 
@@ -237,13 +239,13 @@ console に表示された `seller`、`merchandise`、`deploy tx`、`register tx
 
 ### 操作
 
-Step S2 で `SELLER` を設定したターミナル (リポジトリのトップ) で実行します。
+Step S2 で `SELLER` を設定したターミナル (リポジトリのトップ) で実行します。最初の 3 行の `<…>` は、山かっこを含めて全体を Step S3 でメモした値に置き換えてから実行してください (zsh は `<` をリダイレクトとして扱うため、そのままではエラーになります)。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
-SELLER_ETH=<Step S3 のseller address>
-MERCH=<Step S3 のmerchandise address>
-TX_HASH=<Step S3 のregister tx hash>
+SELLER_ETH=<Step S3 の seller address>
+MERCH=<Step S3 の merchandise address>
+TX_HASH=<Step S3 の register tx hash>
 
 curl -s -X POST http://$HOST_IP:8080/marketplace/register \
   -H "Authorization: Bearer $SELLER" \
@@ -312,7 +314,7 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 ```
 
 その後、[Stage 5 ハンズオン](marketplace-vc-bridge.md) の手順で MetaMask 購入 → wallet 受領
-→ ViewerToken 取得 → 取得の順に進めます。ViewerToken の有効期限は 60 秒なので、提示したらすぐに次のコマンドを実行し、`viewer_token_expired` が出たら提示からやり直してください。
+→ ViewerToken 取得 → 取得の順に進めます。ViewerToken の有効期限は 60 秒なので、提示したらすぐに次のコマンドを実行し、`viewer_token_expired` が出たら提示からやり直してください。`<buyer の ViewerToken>` は、山かっこを含めて全体を [Stage 5 の Step 8](marketplace-vc-bridge.md#step-8-viewertoken-を取り出す) で取り出したトークンに置き換えてから実行します (zsh は `<` をリダイレクトとして扱います)。
 
 ```bash
 TOKEN=<buyer の ViewerToken>

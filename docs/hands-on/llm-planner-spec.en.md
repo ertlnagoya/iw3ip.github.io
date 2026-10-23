@@ -12,7 +12,7 @@ The implementation steps are covered in [Let an AI plan the steps (LLM Planner)]
 - the reason for keeping the existing evaluator / actuator / API as they are
 - the importance of deciding allow lists, validators, and fallback first
 
-## Common issues
+## Common pitfalls
 
 - treating "adding an LLM" as "turning the whole system into AI" breaks the design
 - at the specification stage, responsibility separation comes before implementation steps

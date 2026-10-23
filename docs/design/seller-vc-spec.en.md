@@ -1,6 +1,7 @@
 # SellerVC — marketplace listing governance VC (Stage 7 design spec)
 
-!!! abstract "Where this document fits"
+!!! abstract "Where this page belongs"
+    This is a design spec in the [Design](index.md) section.
     This is the design spec for **Stage 7**, which adds identity verification
     to Merchandise registration on iot-market. It introduces a **fifth VC**
     (Verifiable Credential), following ConsentVC / ViewerVC / ServiceVC /

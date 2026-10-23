@@ -1,6 +1,7 @@
 # Marketplace VC Bridge — v1 / v2 Design Spec
 
-!!! abstract "Where this document fits"
+!!! abstract "Where this page belongs"
+    This is a design spec in the [Design](index.md) section.
     This is the design spec for **v2**, which connects the marketplace to an SSI (Self-Sovereign Identity) wallet on a smartphone.
     The existing system is called **v1** and the system implemented by this spec is called **v2**;
     the common parts and the derived parts are stated explicitly. This document is the draft for milestone M1 (design freeze) in §11.
@@ -96,6 +97,8 @@ Purchase (common)
                               └──────────────────┘
 ```
 
+→ In the implementation, the publisher does not enrich data from IPFS / Postgres. `/platform/data` returns the rows that the publisher received at `/platform/ingest` and keeps in memory (`app.state.ingested`). In v1, `mediator-owner` puts the data itself in the storage (simple-storage), and only metadata goes to IPFS and PostgreSQL.
+
 In the figures, HH means Hardhat and RN means React Native. OID4VCI (OpenID for Verifiable
 Credential Issuance) is the protocol used to issue VCs, and OID4VP (OpenID for Verifiable Presentations) is
 the protocol used to present them. did:jwk is a DID (Decentralized
@@ -112,6 +115,8 @@ Identifier) method that derives the identifier from a public key (JWK); here it 
 | Hardhat local chain | Chain infrastructure | **None** |
 | IPFS | Store for the data itself | **None** (common to v1/v2) |
 | PostgreSQL `ipfs_records` | Metadata index | **None** |
+
+→ In the implementation, the v1 data itself is not in IPFS but in the storage (simple-storage), where `mediator-owner` puts it. Only metadata goes to IPFS. The v2 `/platform/data` reads neither IPFS nor the storage; it returns the rows that the publisher received at `/platform/ingest` and keeps in memory.
 | `iot-market-ui` home + list + existing purchase flow | Product discovery and purchase | **None** |
 
 ### 3.2 **Added** in v2 (not present in v1)

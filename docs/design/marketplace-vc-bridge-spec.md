@@ -1,6 +1,7 @@
 # Marketplace VC Bridge — v1 / v2 設計仕様
 
-!!! abstract "このドキュメントの位置付け"
+!!! abstract "このページの位置付け"
+    [設計](index.md) の章の設計仕様です。
     マーケットプレイスと、スマホの SSI (Self-Sovereign Identity、自己主権型アイデンティティ) ウォレットを接続する **v2** の設計仕様である。
     既存システムを **v1**、本仕様で実装するシステムを **v2** と呼び、
     共通部分と派生部分を明示する。本書は、§11 のマイルストーン M1 (設計確定) のドラフトである。
@@ -96,6 +97,8 @@ v2 は v1 を置き換えない。v1 の暗号化した URI による配信は�
                               └──────────────────┘
 ```
 
+→ 実装では、publisher は IPFS / Postgres からデータを補わない。`/platform/data` は、publisher が `/platform/ingest` で受け取ってメモリに持つ行 (`app.state.ingested`) を返す。v1 のデータ本体は `mediator-owner` が保管庫 (simple-storage) に置き、IPFS と PostgreSQL にはメタデータだけを置く。
+
 図中の HH は Hardhat、RN は React Native を指す。OID4VCI (OpenID for Verifiable
 Credential Issuance) は VC の発行、OID4VP (OpenID for Verifiable Presentations) は
 VC の提示に使うプロトコルである。did:jwk は公開鍵 (JWK) から導出する DID (Decentralized
@@ -112,6 +115,8 @@ Identifier、分散型識別子) の方式で、ここではウォレットの�
 | Hardhat ローカルチェーン | チェーン基盤 | **無し** |
 | IPFS | データ本体ストア | **無し** (v1/v2 共通) |
 | PostgreSQL `ipfs_records` | メタデータインデックス | **無し** |
+
+→ 実装では、v1 のデータ本体は IPFS ではなく保管庫 (simple-storage) にあり、`mediator-owner` が置く。IPFS にはメタデータだけを置く。v2 の `/platform/data` は、IPFS も保管庫も読まず、publisher が `/platform/ingest` で受け取ってメモリに持つ行を返す。
 | `iot-market-ui` ホーム + リスト + 既存 purchase 動線 | 商品発見と購入 | **無し** |
 
 ### 3.2 v2 で使うもの (新規に追加するものと、既存のものの再利用)

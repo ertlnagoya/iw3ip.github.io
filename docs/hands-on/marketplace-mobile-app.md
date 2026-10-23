@@ -4,7 +4,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 > **やること**: PWA として iot-market-ui をスマホで使い、購入と VC 取得を進める
 >
-> **前提**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)
+> **前提**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)、[Stage 6](marketplace-vc-end-to-end.md) の Step E0 (デプロイと公開鍵の登録)
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet) + MetaMask モバイル
 >
@@ -62,7 +62,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 ## 前提
 
-- Stage 5 / 6 / 7 のハンズオンを済ませている。その後に Hardhat を起動し直した場合は、先に [Stage 6 の Step E0](marketplace-vc-end-to-end.md#step-e0-前提環境の起動-stage-5-と共通) (ノードの起動、デプロイ、公開鍵の登録、bridge の作り直し) をやり直す
+- Stage 5 と Stage 6 のハンズオンを済ませている (購入には、Stage 6 の Step E0 でデプロイした Merchandise と、登録した公開鍵を使います。Stage 7 は任意で、Step M5 の `seller_did` の説明にだけ関わります)。その後に Hardhat を起動し直した場合は、先に [Stage 6 の Step E0](marketplace-vc-end-to-end.md#step-e0-前提環境の起動-stage-5-と共通) (ノードの起動、デプロイ、公開鍵の登録、bridge の作り直し) をやり直す
 - publisher + bridge + Hardhat + iot-market-ui が起動できる
 - iw3ip-wallet (iPhone) が動く
 - コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
@@ -233,6 +233,8 @@ Step M4・M5 も、この内蔵ブラウザで続けてください。
 
 iw3ip-wallet が起動して「IW3IP 購入閲覧（Tier 1 / イベントのみ）」確認画面 (英語表示では「IW3IP Purchase Viewer (Event-only)」) → 承認。
 
+VC 発行用のコードの有効期限は、購入の申告から 30 分です。Step M3 の購入から 30 分以内に受け取ってください。期限が切れると wallet の受け取りが失敗します (publisher の `/issuer/token` が `400 invalid_grant` を返します)。同じ購入からは同じコードしか得られないので、[Stage 5 のトラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング) の F のとおり、まだ買っていない Merchandise ([Stage 6 の Step E2](marketplace-vc-end-to-end.md) の表を参照) を Step M3 の手順で買い直します。
+
 ### 期待結果
 - wallet の VC 一覧に新しいエントリ
 - claim に `merchandise_address`, `tx_hash`, `buyer_eth_addr`, `dataset_id`
@@ -366,5 +368,5 @@ Safari のキャッシュ。
 
 - [VC Architecture Overview](../design/vc-architecture-overview.md)
 - [Stage 5: Marketplace × Wallet bridge](marketplace-vc-bridge.md)
-- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md)
+- [Stage 6: ServiceVC × PurchaseViewerVC end-to-end](marketplace-vc-end-to-end.md)
 - [Stage 7: Marketplace Seller VC](marketplace-seller-vc.md)

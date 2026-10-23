@@ -16,4 +16,4 @@ A. No. The blockchain is a local Hardhat chain on your PC, and the ETH used for 
 
 ## Q. What is the difference between Part, Phase, and Stage?
 
-A. Part is the learning order on this site, Phase is the development stage of the platform, and Stage is a sequence label for the hands-on pages that use VCs. See the [Hands-on overview](../hands-on/index.md#part-phase-stage).
+A. Part is the learning order on this site, Phase is the development stage of the platform, and Stage is a sequence label for the Part 2 hands-on pages built around VCs (it also covers the preparation in Stage 0 and Stage P, which signs image provenance without VCs). See the [Hands-on overview](../hands-on/index.md#part-phase-stage).

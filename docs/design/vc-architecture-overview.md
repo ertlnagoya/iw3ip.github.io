@@ -1,8 +1,9 @@
-# VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A)
+# VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)
 
-!!! abstract "このドキュメントの位置付け"
+!!! abstract "このページの位置付け"
+    [設計](index.md) の章の資料です。
     Phase 2 で構築した **6 種類の VC × 4 種類のトークン × Stage 0〜7 と
-    Stage T / A のハンズオン**を一覧にまとめた俯瞰資料。各仕様の詳細は個別ページを
+    Stage T / A / P のハンズオン**を一覧にまとめた俯瞰資料。各仕様の詳細は個別ページを
     参照。e2e 動作は publisher のテストと iPhone 実機で確認している。
 
 ## 1. 全体像
@@ -52,7 +53,7 @@ JSON 登録      │ /consents POST  │ —              │ —          │ �
 
 **SellerVC はデータを読み出す API を gate しない**。代わりに出品時の身元証跡を audit log に残し、buyer の `/platform/data?merchandise=` レスポンスに `seller_did` として含まれる。なお、実装では SellerToken は Stage T の `POST /provider/publish` (データ提供者の PWA からの書き込み) にも使え、そのたびに `register_count` が増える。
 
-## 5. ハンズオンの段階 (Stage 0〜7, T, A)
+## 5. ハンズオンの段階 (Stage 0〜7, T, A, P)
 
 ```
 Phase 2 hands-on の依存グラフ
@@ -75,7 +76,8 @@ Phase 2 hands-on の依存グラフ
   Stage 7 ── marketplace-seller-vc SellerVC (出品身元)
 
   Stage 1 + Stage 0 ─→ Stage T ── data-user-vc-tiered  DataUserVC (信頼度で見せる中身を変える)
-  Stage 5 ─→ Stage A ── marketplace-mobile-app  スマホの PWA で購入から閲覧まで
+  Stage 6 ─→ Stage A ── marketplace-mobile-app  スマホの PWA で購入から閲覧まで
+  Stage T + Stage 7 ─→ Stage P ── c2pa-provenance  C2PA で画像の来歴を署名 (VC は使わない)
 ```
 
 各ステージの詳細:
@@ -87,10 +89,11 @@ Phase 2 hands-on の依存グラフ
 | 3 | [ha-ssi-viewer](../hands-on/ha-ssi-viewer.md) | ViewerVC + ViewerToken + `GET /platform/data` |
 | 4 prep | [ha-ssi-service](../hands-on/ha-ssi-service.md) | ServiceVC + ServiceToken (M2M) |
 | 5 | [marketplace-vc-bridge](../hands-on/marketplace-vc-bridge.md) | bridge service + PurchaseViewerVC + `merchandise=<addr>` 逆引き |
-| 6 | [marketplace-vc-end-to-end](../hands-on/marketplace-vc-end-to-end.md) | 4 種 VC が同一 dataset で協調 + dataset_id を `additionalInfo` から動的取得 |
+| 6 | [marketplace-vc-end-to-end](../hands-on/marketplace-vc-end-to-end.md) | ServiceVC の書き込みと PurchaseViewerVC の読み出しを同一 dataset でつなぐ (Stage 1・3 の ConsentVC・ViewerVC の流れの上に組み立てる) + dataset_id を `additionalInfo` から動的取得 |
 | 7 | [marketplace-seller-vc](../hands-on/marketplace-seller-vc.md) | SellerVC + `/marketplace/register` + on-chain `getOwner()` 検証 + `seller_did` 同梱 |
 | T | [data-user-vc-tiered](../hands-on/data-user-vc-tiered.md) | DataUserVC + 信頼スコア + `allowed_views` で `/platform/data` の出力を段階化 |
 | A | [marketplace-mobile-app](../hands-on/marketplace-mobile-app.md) | `iot-market-ui` を PWA としてスマホで使い、購入から VC 受領、閲覧まで |
+| P | [c2pa-provenance](../hands-on/c2pa-provenance.md) | VC は使わない。X.509 証明書による C2PA の署名で画像の来歴を証明する (publisher とウォレットは不要) |
 
 ## 6. v1 / v2 マーケットプレイスの並走
 

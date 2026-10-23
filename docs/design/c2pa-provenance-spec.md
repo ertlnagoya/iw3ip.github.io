@@ -1,11 +1,12 @@
 # C2PA 来歴パイプライン — カメラ映像とセンサーデータの来歴証明 (Stage P 設計仕様)
 
-!!! abstract "このドキュメントの位置付け"
+!!! abstract "このページの位置付け"
+    [設計](index.md) の章の設計仕様です。
     市販の安価な IP カメラや USB ウェブカメラの映像と、センサーデータに、C2PA (Coalition for Content Provenance and Authenticity) [1] の規格に沿った来歴情報を付ける **Stage P** (Provenance) の設計仕様である。
-    署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた草稿である。
+    署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた設計であり、そのうち P0 は実装した (§13)。
     本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像](vc-architecture-overview.md) の §5)。
     Stage P は、Stage T の段階アクセス ([段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)) と Stage 7 の SellerVC ([SellerVC 設計仕様](seller-vc-spec.md)) の上に載せる。P0 の部分は、ハンズオン [画像の来歴を証明する](../hands-on/c2pa-provenance.md) で手元で動かせる。
-    本文中の P0〜P5 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、ハンズオンで動かす最小限の実装) は P0〜P2 に当たる。
+    本文中の P0〜P5 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、最初に作る最小限の実装) は P0〜P2 に当たる。ハンズオンで動かすのは P0 (と、P2 に含まれる Tier 2 の派生マニフェストの確認) で、P1 と P2 はまだ実装していない。
 
 本仕様は、写真や映像に**「誰が、いつ、どう撮って、どう加工したか」の記録を付け、その記録に電子署名をする**仕組みを IW3IP に組み込むための設計である。記録を改ざんすると署名が合わなくなるため、受け取った人が自分で本物かどうかを確かめられる。
 
@@ -54,7 +55,7 @@ C2PA では、撮影した機器の鍵による電子署名と、加工の履歴
 2. 撮影時刻、カメラ ID、検知イベント、センサー値を、独自のアサーションとしてマニフェストに入れる
 3. Stage T の派生データ (顔ブラー画像など) に、元データを「素材 (ingredient)」として参照するマニフェストを付け、加工の履歴をつなぐ
 4. publisher がアップロードの時点でマニフェストを検証し、結果を監査ログに記録する
-5. マニフェストのハッシュと CID を ERC-721 [10] のトークンとしてチェーンに記録する (生データはチェーンに載せない)
+5. マニフェストのハッシュと CID を ERC-721 [4] のトークンとしてチェーンに記録する (生データはチェーンに載せない)
 
 既存の経路との互換性は保つ。マニフェストの無いメディアは、Stage T までと同じ経路で扱う。
 
@@ -210,9 +211,11 @@ C2PA の仕様では、独自のアサーションのラベルはドメイン名
 ```
 
 `c2pa.actions` は C2PA が定めるアサーションで、ファイルに対して行った操作を並べる。`c2pa.created` は「このファイルを新しく作った」ことを表す。
-`digitalSourceType` には、報道機関の業界団体 IPTC が定める語彙 [9] の `digitalCapture` を使い、カメラで撮影したことを示す (生成 AI で作った画像には、別の値を使う)。
+`digitalSourceType` には、報道機関の業界団体 IPTC が定める語彙 [7] の `digitalCapture` を使い、カメラで撮影したことを示す (生成 AI で作った画像には、別の値を使う)。
 
 `gateway_did` は「どのゲートウェイが撮ったか」を示す属性にすぎない。署名に使う鍵は X.509 証明書の鍵であり、DID の鍵ではない (§6.3)。
+
+→ 実装 (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) の撮影マニフェストには、上の例のうち `jp.ertl.iw3ip.capture` の `camera_model`、`jp.ertl.iw3ip.detection` のアサーション、`jp.ertl.iw3ip.sensor` の `window` が無い。P0 では検知を行わず、センサー値も固定の 1 件だけを書く。
 
 `title` には、カメラ ID や撮影時刻のような意味を持つ値を入れない。撮影マニフェストの題名は、派生ファイルでも削除できないためである (§5.3)。カメラ ID と撮影時刻は、削除できる `jp.ertl.iw3ip.capture` に入れる。
 
@@ -345,10 +348,10 @@ C2PA の仕様の範囲で扱えるかどうかは §11 のオープンクエス
 | 段階 | 証明書 | 検証したときの表示 |
 | --- | --- | --- |
 | MVP | 自前の CA と、ES256 の署名用証明書 | 信頼されていない署名者 (検証ツールに自前の CA を登録すれば信頼される) |
-| 本番想定 | C2PA Trust List [7] に載った CA が発行した証明書 | 信頼される署名者 |
+| 本番想定 | C2PA Trust List [8] に載った CA が発行した証明書 | 信頼される署名者 |
 
 ES256 は、楕円曲線暗号 (P-256) と SHA-256 を組み合わせた署名の方式である。
-C2PA Trust List は、C2PA が「この CA が発行した証明書は信頼してよい」と認めた CA の一覧であり、ブラウザが信頼する HTTPS の CA の一覧に当たる。以前は暫定の一覧 (Interim Trust List) が使われていたが、2026 年 1 月 1 日から更新が止まり、審査の制度 (Conformance Program) に基づく C2PA Trust List に移った [7][8]。研究用の実装では本番の証明書を取らず、自前の CA で検証の流れを確かめる。
+C2PA Trust List は、C2PA が「この CA が発行した証明書は信頼してよい」と認めた CA の一覧であり、ブラウザが信頼する HTTPS の CA の一覧に当たる。以前は暫定の一覧 (Interim Trust List) が使われていたが、2026 年 1 月 1 日から更新が止まり、審査の制度 (Conformance Program) に基づく C2PA Trust List に移った [8][9]。研究用の実装では本番の証明書を取らず、自前の CA で検証の流れを確かめる。
 
 自前の CA で作る証明書は、次の条件を満たす必要がある (満たさないと SDK が署名を拒む)。本体リポジトリの `make_test_certs.py` は、これらを満たす証明書を作る。
 
@@ -370,7 +373,7 @@ c2pa-python は、署名の処理を呼び出し側の関数 (コールバック
 
 ServiceVC は、機器やサービスが継続して書き込んでよいことを表す VC である ([機器間での連携認証](../hands-on/ha-ssi-service.md))。ゲートウェイを ServiceVC の holder にすれば、ゲートウェイは `did:jwk` を持つ。C2PA の署名者は X.509 証明書で表すため、この 2 つは別の識別子になる。
 
-2 つを結び付ける方法として、CAWG (Creator Assertions Working Group、C2PA の来歴に作成者の身元を加える方法を定める作業部会) の identity assertion [4] がある。
+2 つを結び付ける方法として、CAWG (Creator Assertions Working Group、C2PA の来歴に作成者の身元を加える方法を定める作業部会) の identity assertion [10] がある。
 CAWG の identity assertion には、X.509 証明書で署名する方式と、VC を集約する方式 (identity claims aggregation) がある。
 SellerVC は VC なので、SellerVC を「誰が提供したか」の証明として使うには、VC をそのまま扱える後者が向いている。ただし、CAI の SDK は後者の検証にだけ対応し、署名には対応していない [2]。
 そのため MVP では `jp.ertl.iw3ip.capture` に `gateway_did` を入れるだけにして、CAWG との統合は P3 で検討する。
@@ -499,6 +502,8 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 | **P4** | RTSP の IP カメラと Raspberry Pi、TPM での署名、§9 の評価 | 市販 IP カメラ・Raspberry Pi |
 | **P5** | ハンズオン (JA + EN) | — |
 
+→ 実装では、P0 のプログラム (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) は、既定ではプログラムが描いたダミー画像に署名する (ウェブカメラは `--webcam` を付けたときだけ使う)。検証には SDK の Reader だけを使い、Content Credentials Verify と c2patool は使っていない。一方で、P2 に挙げた Tier 2 の派生マニフェストと削除 (redaction) は、P0 のプログラムですでに作って確かめている。P1 (`/media/upload` への組み込み) と P2 の ProvenanceToken などは、教材リポジトリにはまだ実装していない。
+
 ## 11. オープンクエスチョン
 
 1. **常時録画の扱い**
@@ -559,18 +564,18 @@ Content Credentials Verify [11] での確認と、RTSP のカメラ、断片化 
 
 [3] Content Authenticity Initiative, "c2pa-python: Python binding for the C2PA SDK," GitHub, <https://github.com/contentauth/c2pa-python>
 
-[4] Creator Assertions Working Group, "Identity Assertion, Version 1.1," <https://cawg.io/identity/1.1/>
+[4] W. Entriken, D. Shirley, J. Evans, N. Sachs, "ERC-721: Non-Fungible Token Standard," Ethereum Improvement Proposals, no. 721, 2018, <https://eips.ethereum.org/EIPS/eip-721>
 
 [5] ONVIF, "ONVIF Media Signing Specification," <https://www.onvif.org/specs/stream/ONVIF-MediaSigning-Spec.pdf>
 
 [6] ONVIF, "media-signing-framework," GitHub, <https://github.com/onvif/media-signing-framework>
 
-[7] C2PA, "C2PA Conformance Program," <https://c2pa.org/conformance/>
+[7] IPTC, "Digital Source Type," NewsCodes vocabulary, <https://cv.iptc.org/newscodes/digitalsourcetype/>
 
-[8] C2PA, "FAQ," <https://c2pa.org/faq/>
+[8] C2PA, "C2PA Conformance Program," <https://c2pa.org/conformance/>
 
-[9] IPTC, "Digital Source Type," NewsCodes vocabulary, <https://cv.iptc.org/newscodes/digitalsourcetype/>
+[9] C2PA, "FAQ," <https://c2pa.org/faqs/>
 
-[10] W. Entriken, D. Shirley, J. Evans, N. Sachs, "ERC-721: Non-Fungible Token Standard," Ethereum Improvement Proposals, no. 721, 2018, <https://eips.ethereum.org/EIPS/eip-721>
+[10] Creator Assertions Working Group, "Identity Assertion, Version 1.1," <https://cawg.io/identity/1.1/>
 
-[11] Content Authenticity Initiative, "Content Credentials Verify," <https://contentcredentials.org/verify>
+[11] Content Authenticity Initiative, "Content Credentials Verify," <https://verify.contentauthenticity.org/>

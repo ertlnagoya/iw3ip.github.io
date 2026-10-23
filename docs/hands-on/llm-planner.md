@@ -649,6 +649,6 @@ LLM API を使えないとき、`/assistant/plan` はエラーにならず、rul
 
 ## 参考文献
 
-[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-docker/>
+[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-started/get-docker/>
 
 [2] HTTPX, "HTTPX," <https://www.python-httpx.org/>

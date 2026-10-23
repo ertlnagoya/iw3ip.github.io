@@ -75,7 +75,7 @@ docker run -d --name iw3ip-ollama -p 11434:11434 -v iw3ip_ollama:/root/.ollama o
 docker exec iw3ip-ollama ollama pull moondream
 ```
 
-docker-compose.yml の `vlm` サービスはホストにポート 11434 を公開していないので、PC 上のプログラムから使えるように、別のコンテナとして起動します。
+docker-compose.yml の `vlm` サービスはホストにポート 11434 を公開していないので、PC 上のプログラムから使えるように、別のコンテナとして起動します。Ollama のデスクトップアプリなどがすでに 11434 番を使っていると起動できないので、先に終了します ([トラブルシュート](../operations/troubleshooting.md) の 10)。
 
 **ターミナル 2: 模擬のクラウド AI**。`--ollama-url` を付けると、受け取った依頼を手元の Ollama に回して、本物らしい説明を返します。
 

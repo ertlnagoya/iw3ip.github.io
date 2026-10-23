@@ -305,7 +305,7 @@ This is why they connect naturally to IW3IP features such as **Consent VC-based 
 
 ## References
 
-[1] National Police Agency of Japan, 「令和6年における行方不明者届受理等の状況」 [Status of missing person reports in 2024] (in Japanese), <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
+[1] National Police Agency of Japan, 「令和6年における行方不明者届受理等の状況」 [Status of missing person reports in 2024] (in Japanese), 2025, <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
 
 [2] National Police Agency of Japan, 「オンラインでの申請等の案内」 [Guidance for online applications] (in Japanese), <https://www.npa.go.jp/policies/application/shinseisys/>
 

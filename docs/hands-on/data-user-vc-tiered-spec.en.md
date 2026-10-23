@@ -37,8 +37,8 @@ On top of the existing Phase 2 flow (VC presentation → verification →
 token mint → `/platform/data`), we tier **what** the holder can fetch by
 their DataUserVC attributes:
 
-- entityType (GovernmentOrganization / Police / Enterprise / ResearchOrganization)
-- purpose (CrimeSearch / TrafficManagement / Research)
+- entityType (GovernmentOrganization / Police / Enterprise / Research Organization)
+- purpose (Crime Search / Traffic Management / Research)
 - legalCompliance (true / false)
 - dataHandlingPolicy (ISO27001 / other)
 - misuseRecord (history of misuse)
@@ -134,12 +134,19 @@ misuseRecord == true                    -> -10
 | Tier 2 (access) | `Enterprise`             | `Research`    | true  | ISO27001 | false | **75** = 20+15+15+15+10 |
 | Tier 1 (denied) | `Enterprise`             | `Research`    | false | Other    | true  | **25** = 20+15+0+0-10  |
 
-The `CrimeSearch` label does not match the Solidity-side
-`"CRIME SEARCH"` (space-separated) string, so the current Python
-implementation falls back to **5** for purpose (which is why Tier 3
-hits 80, not 100). Hands-on output crosses the right tier boundaries
-either way; if/when ZK / on-chain parity is wired in, the UI's input
-labels should be normalized to the spaced form (follow-up TODO).
+`trust_score.py` uppercases the input with `upper()` and then looks it
+up in the table by exact match. Case does not matter, but spaces do. The
+purpose table keys are `CRIME SEARCH` and `TRAFFIC MANAGEMENT` (with a
+space, as on the Solidity side) and `RESEARCH`; the entityType table keys
+are `GOVERNMENTORGANIZATION`, `POLICE`, `ENTERPRISE`, and
+`RESEARCH ORGANIZATION` (with a space). Any value not in the table falls
+back to **5**. So `CrimeSearch` from the offer URL becomes `CRIMESEARCH`,
+does not match `CRIME SEARCH`, and scores 5 for purpose (which is why
+Tier 3 hits 80 = 35 + 5 + ..., not 35 + 25 + ...). Run-together forms such
+as `TrafficManagement` and `ResearchOrganization` also score 5. Hands-on
+output crosses the right tier boundaries either way; if/when ZK /
+on-chain parity is wired in, the UI's input labels should be normalized
+to the spaced form (not done yet; future work).
 
 ### Threshold → access level
 
@@ -246,7 +253,7 @@ when either changes, the test suite enforces parity.
 
 ## ssi-ui
 
-The `ssi-ui/` Next.js prototype is **deprecated**. Future work goes to
+The `ssi/ssi-ui/` Next.js prototype (a git submodule) is **deprecated**. Future work goes to
 the Phase 2 wallet (`iw3ip-wallet`) + Publisher.
 
 ## Test plan

@@ -247,10 +247,12 @@ ViewerToken は publisher のログに出ます。提示の直後に次のコマ
 docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1
 ```
 
+publisher のログは 1 行が 1 つの JSON で、目的の文字列は `"message"` の値に入っています。行頭の `iw3ip-publisher  |` は、docker compose が付けるコンテナ名です。
+
 期待する出力:
 
 ```text
-... viewer_token_issued vc_kind=PurchaseViewerVC jti=... token=<ViewerToken> dataset=home/event/possible_littering ttl=60s views=event+image+video
+iw3ip-publisher  | {"ts": "...", "level": "INFO", "logger": "publisher.app.ssi.verifier_routes", "message": "viewer_token_issued vc_kind=PurchaseViewerVC jti=... token=<ViewerToken> dataset=home/event/possible_littering ttl=60s views=event+image+video"}
 ```
 
 `token=` の値をシェル変数 `VIEWER_TOKEN` に入れて、次を実行します。ViewerToken の有効期間は 60 秒なので、取り出したらすぐに使います。期限が切れたら、もう一度提示します。

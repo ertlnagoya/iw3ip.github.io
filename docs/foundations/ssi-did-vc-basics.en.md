@@ -88,7 +88,7 @@ C -->|deny| E[Audit Log]
 
 ### What This Sample Simplifies
 
-Stating these simplifications explicitly makes it easier to distinguish the purpose of the sample from future extensions.
+The Phase 1 sample (registering JSON equivalent to a Consent VC with `/consents`) simplifies the following. The Part 2 hands-on pages that use the wallet cover issuing, presenting and verifying SD-JWT VCs.
 
 - signature verification is still a placeholder
 - DID resolution is not fully implemented
@@ -102,7 +102,7 @@ Stating these simplifications explicitly makes it easier to distinguish the purp
 
 ## References
 
-[1] Decentralized Identity Foundation, <https://identity.foundation/>
+[1] Decentralized Identity Foundation, "Decentralized Identity Foundation (DIF)," <https://identity.foundation/>
 
 [2] W3C, "Decentralized Identifiers (DIDs) v1.0," W3C Recommendation, 2022, <https://www.w3.org/TR/did-1.0/>
 

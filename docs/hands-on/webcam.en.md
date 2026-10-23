@@ -12,7 +12,7 @@ Without a HUSKYLENS2, a generic USB webcam plus OpenCV [1] is enough to emit `pe
 
 ## Goal
 
-Generate `person_detected` / `possible_littering` events with only a USB webcam, even without HUSKYLENS2.
+Detect people and possible littering in USB webcam images and generate event files, even without HUSKYLENS2. `mediator-owner` registers the generated files on the marketplace as merchandise.
 
 ## What this page helps you understand
 

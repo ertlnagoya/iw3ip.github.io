@@ -1,6 +1,7 @@
 # SellerVC — マーケット出品ガバナンス VC (Stage 7 設計仕様)
 
-!!! abstract "このドキュメントの位置付け"
+!!! abstract "このページの位置付け"
+    [設計](index.md) の章の設計仕様です。
     iot-market への Merchandise 登録に身元確認を追加する **Stage 7**
     の設計仕様である。ConsentVC / ViewerVC / ServiceVC /
     PurchaseViewerVC に続く **5 種類目の VC** (Verifiable Credential) を導入し、

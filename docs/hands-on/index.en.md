@@ -40,7 +40,7 @@ This site uses three kinds of numbering.
 
 - **Part 1–3**: the learning order on this site (Basic, Feature Extensions, Intelligence Integration).
 - **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see [Phase structure in the platform overview](../platform-overview.md#phase-structure)).
-- **Stage 0–7, A, T**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0). Each page assumes the earlier Stages are done. There is no Stage 2.
+- **Stage 0–7, A, T, P**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0) and image provenance signing (Stage P, which uses no VC). Each page assumes the earlier Stages are done. There is no Stage 2.
 
 | Stage | Hands-on | VC |
 |---|---|---|
@@ -49,10 +49,11 @@ This site uses three kinds of numbering.
 | 3 | [Authenticate the viewer](ha-ssi-viewer.md) | ViewerVC |
 | 4 prep | [Authenticate machines](ha-ssi-service.md) | ServiceVC |
 | 5 | [Hand a credential to the buyer's wallet](marketplace-vc-bridge.md) | PurchaseViewerVC |
-| 6 | [Tie four credentials together end-to-end](marketplace-vc-end-to-end.md) | Consent / Viewer / Service / PurchaseViewer |
+| 6 | [Read ServiceVC-written data with a PurchaseViewerVC](marketplace-vc-end-to-end.md) | ServiceVC + PurchaseViewerVC (builds on the ConsentVC / ViewerVC flows of Stages 1 and 3) |
 | 7 | [Back the seller's identity](marketplace-seller-vc.md) | SellerVC |
 | A | [Marketplace as a phone app](marketplace-mobile-app.md) | PurchaseViewerVC (phone only) |
 | T | [Tier the response by trust](data-user-vc-tiered.md) | DataUserVC |
+| P | [Prove where an image came from](c2pa-provenance.md) | none (C2PA signing with X.509 certificates; no publisher or wallet needed) |
 
 The mapping between VCs and tokens is summarized in [VC Architecture Overview](../design/vc-architecture-overview.md).
 
@@ -124,7 +125,7 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
 | Cover all of Basic | All of Part 1 (approx. 1.5 hours; pick one device in §1.2) |
 | Reach safe / conditional sharing | Part 1 → Part 2 §2.1–§2.3 (+ approx. 4 hours) |
 | Reach v2 marketplace integration | Part 1 → Part 2 §2.4 (+ approx. 4 hours) |
-| Reach tiered access | Through Part 2 §2.5 (+ approx. 1 hour; about 3 more hours to cover image/video delivery and semantic-level tiering) |
+| Reach tiered access | Through Part 2 §2.5 (+ approx. 1 hour; about 3 more hours to cover image/video delivery and semantic-level tiering, and about 30–40 more minutes to prove image provenance with C2PA (Stage P)) |
 | Reach AI integration | Through Part 3 (+ approx. 5 hours) |
 
 The times are sums of the estimates at the top of each page. A "+" means time needed on top of the row above.
@@ -270,11 +271,11 @@ Use VCs to separate "read-only viewer" from "write-only service".
 Deliver the data after purchase with **PurchaseViewerVC + ViewerToken** instead of the encrypted URI (v1).
 
 - [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — stand up the bridge
-- [Tie four credentials together end-to-end (Stage 6)](marketplace-vc-end-to-end.md) — full buy-to-view path
+- [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md) — full buy-to-view path
 - [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — seller-side VC
 - [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md) — dedicated mobile app
 
-### 2.5 Tiered access by trust (Stage T)
+### 2.5 Tiered access by trust (Stage T / P)
 
 Switch the response between Tier 3 (video + everything), Tier 2 (image + derived), and Tier 1 (summary only) based on the user's **DataUserVC**. Goes all the way to **semantic intermediate representation + trust-aware rendering**.
 

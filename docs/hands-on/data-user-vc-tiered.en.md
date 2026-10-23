@@ -72,6 +72,9 @@ real-device-validated default; the iPhone walkthrough below covers it.
 | **B** (recommended) | publisher serves `/media/<sha256>.<ext>` | yes — direct HTTP | shipped | demo / hands-on |
 | C | local kubo IPFS daemon, content-addressed | yes — publisher's `/ipfs/<cid>` proxy + any public gateway | shipped (`--profile ipfs`) | production-flavoured distributed demo |
 
+"Tier projection" in the table means selecting which keys go into the
+`/platform/data` response according to the receiver's tier.
+
 §2–§7 below cover the core DataUserVC + tier-projection loop. **Option
 B real-data integration is in [§8](data-user-vc-tiered-media.md#8-real-data-integration-option-b--http-media-gateway)**, **Option C IPFS integration is in
 [§9](data-user-vc-tiered-media.md#9-option-c-local-kubo-ipfs-daemon-for-distributed-delivery).** Option C is a strict superset of B — `/media/upload`'s response
@@ -248,10 +251,12 @@ The ViewerToken appears in the publisher log. Right after presenting, extract it
 docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1
 ```
 
+Each publisher log line is one JSON object, and the text you want is in its `"message"` field. The leading `iw3ip-publisher  |` is the container name that docker compose adds.
+
 Expected output:
 
 ```text
-... viewer_token_issued vc_kind=PurchaseViewerVC jti=... token=<ViewerToken> dataset=home/event/possible_littering ttl=60s views=event+image+video
+iw3ip-publisher  | {"ts": "...", "level": "INFO", "logger": "publisher.app.ssi.verifier_routes", "message": "viewer_token_issued vc_kind=PurchaseViewerVC jti=... token=<ViewerToken> dataset=home/event/possible_littering ttl=60s views=event+image+video"}
 ```
 
 Put the `token=` value into the shell variable `VIEWER_TOKEN` and run the
@@ -337,4 +342,4 @@ share the same VCT.
 - [Tier by semantic level](data-user-vc-tiered-semantic.md) — continues with §12–§13 (semantic-level tiering with a VLM, semantic intermediate representation)
 - [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) — bring up the Phase 2 wallet
 - [Tiered access design spec](data-user-vc-tiered-spec.md) — design rationale
-- [Share detections, not raw frames](webcam-event-sharing.md) — listing comes from here
+- [Share detections, not raw frames](webcam-event-sharing.md) — share events conditionally

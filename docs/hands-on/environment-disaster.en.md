@@ -368,7 +368,7 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
    ```
 4. Confirm `/audit/logs` shows `reason=policy_token_consumed:<jti>`
 
-### Limits of this appendix
+### Notes
 
 - A ConsentVC PD for `home/event/flood_risk_high`
   ([consent-event-flood-risk-high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/consent-event-flood-risk-high.json))

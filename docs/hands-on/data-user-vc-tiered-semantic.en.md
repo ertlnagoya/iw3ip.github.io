@@ -53,17 +53,17 @@ working under the legacy 3-tier projection.
 
 Set the publisher backends, then bring everything up. The compose file reads
 these environment variables, so either `export` them in your shell or
-write them in `.env`:
+write them in `.env`. Docker on macOS runs the model on the CPU, and llava
+takes about 3 minutes per inference. The default wait of 180 s is not
+enough, so extend it with `VLM_TIMEOUT_SEC` (to use the lighter moondream,
+also set `VLM_MODEL=moondream`). With `--profile vlm`, the Ollama service
+and `vlm-pull`, which pulls llava in advance, start together.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 export VLM_BACKEND=ollama
 export IMAGE_REDACTION_BACKEND=opencv
-# Docker on macOS runs the model on the CPU, and llava takes about 3 minutes per call.
-# The default wait of 180 s is not enough, so extend it. Or use the lighter VLM_MODEL=moondream
 export VLM_TIMEOUT_SEC=600
-# Turn profile vlm on. This starts the Ollama service and vlm-pull, which pre-pulls llava
-# start together
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
   publisher mosquitto vlm vlm-pull
 ```
@@ -76,8 +76,9 @@ Wait for `vlm-pull` to finish pulling `llava` (first time only, multi-GB):
 
 ```bash
 docker compose -f infra/docker-compose.yml logs -f vlm-pull
-# wait for the line vlm model llava ready, then exit with Ctrl+C
 ```
+
+When the line `vlm model llava ready` appears, exit with Ctrl+C.
 
 Check that the publisher is up:
 
@@ -164,7 +165,7 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 Same routine as [§3–§4](data-user-vc-tiered.md#3-three-marketplaceclaim-calls): claim → PurchaseViewerVC → present → ViewerToken → fetch.
 The rows are the ones published in §12.2.1.
 
-If the cards you received in §4 of the first page are still in the wallet, they appear under the same names as the cards you receive here. Presenting an old card shows no VLM descriptions or redacted image. Delete the old cards from the wallet first, or after presenting check `views=` in `docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`: Tier 3 is `event+image+video+image_redacted+description_full+description_summary`, Tier 2 is `event+image_redacted+description_full+description_summary`, Tier 1 is `event+description_summary`, and Tier 0 is `event`.
+If the cards you received in §4 of the first page are still in the wallet, they appear under the same names as the cards you receive here. Presenting an old card shows no VLM descriptions or redacted image. Delete the old cards from the wallet first, or after presenting run `docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1` and check `views=` in the `"message"` of the JSON it prints: Tier 3 is `event+image+video+image_redacted+description_full+description_summary`, Tier 2 is `event+image_redacted+description_full+description_summary`, Tier 1 is `event+description_summary`, and Tier 0 is `event`.
 
 With `VLM_BACKEND` set:
 
@@ -214,7 +215,7 @@ The blur runs each time an event is published (not when `/platform/data` is read
 ### 12.6 Inspecting VLM output
 
 Compare `description_full` (Tier 2/3) against `description_summary`
-(Tier 1+) to confirm proper-noun stripping. First present the Tier 3 (12.3.a) PurchaseViewerVC as in §12.4, then set the `token=` value from the publisher's `viewer_token_issued` log line (`docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`) with `export VIEWER_TOKEN_TIER3=<token value>`. The ViewerToken expires after 60 seconds, so run the commands right away:
+(Tier 1+) to confirm proper-noun stripping. First present the Tier 3 (12.3.a) PurchaseViewerVC as in §12.4, then set the `token=` value in the `"message"` of the publisher's `viewer_token_issued` log line (`docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`) with `export VIEWER_TOKEN_TIER3=<token value>`. The ViewerToken expires after 60 seconds, so right away run the following to fetch every key at Tier 3:
 
 ```bash
 curl -s -H "authorization: Bearer $VIEWER_TOKEN_TIER3" \
@@ -248,24 +249,33 @@ The `_full` line keeps the person's name, brand, and place. The
 If either VLM or blur fails, publishing keeps going and
 `processing_warnings[]` tells the receiver what was skipped.
 
-Stop the VLM only:
+To stop the VLM only, stop vlm with:
 
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
-# publish an event with provider_with_media.py as in §12.2.1. It still succeeds, and /platform/data carries
-# processing_warnings with vlm_unavailable
-# image_url_redacted is still generated, because face blur does not need the VLM
-# the description keys are absent
 ```
 
-Stop both:
+Then publish an event with `provider_with_media.py` as in §12.2.1. The
+`/platform/data` response looks like this:
+
+- `processing_warnings` contains `vlm_unavailable`
+- `image_url_redacted` is still generated, because face blur does not use the VLM
+- the `description_*` keys are absent
+
+To stop both, stop vlm the same way, then clear the publisher's
+`IMAGE_REDACTION_BACKEND` and start it again:
 
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
-# also clear IMAGE_REDACTION_BACKEND on the publisher and restart
-# /platform/data carries processing_warnings with vlm_unavailable
-# Tier 2 and Tier 1 receivers get no image keys and no description keys, only the event
+IMAGE_REDACTION_BACKEND= docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
 ```
+
+Restarting the publisher clears the claims and rows kept in memory.
+Publish the event again as in §12.2.1 and redo the claims and
+presentations in §12.4; the `/platform/data` response then looks like this:
+
+- `processing_warnings` contains `vlm_unavailable`
+- Tier 2 and Tier 1 receivers get no image keys and no `description_*` keys, only the event
 
 Clearing `IMAGE_REDACTION_BACKEND` disables face blur entirely. Nothing
 is attempted, so no `redaction_unavailable` appears (that warning is
@@ -311,7 +321,7 @@ Same format as [§11.8](data-user-vc-tiered-media.md#118-real-device-validation-
 | **V3** Tier 1 (summary) is text-only | macOS Chrome | not verified | OID4VP needed; deferred |
 | **V4** Face blur visual confirmation | StyleGAN2 synthetic face (no real PII) → publish → Tier 2 receiver | **verified (2026-04-30)** | OpenCV detected 1 face, applied Gaussian blur (51×51), re-uploaded as a separate file. Face is unrecognizable in the output.<br>📷 [original](images/data-user-vc-tiered/vlm/V4-original.jpg) → [redacted](images/data-user-vc-tiered/vlm/V4-redacted.jpg) |
 | **V5** description_full vs summary quality | StyleGAN2 sample | partial | VLM 2-stage prompting completed (`full_len=280`, `summary_len=172`). **Actual text diff requires ViewerToken-based fetch; deferred** |
-| **V6** VLM-down degrade | timeout 60s effectively triggered vlm_unavailable | verified (2026-04-30) | `vlm describe failed: ollama call failed: timed out` → `processing_warnings: ["vlm_unavailable"]` emitted; `image_url_redacted` still generated. Δ3 timeout fix bumps default to 180s; CPU environments need `VLM_TIMEOUT_SEC=600` |
+| **V6** VLM-down degrade | timeout 60s effectively triggered vlm_unavailable | verified (2026-04-30) | `vlm describe failed: ollama call failed: timed out` → `processing_warnings: ["vlm_unavailable"]` emitted; `image_url_redacted` still generated. The timeout was later extended (item 2 in the table below), but the basic degrade behavior is confirmed |
 | **V7** Redaction-leak survey | large sample | 🔬 research | Spec's post-check implementation prerequisite; not started in this validation pass |
 
 #### Bugs / constraints surfaced during V1–V6
@@ -321,8 +331,8 @@ Three operational findings emerged during this pass:
 | # | Symptom | Cause / Resolution |
 |---|---|---|
 | 1 | `/provider/publish` followed by `vlm describe failed: ollama call failed: timed out` | CPU LLaVA-7B inference takes **~186s per stage** (even on a 1×1 pixel image). describe() needs 2 stages → ~6 min total |
-| 2 | Δ3's default `VLM_TIMEOUT_SEC=60` couldn't complete | [Blockchain_IoT_Marketplace#45](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/45) bumps to 180s; CPU setups need `VLM_TIMEOUT_SEC=600` |
-| 3 | LLaVA-7B on CPU is impractical for hands-on workshops | Use a smaller model (`bakllava`, `moondream`) or GPU / external API. Add to docs |
+| 2 | The original default `VLM_TIMEOUT_SEC=60` couldn't complete | [Blockchain_IoT_Marketplace#45](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/45) bumps to 180s; CPU setups need `VLM_TIMEOUT_SEC=600` |
+| 3 | LLaVA-7B on CPU is impractical for hands-on workshops | We recommend a smaller model (`bakllava`, `moondream`), a GPU environment, or an external API |
 
 #### moondream re-test (2026-04-30 addendum)
 
@@ -332,7 +342,7 @@ Pulled `moondream` (1.7 GB, ~1/3 of llava) and re-ran the same pipeline:
 |---|---|---|
 | Model size | 4.7 GB | **1.7 GB** |
 | describe() time on CPU | ~6 min | **~21 s – 5 min** (depends on prompt + cold/warm) |
-| Δ3 two-stage long prompts | Long output (`full_len=280, summary_len=172`) | **Fragments only** (`full_len=3, summary_len=10`) |
+| Current long two-stage prompts | Long output (`full_len=280, summary_len=172`) | **Fragments only** (`full_len=3, summary_len=10`) |
 | Simple prompt ("Describe this image.") | Works but verbose | **High quality**: "A man with a beard and glasses... blurred green landscape" |
 
 **Finding**: a small VLM (moondream) is dramatically faster but **does not respond well to the current long 2-stage prompts**. Either tune prompts per-backend (a `prompts: {model -> str}` dict in `vlm_client.py`) or unify all backends on shorter prompts.
@@ -397,7 +407,13 @@ For the detailed design rationale, see the [tiered access design spec](data-user
 [Viewer Output]
 ```
 
+Each layer can be tested independently. Even if the policy decision or
+the VLM output is wrong, the layer structure guarantees that the
+pipeline **fails toward the safe side (hiding)**.
+
 ### 13.2 Trust × output matrix
+
+Mapping of `ViewerTrustLevel` (6 levels) to `OutputKind` (6 kinds):
 
 | Level | textSummary | eventList | redactedImage | lowResolutionImage | maskedVideoFrame | originalFrame |
 |---|---|---|---|---|---|---|
@@ -438,74 +454,107 @@ The claims, ViewerTokens, and event rows kept in memory are cleared, so before
 
 ### 13.4 /provider §1.5 "Run analysis" panel
 
-Right after uploading media as in [§11.3](data-user-vc-tiered-media.md#113-three-ways-to-provide-data), the §1.5 panel becomes available on the
-`/provider` page ("§1.5" is a section number inside that page, not a
-section of this document). Pressing
-"分析を実行":
+Right after uploading media as in [§11.3](data-user-vc-tiered-media.md#113-three-ways-to-provide-data), a **"1.5 意味的中間表現を確認" (check the semantic intermediate representation)**
+section appears on the `/provider` page ("§1.5" is a section number inside that page, not a section of this document).
+It is a UI for a **dry run**: checking how receivers will see the data before you press Publish.
 
-1. POSTs the source blob to `/semantic/analyze` to retrieve the SIR
-2. Overlays detected `sensitive_regions` as red bounding boxes on the uploaded image
-3. Calls `/semantic/render` four times (anonymous / low / medium / high) and shows a card per tier (`granted_kinds` + `text_summary` + masked image inline when permitted)
+1. When the upload completes, the "分析を実行" (run analysis) button is enabled
+2. Pressing it calls **`POST /semantic/analyze`** to get the SIR
+3. The detected `sensitive_regions` are overlaid on the source image as **red bounding boxes**
+4. Four cards (anonymous / low / medium / high) preview **how each trust level sees the data**
+   - granted_kinds, text_summary, and the masked image inline when the policy allows it
+5. Before the real Publish, the provider can check on the device "what a medium receiver will see"
 
-This is an operator-facing **dry run**: see exactly what each tier
-will receive before pressing Publish. Catches Haar misses or
-unknown_sensitive over-reach early.
+This check lets you catch analyzer misses and over-detection before the event is published.
+It runs independently of the Publish button, so you can check, skip Publish, and try again.
 
-### 13.5 /viewer 🔬 toggle
+### 13.5 /viewer 🔬 toggle — trust-aware rendering
 
-The receiver-side `/viewer` gains an opt-in **🔬 「意味的レンダリングを使う (実験)」**
-checkbox. Off (default) preserves the legacy projection of [§10](data-user-vc-tiered-media.md#10-pwa-viewer-one-ux-for-phone-and-pc) byte-for-byte.
-On switches to the semantic pipeline:
+The receiver-side `/viewer` gains a **"🔬 意味的レンダリングを使う (実験)" (use semantic rendering, experimental)** checkbox
+at the top. Off (default) shows the same legacy tier projection as [§10](data-user-vc-tiered-media.md#10-pwa-viewer-one-ux-for-phone-and-pc). On works as follows:
 
-- The page derives a trust level from the existing `allowed_views`:
-  `video → high`, `image|image_redacted → medium`,
-  `description_* → low`, `event` only / unknown → `anonymous`
-  (fail-closed)
-- Each row with an image calls `POST /semantic/render_url` (rows without an image, such as Tier 1/0, show text only; one round trip to
-  fetch + analyze + render) and renders the result
-- Toggle state persists in `localStorage` so a refresh keeps the
-  selection
+1. On page load, the trust level is derived from `allowed_views` in `/platform/data`
+   ```
+   video         → high
+   image | image_redacted → medium
+   description_* → low
+   event only / unknown → anonymous (fail-closed)
+   ```
+2. Each row with an image calls **`POST /semantic/render_url`** (rows without an image, such as Tier 1/0, show text only), and the server runs fetch + analyze + policy + render in one round trip
+3. The result is shown:
+   - `[<level>] kinds: redactedImage + textSummary + eventList`
+   - the permitted image_b64 inline as an `<img>`
+   - text_summary, event_list, the audit_required banner, and the policy rationale (debug)
+
+The toggle state is saved in localStorage, so the selection survives a reload.
+**With the toggle off, behavior is exactly the same as before**, so the steps up to §12 are not affected.
 
 ### 13.6 Fail-closed sites
 
-- `_coerce_trust_level()`: unknown / None → ANONYMOUS
-- `TrustPolicyEngine.evaluate()`: `privacy_risk_score >= 0.9` strips image kinds
-- `TrustPolicyEngine.evaluate_safe()`: any internal exception → empty `allowed_outputs`
-- `_compute_mask_plan()`: face / text / screen / whiteboard / document / id_card / name_tag / `unknown_sensitive` always masked at HIGH and below (only `unknown_sensitive` at HIGH can be unmasked with `SEMANTIC_ALLOW_UNKNOWN_AT_HIGH=true`)
-- `/semantic/analyze`: on failure returns an `empty()` SIR (never returns raw bytes)
-- `TrustAwareRenderer.render()`: `ORIGINAL_FRAME` requires `trust_level in (OWNER, ADMIN)`
-- `_render_masked()`: cv2 / decode / encode failures → text fallback
-- `SemanticIntermediateRepresentation.empty()`: `privacy_risk_score=1.0` flags the analyzer-failure path
-- `/semantic/render_url`: URL fetch failure → empty SIR + text-only
+| Site | Behavior |
+|---|---|
+| `_coerce_trust_level()` | unknown value / None → ANONYMOUS |
+| `TrustPolicyEngine.evaluate()` | `privacy_risk_score >= 0.9` strips image kinds |
+| `TrustPolicyEngine.evaluate_safe()` | internal exception → `allowed_outputs=frozenset()` (empty) |
+| `_compute_mask_plan()` | masks face/text/screen/whiteboard/document/id_card/name_tag/`unknown_sensitive` at HIGH and below (only `unknown_sensitive` at HIGH can be unmasked with `SEMANTIC_ALLOW_UNKNOWN_AT_HIGH=true`) |
+| `TrustAwareRenderer.render()` | double-checks `trust_level in (OWNER, ADMIN)` for ORIGINAL_FRAME |
+| `_render_masked()` | cv2 / decode / encode failure → text fallback |
+| `SemanticIntermediateRepresentation.empty()` | represents an analyzer failure as a fail-closed state with `privacy_risk_score=1.0` |
+| `/semantic/analyze` | on failure returns an `empty()` SIR (never returns raw bytes) |
+| `/semantic/render_url` | URL fetch failure → `empty()` SIR + text-only |
 
 ### 13.7 Server-side audit log
 
-`/semantic/render` and `/semantic/render_url` write an audit row when
-either condition fires:
+`/semantic/render` and `/semantic/render_url` add a row to `audit_log`
+when either of the following holds:
 
 - The policy returned `audit_required=True` (OWNER / ADMIN tier)
-- The renderer actually produced image bytes (any tier)
+- The renderer actually returned `image_bytes` (any trust level)
 
-Fields recorded: `ts`, `action`, `subject_did` (sir.source_device_id),
-`dataset_id` (empty; the current implementation does not set it), `purpose=semantic_render`, `reason=trust=...;kinds=...;image=yes|no;
-audit_required=...;rationale=...`, `message_hash` (sir.frame_id), `raw_topic` (same value as `action`),
-`presentation_verified` (`owner_or_admin` or `policy_only`).
+Fields recorded in the audit row:
 
-We never log the source bytes, the base64-encoded rendered image,
-or any face encoding / person name derived from the SIR. `image_url`
-is not in the audit row either (the row has no field for a URL).
+| Field | Value |
+|---|---|
+| `ts` | UTC ISO8601 |
+| `action` | `semantic/render` or `semantic/render_url` |
+| `subject_did` | `sir.source_device_id` |
+| `dataset_id` | empty string (the current implementation does not set it) |
+| `purpose` | `semantic_render` |
+| `reason` | `trust=<level>;kinds=<list>;image=yes|no;audit_required=<bool>;rationale=<policy>` |
+| `message_hash` | `sir.frame_id` |
+| `raw_topic` | same value as `action` |
+| `presentation_verified` | `owner_or_admin` or `policy_only` |
+
+**Not recorded**: the source frame bytes, the base64-encoded rendered image, and any face
+encoding / person name derived from the SIR. `image_url` is not in the audit row either (the row has no field for a URL).
 
 Calls with `audit_required` false that return no image are not written
-to the audit table, whatever the trust level, so the audit table records
-only actual disclosures.
+to the audit table, whatever the trust level (so that the audit table records only actual disclosures).
 
 ### 13.8 API reference
 
-| Endpoint | Input | Output | Notes |
-|---|---|---|---|
-| `POST /semantic/analyze` | multipart `file` + `source_device_id` form field | SIR JSON (`{frame_id, source_device_id, captured_at, scene_summary, objects, people, sensitive_regions, events, privacy_risk_score, analyzer_version}`) | Never echoes input bytes; analyzer error → `SemanticIntermediateRepresentation.empty()` |
-| `POST /semantic/render` | JSON `{trust_level?, sir, image_url?}` | `{trust_level, granted_kinds[], text_summary, event_list[], rationale, audit_required, image_b64?, image_content_type?}` | Unknown trust_level → ANONYMOUS. The publisher fetches `image_url` as given, with no check; pass only the publisher's own `/media/…` URLs. Low-trust receivers never get `image_b64` |
-| `POST /semantic/render_url` | JSON `{trust_level?, image_url, source_device_id?}` | same as `/semantic/render` | Fetch + analyze + render in one call. A fetch or analyze failure falls back fail-closed to an `empty()` SIR |
+#### `POST /semantic/analyze`
+
+- Input: multipart `file` field + `source_device_id` form value
+- Output: SIR JSON (`{frame_id, source_device_id, captured_at, scene_summary,
+  objects, people, sensitive_regions, events, privacy_risk_score, analyzer_version}`)
+- Security: the input bytes are **never included** in the response. On analyzer failure it returns
+  `SemanticIntermediateRepresentation.empty()`.
+
+#### `POST /semantic/render`
+
+- Input: JSON `{trust_level?: string, sir: object, image_url?: string}`
+- Output: `{trust_level, granted_kinds[], text_summary, event_list[], rationale,
+  audit_required, image_b64?, image_content_type?}`
+- Security: an unknown `trust_level` is treated as ANONYMOUS. The publisher fetches `image_url`
+  as given (with no check), so pass only the publisher's own `/media/…` URLs. Low-trust receivers never get image_b64.
+
+#### `POST /semantic/render_url`
+
+- Input: JSON `{trust_level?: string, image_url: string, source_device_id?: string}`
+- Output: same as `/semantic/render`
+- Behavior: the server runs fetch + analyze + render in one call. If fetch or analyze
+  fails, it responds fail-closed using an `empty()` SIR.
 
 ### 13.9 Relation to §12 VLM tier
 

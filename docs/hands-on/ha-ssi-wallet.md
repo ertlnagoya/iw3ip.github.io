@@ -50,7 +50,7 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 
 - ウォレットに VC を発行（OID4VCI）し、提示（OID4VP）する基本フロー
 - Verifier 側の Presentation Definition（PEX）とウォレット側の応答対応
-- `did:jwk` / `did:key` と SD-JWT VC を用いた軽量構成
+- `did:jwk` と SD-JWT VC を用いた軽量構成
 - `allowed` / `denied` が VC の内容と `purpose` によって決まる様子
 
 ## よくある問題
@@ -315,7 +315,7 @@ docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_tok
 - [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) — 読み出し。TTL 内は何度でも使える (ViewerVC)
 - [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) — 機器からの連続書き込み (ServiceVC)
 - [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) — 購入と結びついた読み出し (PurchaseViewerVC)
-- [4 種類の証明書を 1 動線でつなぐ (Stage 6)](marketplace-vc-end-to-end.md) — Stage 1〜5 の総合演習
+- [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md) — Stage 1〜5 の総合演習
 - [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) — 出品者の身元の管理
 
 ## 拡張ヒント
@@ -346,4 +346,4 @@ docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_tok
 
 [4] Sphereon, "pex," GitHub repository, <https://github.com/Sphereon-Opensource/pex>
 
-[5] IETF, "SD-JWT-based Verifiable Digital Credentials (SD-JWT VC)," Internet-Draft, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
+[5] O. Terbu, D. Fett, and B. Campbell, "SD-JWT-based Verifiable Digital Credentials (SD-JWT VC)," IETF Internet-Draft draft-ietf-oauth-sd-jwt-vc-19, Aug. 2026, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>

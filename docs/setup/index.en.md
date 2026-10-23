@@ -1,7 +1,7 @@
 # Environment Setup
 
 This section covers what you need before starting the hands-on.
-It assumes a high school or undergraduate student is encountering this for the first time, so terms and steps are explained in plain language.
+It assumes an undergraduate student in computing is encountering this for the first time, so terms and steps are explained in plain language.
 
 ## What you are building
 

@@ -1,8 +1,9 @@
-# VC architecture overview (Phase 2 / Stages 0–7, T, A)
+# VC architecture overview (Phase 2 / Stages 0–7, T, A, P)
 
-!!! abstract "Where this document fits"
+!!! abstract "Where this page belongs"
+    This is a document in the [Design](index.md) section.
     A bird's-eye summary of what Phase 2 built: **6 VC kinds × 4 token
-    kinds × hands-on Stages 0–7 plus Stages T / A**. See the individual pages
+    kinds × hands-on Stages 0–7 plus Stages T / A / P**. See the individual pages
     for the details of each spec. End-to-end behavior is checked with the
     publisher tests and on a real iPhone.
 
@@ -53,7 +54,7 @@ Listing governance│ —               │ —              │ —          �
 
 **SellerVC does not gate the data-read APIs.** Instead, it leaves evidence of the seller's identity at listing time in the audit log, and that identity is included as `seller_did` in the buyer's `/platform/data?merchandise=` response. In the implementation, the SellerToken also works for `POST /provider/publish` in Stage T (writes from the data-provider PWA), and each use increments `register_count`.
 
-## 5. Hands-on stages (Stages 0–7, T, A)
+## 5. Hands-on stages (Stages 0–7, T, A, P)
 
 ```
 Dependency graph of the Phase 2 hands-on
@@ -76,7 +77,8 @@ Dependency graph of the Phase 2 hands-on
   Stage 7 ── marketplace-seller-vc SellerVC (listing identity)
 
   Stage 1 + Stage 0 ─→ Stage T ── data-user-vc-tiered  DataUserVC (content tiered by trust)
-  Stage 5 ─→ Stage A ── marketplace-mobile-app  purchase to viewing in a phone PWA
+  Stage 6 ─→ Stage A ── marketplace-mobile-app  purchase to viewing in a phone PWA
+  Stage T + Stage 7 ─→ Stage P ── c2pa-provenance  image provenance signed with C2PA (no VC)
 ```
 
 Details of each stage:
@@ -88,10 +90,11 @@ Details of each stage:
 | 3 | [ha-ssi-viewer](../hands-on/ha-ssi-viewer.md) | ViewerVC + ViewerToken + `GET /platform/data` |
 | 4 prep | [ha-ssi-service](../hands-on/ha-ssi-service.md) | ServiceVC + ServiceToken (M2M) |
 | 5 | [marketplace-vc-bridge](../hands-on/marketplace-vc-bridge.md) | bridge service + PurchaseViewerVC + `merchandise=<addr>` reverse lookup |
-| 6 | [marketplace-vc-end-to-end](../hands-on/marketplace-vc-end-to-end.md) | 4 VC kinds working together on one dataset + dataset_id obtained dynamically from `additionalInfo` |
+| 6 | [marketplace-vc-end-to-end](../hands-on/marketplace-vc-end-to-end.md) | ServiceVC writes and PurchaseViewerVC reads connected on one dataset (building on the ConsentVC / ViewerVC flows of Stages 1 and 3) + dataset_id obtained dynamically from `additionalInfo` |
 | 7 | [marketplace-seller-vc](../hands-on/marketplace-seller-vc.md) | SellerVC + `/marketplace/register` + on-chain `getOwner()` verification + `seller_did` included in the response |
 | T | [data-user-vc-tiered](../hands-on/data-user-vc-tiered.md) | DataUserVC + trust score + `allowed_views` to tier the `/platform/data` output |
 | A | [marketplace-mobile-app](../hands-on/marketplace-mobile-app.md) | Use `iot-market-ui` as a PWA on the phone, from purchase through VC receipt to viewing |
+| P | [c2pa-provenance](../hands-on/c2pa-provenance.md) | No VC. Prove image provenance with C2PA signing using X.509 certificates (no publisher or wallet needed) |
 
 ## 6. v1 / v2 marketplaces running side by side
 

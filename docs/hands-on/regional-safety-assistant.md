@@ -287,6 +287,6 @@ docker compose -f infra/docker-compose.yml stop assistant
 
 ## 参考文献
 
-[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-docker/>
+[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-started/get-docker/>
 
 [2] FastAPI, "FastAPI," <https://fastapi.tiangolo.com/>

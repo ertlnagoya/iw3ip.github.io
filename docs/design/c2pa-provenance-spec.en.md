@@ -1,11 +1,12 @@
 # C2PA provenance pipeline — provenance for camera footage and sensor data (Stage P design spec)
 
-!!! abstract "Where this document fits"
+!!! abstract "Where this page belongs"
+    This is a design spec in the [Design](index.md) section.
     This is the design spec for **Stage P** (Provenance), which attaches provenance information that follows the C2PA (Coalition for Content Provenance and Authenticity) standard [1] to footage from low-cost commercial IP cameras and USB webcams, and to sensor data.
-    Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It is a draft written before implementation.
+    Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It was designed before implementation, and P0 of it is now implemented (§13).
     "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview](vc-architecture-overview.md)).
     Stage P builds on the tiered access of Stage T ([Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)) and the SellerVC of Stage 7 ([SellerVC design spec](seller-vc-spec.md)). The P0 part can be run locally in the hands-on [Prove where an image came from](../hands-on/c2pa-provenance.md).
-    P0–P5 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation run in the hands-on) corresponds to P0–P2.
+    P0–P5 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation to build first) corresponds to P0–P2. The hands-on runs P0 (plus the check of the Tier 2 derivative manifest that belongs to P2); P1 and P2 are not implemented yet.
 
 This spec is a design for adding to IW3IP a mechanism that **attaches to each photo or video a record of who took it, when, how, and how it was processed, and signs that record electronically**. Tampering with the record breaks the signature, so whoever receives the file can check for themselves whether it is genuine.
 
@@ -54,7 +55,7 @@ C2PA attaches to the file an electronic signature made with the capturing device
 2. The capture time, camera ID, detection event, and sensor readings go into the manifest as custom assertions
 3. The publisher attaches a manifest to each Stage T derivative (such as a face-blurred image) that references the original as an "ingredient", linking the processing history
 4. The publisher validates the manifest at upload time and records the result in the audit log
-5. The manifest hash and CID are recorded on chain as an ERC-721 [10] token (raw data never goes on chain)
+5. The manifest hash and CID are recorded on chain as an ERC-721 [4] token (raw data never goes on chain)
 
 Compatibility with the existing path is preserved. Media without a manifest is handled by the same path as up to Stage T.
 
@@ -210,9 +211,11 @@ Attached by the gateway to files it captures. In c2pa-python, the manifest conte
 ```
 
 `c2pa.actions` is an assertion defined by C2PA that lists the operations performed on the file. `c2pa.created` means "this file was newly created".
-`digitalSourceType` uses `digitalCapture` from the vocabulary of IPTC, an industry body of news organizations [9], to indicate that a camera captured the file (an image made with generative AI uses a different value).
+`digitalSourceType` uses `digitalCapture` from the vocabulary of IPTC, an industry body of news organizations [7], to indicate that a camera captured the file (an image made with generative AI uses a different value).
 
 `gateway_did` is only an attribute saying "which gateway captured this". The key used for signing is the X.509 certificate's key, not the DID's key (§6.3).
+
+→ In the implementation (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`), the capture manifest lacks these parts of the example above: `camera_model` in `jp.ertl.iw3ip.capture`, the `jp.ertl.iw3ip.detection` assertion, and `window` in `jp.ertl.iw3ip.sensor`. P0 runs no detection and writes a single fixed sensor reading.
 
 `title` must not carry meaningful values such as the camera ID or the capture time, because the capture manifest's title cannot be redacted from derived files (§5.3). Put the camera ID and capture time in `jp.ertl.iw3ip.capture`, which can be redacted.
 
@@ -345,10 +348,10 @@ As described in §2.3, a signer is represented by an X.509 certificate issued by
 | Phase | Certificate | Shown on validation |
 | --- | --- | --- |
 | MVP | A private CA and an ES256 signing certificate | Untrusted signer (trusted once the private CA is registered with the validator) |
-| Production (assumed) | A certificate issued by a CA on the C2PA Trust List [7] | Trusted signer |
+| Production (assumed) | A certificate issued by a CA on the C2PA Trust List [8] | Trusted signer |
 
 ES256 is a signature scheme that combines elliptic-curve cryptography (P-256) with SHA-256.
-The C2PA Trust List is the list of CAs that C2PA has approved as "certificates from this CA may be trusted", the counterpart of the list of HTTPS CAs a browser trusts. A provisional list (the Interim Trust List) was used before, but it stopped receiving updates on January 1, 2026, and was replaced by the C2PA Trust List based on a review scheme (the Conformance Program) [7][8]. The research implementation does not obtain a production certificate; it checks the validation flow with a private CA.
+The C2PA Trust List is the list of CAs that C2PA has approved as "certificates from this CA may be trusted", the counterpart of the list of HTTPS CAs a browser trusts. A provisional list (the Interim Trust List) was used before, but it stopped receiving updates on January 1, 2026, and was replaced by the C2PA Trust List based on a review scheme (the Conformance Program) [8][9]. The research implementation does not obtain a production certificate; it checks the validation flow with a private CA.
 
 Certificates made with the private CA must meet the following conditions (otherwise the SDK refuses to sign). `make_test_certs.py` in the main repository creates certificates that meet them.
 
@@ -370,7 +373,7 @@ c2pa-python lets the caller perform signing in its own function (a callback) [3]
 
 ServiceVC is a VC stating that a device or service may write continuously ([Authenticate machines](../hands-on/ha-ssi-service.md)). Making the gateway a ServiceVC holder gives it a `did:jwk`. A C2PA signer is represented by an X.509 certificate, so these are two separate identifiers.
 
-The identity assertion of CAWG (Creator Assertions Working Group, the working group defining how to add the creator's identity to C2PA provenance) [4] is one way to bind the two.
+The identity assertion of CAWG (Creator Assertions Working Group, the working group defining how to add the creator's identity to C2PA provenance) [10] is one way to bind the two.
 The CAWG identity assertion has a mode signed with an X.509 certificate and a mode that aggregates VCs (identity claims aggregation).
 SellerVC is a VC, so the latter, which handles VCs as they are, suits using SellerVC as proof of "who provided this". The CAI SDK, however, can only validate the latter, not sign it [2].
 The MVP therefore only puts `gateway_did` in `jp.ertl.iw3ip.capture`, and integration with CAWG is considered in P3.
@@ -499,6 +502,8 @@ C2PA also has a mechanism for finding stripped provenance again from the pixels,
 | **P4** | RTSP IP camera and Raspberry Pi, TPM signing, evaluation in §9 | Commercial IP camera, Raspberry Pi |
 | **P5** | Hands-on (JA + EN) | — |
 
+→ In the implementation, the P0 program (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) signs a dummy image drawn by the program by default (it uses a webcam only with `--webcam`). It validates with the SDK Reader only; Content Credentials Verify and c2patool are not used. On the other hand, the P0 program already builds and checks the Tier 2 derivative manifest and redaction listed under P2. P1 (integration into `/media/upload`) and P2's ProvenanceToken and so on are not implemented in the course repository yet.
+
 ## 11. Open questions
 
 1. **Continuous recording**
@@ -559,18 +564,18 @@ Checking with Content Credentials Verify [11], RTSP cameras, fragmented MP4, and
 
 [3] Content Authenticity Initiative, "c2pa-python: Python binding for the C2PA SDK," GitHub, <https://github.com/contentauth/c2pa-python>
 
-[4] Creator Assertions Working Group, "Identity Assertion, Version 1.1," <https://cawg.io/identity/1.1/>
+[4] W. Entriken, D. Shirley, J. Evans, N. Sachs, "ERC-721: Non-Fungible Token Standard," Ethereum Improvement Proposals, no. 721, 2018, <https://eips.ethereum.org/EIPS/eip-721>
 
 [5] ONVIF, "ONVIF Media Signing Specification," <https://www.onvif.org/specs/stream/ONVIF-MediaSigning-Spec.pdf>
 
 [6] ONVIF, "media-signing-framework," GitHub, <https://github.com/onvif/media-signing-framework>
 
-[7] C2PA, "C2PA Conformance Program," <https://c2pa.org/conformance/>
+[7] IPTC, "Digital Source Type," NewsCodes vocabulary, <https://cv.iptc.org/newscodes/digitalsourcetype/>
 
-[8] C2PA, "FAQ," <https://c2pa.org/faq/>
+[8] C2PA, "C2PA Conformance Program," <https://c2pa.org/conformance/>
 
-[9] IPTC, "Digital Source Type," NewsCodes vocabulary, <https://cv.iptc.org/newscodes/digitalsourcetype/>
+[9] C2PA, "FAQ," <https://c2pa.org/faqs/>
 
-[10] W. Entriken, D. Shirley, J. Evans, N. Sachs, "ERC-721: Non-Fungible Token Standard," Ethereum Improvement Proposals, no. 721, 2018, <https://eips.ethereum.org/EIPS/eip-721>
+[10] Creator Assertions Working Group, "Identity Assertion, Version 1.1," <https://cawg.io/identity/1.1/>
 
-[11] Content Authenticity Initiative, "Content Credentials Verify," <https://contentcredentials.org/verify>
+[11] Content Authenticity Initiative, "Content Credentials Verify," <https://verify.contentauthenticity.org/>

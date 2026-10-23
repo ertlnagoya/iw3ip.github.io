@@ -56,7 +56,7 @@ IW3IP に関する発表論文は [論文](../publications.md) のページに�
 
 [3] 村中大輝, 雨宮護, 大山智也, 「地方自治体による公共空間への防犯カメラ大規模設置事業の取り組み実態と評価」, 都市計画論文集, Vol.51, No.3, pp.357–364, 2016. DOI: [10.11361/journalcpij.51.357](https://doi.org/10.11361/journalcpij.51.357)
 
-[4] 警察庁, 「令和6年における行方不明者届受理等の状況」, <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
+[4] 警察庁, 「令和6年における行方不明者届受理等の状況」, 2025, <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
 
 [5] 警察庁, 「オンラインでの申請等の案内」, <https://www.npa.go.jp/policies/application/shinseisys/>
 
@@ -74,7 +74,7 @@ IW3IP に関する発表論文は [論文](../publications.md) のページに�
 
 [12] W3C, "Verifiable Credentials Data Model v2.0," W3C Recommendation, 2025, <https://www.w3.org/TR/vc-data-model-2.0/>
 
-[13] Decentralized Identity Foundation, <https://identity.foundation/>
+[13] Decentralized Identity Foundation, "Decentralized Identity Foundation (DIF)," <https://identity.foundation/>
 
 [14] OWASP Foundation, "OWASP API Security Top 10," <https://api-security.owasp.org/>
 

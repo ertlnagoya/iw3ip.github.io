@@ -4,7 +4,7 @@
 
 > **やること**: ウェブカメラ画像をローカル VLM で解析し、生成した意味データ（説明文）を基盤上で流通させる
 >
-> **前提**: [環境構築](../setup/index.md) と [最短起動](../setup/quickstart.md) が済んでいること
+> **前提**: [環境構築](../setup/index.md) が済み、Docker が使えること (最短起動のスタックは使いません)
 >
 > **使うもの**: ラップトップ PC + USB ウェブカメラ + Docker（VLM を含む）
 >
@@ -45,7 +45,7 @@
 
 ## 前提
 
-- [最短起動](../setup/quickstart.md) の v1 スタックを起動できる
+- Docker が使え、教材リポジトリのトップで `docker compose -f infra/docker-compose.yml ...` を実行できる
 - [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 - USB ウェブカメラが PC から認識されている（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を一度試していると理解が早い）
 - 教材リポジトリのトップで Python 3 の仮想環境を作り、OpenCV を入れておく (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`)。新しく開いたターミナルでも `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を実行します。Homebrew の Python などでは、venv の外で `pip install` するとエラーになります

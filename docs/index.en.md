@@ -6,7 +6,7 @@ title: IW3IP Documentation
 
 This documentation site brings together the IW3IP overview, implementation examples, and hands-on instructions.
 
-## Main Use Cases
+## Intended readers
 
 - Undergraduate students studying computing or information systems
 - Instructors and TAs running practical sessions

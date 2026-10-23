@@ -31,7 +31,7 @@ Confirm that you can open the marketplace from a smartphone and buy an item.
     assumes a `/mobile` route, but the current `iot-market-ui` does
     not have one. Use the actual entry points listed below.
 
-## Common issues
+## Common pitfalls
 
 - if the PC side is not exposed on `0.0.0.0`, the smartphone cannot reach it
 - even on what looks like the same Wi-Fi, a split network prevents the connection

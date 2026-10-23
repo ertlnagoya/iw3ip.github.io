@@ -26,5 +26,5 @@ Read it after the hands-on when you want to know why things behave as they do, w
 
 ## How to read the design specs
 
-- Many specs were written before the implementation. Where the implementation differs, the spec carries a "→ In the implementation" note. The source code of the course repository and the hands-on steps are the reference for actual behaviour.
+- Many specs were written before the implementation. Where the implementation differs, the spec says so in a note (a "→ In the implementation" line, an "in the original design / in the current implementation" contrast, or a "Current implementation" box). The source code of the course repository and the hands-on steps are the reference for actual behaviour.
 - "Stage" in the text is the step number of the Phase 2 hands-on (listed in §5 of the [VC Architecture Overview](vc-architecture-overview.md)). The relation between Part, Phase and Stage is explained in the [Hands-on overview](../hands-on/index.md#part-phase-stage).

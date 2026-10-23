@@ -1,8 +1,8 @@
-# 4 種類の証明書を 1 動線でつなぐ (Stage 6)
+# ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)
 
 Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデータを Buyer が PurchaseViewerVC で読み出すシナリオを 1 セッションで通します。
 
-> **やること**: 4 種 VC (Consent / Service / Viewer / PurchaseViewer) を 1 動線でつなぐ
+> **やること**: 1 つの dataset について、ServiceVC での書き込みと PurchaseViewerVC での読み出しをつなぐ
 >
 > **前提**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)
 >
@@ -26,9 +26,10 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 
 ## 目的
 
-- データフローに関わる 4 種類の VC (ConsentVC / ViewerVC /
-  **ServiceVC** / **PurchaseViewerVC**) が **1 つの dataset を介して協調**
-  することを確認する (5 種類目の SellerVC は出品者の身元を扱うもので、
+- **ServiceVC** での書き込みと **PurchaseViewerVC** での読み出しが
+  **1 つの dataset を介してつながる**ことを確認する。Stage 1 (ConsentVC) と
+  Stage 3 (ViewerVC) の流れの上に組み立てた演習で、このページの手順で使う VC は
+  ServiceVC と PurchaseViewerVC の 2 種類です (出品者の身元を扱う SellerVC は
   [Stage 7](marketplace-seller-vc.md) で扱う)
 - on-chain 支払い (MetaMask) と off-chain 認可 (VC) の **役割分担**を
   一連の流れで理解する
@@ -142,10 +143,6 @@ docker logs iw3ip-mv-bridge 2>&1 | tail -5
 bridge: listening to 5 merchandise(s)
 ```
 
-```bash
-
-```
-
 iot-market-ui は別のターミナルで起動します (Stage 5 のターミナル D で動いていれば、そのまま使えるので不要です)。
 
 ```bash
@@ -199,11 +196,16 @@ done
 ```
 
 ### 期待出力
-```
+
+```text
 iter 1 {'status': 'received', 'count': N}
 iter 2 {'status': 'received', 'count': N+1}
-... (N+4 まで連番増加)
+iter 3 {'status': 'received', 'count': N+2}
+iter 4 {'status': 'received', 'count': N+3}
+iter 5 {'status': 'received', 'count': N+4}
 ```
+
+`N` は、この書き込みの前に publisher が受け取っていた行の数に 1 を足した値です。publisher を作り直した直後なら `N` は 1 になります。
 
 これで `home/env/temperature` に **値 31〜35** の 5 件が seller 役として蓄積されました。
 
@@ -274,8 +276,10 @@ docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1
 期待する出力:
 
 ```text
-jti と deeplink を取り出す
+bridge: claim ok jti=<claim_id> deeplink=openid-credential-offer://?credential_offer=...
 ```
+
+この行の `deeplink=` 以降を、Step E3 で取り出して QR にします。
 
 ---
 
@@ -295,6 +299,8 @@ open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 iPhone wallet で QR を読み取り、「IW3IP 購入閲覧（Tier 1 / イベントのみ）」(英語表示では「IW3IP Purchase Viewer (Event-only)」) を承認します。上のコマンドは deeplink を外部の QR 生成サービスに送るため、ローカルのハンズオン環境以外では使わないでください。
 
 VC claims に `dataset_id: home/env/temperature` が入っていることを wallet で確認。
+
+deeplink に含まれるコードの有効期限は、購入の申告から 30 分です。Step E2 の購入から 30 分以内に wallet で受け取ってください。期限が切れて publisher の `/issuer/token` が `400 invalid_grant` を返したときは、[Stage 5 のトラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング) の F のとおり、まだ買っていない温度の Merchandise (#0 か #1) を Step E2 の手順で買い直し、Step E4 の `MERCHANDISE` もそのアドレスに置き換えます。
 
 audit:
 ```bash

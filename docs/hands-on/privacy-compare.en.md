@@ -75,7 +75,7 @@ docker run -d --name iw3ip-ollama -p 11434:11434 -v iw3ip_ollama:/root/.ollama o
 docker exec iw3ip-ollama ollama pull moondream
 ```
 
-The `vlm` service in docker-compose.yml does not publish port 11434 to the host, so Ollama runs as a separate container that programs on the PC can reach.
+The `vlm` service in docker-compose.yml does not publish port 11434 to the host, so Ollama runs as a separate container that programs on the PC can reach. If the Ollama desktop app or something else already uses port 11434, it cannot start, so quit it first (see [Troubleshooting](../operations/troubleshooting.md), 10).
 
 **Terminal 2: the mock cloud AI**. With `--ollama-url`, it forwards each request to the local Ollama and returns a realistic description.
 

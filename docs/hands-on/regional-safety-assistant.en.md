@@ -38,7 +38,7 @@ Branches after that:
 - the reason for separating `plan` and `execute`
 - the meaning of designing planner, evaluator, and actuator as separate modules
 
-## Common issues
+## Common pitfalls
 
 - being able to build a `plan` is different from having the conditions met at `execute`
 - treating event-count evaluation and device control as one process makes the flow hard to see
@@ -287,6 +287,6 @@ docker compose -f infra/docker-compose.yml stop assistant
 
 ## References
 
-[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-docker/>
+[1] Docker, "Get Docker," Docker Docs, <https://docs.docker.com/get-started/get-docker/>
 
 [2] FastAPI, "FastAPI," <https://fastapi.tiangolo.com/>

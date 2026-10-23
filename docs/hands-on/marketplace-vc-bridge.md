@@ -429,6 +429,9 @@ iPhone のカメラで QR を読み取ると wallet が起動し、「IW3IP 購�
 !!! warning "QR 生成に外部サービスを使います"
     上のコマンドは deeplink の内容を外部の QR 生成サービス (api.qrserver.com) に送ります。deeplink には VC 発行用のコードが含まれるため、ローカルのハンズオン環境以外では使わないでください。
 
+!!! note "購入から 30 分以内に受け取る"
+    deeplink に含まれる VC 発行用のコード (pre-authorized code) の有効期限は、bridge が購入を申告してから 30 分です。Step 6 の購入から 30 分以内に wallet で受け取ってください。期限を過ぎると、wallet の受け取りが失敗し、publisher の `/issuer/token` が `400 invalid_grant` を返します。publisher は購入の申告を取引ハッシュ (tx_hash) ごとに 1 回だけ記録するので、同じ購入からは同じ (期限切れの) コードしか得られません。期限が切れたら [トラブルシューティング](#トラブルシューティング) の F を参照してください。
+
 
 ### 期待結果
 
@@ -659,8 +662,10 @@ echo "$DEEPLINK" | python3 -c "import sys,urllib.parse,json; d=urllib.parse.unqu
 期待する出力:
 
 ```text
-http://<HOST_IP>:8080  (host.docker.internal:8080 ではなく)
+http://<HOST_IP>:8080
 ```
+
+`http://host.docker.internal:8080` ではなく、PC の LAN IP が表示されれば正しく設定できています。
 
 **原因 2**: wallet が `No script URL provided` エラー画面を出している = Metro bundler 未起動。
 
@@ -706,6 +711,20 @@ ipconfig getifaddr en0
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 ```
+
+### F. wallet が VC を受け取れず、publisher の `/issuer/token` が `400 invalid_grant` を返す
+
+```bash
+docker logs $(docker ps -qf name=publisher) 2>&1 | grep "/issuer/token" | tail -2
+```
+
+```text
+HTTP 400 on POST /issuer/token: invalid_grant
+```
+
+**原因**: deeplink に含まれるコード (pre-authorized code) の有効期限 (購入の申告から 30 分) が切れている、または同じコードですでに一度受け取っている。publisher の `/marketplace/claim` は取引ハッシュ (tx_hash) ごとに冪等で、同じ購入を申告し直しても同じコードを返します。そのため、deeplink を取り出し直したり bridge を作り直したりしても解決しません。
+
+**対処**: まだ買っていない温度の Merchandise (#0 `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0` ないしは #3 `0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6`) を Step 6 の手順で購入し、Step 7 の手順で 30 分以内に wallet で受け取る。Step 9 の `MERCHANDISE` もそのアドレスに置き換える。
 
 ---
 

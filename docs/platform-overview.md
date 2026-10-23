@@ -239,7 +239,7 @@ IW3IP はカメラ映像専用の基盤ではありません。温度・振動�
 
 ## 参考文献
 
-[1] 警察庁, 「令和6年における行方不明者届受理等の状況」, <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
+[1] 警察庁, 「令和6年における行方不明者届受理等の状況」, 2025, <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
 
 [2] 警察庁, 「オンラインでの申請等の案内」, <https://www.npa.go.jp/policies/application/shinseisys/>
 

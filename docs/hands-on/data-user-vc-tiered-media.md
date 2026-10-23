@@ -100,8 +100,9 @@ export IPFS_GATEWAY_URL=http://ipfs:8080
 
 docker compose -f infra/docker-compose.yml --profile ipfs up -d --force-recreate publisher ipfs
 docker compose -f infra/docker-compose.yml ps ipfs
-# iw3ip-ipfs container が Up になっていれば OK
 ```
+
+`ps` の出力で、iw3ip-ipfs のコンテナが Up になっていれば成功です。
 
 `--force-recreate` で publisher のコンテナを作り直すと、メモリに保存していた claim、ViewerToken、イベントの行は消えます。§9.2 でイベントを流し直したあと、1 ページ目の [§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) の提示 (ViewerToken の取得) だけをやり直してください。ウォレットのカードは発行用の鍵がボリュームに残っているので、そのまま使えます。§3 の claim からやり直すと、同じ名前のカードが 3 枚増えます。同意はボリュームに保存されているので、登録し直す必要はありません。
 
@@ -111,8 +112,9 @@ publisher の設定に `IPFS_API_URL=http://ipfs:5001` が反映されたこと�
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer >/dev/null
 docker compose -f infra/docker-compose.yml exec publisher \
   python -c "from publisher.app.config import Settings; \
-             print('IPFS_API_URL=', Settings().ipfs_api_url); \
-             print('IPFS_GATEWAY_URL=', Settings().ipfs_gateway_url)"
+             s=Settings(); \
+             print('IPFS_API_URL=', s.ipfs_api_url); \
+             print('IPFS_GATEWAY_URL=', s.ipfs_gateway_url)"
 ```
 
 ### 9.2 アップロード時に CID が返ることを確認
@@ -299,7 +301,7 @@ iPhone（iw3ip-wallet）で一連の流れを実行したときの `/viewer` 画
 
 | 症状 | 対処 |
 |---|---|
-| iPhone で deeplink が起動しない | Safari → ウォレットで開く リンクをタップ。Safari の「アプリ起動許可」を確認 |
+| iPhone で deeplink が起動しない | Safari に表示された「ウォレットで開く」リンクをタップし、Safari の「アプリ起動許可」を確認します |
 | PC で QR が表示されない | ブラウザが CDN（`cdn.jsdelivr.net`）に到達できるか確認。オフライン環境ではエラーになる |
 | PC のロングポーリングが終わらない | ウォレット側で正しい VC を提示できているか `docker compose -f infra/docker-compose.yml logs publisher` で `/verifier/response` の 200 を確認 |
 | `/viewer` が 401 | ViewerToken TTL 60 秒切れ。`/buyer/start` から再開 |

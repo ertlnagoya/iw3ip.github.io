@@ -4,7 +4,7 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
 
 > **What you'll do**: analyze a webcam image with a local VLM and distribute the generated semantic data (descriptions) over the platform
 >
-> **Prerequisites**: [Environment setup](../setup/index.md) and [Quickstart](../setup/quickstart.md) completed
+> **Prerequisites**: [Environment setup](../setup/index.md) completed and Docker available (the Quickstart stack is not used)
 >
 > **What you need**: laptop PC + USB webcam + Docker (including the VLM)
 >
@@ -45,7 +45,7 @@ Instead of distributing raw images, distribute the **semantic derivatives** a lo
 
 ## Prerequisites
 
-- you can start the v1 stack from [Quickstart](../setup/quickstart.md)
+- Docker is available and you can run `docker compose -f infra/docker-compose.yml ...` at the top of the course repository
 - If the IPFS from the [Quickstart](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - a USB webcam is recognized by the PC (trying [Detect with a USB webcam (OpenCV)](webcam.md) first makes this easier)
 - A Python 3 virtual environment at the top of the course repository with OpenCV installed (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`). In every new terminal, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate`. With Homebrew Python and similar setups, `pip install` outside a venv fails

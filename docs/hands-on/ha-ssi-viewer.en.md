@@ -121,7 +121,8 @@ Response the wallet receives (for reference; it is not shown in the PC browser):
   "viewer_token": "Xa9Hk...",
   "viewer_token_jti": "1f2c...",
   "expires_in": 60,
-  "allowed_views": ["event"]
+  "allowed_views": ["event"],
+  "redirect_uri": "http://<HOST_IP>:8080/viewer?vt=Xa9Hk...&ds=home/env/temperature"
 }
 ```
 
@@ -223,7 +224,7 @@ ViewerVC reads use a **directly specified dataset_id**. Other forms of authoriza
 
 - [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) — continuous writes from a device (ServiceVC)
 - [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
-- [Tie four credentials together end-to-end (Stage 6)](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
+- [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
 - [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — seller identity
 
 ## Extension ideas

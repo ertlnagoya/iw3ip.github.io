@@ -104,8 +104,9 @@ export IPFS_GATEWAY_URL=http://ipfs:8080
 
 docker compose -f infra/docker-compose.yml --profile ipfs up -d --force-recreate publisher ipfs
 docker compose -f infra/docker-compose.yml ps ipfs
-# iw3ip-ipfs container should be Up
 ```
+
+In the `ps` output, the iw3ip-ipfs container should be Up.
 
 Recreating the publisher container with `--force-recreate` clears the claims, ViewerTokens, and event rows it kept in memory. After publishing again in §9.2, redo only the presentation (getting a ViewerToken) in [§4](data-user-vc-tiered.md#4-issue-purchaseviewervc-present-fetch-platformdata) of the first page. The cards in the wallet stay usable because the issuer key is kept on the volume. Redoing the claims in §3 would add three more cards with the same names. Consents are stored on the volume, so you do not need to register them again.
 
@@ -286,7 +287,7 @@ badge color and which media keys disappear tell the tier story at a glance.
 |---|---|---|
 | ![Tier 3 viewer](images/data-user-vc-tiered/viewer-tier-3-full.png) | ![Tier 2 viewer](images/data-user-vc-tiered/viewer-tier-2-access.png) | ![Tier 1 viewer](images/data-user-vc-tiered/viewer-tier-1-event.png) |
 | green badge `tier: event+image+video` | orange badge `tier: event+image` | gray badge `tier: event` |
-| inline image + video player | image only, video player gone | timestamp + raw payload only |
+| inline image + video player | image only, video player gone | text and timestamp only |
 | `image_cid` / `image_url` / `video_url` / `video_duration_sec` all present | `image_cid` / `image_url` only | every media key dropped |
 
 The three screenshots come from the **same dataset** (`home/event/possible_littering`)
@@ -308,7 +309,7 @@ through. That's Stage T's whole point.
 
 | Symptom | Fix |
 |---|---|
-| iPhone deeplink doesn't open the wallet | Tap the visible "Open in wallet" link; check Safari's "Open in App" permission |
+| iPhone deeplink doesn't open the wallet | Tap the visible 「ウォレットで開く」 ("Open in wallet") link; check Safari's "Open in App" permission |
 | PC doesn't show a QR | The browser couldn't reach the CDN (`cdn.jsdelivr.net`). Plug in. |
 | PC poll never finishes | Confirm the wallet actually presented a valid VC: `docker compose -f infra/docker-compose.yml logs publisher` should show a `200 /verifier/response` |
 | `/viewer` returns 401 | ViewerToken TTL (60 s) lapsed. Reload `/buyer/start` |

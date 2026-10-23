@@ -41,7 +41,7 @@ plugins:
             Hardhat Basics: Hardhat基礎
             SSI DID VC Basics: SSI/DID/VC基礎
             References: 参考文献
-            Docs: サイトの構築と編集
+            Building and Editing This Site: サイトの構築と編集
             Environment Setup: 環境構築
             Setup Overview: 環境構築の概要
             Hands-on Overview: ハンズオンの概要
@@ -60,6 +60,7 @@ plugins:
             "Trade on the marketplace (MetaMask)": マーケットで売買する (MetaMask = ETH ウォレット)
             "Open the marketplace and buy on a phone (v1)": スマホでマーケットを開いて購入する (v1)
             "Part 2: Feature Extensions — Add auth, marketplace integration, and processing": Part 2 機能拡張 — 認証・連携・データ処理を加える
+            "Share events (Stage 0)": イベントを共有してみよう (Stage 0)
             "Add authentication (SSI wallet)": 認証してみよう (SSI ウォレット)
             "Authenticate the data provider (Consent VC / Stage 1)": データ提供者の認証 (Consent VC / Stage 1)
             "Authenticate the viewer (Viewer VC / Stage 3)": データ閲覧者の認証 (Viewer VC / Stage 3)
@@ -68,7 +69,7 @@ plugins:
             "Share disaster events": 防災イベントを共有する
             "Wire wallet to the marketplace (v2)": マーケットと連携してみよう (v2)
             "Hand a credential to the buyer's wallet (Bridge / Stage 5)": 購入後に証明書をウォレットへ渡す (Bridge / Stage 5)
-            "Tie four credentials together end-to-end (Stage 6)": 4 種類の証明書を 1 動線でつなぐ (Stage 6)
+            "Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)": ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)
             "Back the seller's identity (Seller VC / Stage 7)": 出品者の身元を裏付ける (Seller VC / Stage 7)
             "Marketplace as a phone app (Stage A)": スマホアプリで購入から閲覧まで (Stage A)
             "Process data before sharing": データ処理を入れてみよう (段階アクセス + 画像処理 + VLM)
@@ -145,15 +146,16 @@ nav:
           - "Trade on the marketplace (MetaMask)":
               - "Open the marketplace and buy on a phone (v1)": hands-on/mobile-viewer.md
       - "Part 2: Feature Extensions — Add auth, marketplace integration, and processing":
-          - "Add authentication (SSI wallet)":
+          - "Share events (Stage 0)":
               - "Share detections, not raw frames": hands-on/webcam-event-sharing.md
               - "Share disaster events": hands-on/environment-disaster.md
+          - "Add authentication (SSI wallet)":
               - "Authenticate the data provider (Consent VC / Stage 1)": hands-on/ha-ssi-wallet.md
               - "Authenticate the viewer (Viewer VC / Stage 3)": hands-on/ha-ssi-viewer.md
               - "Authenticate machines (Service VC / Stage 4 prep)": hands-on/ha-ssi-service.md
           - "Wire wallet to the marketplace (v2)":
               - "Hand a credential to the buyer's wallet (Bridge / Stage 5)": hands-on/marketplace-vc-bridge.md
-              - "Tie four credentials together end-to-end (Stage 6)": hands-on/marketplace-vc-end-to-end.md
+              - "Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)": hands-on/marketplace-vc-end-to-end.md
               - "Back the seller's identity (Seller VC / Stage 7)": hands-on/marketplace-seller-vc.md
               - "Marketplace as a phone app (Stage A)": hands-on/marketplace-mobile-app.md
           - "Process data before sharing":
@@ -182,7 +184,7 @@ nav:
       - Course Guide: foundations/course-guide.md
       - Facilitator Guide: operations/facilitator-guide.md
   - About This Site:
-      - Docs: docs.md
+      - Building and Editing This Site: docs.md
       - Contact: contact.md
 
 validation:

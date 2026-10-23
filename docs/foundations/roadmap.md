@@ -18,14 +18,15 @@ P0 が最優先で、P1、P2 の順に進めます。
 
 ## 最短学習パス
 
-1. [授業ガイド](course-guide.md)
-2. [ブロックチェーン基礎](blockchain-basics.md)
-3. [Hardhat基礎](hardhat-basics.md)
-4. [SSI/DID/VC基礎](ssi-did-vc-basics.md)
-5. [最短起動](../setup/quickstart.md)
-6. [HA x SSI Publisherサンプル](../hands-on/ha-ssi-publisher.md)
+1. [ブロックチェーン基礎](blockchain-basics.md)
+2. [Hardhat基礎](hardhat-basics.md)
+3. [SSI/DID/VC基礎](ssi-did-vc-basics.md)
+4. [事前準備](../setup/prerequisites.md)
+5. [HA Demo Simulator](../hands-on/ha-demo-simulator.md)（実機なしで一通り動かす）
+6. [最短起動](../setup/quickstart.md)
+7. [HA x SSI Publisherサンプル](../hands-on/ha-ssi-publisher.md)
 
-この6ページで、基本理解と最小ハンズオンは完結します。
+この7ページで、基本理解と最小ハンズオンは完結します。
 
 ## 3週間プラン（例）
 

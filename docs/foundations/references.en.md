@@ -58,7 +58,7 @@ The papers on IW3IP are listed on the [Publications](../publications.md) page.
 
 [3] H. Muranaka, M. Amemiya, and T. Ohyama, "Survey and evaluation of large-scale installation of CCTV in public space by local governments" (in Japanese), Journal of the City Planning Institute of Japan, vol. 51, no. 3, pp. 357–364, 2016. DOI: [10.11361/journalcpij.51.357](https://doi.org/10.11361/journalcpij.51.357)
 
-[4] National Police Agency of Japan, 「令和6年における行方不明者届受理等の状況」 [Status of missing person reports in 2024] (in Japanese), <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
+[4] National Police Agency of Japan, 「令和6年における行方不明者届受理等の状況」 [Status of missing person reports in 2024] (in Japanese), 2025, <https://www.npa.go.jp/publications/statistics/safetylife/R6_yukuefumeishakouhoushiryou2.pdf>
 
 [5] National Police Agency of Japan, 「オンラインでの申請等の案内」 [Guidance for online applications] (in Japanese), <https://www.npa.go.jp/policies/application/shinseisys/>
 
@@ -76,7 +76,7 @@ The papers on IW3IP are listed on the [Publications](../publications.md) page.
 
 [12] W3C, "Verifiable Credentials Data Model v2.0," W3C Recommendation, 2025, <https://www.w3.org/TR/vc-data-model-2.0/>
 
-[13] Decentralized Identity Foundation, <https://identity.foundation/>
+[13] Decentralized Identity Foundation, "Decentralized Identity Foundation (DIF)," <https://identity.foundation/>
 
 [14] OWASP Foundation, "OWASP API Security Top 10," <https://api-security.owasp.org/>
 

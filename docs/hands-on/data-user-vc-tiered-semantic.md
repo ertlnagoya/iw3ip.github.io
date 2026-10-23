@@ -50,17 +50,13 @@ score 50〜59 が `summary` になります。`VLM_BACKEND` が空なら、`--pr
 VLM と顔ブラーは **opt-in**（明示的に有効にしたときだけ動く機能）です。4 段階の tier に切り替わるのは、publisher の環境変数 `VLM_BACKEND` が空でないときです。`--profile vlm` は Ollama のコンテナを起動するだけで、`VLM_BACKEND` が空なら §1〜§11 と同じ 3 段階の tier 投影で動きます。
 
 publisher の環境変数を VLM 用に設定してから起動します（compose ファイルが受け取る環境変数を
-シェルで `export` するか、`.env` に書きます）。
+シェルで `export` するか、`.env` に書きます）。macOS の Docker ではモデルが CPU で動き、llava は 1 回の推論に 3 分前後かかります。既定の待ち時間 180 秒では足りないので、`VLM_TIMEOUT_SEC` で延ばします（軽い moondream を使う場合は `VLM_MODEL=moondream` も設定します）。`--profile vlm` を付けると、Ollama service と、llava を事前に pull する `vlm-pull` が一緒に起動します。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 export VLM_BACKEND=ollama
 export IMAGE_REDACTION_BACKEND=opencv
-# macOS の Docker ではモデルが CPU で動き、llava は 1 回に 3 分前後かかる。
-# 既定の待ち時間 180 秒では足りないので延ばす。軽い moondream にするなら VLM_MODEL=moondream
 export VLM_TIMEOUT_SEC=600
-# profile vlm を ON にする。Ollama service と、llava を事前に pull する vlm-pull が起動する
-# が一緒に立ち上がる
 docker compose -f infra/docker-compose.yml --profile vlm up -d \
   publisher mosquitto vlm vlm-pull
 ```
@@ -73,7 +69,7 @@ docker compose -f infra/docker-compose.yml --profile vlm up -d \
 docker compose -f infra/docker-compose.yml logs -f vlm-pull
 ```
 
-"vlm model llava ready" が出たら抜ける
+`vlm model llava ready` の行が出たら、Ctrl+C で抜けます。
 
 publisher が起動していることを確認します。
 
@@ -148,7 +144,7 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 [§3〜§4](data-user-vc-tiered.md#3-marketplaceclaim-を-3-通り呼び出す) と同じ要領で、4 通りそれぞれについて claim、PurchaseViewerVC の提示、ViewerToken の取得、
 `/platform/data` の取得を行います。対象の行は §12.2.1 で流したものです。
 
-1 ページ目の §4 で受け取ったカードがウォレットに残っていると、ここで受け取るカードと同じ名前で並びます。古いカードを提示すると、VLM の説明文や加工した画像は出ません。先に古いカードをウォレットから削除するか、提示後に `docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1` の `views=` を確かめます。Tier 3 は `event+image+video+image_redacted+description_full+description_summary`、Tier 2 は `event+image_redacted+description_full+description_summary`、Tier 1 は `event+description_summary`、Tier 0 は `event` になります。
+1 ページ目の §4 で受け取ったカードがウォレットに残っていると、ここで受け取るカードと同じ名前で並びます。古いカードを提示すると、VLM の説明文や加工した画像は出ません。先に古いカードをウォレットから削除するか、提示後に `docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1` を実行し、出力された JSON の `"message"` にある `views=` を確かめます。Tier 3 は `event+image+video+image_redacted+description_full+description_summary`、Tier 2 は `event+image_redacted+description_full+description_summary`、Tier 1 は `event+description_summary`、Tier 0 は `event` になります。
 
 `VLM_BACKEND` を設定しているとき、レスポンスに含まれるキーは次のように変わります。
 
@@ -195,10 +191,9 @@ publisher は内部で次の順に処理します。
 Tier 2 / 3 で取得した `description_full` と Tier 1 の `description_summary` を
 並べると、**人名・固有名詞が除かれているか**を確認できます。
 
-先に、§12.4 と同じ手順で Tier 3 (12.3.a) の PurchaseViewerVC を提示し、publisher のログの `viewer_token_issued` 行 (`docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`) にある `token=` の値を `export VIEWER_TOKEN_TIER3=<token= の値>` で入れます。ViewerToken の有効期限は 60 秒なので、入れたらすぐに次を実行します。
+先に、§12.4 と同じ手順で Tier 3 (12.3.a) の PurchaseViewerVC を提示し、publisher のログの `viewer_token_issued` 行 (`docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`) の `"message"` にある `token=` の値を `export VIEWER_TOKEN_TIER3=<token= の値>` で入れます。ViewerToken の有効期限は 60 秒なので、入れたらすぐに次を実行し、Tier 3 で全キーを取得します。
 
 ```bash
-# Tier 3 でフルキー取得
 curl -s -H "authorization: Bearer $VIEWER_TOKEN_TIER3" \
      'localhost:8080/platform/data?dataset_id=home/event/possible_littering' \
   | jq '.rows[0] | {description_full, description_summary, description_model}'
@@ -232,24 +227,29 @@ afternoon」のような **一般化された語だけ**が出ているはずで
 VLM か顔ブラーのどちらかが失敗しても publish は止まりません。機能を縮退（degrade）させて
 処理を続け、`processing_warnings[]` で受信側に状況を通知します。
 
-VLM だけを停止する場合:
+VLM だけを停止する場合は、次のコマンドで vlm を止めます。
 
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
-# §12.2.1 の provider_with_media.py でイベントを流すと、/platform/data で
-# processing_warnings に vlm_unavailable が出る
-# 顔ブラーは VLM 不要のため、image_url_redacted は生成される
-# description のキーは欠落
 ```
 
-両方を停止する場合:
+この状態で §12.2.1 の `provider_with_media.py` でイベントを流すと、`/platform/data` の応答は次のようになります。
+
+- `processing_warnings` に `vlm_unavailable` が出ます
+- 顔ブラーは VLM を使わないので、`image_url_redacted` は生成されます
+- `description_*` のキーは含まれません
+
+両方を停止する場合は、同じく vlm を止めたうえで、publisher の `IMAGE_REDACTION_BACKEND` を空にして起動し直します。
 
 ```bash
 docker compose -f infra/docker-compose.yml stop vlm
-# 加えて publisher の IMAGE_REDACTION_BACKEND を空にして再起動
-# /platform/data で processing_warnings に vlm_unavailable が出る
-# Tier 2 と Tier 1 の受信者は画像キーも description のキーも受け取らず、event だけになる
+IMAGE_REDACTION_BACKEND= docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
 ```
+
+publisher を起動し直すと、メモリに保存していた claim と行は消えます。§12.2.1 でイベントを流し直し、§12.4 で claim と提示をやり直すと、`/platform/data` の応答は次のようになります。
+
+- `processing_warnings` に `vlm_unavailable` が出ます
+- Tier 2 と Tier 1 の受信者は、画像のキーも `description_*` のキーも受け取らず、event だけになります
 
 `IMAGE_REDACTION_BACKEND` を空にすると、顔ブラー処理そのものが無効になります。
 処理を試みて失敗したわけではないので、`redaction_unavailable` は出ません

@@ -40,7 +40,7 @@ v2 は v1 を置き換えるものではなく、v1 に追加する経路です�
 
 - **Part 1〜3**: このサイトでの学習順です。基本、機能拡張、知能統合の順に進みます。
 - **Phase 1〜3**: 基盤の発展段階です。Phase 1 はデータ共有、Phase 2 はイベント共有、Phase 3 は AI による判断と制御を指します（[プラットフォーム概要のフェーズ構成](../platform-overview.md#フェーズ構成)）。
-- **Stage 0〜7、A、T**: Part 2 のうち、VC を使うハンズオンとその準備 (Stage 0) に付けた通し番号です。各ページは、前の Stage を済ませていることを前提にしています。Stage 2 は欠番です。
+- **Stage 0〜7、A、T、P**: Part 2 のうち、VC を使うハンズオンと、その準備 (Stage 0)、画像の来歴の署名 (Stage P。VC は使わない) に付けた通し番号です。各ページは、前の Stage を済ませていることを前提にしています。Stage 2 は欠番です。
 
 | Stage | ハンズオン | 扱う VC |
 |---|---|---|
@@ -49,10 +49,11 @@ v2 は v1 を置き換えるものではなく、v1 に追加する経路です�
 | 3 | [データ閲覧者の認証](ha-ssi-viewer.md) | ViewerVC |
 | 4 prep | [機器間での連携認証](ha-ssi-service.md) | ServiceVC |
 | 5 | [購入後に証明書をウォレットへ渡す](marketplace-vc-bridge.md) | PurchaseViewerVC |
-| 6 | [4 種類の証明書を 1 動線でつなぐ](marketplace-vc-end-to-end.md) | Consent / Viewer / Service / PurchaseViewer |
+| 6 | [ServiceVC で書いたデータを PurchaseViewerVC で読み出す](marketplace-vc-end-to-end.md) | ServiceVC + PurchaseViewerVC (Stage 1・3 の ConsentVC・ViewerVC の流れの上に組み立てる) |
 | 7 | [出品者の身元を裏付ける](marketplace-seller-vc.md) | SellerVC |
 | A | [スマホアプリで購入から閲覧まで](marketplace-mobile-app.md) | PurchaseViewerVC (スマホだけで操作) |
 | T | [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) | DataUserVC |
+| P | [画像の来歴を証明する](c2pa-provenance.md) | なし (C2PA の署名に X.509 証明書を使う。publisher とウォレットは不要) |
 
 VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-architecture-overview.md) にまとめています。
 
@@ -124,7 +125,7 @@ export HOST_IP=192.168.1.20
 | 基本を一通り | Part 1 全部 (約 1.5 時間。1.2 のデバイスは 1 つ選ぶ) |
 | 安全な共有まで | Part 1 → Part 2 の 2.1〜2.3 (+ 約 4 時間) |
 | マーケット連携の v2 まで | Part 1 → Part 2 の 2.4 まで (+ 約 4 時間) |
-| 段階アクセスまで | Part 2 の 2.5 まで (+ 約 1 時間。画像・動画の配信と意味レベルの段階化まで進む場合は、さらに約 3 時間) |
+| 段階アクセスまで | Part 2 の 2.5 まで (+ 約 1 時間。画像・動画の配信と意味レベルの段階化まで進む場合は、さらに約 3 時間。C2PA で画像の来歴を証明する (Stage P) 場合は、さらに約 30〜40 分) |
 | AI 統合まで | Part 3 まで (+ 約 5 時間) |
 
 時間は、各ページの冒頭にある所要時間を合計した目安です。「+」は、1 つ上の行までにかかる時間に加えて必要な時間です。
@@ -273,11 +274,11 @@ export HOST_IP=192.168.1.20
 購入後の受け渡しを、暗号化した URI (v1) ではなく **PurchaseViewerVC + ViewerToken** で行う v2 経路を扱います。
 
 - [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) — bridge を起動し、購入から VC 発行までをつなぐ
-- [4 種類の証明書を 1 動線でつなぐ (Stage 6)](marketplace-vc-end-to-end.md) — 書き込みから購入、閲覧までを通す
+- [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md) — 書き込みから購入、閲覧までを通す
 - [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) — 出品者側の VC
 - [スマホアプリで購入から閲覧まで (Stage A)](marketplace-mobile-app.md) — 専用モバイルアプリ
 
-### 2.5 信頼度に応じた段階アクセス (Stage T)
+### 2.5 信頼度に応じた段階アクセス (Stage T / P)
 
 利用者の **DataUserVC** に基づき、Tier 3 (動画+全部) / Tier 2 (画像+派生) / Tier 1 (要約のみ) の 3 段階で見せ方を変えます。
 後半では、画像の内容を構造化したデータ（意味的中間表現）を作り、信頼度に応じて見せ方を変える処理（trust-aware rendering）も扱います。

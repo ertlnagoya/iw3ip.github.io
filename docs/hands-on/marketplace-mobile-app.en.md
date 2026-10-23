@@ -4,7 +4,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 
 > **What you'll do**: Use iot-market-ui as a PWA on your phone and go through purchase and VC receipt
 >
-> **Prerequisites**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)
+> **Prerequisites**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5), Step E0 of [Stage 6](marketplace-vc-end-to-end.md) (deploy and public key registration)
 >
 > **What you need**: PC + smartphone (iw3ip-wallet) + MetaMask mobile
 >
@@ -62,7 +62,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 
 ## Prerequisites
 
-- You have completed the Stage 5 / 6 / 7 hands-ons. If you restarted Hardhat since then, first redo [Stage 6 Step E0](marketplace-vc-end-to-end.md#step-e0-start-the-prerequisite-environment-same-as-stage-5) (start the node, deploy, register the public key, recreate the bridge)
+- You have completed the Stage 5 and Stage 6 hands-ons (the purchase uses the Merchandise deployed and the public key registered in Stage 6 Step E0; Stage 7 is optional and only matters for the `seller_did` explanation in Step M5). If you restarted Hardhat since then, first redo [Stage 6 Step E0](marketplace-vc-end-to-end.md#step-e0-start-the-prerequisite-environment-same-as-stage-5) (start the node, deploy, register the public key, recreate the bridge)
 - You can start publisher + bridge + Hardhat + iot-market-ui
 - iw3ip-wallet (iPhone) works
 - `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
@@ -239,6 +239,8 @@ On `/purchased/<txHash>`, tap **"ウォレットで開く" (Open in wallet)**.
 
 iw3ip-wallet launches and shows the "IW3IP Purchase Viewer (Event-only)" confirmation screen (shown as "IW3IP 購入閲覧（Tier 1 / イベントのみ）" in a Japanese-language wallet) → approve.
 
+The VC issuance code expires 30 minutes after the purchase claim. Receive the VC within 30 minutes of the Step M3 purchase. After it expires, the wallet fails to receive the VC (the publisher's `/issuer/token` returns `400 invalid_grant`). The same purchase only ever gives you the same code, so, as in F of [Troubleshooting in the Stage 5 hands-on](marketplace-vc-bridge.md#troubleshooting), buy a Merchandise you have not bought yet (see the table in [Stage 6 Step E2](marketplace-vc-end-to-end.md)) as in Step M3.
+
 ### Expected result
 
 - A new entry in the wallet's VC list
@@ -373,5 +375,5 @@ and the troubleshooting section of [Stage 7](marketplace-seller-vc.md).
 
 - [VC Architecture Overview](../design/vc-architecture-overview.md)
 - [Stage 5: Marketplace × Wallet bridge](marketplace-vc-bridge.md)
-- [Stage 6: 4-VC end-to-end](marketplace-vc-end-to-end.md)
+- [Stage 6: ServiceVC × PurchaseViewerVC end-to-end](marketplace-vc-end-to-end.md)
 - [Stage 7: Marketplace Seller VC](marketplace-seller-vc.md)

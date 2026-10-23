@@ -101,7 +101,7 @@ Phase 1 のサンプル（Consent VC に相当する JSON を `/consents` に登
 
 ## 参考文献
 
-[1] Decentralized Identity Foundation, <https://identity.foundation/>
+[1] Decentralized Identity Foundation, "Decentralized Identity Foundation (DIF)," <https://identity.foundation/>
 
 [2] W3C, "Decentralized Identifiers (DIDs) v1.0," W3C Recommendation, 2022, <https://www.w3.org/TR/did-1.0/>
 

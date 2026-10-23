@@ -203,4 +203,4 @@ Stage 1 ハンズオン (PolicyToken のみ知る参加者) のエラーメッ�
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md): 人による 1 回だけの書き込みの認可
 - [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md): 人による複数回の読み出しの認可
 - [検知イベントだけを共有する](webcam-event-sharing.md#補論-ウォレットモードによる認可) の補論:
-  ServiceVC 未実装時の 1 件単発 wallet モード
+  ServiceVC を使わない 1 件単発 wallet モード

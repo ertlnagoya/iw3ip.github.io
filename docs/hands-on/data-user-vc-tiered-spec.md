@@ -33,8 +33,8 @@ Publisher が公開するカメラ視野を **イベント／画像／動画** �
 Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/data でイベント取得」
 というフローに対し、**「何を取得できるか」を VC 属性で段階化**します。
 
-- entityType（GovernmentOrganization / Police / Enterprise / ResearchOrganization）
-- purpose（CrimeSearch / TrafficManagement / Research）
+- entityType（GovernmentOrganization / Police / Enterprise / Research Organization）
+- purpose（Crime Search / Traffic Management / Research）
 - legalCompliance（true / false）
 - dataHandlingPolicy（ISO27001 / その他）
 - misuseRecord（過去の濫用記録）
@@ -129,12 +129,17 @@ misuseRecord == true                    -> -10
 | Tier 2 (access) | `Enterprise` | `Research` | true | ISO27001 | false | **75** (20+15+15+15+10) |
 | Tier 1 (denied) | `Enterprise` | `Research` | false | Other | true | **25** (20+15+0+0-10) |
 
-`CrimeSearch` の purpose ラベルは Solidity 側の `"CRIME SEARCH"`
-（スペース込み）と一致しないため、現在の Python 実装ではフォールバック値
-**5** になります（そのため 35 + 25 にはならず、35 + 5 を含む合計 80 になります）。
+`trust_score.py` は、入力値を `upper()` で大文字にしてから表と完全一致で照合します。
+大文字・小文字は区別しませんが、スペースは区別します。purpose の表のキーは
+Solidity 側と同じ `CRIME SEARCH`・`TRAFFIC MANAGEMENT`（スペース込み）と `RESEARCH`、
+entityType の表のキーは `GOVERNMENTORGANIZATION`・`POLICE`・`ENTERPRISE`・
+`RESEARCH ORGANIZATION`（スペース込み）です。表に無い値はフォールバック値 **5** になります。
+そのため、オファー URL で渡す `CrimeSearch` は `CRIMESEARCH` となって `CRIME SEARCH`
+と一致せず、purpose は 5 点になります（35 + 25 にはならず、35 + 5 を含む合計 80 になります）。
+`TrafficManagement` や `ResearchOrganization` のようにスペースを詰めた表記も同様に 5 点です。
 ハンズオンではティアの境界を再現できれば足りるので、このままで問題ありません。
 将来、ゼロ知識証明（ZK）やオンチェーンとの同期を入れるときには、UI の入力ラベルを
-正規化する修正が必要です（未対応で、今後の課題です）。
+スペース込みの表記に正規化する修正が必要です（未対応で、今後の課題です）。
 
 ### しきい値 → アクセスレベル
 
@@ -239,7 +244,7 @@ score >= 60                               -> "access"
 
 ## ssi-ui の扱い
 
-`ssi-ui/` 配下の Next.js 試験 UI は **非推奨（deprecated）** とし、
+`ssi/ssi-ui/` 配下（git のサブモジュール）の Next.js 試験 UI は **非推奨（deprecated）** とし、
 今後の機能追加は Phase 2 wallet（`iw3ip-wallet`）+ Publisher 側に集約します。
 
 ## テスト方針

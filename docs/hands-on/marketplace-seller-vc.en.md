@@ -97,11 +97,13 @@ curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer \
   | python3 -m json.tool | grep -A1 SellerVC
 ```
 
-Expected output:
+Expected output (excerpt):
 
 ```text
-"vct": "https://iw3ip.example/credentials/SellerVC/v1"
+            "vct": "https://iw3ip.example/credentials/SellerVC/v1",
 ```
+
+`grep -A1` prints every line that contains `SellerVC` plus the line after it, so you actually see more lines than this. If this `vct` line is among them, the publisher can issue SellerVCs.
 
 When S0 recreates the publisher (when the image changes or when `infra/.env` changes), the claims and ingested rows held in the publisher's memory since Stage 6 are cleared. So `count` in Step S5 can be 0. This does not affect the `seller_did` that Step S5 checks.
 
@@ -243,7 +245,7 @@ Note down the four values shown in the console: `seller`, `merchandise`, `deploy
 
 ### Steps
 
-Run this in the terminal where you set `SELLER` in Step S2 (at the repository top).
+Run this in the terminal where you set `SELLER` in Step S2 (at the repository top). Before running, replace each whole `<…>` in the first three lines, including the angle brackets, with the value you noted in Step S3 (zsh treats `<` as a redirect, so running them as is fails).
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -320,7 +322,7 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 ```
 
 Then follow the procedure of the [Stage 5 hands-on](marketplace-vc-bridge.md): purchase with MetaMask → receive in the wallet
-→ obtain a ViewerToken → fetch. The ViewerToken expires after 60 seconds, so run the next commands right after presenting; if you get `viewer_token_expired`, present again.
+→ obtain a ViewerToken → fetch. The ViewerToken expires after 60 seconds, so run the next commands right after presenting; if you get `viewer_token_expired`, present again. Before running, replace the whole `<buyer ViewerToken>`, including the angle brackets, with the token you extracted as in [Stage 5 Step 8](marketplace-vc-bridge.md#step-8-obtain-a-viewertoken) (zsh treats `<` as a redirect).
 
 ```bash
 TOKEN=<buyer ViewerToken>

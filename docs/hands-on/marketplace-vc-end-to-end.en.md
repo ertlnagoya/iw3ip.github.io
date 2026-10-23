@@ -1,8 +1,8 @@
-# Tie four credentials together end-to-end (Stage 6)
+# Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)
 
 This is the capstone exercise for Stages 1–5. In one session, you run a scenario in which a Seller writes data with a ServiceVC and a Buyer reads it with a PurchaseViewerVC.
 
-> **What you'll do**: Tie four VCs (Consent / Service / Viewer / PurchaseViewer) together in one flow
+> **What you'll do**: For one dataset, connect writes with a ServiceVC to reads with a PurchaseViewerVC
 >
 > **Prerequisites**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)
 >
@@ -26,10 +26,11 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 
 ## Goal
 
-- Confirm that the four VC types involved in the data flow (ConsentVC / ViewerVC /
-  **ServiceVC** / **PurchaseViewerVC**) **cooperate through one dataset**
-  (the fifth type, SellerVC, handles the seller's identity and
-  is covered in [Stage 7](marketplace-seller-vc.md))
+- Confirm that writes with a **ServiceVC** and reads with a **PurchaseViewerVC**
+  **connect through one dataset**. This exercise builds on the Stage 1 (ConsentVC) and
+  Stage 3 (ViewerVC) flows; the steps on this page use two VC types,
+  ServiceVC and PurchaseViewerVC (SellerVC, which handles the seller's identity, is
+  covered in [Stage 7](marketplace-seller-vc.md))
 - Understand the **division of roles** between on-chain payment (MetaMask) and
   off-chain authorization (VC) through one continuous flow
 - Read the links in the audit log: follow the relationship ETH key → did:jwk →
@@ -141,10 +142,6 @@ Expected output:
 bridge: listening to 5 merchandise(s)
 ```
 
-```bash
-
-```
-
 Start iot-market-ui in another terminal (skip this if the Stage 5 Terminal D server is still running).
 
 ```bash
@@ -200,11 +197,15 @@ done
 
 ### Expected output
 
-```
+```text
 iter 1 {'status': 'received', 'count': N}
 iter 2 {'status': 'received', 'count': N+1}
-... (increases sequentially up to N+4)
+iter 3 {'status': 'received', 'count': N+2}
+iter 4 {'status': 'received', 'count': N+3}
+iter 5 {'status': 'received', 'count': N+4}
 ```
+
+`N` is the number of rows the publisher had received before these writes, plus 1. Right after the publisher is recreated, `N` is 1.
 
 Five rows with **values 31–35** have now been accumulated in `home/env/temperature` in the seller role.
 
@@ -276,8 +277,10 @@ docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1
 Expected output:
 
 ```text
-extract the jti and the deeplink
+bridge: claim ok jti=<claim_id> deeplink=openid-credential-offer://?credential_offer=...
 ```
+
+In Step E3, you extract the part after `deeplink=` from this line and turn it into a QR code.
 
 ---
 
@@ -298,6 +301,8 @@ open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 Scan the QR code with the iPhone wallet and approve "IW3IP Purchase Viewer (Event-only)" (shown as "IW3IP 購入閲覧（Tier 1 / イベントのみ）" in a Japanese-language wallet). The command above sends the deeplink to an external QR generation service, so do not use it outside a local hands-on environment.
 
 Confirm in the wallet that the VC claims contain `dataset_id: home/env/temperature`.
+
+The code in the deeplink expires 30 minutes after the purchase claim. Receive the VC in the wallet within 30 minutes of the Step E2 purchase. If it has expired and the publisher's `/issuer/token` returns `400 invalid_grant`, follow F in [Troubleshooting in the Stage 5 hands-on](marketplace-vc-bridge.md#troubleshooting): buy a temperature Merchandise you have not bought yet (#0 or #1) as in Step E2, and also set `MERCHANDISE` in Step E4 to that address.
 
 audit:
 

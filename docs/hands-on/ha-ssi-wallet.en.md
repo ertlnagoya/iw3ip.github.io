@@ -50,7 +50,7 @@ Pipeline:
 
 - The basic flow of issuing a VC to the wallet (OID4VCI) and presenting it (OID4VP)
 - How the verifier's Presentation Definition (PEX) maps to the wallet's response
-- A lightweight stack using `did:jwk` / `did:key` and SD-JWT VC
+- A lightweight stack using `did:jwk` and SD-JWT VC
 - How `allowed` / `denied` depends on VC content and `purpose`
 
 ## Common issues
@@ -316,7 +316,7 @@ This hands-on (Stage 1) only covers **single-use write authorization**
 - [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) — reads, any number of times within the TTL (ViewerVC)
 - [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) — continuous writes from a device (ServiceVC)
 - [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
-- [Tie four credentials together end-to-end (Stage 6)](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
+- [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
 - [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — seller identity
 
 ## Extension ideas
@@ -349,4 +349,4 @@ This hands-on (Stage 1) only covers **single-use write authorization**
 
 [4] Sphereon, "pex," GitHub repository, <https://github.com/Sphereon-Opensource/pex>
 
-[5] IETF, "SD-JWT-based Verifiable Digital Credentials (SD-JWT VC)," Internet-Draft, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
+[5] O. Terbu, D. Fett, and B. Campbell, "SD-JWT-based Verifiable Digital Credentials (SD-JWT VC)," IETF Internet-Draft draft-ietf-oauth-sd-jwt-vc-19, Aug. 2026, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>

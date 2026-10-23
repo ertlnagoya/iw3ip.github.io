@@ -17,14 +17,15 @@ The order is the same whether you go through it quickly or over several weeks.
 
 ## Short Learning Path
 
-1. [Course Guide](course-guide.md)
-2. [Blockchain Basics](blockchain-basics.md)
-3. [Hardhat Basics](hardhat-basics.md)
-4. [SSI/DID/VC Basics](ssi-did-vc-basics.md)
-5. [Quickstart](../setup/quickstart.md)
-6. [HA x SSI Publisher Sample](../hands-on/ha-ssi-publisher.md)
+1. [Blockchain Basics](blockchain-basics.md)
+2. [Hardhat Basics](hardhat-basics.md)
+3. [SSI/DID/VC Basics](ssi-did-vc-basics.md)
+4. [Prerequisites](../setup/prerequisites.md)
+5. [HA Demo Simulator](../hands-on/ha-demo-simulator.md) (run the whole flow without hardware)
+6. [Quickstart](../setup/quickstart.md)
+7. [HA x SSI Publisher Sample](../hands-on/ha-ssi-publisher.md)
 
-These six pages complete the basic understanding and the minimum hands-on.
+These seven pages complete the basic understanding and the minimum hands-on.
 
 ## 3-Week Plan (Example)
 

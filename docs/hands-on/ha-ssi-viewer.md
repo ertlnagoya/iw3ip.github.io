@@ -124,7 +124,8 @@ QR または deeplink でウォレットを開き、ViewerVC を選んで提示�
   "viewer_token": "Xa9Hk...",
   "viewer_token_jti": "1f2c...",
   "expires_in": 60,
-  "allowed_views": ["event"]
+  "allowed_views": ["event"],
+  "redirect_uri": "http://<HOST_IP>:8080/viewer?vt=Xa9Hk...&ds=home/env/temperature"
 }
 ```
 
@@ -225,7 +226,7 @@ ViewerVC は **dataset を直接指定して読む** 形でした。ほかの認
 
 - [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) — 機器からの連続書き込み (ServiceVC)
 - [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) — 購入と結びついた読み出し (PurchaseViewerVC)
-- [4 種類の証明書を 1 動線でつなぐ (Stage 6)](marketplace-vc-end-to-end.md) — Stage 1〜5 の総合演習
+- [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md) — Stage 1〜5 の総合演習
 - [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) — 出品者の身元の管理
 
 ## 拡張ヒント
