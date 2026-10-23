@@ -78,6 +78,7 @@ Phase 2 hands-on の依存グラフ
   Stage 1 + Stage 0 ─→ Stage T ── data-user-vc-tiered  DataUserVC (信頼度で見せる中身を変える)
   Stage 6 ─→ Stage A ── marketplace-mobile-app  スマホの PWA で購入から閲覧まで
   Stage T + Stage 7 ─→ Stage P ── c2pa-provenance  C2PA で画像の来歴を署名 (VC は使わない)
+                       (設計上の土台。ハンズオンは単独で動く)
 ```
 
 各ステージの詳細:
@@ -93,7 +94,7 @@ Phase 2 hands-on の依存グラフ
 | 7 | [marketplace-seller-vc](../hands-on/marketplace-seller-vc.md) | SellerVC + `/marketplace/register` + on-chain `getOwner()` 検証 + `seller_did` 同梱 |
 | T | [data-user-vc-tiered](../hands-on/data-user-vc-tiered.md) | DataUserVC + 信頼スコア + `allowed_views` で `/platform/data` の出力を段階化 |
 | A | [marketplace-mobile-app](../hands-on/marketplace-mobile-app.md) | `iot-market-ui` を PWA としてスマホで使い、購入から VC 受領、閲覧まで |
-| P | [c2pa-provenance](../hands-on/c2pa-provenance.md) | VC は使わない。X.509 証明書による C2PA の署名で画像の来歴を証明する (publisher とウォレットは不要) |
+| P | [c2pa-provenance](../hands-on/c2pa-provenance.md) | VC は使わない。X.509 証明書による C2PA の署名で画像の来歴を証明する。前提となるステージは無い (リポジトリと Python だけで動き、publisher とウォレットは不要) |
 
 ## 6. v1 / v2 マーケットプレイスの並走
 

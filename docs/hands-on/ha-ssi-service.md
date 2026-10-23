@@ -122,18 +122,18 @@ service_token_issued jti=... token=... dataset=home/env/temperature ttl=3600s
 ## 4. ServiceToken で連続 ingest
 
 ```bash
-SERVICE=<service_token>
+SERVICE='<service_token>'
 
 for i in 1 2 3 4 5; do
   curl -s -X POST http://$HOST_IP:8080/platform/ingest \
     -H "Authorization: Bearer $SERVICE" \
     -H "Content-Type: application/json" \
     -d "{\"dataset_id\":\"home/env/temperature\",\"value\":$((20 + i))}" \
-    | python3 -c "import json,sys; print(json.load(sys.stdin))"
+  echo
 done
 ```
 
-5 件すべてが HTTP 200 で `{"status":"received","count":N}` を返せば成功です。
+5 件すべてが `{"status":"received","count":N}` を返せば成功です (N は publisher を起動してから取り込んだ行の数で、1 件ごとに増えます)。
 
 PolicyToken のように 2 回目で `403 policy_token_already_consumed` にはなりません。
 

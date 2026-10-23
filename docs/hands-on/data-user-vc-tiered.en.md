@@ -263,7 +263,7 @@ Put the `token=` value into the shell variable `VIEWER_TOKEN` and run the
 command below. A ViewerToken is valid for only 60 seconds, so use it right away. If it expires, present again.
 
 ```bash
-export VIEWER_TOKEN=<value of token=>
+export VIEWER_TOKEN='<value of token=>'
 curl -s -H "authorization: Bearer $VIEWER_TOKEN" \
      'localhost:8080/platform/data?dataset_id=home/event/possible_littering' | jq .
 ```
@@ -297,8 +297,11 @@ python -m pytest tests/test_data_user_vc_tiered.py -v
 
 The four pure-function tests
 (GovernmentOrganization / Enterprise / low-score / `score>=80` but
-non-gov/police) lock the parity between `trust_score.py` and
-`DataUserVerifier.sol`.
+non-gov/police) compare the trustScore and access level returned by
+`trust_score.py` with expected values written by hand to match the weights
+of the `DataUserVerifier.sol` contract. The tests do not load or run
+`DataUserVerifier.sol` itself, so if the contract's weights change,
+`trust_score.py` and the expected values in the tests must be updated by hand as well.
 
 ## 7. Values observed on real-device runs
 

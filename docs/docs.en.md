@@ -1,4 +1,4 @@
-# Docs (MkDocs)
+# Building and Editing This Site
 
 This website is built with MkDocs [1]. It uses Material for MkDocs [2] as the theme and mkdocs-static-i18n [3] for switching between Japanese and English.
 

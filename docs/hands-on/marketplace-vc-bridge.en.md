@@ -217,13 +217,16 @@ is enough here because this hands-on checks only the v2 path.
 
 ### Steps
 
-Terminal C:
+In Terminal C, get the latest code.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
+```
 
-# env for the bridge. The LAN IP is the value from ipconfig getifaddr en0
+Write the env for the bridge and start the publisher and the bridge. `$HOST_IP` is the LAN IP you checked with `ipconfig getifaddr en0`.
+
+```bash
 cat > infra/.env <<EOF
 BRIDGE_HARDHAT_RPC=http://host.docker.internal:8545
 BRIDGE_IOT_MARKET_ADDRESS=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
@@ -255,14 +258,22 @@ curl -s http://$HOST_IP:8080/health
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A1 PurchaseViewerVC
 ```
 
-→
+→ The beginning of the output is as follows.
 
+```text
+        "PurchaseViewerVC": {
+            "format": "dc+sd-jwt",
+--
+            "vct": "https://iw3ip.example/credentials/PurchaseViewerVC/v1",
+            "scope": "PurchaseViewerVC",
+            "display": [
+--
+        "PurchaseViewerVC.full": {
+            "format": "dc+sd-jwt",
+--
 ```
-"PurchaseViewerVC": {
-  "format": "dc+sd-jwt",
-  ...
-"vct": "https://iw3ip.example/credentials/PurchaseViewerVC/v1",
-```
+
+The `vct` lines of `PurchaseViewerVC.full`, and the same kind of lines for `PurchaseViewerVC.access` and `PurchaseViewerVC.event`, follow.
 
 #### 4-C. Has the bridge connected to Hardhat and discovered the Merchandise contracts?
 
@@ -433,8 +444,11 @@ Confirm `Metro waiting on...`. Press "Reload JS" in the wallet to return to the 
 ```bash
 DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1 | sed -E 's/.*deeplink=//')
 echo "$DEEPLINK"
+```
 
-# Open the QR code in the Mac browser
+Turn the deeplink into a QR code and open it in the Mac browser.
+
+```bash
 ENCODED=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$DEEPLINK")
 open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 ```
@@ -746,8 +760,11 @@ docker logs $(docker ps -qf name=publisher) 2>&1 | grep "/issuer/token" | tail -
 ```
 
 ```text
-HTTP 400 on POST /issuer/token: invalid_grant
+{"ts": "2026-...", "level": "ERROR", "logger": "ssi.error", "message": "HTTP 400 on POST /issuer/token: invalid_grant"}
+INFO:     172.18.0.1:54321 - "POST /issuer/token HTTP/1.1" 400 Bad Request
 ```
+
+The first line is the publisher's error log, a one-line JSON (`logger` is `ssi.error`, `message` is `HTTP 400 on POST /issuer/token: invalid_grant`). The second line is uvicorn's access log, a plain line that is not JSON. The `ts` value, IP address and port number differ in each environment.
 
 **Cause**: The code in the deeplink (pre-authorized code) has expired (30 minutes after the purchase claim), or you have already received the VC once with the same code. The publisher's `/marketplace/claim` is idempotent per transaction hash (tx_hash) and returns the same code when the same purchase is claimed again. So extracting the deeplink again or recreating the bridge does not help.
 

@@ -96,8 +96,7 @@ Expected output:
 
 `description_*` and `image_url_redacted` are attached only to rows published
 after `VLM_BACKEND` is set. Register the consent and publish an event with an
-image. In a new terminal, first run `cd ~/program/Blockchain_IoT_Marketplace` and `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip)). To check face blur, pass an image with a face (a synthetic one, for
-example) via `--image`.
+image. In a new terminal, first run `cd ~/program/Blockchain_IoT_Marketplace` and `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip)). Without `--image`, the script uses the 16×16 grey image in the course repository. Face blur still runs on this image and `image_url_redacted` is produced, but the image has no face, so nothing is blurred. To see a face being blurred, optionally add `--image <path to an image with a face>` (a synthetic one, for example). If you ran this script before and the old fixture (a 155-byte JPEG with no image data) is still there, run `git pull` first; the script then replaces the fixture with the new image automatically.
 
 ```bash
 curl -s -X POST localhost:8080/consents \
@@ -165,6 +164,29 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 Same routine as [§3–§4](data-user-vc-tiered.md#3-three-marketplaceclaim-calls): claim → PurchaseViewerVC → present → ViewerToken → fetch.
 The rows are the ones published in §12.2.1.
 
+In each claim, put the same attributes as the offer URLs of 12.3.a–d in `data_user_attrs`, and use a different `tx_hash` for each claim. The trustScore is what `trust_score.py` computes, and the tier is the result with `VLM_BACKEND` set.
+
+| Profile | `tx_hash` | `data_user_attrs` | trustScore → tier |
+|---|---|---|---|
+| 12.3.a Tier 3 | `0xdemo-vlm-tier3` | `{"entityType":"GovernmentOrganization","purpose":"CrimeSearch","legalCompliance":true,"dataHandlingPolicy":"ISO27001","misuseRecord":false}` | 80 → `full` |
+| 12.3.b Tier 2 | `0xdemo-vlm-tier2` | `{"entityType":"Enterprise","purpose":"Research","legalCompliance":true,"dataHandlingPolicy":"ISO27001","misuseRecord":false}` | 75 → `access` |
+| 12.3.c Tier 1 | `0xdemo-vlm-tier1` | `{"entityType":"Enterprise","purpose":"unknown","legalCompliance":true,"dataHandlingPolicy":"other","misuseRecord":false}` | 50 → `summary` |
+| 12.3.d Tier 0 | `0xdemo-vlm-tier0` | `{"entityType":"Enterprise","purpose":"Research","legalCompliance":false,"dataHandlingPolicy":"Other","misuseRecord":true}` | 25 → `denied` |
+
+For example, the claim for 12.3.c is below. For the other three, change `tx_hash` and `data_user_attrs` to the values in the table.
+
+```bash
+curl -s -X POST localhost:8080/marketplace/claim \
+  -H 'content-type: application/json' \
+  -d '{
+    "merchandise_address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "buyer_eth_addr": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "tx_hash": "0xdemo-vlm-tier1",
+    "dataset_id": "home/event/possible_littering",
+    "data_user_attrs": {"entityType":"Enterprise","purpose":"unknown","legalCompliance":true,"dataHandlingPolicy":"other","misuseRecord":false}
+  }' | tee /tmp/claim.json | jq '{claim_id, offer_url}'
+```
+
 If the cards you received in §4 of the first page are still in the wallet, they appear under the same names as the cards you receive here. Presenting an old card shows no VLM descriptions or redacted image. Delete the old cards from the wallet first, or after presenting run `docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1` and check `views=` in the `"message"` of the JSON it prints: Tier 3 is `event+image+video+image_redacted+description_full+description_summary`, Tier 2 is `event+image_redacted+description_full+description_summary`, Tier 1 is `event+description_summary`, and Tier 0 is `event`.
 
 With `VLM_BACKEND` set:
@@ -175,6 +197,8 @@ With `VLM_BACKEND` set:
 | 12.3.b Tier 2 (access) | yes | **no** | **no** | yes | yes | yes |
 | 12.3.c Tier 1 (summary) | yes | **no** | **no** | **no** | **no** | yes |
 | 12.3.d Tier 0 (denied) | yes (events only) | **no** | **no** | **no** | **no** | **no** |
+
+If you ran §12.2.1 with the default grey image, the keys are the same as in this table. However, `image_url_redacted` has no face, so nothing in it is blurred, and `description_*` are short sentences about a plain grey image.
 
 With `VLM_BACKEND` **empty** the legacy 3-tier projection runs (same as [§4](data-user-vc-tiered.md#4-issue-purchaseviewervc-present-fetch-platformdata); no derivative
 keys appear). Claim 12.3.c then resolves to `denied` since `summary`
@@ -187,6 +211,8 @@ Even for a summary-tier claim, the wallet shows the card under the event-only na
 Open `image_url_redacted` from a Tier 2 response in a browser. You
 should see **the same scene as `image_url` (Tier 3 only) but with
 faces blurred**.
+
+If you ran §12.2.1 with the default grey image, no face is detected, so `image_url_redacted` shows a grey image that looks the same as the original. To see a face blurred as in the example below, publish the event again in §12.2.1 with `--image` pointing to an image with a face, and fetch `/platform/data` for Tier 2 as in §12.4.
 
 | Original (`image_url`, Tier 3 only) | Blurred (`image_url_redacted`, Tier 2+) |
 |---|---|
@@ -233,6 +259,8 @@ Example output:
 }
 ```
 
+This example is for an image with a person in it. With the default grey image, both are short sentences saying the image is plain grey.
+
 The `_full` line keeps the person's name, brand, and place. The
 `_summary` line collapses to "an adult / public location / afternoon".
 
@@ -259,16 +287,20 @@ Then publish an event with `provider_with_media.py` as in §12.2.1. The
 `/platform/data` response looks like this:
 
 - `processing_warnings` contains `vlm_unavailable`
-- `image_url_redacted` is still generated, because face blur does not use the VLM
+- `image_url_redacted` is still generated, because face blur does not use the VLM (with the default grey image there is no face, so nothing is blurred)
 - the `description_*` keys are absent
 
 To stop both, stop vlm the same way, then clear the publisher's
 `IMAGE_REDACTION_BACKEND` and start it again:
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml stop vlm
-IMAGE_REDACTION_BACKEND= docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
+VLM_BACKEND=ollama VLM_MODEL=llava VLM_TIMEOUT_SEC=600 IMAGE_REDACTION_BACKEND= \
+  docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
 ```
+
+`VLM_BACKEND` and the other variables are set at the start of the command so that the publisher restarts with the 4 tiers even in a new terminal where the variables exported in §12.2 are gone. If you used `VLM_MODEL=moondream` in §12.2, change `VLM_MODEL=llava` to `VLM_MODEL=moondream`.
 
 Restarting the publisher clears the claims and rows kept in memory.
 Publish the event again as in §12.2.1 and redo the claims and
@@ -330,7 +362,7 @@ Three operational findings emerged during this pass:
 
 | # | Symptom | Cause / Resolution |
 |---|---|---|
-| 1 | `/provider/publish` followed by `vlm describe failed: ollama call failed: timed out` | CPU LLaVA-7B inference takes **~186s per stage** (even on a 1×1 pixel image). describe() needs 2 stages → ~6 min total |
+| 1 | `/provider/publish` followed by `vlm describe failed: ollama call failed: timed out` | CPU LLaVA-7B inference takes **~186s per stage** (even on a small image). describe() needs 2 stages → ~6 min total |
 | 2 | The original default `VLM_TIMEOUT_SEC=60` couldn't complete | [Blockchain_IoT_Marketplace#45](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/45) bumps to 180s; CPU setups need `VLM_TIMEOUT_SEC=600` |
 | 3 | LLaVA-7B on CPU is impractical for hands-on workshops | We recommend a smaller model (`bakllava`, `moondream`), a GPU environment, or an external API |
 
@@ -496,7 +528,7 @@ The toggle state is saved in localStorage, so the selection survives a reload.
 | `_coerce_trust_level()` | unknown value / None → ANONYMOUS |
 | `TrustPolicyEngine.evaluate()` | `privacy_risk_score >= 0.9` strips image kinds |
 | `TrustPolicyEngine.evaluate_safe()` | internal exception → `allowed_outputs=frozenset()` (empty) |
-| `_compute_mask_plan()` | masks face/text/screen/whiteboard/document/id_card/name_tag/`unknown_sensitive` at HIGH and below (only `unknown_sensitive` at HIGH can be unmasked with `SEMANTIC_ALLOW_UNKNOWN_AT_HIGH=true`) |
+| `_compute_mask_plan()` | masks face/text/screen/whiteboard/document/id_card/name_tag/license_plate/`unknown_sensitive` at HIGH and below (only `unknown_sensitive` at HIGH can be unmasked with `SEMANTIC_ALLOW_UNKNOWN_AT_HIGH=true`) |
 | `TrustAwareRenderer.render()` | double-checks `trust_level in (OWNER, ADMIN)` for ORIGINAL_FRAME |
 | `_render_masked()` | cv2 / decode / encode failure → text fallback |
 | `SemanticIntermediateRepresentation.empty()` | represents an analyzer failure as a fail-closed state with `privacy_risk_score=1.0` |

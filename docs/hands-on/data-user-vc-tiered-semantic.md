@@ -85,7 +85,7 @@ curl -s http://localhost:8080/health | jq .
 
 #### 12.2.1 画像つきのイベントを流す
 
-`description_*` や `image_url_redacted` は、`VLM_BACKEND` を設定したあとに流したイベントの行にだけ付きます。同意を登録し、画像つきのイベントを流します。新しいターミナルでは、先に `cd ~/program/Blockchain_IoT_Marketplace` で教材リポジトリに移動し、`export HOST_IP=<PC の LAN IP>` を実行します ([ハンズオンの概要](index.md#host-ip) を参照)。顔ブラーを確かめたい場合は、`--image` に顔が写った画像（合成画像など）を指定します。
+`description_*` や `image_url_redacted` は、`VLM_BACKEND` を設定したあとに流したイベントの行にだけ付きます。同意を登録し、画像つきのイベントを流します。新しいターミナルでは、先に `cd ~/program/Blockchain_IoT_Marketplace` で教材リポジトリに移動し、`export HOST_IP=<PC の LAN IP>` を実行します ([ハンズオンの概要](index.md#host-ip) を参照)。`--image` を省くと、教材リポジトリにある 16×16 ピクセルの灰色の画像を使います。この画像でも顔ブラーの処理は動き、`image_url_redacted` は作られますが、顔が写っていないので、ぼかされる箇所はありません。顔がぼかされる様子を確かめたい場合は、任意で `--image <顔が写った画像のパス>`（合成画像など）を付けて実行します。以前にこのスクリプトを実行していて、古い fixture（画像データを含まない 155 バイトの JPEG）が残っている場合は、先に `git pull` します。スクリプトが fixture を新しい画像に自動で置き換えます。
 
 ```bash
 curl -s -X POST localhost:8080/consents \
@@ -144,6 +144,29 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 [§3〜§4](data-user-vc-tiered.md#3-marketplaceclaim-を-3-通り呼び出す) と同じ要領で、4 通りそれぞれについて claim、PurchaseViewerVC の提示、ViewerToken の取得、
 `/platform/data` の取得を行います。対象の行は §12.2.1 で流したものです。
 
+claim の `data_user_attrs` には、12.3.a〜d のオファー URL と同じ属性を入れます。`tx_hash` は claim ごとに変えます。trustScore は `trust_score.py` の計算で、tier は `VLM_BACKEND` を設定しているときの判定です。
+
+| プロファイル | `tx_hash` | `data_user_attrs` | trustScore → tier |
+|---|---|---|---|
+| 12.3.a Tier 3 | `0xdemo-vlm-tier3` | `{"entityType":"GovernmentOrganization","purpose":"CrimeSearch","legalCompliance":true,"dataHandlingPolicy":"ISO27001","misuseRecord":false}` | 80 → `full` |
+| 12.3.b Tier 2 | `0xdemo-vlm-tier2` | `{"entityType":"Enterprise","purpose":"Research","legalCompliance":true,"dataHandlingPolicy":"ISO27001","misuseRecord":false}` | 75 → `access` |
+| 12.3.c Tier 1 | `0xdemo-vlm-tier1` | `{"entityType":"Enterprise","purpose":"unknown","legalCompliance":true,"dataHandlingPolicy":"other","misuseRecord":false}` | 50 → `summary` |
+| 12.3.d Tier 0 | `0xdemo-vlm-tier0` | `{"entityType":"Enterprise","purpose":"Research","legalCompliance":false,"dataHandlingPolicy":"Other","misuseRecord":true}` | 25 → `denied` |
+
+たとえば 12.3.c の claim は次のとおりです。ほかの 3 つは、`tx_hash` と `data_user_attrs` を上の表の値に変えて実行します。
+
+```bash
+curl -s -X POST localhost:8080/marketplace/claim \
+  -H 'content-type: application/json' \
+  -d '{
+    "merchandise_address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "buyer_eth_addr": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "tx_hash": "0xdemo-vlm-tier1",
+    "dataset_id": "home/event/possible_littering",
+    "data_user_attrs": {"entityType":"Enterprise","purpose":"unknown","legalCompliance":true,"dataHandlingPolicy":"other","misuseRecord":false}
+  }' | tee /tmp/claim.json | jq '{claim_id, offer_url}'
+```
+
 1 ページ目の §4 で受け取ったカードがウォレットに残っていると、ここで受け取るカードと同じ名前で並びます。古いカードを提示すると、VLM の説明文や加工した画像は出ません。先に古いカードをウォレットから削除するか、提示後に `docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1` を実行し、出力された JSON の `"message"` にある `views=` を確かめます。Tier 3 は `event+image+video+image_redacted+description_full+description_summary`、Tier 2 は `event+image_redacted+description_full+description_summary`、Tier 1 は `event+description_summary`、Tier 0 は `event` になります。
 
 `VLM_BACKEND` を設定しているとき、レスポンスに含まれるキーは次のように変わります。
@@ -155,6 +178,8 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 | 12.3.c Tier 1 (summary) | あり | **なし** | **なし** | **なし** | **なし** | あり |
 | 12.3.d Tier 0 (denied) | あり (イベントのみ) | **なし** | **なし** | **なし** | **なし** | **なし** |
 
+§12.2.1 を既定の灰色の画像で実行した場合も、キーの有無はこの表のとおりです。ただし、`image_url_redacted` の画像には顔が無いのでぼかされた箇所はなく、`description_*` は無地の灰色の画像についての短い文になります。
+
 `VLM_BACKEND` が空なら従来どおり（[§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) と同じ）3 段階の tier 投影になり、新しいキーは応答に含まれません。
 この状態で 12.3.c の claim を送ると `denied` になります（summary tier は `VLM_BACKEND` を設定したときだけ
 使われます）。
@@ -165,6 +190,8 @@ summary tier の claim でも、ウォレットに届くカードは「イベン
 
 Tier 2 で受信した `image_url_redacted` の URL をブラウザで開くと、
 **元画像（`image_url`）と同じ構図で、人物の顔がぼかされた**画像が返ります。
+
+§12.2.1 を既定の灰色の画像で実行した場合は、顔が検出されないので、`image_url_redacted` には元画像と同じ見た目の灰色の画像が表示されます。下の例のように顔がぼかされるのを見るには、§12.2.1 で `--image` に顔が写った画像を指定してイベントを流し直し、§12.4 と同じ手順で Tier 2 の `/platform/data` を取得します。
 
 | 元 (`image_url`, Tier 3 のみ) | ブラー後 (`image_url_redacted`, Tier 2+) |
 |---|---|
@@ -209,6 +236,8 @@ curl -s -H "authorization: Bearer $VIEWER_TOKEN_TIER3" \
 }
 ```
 
+これは人物が写った画像の場合の例です。既定の灰色の画像では、どちらも無地の画像であることを述べる短い文になります。
+
 `description_full` には人名（"John Smith"）・ブランド（"Coca-Cola"）・場所（"Hibiya
 station"）が残り、`description_summary` には「an adult / public location /
 afternoon」のような **一般化された語だけ**が出ているはずです。
@@ -236,15 +265,19 @@ docker compose -f infra/docker-compose.yml stop vlm
 この状態で §12.2.1 の `provider_with_media.py` でイベントを流すと、`/platform/data` の応答は次のようになります。
 
 - `processing_warnings` に `vlm_unavailable` が出ます
-- 顔ブラーは VLM を使わないので、`image_url_redacted` は生成されます
+- 顔ブラーは VLM を使わないので、`image_url_redacted` は生成されます（既定の灰色の画像では、顔が無いので何もぼかされません）
 - `description_*` のキーは含まれません
 
 両方を停止する場合は、同じく vlm を止めたうえで、publisher の `IMAGE_REDACTION_BACKEND` を空にして起動し直します。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml stop vlm
-IMAGE_REDACTION_BACKEND= docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
+VLM_BACKEND=ollama VLM_MODEL=llava VLM_TIMEOUT_SEC=600 IMAGE_REDACTION_BACKEND= \
+  docker compose -f infra/docker-compose.yml --profile vlm up -d publisher
 ```
+
+§12.2 で `export` した環境変数が残っていない新しいターミナルでも、4 段階の tier のまま起動し直せるように、`VLM_BACKEND` などをコマンドの先頭で指定しています。§12.2 で `VLM_MODEL=moondream` を使った場合は、`VLM_MODEL=llava` を `VLM_MODEL=moondream` に変えます。
 
 publisher を起動し直すと、メモリに保存していた claim と行は消えます。§12.2.1 でイベントを流し直し、§12.4 で claim と提示をやり直すと、`/platform/data` の応答は次のようになります。
 
@@ -302,7 +335,7 @@ V1〜V6 の実施中に、**運用上の問題が 3 件**見つかりました�
 
 | # | 症状 | 原因 / 対応 |
 |---|---|---|
-| 1 | `/provider/publish` 後に `vlm describe failed: ollama call failed: timed out` | CPU 上の LLaVA-7B 推論は **1 stage あたり約 186 秒**かかります（1×1 ピクセル画像でも同じです）。describe() は 2 stage なので、合計で約 6 分必要です |
+| 1 | `/provider/publish` 後に `vlm describe failed: ollama call failed: timed out` | CPU 上の LLaVA-7B 推論は **1 stage あたり約 186 秒**かかります（小さな画像でも同じです）。describe() は 2 stage なので、合計で約 6 分必要です |
 | 2 | 当初の既定値 VLM_TIMEOUT_SEC=60 では完了しない | [Blockchain_IoT_Marketplace#45](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/45) で既定値を 180 秒に変更しました。CPU 環境ではさらに `VLM_TIMEOUT_SEC=600` の指定が必要です |
 | 3 | ハンズオンで使うには、CPU 上の LLaVA-7B は処理時間が長すぎる | 軽量モデル（`bakllava`, `moondream`）か、GPU 環境 / 外部 API の利用を推奨します |
 
@@ -469,7 +502,7 @@ Publish ボタンとは独立して動くので、確認だけして Publish せ
 | `_coerce_trust_level()` | 不明な値 / None → ANONYMOUS |
 | `TrustPolicyEngine.evaluate()` | `privacy_risk_score >= 0.9` で image kinds 剥奪 |
 | `TrustPolicyEngine.evaluate_safe()` | 内部例外 → `allowed_outputs=frozenset()` (空) |
-| `_compute_mask_plan()` | face/text/screen/whiteboard/document/id_card/name_tag/`unknown_sensitive` を HIGH 以下でマスク (HIGH の `unknown_sensitive` だけは `SEMANTIC_ALLOW_UNKNOWN_AT_HIGH=true` で解除可) |
+| `_compute_mask_plan()` | face/text/screen/whiteboard/document/id_card/name_tag/license_plate/`unknown_sensitive` を HIGH 以下でマスク (HIGH の `unknown_sensitive` だけは `SEMANTIC_ALLOW_UNKNOWN_AT_HIGH=true` で解除可) |
 | `TrustAwareRenderer.render()` | ORIGINAL_FRAME に対して `trust_level in (OWNER, ADMIN)` を二重チェック |
 | `_render_masked()` | cv2 / decode / encode 失敗 → text fallback |
 | `SemanticIntermediateRepresentation.empty()` | `privacy_risk_score=1.0` でアナライザ失敗を fail-closed 状態として表現 |

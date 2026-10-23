@@ -40,7 +40,7 @@ v2 は v1 を置き換えるものではなく、v1 に追加する経路です�
 
 - **Part 1〜3**: このサイトでの学習順です。基本、機能拡張、知能統合の順に進みます。
 - **Phase 1〜3**: 基盤の発展段階です。Phase 1 はデータ共有、Phase 2 はイベント共有、Phase 3 は AI による判断と制御を指します（[プラットフォーム概要のフェーズ構成](../platform-overview.md#フェーズ構成)）。
-- **Stage 0〜7、A、T、P**: Part 2 のうち、VC を使うハンズオンと、その準備 (Stage 0)、画像の来歴の署名 (Stage P。VC は使わない) に付けた通し番号です。各ページは、前の Stage を済ませていることを前提にしています。Stage 2 は欠番です。
+- **Stage 0〜7、A、T、P**: Part 2 のうち、VC を使うハンズオンと、その準備 (Stage 0)、画像の来歴の署名 (Stage P。VC は使わない) に付けた通し番号です。各ページは、前の Stage を済ませていることを前提にしています。ただし、Stage P は前の Stage を使わず、教材リポジトリと Python だけで単独で動かせます。Stage 2 は欠番です。
 
 | Stage | ハンズオン | 扱う VC |
 |---|---|---|
@@ -140,18 +140,22 @@ export HOST_IP=192.168.1.20
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
 | **Part 1 / データを取り込む** | ✓ <small>(HA 経路)</small> | ✓ <small>(カメラ経路)</small> | – | – | ✓ <small>(カメラ経路)</small> | – |
 | **Part 1 / マーケットで売買 (v1)** | – | ✓ | ✓ | – | ✓ | – |
+| **Part 2 / イベントを共有してみよう (Stage 0)** | ✓ | – | – | ✓ <small>(補論のみ)</small> | – | – |
 | **Part 2 / 認証してみよう (SSI)** | ✓ | – | – | ✓ | – | – |
 | **Part 2 / マーケットと連携 (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
-| **Part 2 / データ処理を入れる** | ✓ | ✓ <small>(Tier 3 実機時)</small> | ✓ <small>(同)</small> | ✓ | – | ✓ <small>(OpenCV / VLM 任意)</small> |
+| **Part 2 / データ処理を入れる**<sup>※</sup> | ✓ | ✓ <small>(Tier 3 実機時)</small> | ✓ <small>(同)</small> | ✓ | – | ✓ <small>(OpenCV / VLM 任意)</small> |
 | **Part 3 / 知能統合** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
+
+※ このサブグループのうち、[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) は Python だけで動き、publisher、ブロックチェーン、MetaMask、SSI ウォレットと VC を使いません。
 
 ### 主に使う VC (Verifiable Credential) の種類
 
 | サブグループ | Consent | Viewer | Service | Purchase&shy;Viewer | Seller | DataUser |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
+| Part 2 / イベントを共有してみよう | ✓ <small>(補論のみ)</small> | – | – | – | – | – |
 | Part 2 / 認証してみよう | ✓ | ✓ | ✓ | – | – | – |
 | Part 2 / マーケットと連携 (v2) | – | – | ✓ | ✓ | ✓ | – |
-| Part 2 / データ処理を入れる | – | – | – | ✓ | – | ✓ |
+| Part 2 / データ処理を入れる<sup>※</sup> | – | – | – | ✓ | – | ✓ |
 
 ### 表の見方
 

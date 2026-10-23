@@ -14,9 +14,9 @@ This environment consists of the following processes:
 |---|---|---|
 | Local blockchain | Records sale/purchase transactions | **Node.js** (`npx hardhat node`) |
 | Marketplace UI | List / buy in the browser | **Node.js** + browser + **MetaMask** |
-| Storage server | Holds the actual data | **Rust** (`cargo run`) |
+| Storage server and mediators | Holds the actual data, and the processes that mediate listing and buying (`mediator-owner` / `mediator-buyer`) | **Rust** (`cargo run`) |
 | Distributed file store | Replicates files | **Docker** (IPFS container) |
-| Publisher / mediators | Glue between everything | **Docker** |
+| Publisher / bridge | Consent checks, issuing and verifying VCs, purchase notifications | **Docker** |
 
 So once you have **Docker / Node.js / Rust / Git / browser + MetaMask**, you can build the environment.
 

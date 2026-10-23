@@ -62,7 +62,7 @@ IW3IP に関する発表論文は [論文](../publications.md) のページに�
 
 [6] 警察庁, 「落とし物の届出・検索」, <https://www.npa.go.jp/bureau/soumu/ishitsubutsu/ishitsu-todokedekensaku.html>
 
-[7] Ethereum Foundation, "Ethereum development documentation," <https://ethereum.org/en/developers/docs/>
+[7] Ethereum Foundation, "Ethereum development documentation," <https://ethereum.org/developers/docs/>
 
 [8] S. Nakamoto, "Bitcoin: A Peer-to-Peer Electronic Cash System," 2008, <https://bitcoin.org/bitcoin.pdf>
 

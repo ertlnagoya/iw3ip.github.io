@@ -12,7 +12,7 @@ Participants should be able to complete the following.
 3. Purchase
 4. Data reception
 
-See §1.3 of the [Hands-on overview](../hands-on/index.md) for the steps.
+See §1.3 of the [Hands-on overview](../hands-on/index.md#13-trade-on-the-marketplace-v1-lane) for the steps.
 
 ## Suggested flow (2 sessions, approx. 120 min)
 
@@ -32,7 +32,7 @@ This template runs from a device through trading on the marketplace to the phone
 
 - HUSKYLENS2 group: [hands-on/huskylens2.md](../hands-on/huskylens2.md) (approx. 45 min)
 - Webcam group: [hands-on/webcam.md](../hands-on/webcam.md) (approx. 30 min)
-- Groups that finish move on to the purchase and delivery in §1.3 of the [Hands-on overview](../hands-on/index.md)
+- Groups that finish move on to the purchase and delivery in §1.3 of the [Hands-on overview](../hands-on/index.md#13-trade-on-the-marketplace-v1-lane)
 
 ### 4. Phone check (approx. 20 min)
 

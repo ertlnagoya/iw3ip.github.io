@@ -213,13 +213,16 @@ registered for: 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC
 
 ### 操作
 
-ターミナル C:
+ターミナル C で、最新のコードを取得します。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
+```
 
-# bridge 用 env。LAN IP は ipconfig getifaddr en0 で確認した値
+bridge 用の env を書き、publisher と bridge を起動します。`$HOST_IP` は、`ipconfig getifaddr en0` で確認した LAN IP です。
+
+```bash
 cat > infra/.env <<EOF
 BRIDGE_HARDHAT_RPC=http://host.docker.internal:8545
 BRIDGE_IOT_MARKET_ADDRESS=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
@@ -249,13 +252,22 @@ curl -s http://$HOST_IP:8080/health
 ```bash
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A1 PurchaseViewerVC
 ```
-→
+→ 出力の先頭部分は次のとおりです。
+
+```text
+        "PurchaseViewerVC": {
+            "format": "dc+sd-jwt",
+--
+            "vct": "https://iw3ip.example/credentials/PurchaseViewerVC/v1",
+            "scope": "PurchaseViewerVC",
+            "display": [
+--
+        "PurchaseViewerVC.full": {
+            "format": "dc+sd-jwt",
+--
 ```
-"PurchaseViewerVC": {
-  "format": "dc+sd-jwt",
-  ...
-"vct": "https://iw3ip.example/credentials/PurchaseViewerVC/v1",
-```
+
+このあと、`PurchaseViewerVC.full` の `vct` の行と、`PurchaseViewerVC.access`・`PurchaseViewerVC.event` についても同じ形の行が続きます。
 
 #### 4-C. bridge が Hardhat に接続して Merchandise を発見しているか
 
@@ -416,8 +428,11 @@ npx react-native start
 ```bash
 DEEPLINK=$(docker logs iw3ip-mv-bridge 2>&1 | grep "claim ok" | tail -1 | sed -E 's/.*deeplink=//')
 echo "$DEEPLINK"
+```
 
-# QR を Mac ブラウザで開く
+deeplink を QR コードにして、Mac のブラウザで開きます。
+
+```bash
 ENCODED=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$DEEPLINK")
 open "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=$ENCODED"
 ```
@@ -719,8 +734,11 @@ docker logs $(docker ps -qf name=publisher) 2>&1 | grep "/issuer/token" | tail -
 ```
 
 ```text
-HTTP 400 on POST /issuer/token: invalid_grant
+{"ts": "2026-...", "level": "ERROR", "logger": "ssi.error", "message": "HTTP 400 on POST /issuer/token: invalid_grant"}
+INFO:     172.18.0.1:54321 - "POST /issuer/token HTTP/1.1" 400 Bad Request
 ```
+
+1 行目は publisher のエラーログで、1 行の JSON です (`logger` が `ssi.error`、`message` が `HTTP 400 on POST /issuer/token: invalid_grant`)。2 行目は uvicorn のアクセスログで、JSON ではない普通の行です。`ts` の値、IP アドレス、ポート番号は環境ごとに変わります。
 
 **原因**: deeplink に含まれるコード (pre-authorized code) の有効期限 (購入の申告から 30 分) が切れている、または同じコードですでに一度受け取っている。publisher の `/marketplace/claim` は取引ハッシュ (tx_hash) ごとに冪等で、同じ購入を申告し直しても同じコードを返します。そのため、deeplink を取り出し直したり bridge を作り直したりしても解決しません。
 

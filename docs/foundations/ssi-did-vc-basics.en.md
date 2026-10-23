@@ -14,7 +14,7 @@ This chapter separates their roles and then reconnects them inside the IW3IP des
 
 - SSI: users manage identity credentials under user control. Standardization and implementation work can be followed at the Decentralized Identity Foundation [1]
 - DID: decentralized identifier (example: `did:example:alice`) [2]
-- VC: Verifiable Credential; here used as Consent VC [3]
+- VC: Verifiable Credential; the Phase 1 sample uses a Consent VC, and Part 2 covers six VC kinds [3]
 
 ### Relationship Between the Three
 

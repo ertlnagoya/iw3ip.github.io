@@ -106,7 +106,11 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
-# pull したコードで publisher と bridge を作り直す。iot-market-ui からの呼び出しには publisher の CORS 対応が必要
+```
+
+pull したコードで publisher と bridge を作り直します。iot-market-ui からの呼び出しには、publisher の CORS 対応が必要です。続けて、iot-market-ui を起動します。
+
+```bash
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 
 cd iot-market-ui
@@ -202,8 +206,10 @@ STEP 3 / 3 - 準備完了
     - 追加後、`Hardhat localhost` に切り替える
     - アカウントメニュー → 「秘密鍵をインポート」→ Account #2 の秘密鍵 (Stage 5 の Step 1 でメモしたもの) を入れる。PubKey を登録済みのアカウント (Stage 6 の Step E0。そのあと Hardhat を起動し直した場合は、E0 をやり直す) でないと購入できません
 1. MetaMask Mobile を開く → 内蔵ブラウザ (右下のグローブアイコン) で
-   `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
-   を開く (deploy script が作る Merchandise #0。#1 は Stage 5 で購入済みのことがあるため使わない)
+   `http://<HOST_IP>:5173/merchandise/<Merchandise のアドレス>`
+   を開く。Merchandise には、今のチェーンでまだ買っていない温度の Merchandise (#0・#1・#3 のどれか。アドレスは [Stage 6 の Step E2](marketplace-vc-end-to-end.md) の表を参照) を使う。
+   Stage 6 の Step E0 でチェーンを作り直しているので、Stage 5 の購入は残っていない。#3 は Stage 6 の Step E2 で買っている。#0・#1 も、Stage 6 の Step E3 で期限切れのときに買い直していれば使えない。
+   たとえば #0 なら `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0` を開く
 2. (省略可) ハンバーガーメニュー → 「Connect your Wallet」をタップして MetaMask 接続。
    スマートフォンの画面幅では右上の「Connect your wallet!」ボタンは表示されません。手順 3 のボタンを押すと自動で接続されるので、この手順は飛ばしても構いません
 3. 「Purchase!」ボタンを押し、MetaMask 側で **Confirm**
@@ -233,7 +239,7 @@ Step M4・M5 も、この内蔵ブラウザで続けてください。
 
 iw3ip-wallet が起動して「IW3IP 購入閲覧（Tier 1 / イベントのみ）」確認画面 (英語表示では「IW3IP Purchase Viewer (Event-only)」) → 承認。
 
-VC 発行用のコードの有効期限は、購入の申告から 30 分です。Step M3 の購入から 30 分以内に受け取ってください。期限が切れると wallet の受け取りが失敗します (publisher の `/issuer/token` が `400 invalid_grant` を返します)。同じ購入からは同じコードしか得られないので、[Stage 5 のトラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング) の F のとおり、まだ買っていない Merchandise ([Stage 6 の Step E2](marketplace-vc-end-to-end.md) の表を参照) を Step M3 の手順で買い直します。
+VC 発行用のコードの有効期限は、購入の申告から 30 分です。Step M3 の購入から 30 分以内に受け取ってください。期限が切れると wallet の受け取りが失敗します (publisher の `/issuer/token` が `400 invalid_grant` を返します)。同じ購入からは同じコードしか得られないので、[Stage 5 のトラブルシューティング](marketplace-vc-bridge.md#トラブルシューティング) の F のとおり、まだ買っていない温度の Merchandise (#0・#1・#3 のどれか。[Stage 6 の Step E2](marketplace-vc-end-to-end.md) の表を参照) を Step M3 の手順で買い直します。#2 (`home/event/possible_littering`) も PurchaseViewerVC の提示定義があるので使えますが、Step M5 で読めるのは温度ではなくイベントのデータになります。#4 (`home/event/flood_risk_high`) には PurchaseViewerVC の提示定義が無いので、Step M5 まで進めません。
 
 ### 期待結果
 - wallet の VC 一覧に新しいエントリ
@@ -256,7 +262,8 @@ VC 発行用のコードの有効期限は、購入の申告から 30 分です�
 2. Step M3 の購入が表示されている (dataset_id, merchandise, tx, 日時)
 3. **「閲覧チケットを取得」** をタップ → 開いたページの **「ウォレットで開く」** をタップ → wallet で PurchaseViewerVC を選んで提示
 4. PC 側 `docker logs iw3ip-publisher 2>&1 | grep viewer_token_issued | tail -1` で token を確認
-   (publisher のログは標準エラーに出るため `2>&1` が必要)
+   (publisher のログは標準エラーに出るため `2>&1` が必要)。
+   publisher のログは 1 行が JSON で、token はその `"message"` の中の `token=` の後ろにあります ([Stage 5 の Step 8](marketplace-vc-bridge.md#step-8-viewertoken-を取り出す) と同じ形です)
 5. `/my-data` に戻り、その購入の **「このデータを見る」** をタップして「ViewerToken (Bearer)」欄を表示
 6. その token を「ViewerToken (Bearer)」欄に貼り付け
 7. **「取得実行」** で JSON が表示

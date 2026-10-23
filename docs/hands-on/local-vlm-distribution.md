@@ -91,7 +91,10 @@ curl -s http://localhost:8080/health | jq .
 期待する出力:
 
 ```text
-{"status": "ok", ...}
+{
+  "status": "ok",
+  "service": "publisher"
+}
 ```
 
 !!! tip "モデルの選び方"
@@ -256,6 +259,6 @@ python3 examples/hands_on/local_vlm_distribution/problem_program.py \
 
 ## 関連ページ
 
-- 前提: [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) / [最短起動](../setup/quickstart.md)
+- 先に試しておくと理解が早いページ: [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md)
 - 詳細: DataUserVC × 段階アクセス（[§8 メディア統合](data-user-vc-tiered-media.md#8-実データ統合案-bhttp-メディアゲートウェイ)・[§12 VLM tier](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー)） / [AI に手順を考えさせる (LLM Planner)](llm-planner.md)
 - 設計: [段階アクセスの設計仕様（tier 拡張: 意味レベルの段階化）](data-user-vc-tiered-spec.md)

@@ -18,7 +18,7 @@ As on the first page, the command examples assume that the course repository is 
 
 Through §7 on the [first page](data-user-vc-tiered.md) you verified the **keys** `image_cid` / `video_cid` /
 `video_duration_sec` appear or disappear per tier. To carry the actual
-image / video bytes end-to-end, the provider side uploads a JPEG / MP4
+image / video bytes end-to-end, the provider side uploads a sample JPEG / MP4
 fixture to the publisher's `/media/upload`, takes back the URL, and
 folds it into the event payload as `image_url` / `video_url`.
 
@@ -46,12 +46,15 @@ python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 
 The script:
 
-1. Generates a 1×1 JPEG / MP4 fixture under `fixtures/`.
+1. Prepares a sample JPEG / MP4 fixture under `fixtures/` (a 16×16 grey JPEG of 285 bytes; the MP4 is the same JPEG bytes handled as `video/mp4`, so it does not play).
 2. Uploads both via `POST /media/upload` (sha256 dedupe).
 3. Posts a `possible_littering` event carrying `image_url` /
    `video_url` / `video_duration_sec` to `/simulate/publish`.
 
 The final `[publish]` output should show `"status": "allowed"`. If it says `denied`, check the consent registration.
+
+!!! note "If you ran this script before"
+    The fixture in older versions of the course repository was a 155-byte JPEG with no image data, which browsers, OpenCV and the VLM could not decode. Run `git pull` to update the course repository and then run the script; it automatically replaces the old file under `fixtures/` with the new JPEG.
 
 ### 8.2 Receiver (unchanged — same Tier 3 / 2 / 1 flow as §3–§7)
 
@@ -61,7 +64,7 @@ Use the [§3–§7](data-user-vc-tiered.md#3-three-marketplaceclaim-calls) flow 
 - **Tier 2 (enterprise)** → `event` + `image_url` only
 - **Tier 1 (default)** → `event` only
 
-Tap `image_url` in iPhone Safari → the JPEG opens directly. To try a
+Tap `image_url` in iPhone Safari → a small grey image (16×16 pixels) opens directly. To try a
 real photo / clip:
 
 ```bash
@@ -132,17 +135,17 @@ python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
 
-Expected output (`cid` starts with `bafk...`):
+Expected output (`cid` starts with `bafk...`). With the default fixture, `sha256` and `cid` match the values below:
 
 ```json
 [upload] {
   "image": {
     "url": "http://<HOST_IP>:8080/media/<sha256>.jpg",
-    "sha256": "...",
+    "sha256": "e6e34dda2552486336ad63a0ef24752c012963a3c08aaa234035caac7928e134",
     "content_type": "image/jpeg",
-    "byte_size": 155,
-    "cid": "bafkreigb...",
-    "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreigb..."
+    "byte_size": 285,
+    "cid": "bafkreihg4ng5ujksjbrtnlldudxsi5jmaeuwhi6arkvcgqbvzkwhskhbgq",
+    "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreihg4ng5ujksjbrtnlldudxsi5jmaeuwhi6arkvcgqbvzkwhskhbgq"
   },
   ...
 }

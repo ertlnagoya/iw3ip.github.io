@@ -90,6 +90,6 @@ IW3IP separates information suited to verification and audit trails from informa
 
 ## References
 
-[1] Ethereum Foundation, "Ethereum development documentation," <https://ethereum.org/en/developers/docs/>
+[1] Ethereum Foundation, "Ethereum development documentation," <https://ethereum.org/developers/docs/>
 
 [2] S. Nakamoto, "Bitcoin: A Peer-to-Peer Electronic Cash System," 2008, <https://bitcoin.org/bitcoin.pdf>

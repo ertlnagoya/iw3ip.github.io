@@ -115,11 +115,11 @@ Identifier) method that derives the identifier from a public key (JWK); here it 
 | Hardhat local chain | Chain infrastructure | **None** |
 | IPFS | Store for the data itself | **None** (common to v1/v2) |
 | PostgreSQL `ipfs_records` | Metadata index | **None** |
-
-→ In the implementation, the v1 data itself is not in IPFS but in the storage (simple-storage), where `mediator-owner` puts it. Only metadata goes to IPFS. The v2 `/platform/data` reads neither IPFS nor the storage; it returns the rows that the publisher received at `/platform/ingest` and keeps in memory.
 | `iot-market-ui` home + list + existing purchase flow | Product discovery and purchase | **None** |
 
-### 3.2 **Added** in v2 (not present in v1)
+→ In the implementation, the v1 data itself is not in IPFS but in the storage (simple-storage), where `mediator-owner` puts it. Only metadata goes to IPFS. The v2 `/platform/data` reads neither IPFS nor the storage; it returns the rows that the publisher received at `/platform/ingest` and keeps in memory.
+
+### 3.2 Used in v2 (new additions and reused existing parts)
 
 | Component | Role |
 |---|---|

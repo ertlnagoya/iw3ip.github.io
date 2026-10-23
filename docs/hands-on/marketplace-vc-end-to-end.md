@@ -100,15 +100,18 @@ git checkout main && git pull --ff-only
 npx hardhat node --hostname 0.0.0.0
 ```
 
-`Started HTTP and WebSocket JSON-RPC server` が表示されたら、ターミナル B で続けます。
+`Started HTTP and WebSocket JSON-RPC server` が表示されたら、ターミナル B で続けます。まず、Merchandise が dataset_id を additionalInfo に持つ最新版をデプロイします。
 
 ```bash
-# デプロイ。Merchandise が dataset_id を additionalInfo に持つ最新版
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
 npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
-# IoTMarket = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512, Merchandise #0..4 のアドレスをメモ
+```
 
-# PubKey 登録。buyer は Account #2
+出力の IoTMarket のアドレス (`0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`) と、Merchandise #0〜#4 のアドレスをメモします。
+
+次に、buyer (Account #2) の PubKey を登録するため、Hardhat のコンソールを開きます。
+
+```bash
 npx hardhat console --network localhost
 ```
 
@@ -124,16 +127,15 @@ await (await pk.registerKey("[handson]")).wait();
 続けて、同じターミナル B で publisher と bridge を起動します。
 
 ```bash
-# publisher + bridge
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
+```
 
-# Hardhat を起動し直したので、bridge と publisher を作り直す
-# bridge は起動時のブロック番号から監視する。publisher は前のチェーンの購入の申告をメモリに持っていて、
-# 同じ取引 ID の購入に使用済みのコードを返してしまう
+Hardhat を起動し直したので、bridge と publisher を作り直します。bridge は起動時のブロック番号から監視します。publisher は前のチェーンの購入の申告をメモリに持っていて、作り直さないと、同じ取引 ID の購入に使用済みのコードを返してしまいます。作り直したら、bridge が起動するまで数秒待ってから、bridge のログを確認します。
+
+```bash
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge
-
-# bridge ログ確認
+sleep 5
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
 ```
 

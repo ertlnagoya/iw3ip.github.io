@@ -140,7 +140,7 @@ docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_tok
 トークンの有効期限 (TTL) は 60 秒です。ログに出てから 60 秒以内に次の curl を実行してください。間に合わなかった場合は、§4 の提示からやり直します。
 
 ```bash
-TOKEN=<viewer_token>
+TOKEN='<viewer_token>'
 
 curl -s -H "Authorization: Bearer $TOKEN" \
   "http://$HOST_IP:8080/platform/data?dataset_id=home/env/temperature" | python3 -m json.tool
@@ -156,7 +156,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
   "seller_did": null,
   "allowed_views": ["event"],
   "rows": [
-    {"dataset_id": "home/env/temperature", "value": 21.4, "purpose": "research"}
+    {"dataset_id": "home/env/temperature", "purpose": "research", "value": 21.4}
   ]
 }
 ```

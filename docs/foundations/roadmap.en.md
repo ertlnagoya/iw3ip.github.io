@@ -7,6 +7,8 @@ The order is the same whether you go through it quickly or over several weeks.
 
 ## Priority Order
 
+P0 comes first, then P1 and P2.
+
 | Priority | Topic | Goal | Estimated Time |
 |---|---|---|---|
 | P0 | Understand site navigation | know what to read in what order | approx. 30 min |

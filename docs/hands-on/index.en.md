@@ -40,7 +40,7 @@ This site uses three kinds of numbering.
 
 - **Part 1–3**: the learning order on this site (Basic, Feature Extensions, Intelligence Integration).
 - **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see [Phase structure in the platform overview](../platform-overview.md#phase-structure)).
-- **Stage 0–7, A, T, P**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0) and image provenance signing (Stage P, which uses no VC). Each page assumes the earlier Stages are done. There is no Stage 2.
+- **Stage 0–7, A, T, P**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0) and image provenance signing (Stage P, which uses no VC). Each page assumes the earlier Stages are done, except Stage P, which does not use the earlier Stages and runs on its own with only the course repository and Python. There is no Stage 2.
 
 | Stage | Hands-on | VC |
 |---|---|---|
@@ -140,18 +140,22 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
 | **Part 1 / Capture data** | ✓ <small>(HA path)</small> | ✓ <small>(camera path)</small> | – | – | ✓ <small>(camera path)</small> | – |
 | **Part 1 / Trade (v1)** | – | ✓ | ✓ | – | ✓ | – |
+| **Part 2 / Share events (Stage 0)** | ✓ | – | – | ✓ <small>(appendix only)</small> | – | – |
 | **Part 2 / Add authentication** | ✓ | – | – | ✓ | – | – |
 | **Part 2 / Wire wallet to marketplace (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
-| **Part 2 / Process data before sharing** | ✓ | ✓ <small>(for Tier 3 e2e)</small> | ✓ <small>(same)</small> | ✓ | – | ✓ <small>(OpenCV / VLM optional)</small> |
+| **Part 2 / Process data before sharing**<sup>*</sup> | ✓ | ✓ <small>(for Tier 3 e2e)</small> | ✓ <small>(same)</small> | ✓ | – | ✓ <small>(OpenCV / VLM optional)</small> |
 | **Part 3 / Intelligence integration** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
+
+\* In this sub-group, [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) runs with Python only and uses no publisher, blockchain, MetaMask, SSI wallet, or VC.
 
 ### VCs used
 
 | Sub-group | Consent | Viewer | Service | Purchase&shy;Viewer | Seller | DataUser |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
+| Part 2 / Share events (Stage 0) | ✓ <small>(appendix only)</small> | – | – | – | – | – |
 | Part 2 / Add authentication | ✓ | ✓ | ✓ | – | – | – |
 | Part 2 / Wire wallet to marketplace (v2) | – | – | ✓ | ✓ | ✓ | – |
-| Part 2 / Process data before sharing | – | – | – | ✓ | – | ✓ |
+| Part 2 / Process data before sharing<sup>*</sup> | – | – | – | ✓ | – | ✓ |
 
 ### Reading the tables
 

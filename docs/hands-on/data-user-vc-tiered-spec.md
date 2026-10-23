@@ -95,7 +95,7 @@ Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/d
 ## trust_score 評価ロジック
 
 `publisher/app/ssi/trust_score.py` に純関数として実装します。
-結果は `DataUserVerifier.sol` と一致させ、テストで両者を突き合わせます。
+結果は `DataUserVerifier.sol` と一致させます。テスト (`tests/test_data_user_vc_tiered.py`) は、Python の計算結果を、コントラクトの重みに合わせて手で書いた期待値と比べます（コントラクト自体は実行しません）。
 
 ### 重み
 
@@ -134,7 +134,7 @@ misuseRecord == true                    -> -10
 Solidity 側と同じ `CRIME SEARCH`・`TRAFFIC MANAGEMENT`（スペース込み）と `RESEARCH`、
 entityType の表のキーは `GOVERNMENTORGANIZATION`・`POLICE`・`ENTERPRISE`・
 `RESEARCH ORGANIZATION`（スペース込み）です。表に無い値はフォールバック値 **5** になります。
-そのため、オファー URL で渡す `CrimeSearch` は `CRIMESEARCH` となって `CRIME SEARCH`
+そのため、`/marketplace/claim` の `data_user_attrs.purpose` で渡す `CrimeSearch` は `CRIMESEARCH` となって `CRIME SEARCH`
 と一致せず、purpose は 5 点になります（35 + 25 にはならず、35 + 5 を含む合計 80 になります）。
 `TrafficManagement` や `ResearchOrganization` のようにスペースを詰めた表記も同様に 5 点です。
 ハンズオンではティアの境界を再現できれば足りるので、このままで問題ありません。
@@ -239,8 +239,8 @@ score >= 60                               -> "access"
 そこで **ロジック（重みとしきい値）だけを Python に再実装**し、
 スマートコントラクト側は、将来の本番環境へ移行するときに使う候補として残します。
 
-`trust_score.py` は **`DataUserVerifier.sol` のミラー**として保守し、
-変更時はテストで両者が一致することを確認します。
+`trust_score.py` は **`DataUserVerifier.sol` のミラー**として保守します。
+テストはコントラクトを直接読み込まないので、どちらかを変更したときは、もう一方とテストの期待値を手で合わせます。
 
 ## ssi-ui の扱い
 
@@ -287,7 +287,7 @@ score >= 60                               -> "access"
 | Tier | アクセスレベル | 例 (score) | 出力する派生データ |
 |---|---|---|---|
 | **3** Full | `full` | 政府機関 + crime + ISO27001 (80) | 生の image / video + 全テキスト派生 |
-| **2** Access | `access` | 企業 + research + ISO27001 (75) | **顔ブラー済 image** + **詳細テキスト**（人名・物体名あり） |
+| **2** Access | `access` | 企業 + research + ISO27001 (75) | **顔ブラー済 image** + **詳細テキスト**（人名・物体名あり）+ 概要文 |
 | **1** Summary | `summary`（新） | 企業 + 不明な purpose + legalCompliance のみ (50〜59) | **概要テキストのみ**（PII redact 済、image 無し） |
 | 0 Denied | `denied` | 不適格 (<50) | イベントのみ (現在の実装では claim は拒否されない) |
 

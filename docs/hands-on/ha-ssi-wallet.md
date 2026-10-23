@@ -251,7 +251,7 @@ PolicyToken の性質:
 リクエスト例です。`<policy_token>` は、publisher のログの `policy_token_issued` 行にある `token=` の値に置き換えます (この節の最後を参照)。
 
 ```bash
-TOKEN=<policy_token>
+TOKEN='<policy_token>'
 
 curl -X POST http://$HOST_IP:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \
@@ -346,4 +346,4 @@ docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_tok
 
 [4] Sphereon, "pex," GitHub repository, <https://github.com/Sphereon-Opensource/pex>
 
-[5] O. Terbu, D. Fett, and B. Campbell, "SD-JWT-based Verifiable Digital Credentials (SD-JWT VC)," IETF Internet-Draft draft-ietf-oauth-sd-jwt-vc-19, Aug. 2026, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
+[5] O. Terbu, D. Fett, and B. Campbell, "SD-JWT-based Verifiable Digital Credentials (SD-JWT VC)," IETF Internet-Draft draft-ietf-oauth-sd-jwt-vc-19, Aug. 2026, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc-19/>

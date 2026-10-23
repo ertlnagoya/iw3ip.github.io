@@ -47,7 +47,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
   - 確認: `docker compose logs ipfs` でエラーの内容を見ます
   - 対応: 保存データが壊れている場合は、`docker compose down -v` でボリュームごと削除し、`docker compose up -d` で作り直します。IPFS と PostgreSQL のデータは消えます。`ipfs/README.md` の手順で `ipfs_records` テーブルを作り直し、`mediator-owner` を起動し直して登録し直します
 - 症状: `docker compose up -d` で `Bind for 0.0.0.0:8080 failed: port is already allocated` と出て、IPFS が起動しない
-  - 確認: publisher が動いていないか確認します。どちらもポート 8080 を使います ([10. ポートが競合する](#10-ポートが競合する))
+  - 確認: publisher が動いていないか確認します。どちらもポート 8080 を使います ([10. ポートが競合する](#port-conflicts))
   - 対応: publisher を止めてから (`cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml stop publisher`)、`ipfs` ディレクトリで `docker compose up -d` をもう一度実行します。データを消す必要はありません
 
 ## 3. スマホから `http://<HOST_IP>:5173/` が開けない
@@ -160,7 +160,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
     PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml up --build -d
     ```
 
-## 10. ポートが競合する
+## 10. ポートが競合する { #port-conflicts }
 
 - 症状: `address already in use` や `port is already allocated` と出て起動しない
   - 確認: 使用中のプロセスを調べます (macOS / Linux)。

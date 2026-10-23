@@ -99,15 +99,18 @@ git checkout main && git pull --ff-only
 npx hardhat node --hostname 0.0.0.0
 ```
 
-When `Started HTTP and WebSocket JSON-RPC server` appears, continue in Terminal B.
+When `Started HTTP and WebSocket JSON-RPC server` appears, continue in Terminal B. First, deploy the latest version, in which Merchandise holds dataset_id in additionalInfo.
 
 ```bash
-# Deploy the latest version, in which Merchandise holds dataset_id in additionalInfo
 cd ~/program/Blockchain_IoT_Marketplace/iot-market
 npx hardhat run scripts/deployMerchandiseWithIoTMarket.ts --network localhost
-# Note IoTMarket = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 and the addresses of Merchandise #0..4
+```
 
-# Register a PubKey for the buyer, Account #2
+Note the IoTMarket address in the output (`0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`) and the addresses of Merchandise #0 to #4.
+
+Next, open the Hardhat console to register a PubKey for the buyer (Account #2).
+
+```bash
 npx hardhat console --network localhost
 ```
 
@@ -123,16 +126,15 @@ await (await pk.registerKey("[handson]")).wait();
 Then, in the same Terminal B, start the publisher and the bridge.
 
 ```bash
-# publisher + bridge
 cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
+```
 
-# Hardhat was restarted, so recreate the bridge and the publisher
-# The bridge watches from the block number at its startup. The publisher keeps the claims of the old chain in memory
-# and would return an already used code for a purchase with the same transaction ID
+Hardhat was restarted, so recreate the bridge and the publisher. The bridge watches from the block number at its startup. The publisher keeps the claims of the old chain in memory and, unless recreated, would return an already used code for a purchase with the same transaction ID. After recreating them, wait a few seconds for the bridge to start, then check the bridge log.
+
+```bash
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge
-
-# Check the bridge log
+sleep 5
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
 ```
 

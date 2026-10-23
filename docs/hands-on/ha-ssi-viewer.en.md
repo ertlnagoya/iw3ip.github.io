@@ -137,7 +137,7 @@ docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_tok
 The token's TTL is 60 seconds. Run the next curl within 60 seconds of the log line. If you miss it, present again from §4.
 
 ```bash
-TOKEN=<viewer_token>
+TOKEN='<viewer_token>'
 
 curl -s -H "Authorization: Bearer $TOKEN" \
   "http://$HOST_IP:8080/platform/data?dataset_id=home/env/temperature" | python3 -m json.tool
@@ -153,7 +153,7 @@ Expected response:
   "seller_did": null,
   "allowed_views": ["event"],
   "rows": [
-    {"dataset_id": "home/env/temperature", "value": 21.4, "purpose": "research"}
+    {"dataset_id": "home/env/temperature", "purpose": "research", "value": 21.4}
   ]
 }
 ```

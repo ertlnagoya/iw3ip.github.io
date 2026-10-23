@@ -14,7 +14,7 @@ SSI、DID、VC は一緒に登場することが多く、最初は区別しに�
 
 - SSI: 利用者が自分の識別情報・資格情報を主体的に管理する考え方。標準化と実装の取り組みは Decentralized Identity Foundation [1] で追える
 - DID: 分散型識別子（例: `did:example:alice`）[2]
-- VC: Verifiable Credential。検証可能な資格情報（このサイトでは Consent VC を利用）[3]
+- VC: Verifiable Credential。検証可能な資格情報（Phase 1 のサンプルでは Consent VC を利用。Part 2 では 6 種類の VC を扱う）[3]
 
 ### 3つの関係
 

@@ -157,7 +157,7 @@ Extra for feature-extension part:
 
 Optional hardware (everything works without it):
 
-- **HUSKYLENS2** or **USB webcam** — for the camera-based Phase 1 lessons
+- **HUSKYLENS2** or **USB webcam** — for the camera-based Part 1 lessons
 - **Raspberry Pi** — to run Home Assistant on real hardware
 
 If you have none of the above, the **Home Assistant Demo Simulator** lets you do the entire walkthrough virtually.

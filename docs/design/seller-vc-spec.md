@@ -312,6 +312,6 @@ e2e (end-to-end) テストには、ハンズオンの手順をそのまま用い
 - [SSI Viewer (Stage 3)](../hands-on/ha-ssi-viewer.md)
 - [SSI Service (Stage 4 prep)](../hands-on/ha-ssi-service.md)
 - [Marketplace × Wallet bridge (Stage 5)](../hands-on/marketplace-vc-bridge.md)
-- [Marketplace VC end-to-end (Stage 6)](../hands-on/marketplace-vc-end-to-end.md)
+- [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](../hands-on/marketplace-vc-end-to-end.md)
 - [Seller VC で出品身元を裏付ける (Stage 7)](../hands-on/marketplace-seller-vc.md) (C6 で作成するハンズオン)
 - [VC アーキテクチャ全体像](vc-architecture-overview.md) (Stage 番号の一覧は §5)

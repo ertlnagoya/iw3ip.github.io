@@ -294,7 +294,7 @@ In these use cases, sharing all raw data is often less important than sharing:
 - summary values
 - purpose-limited data
 
-This is why they connect naturally to IW3IP features such as **Consent VC-based conditions**, **audit logging**, and future support for **event sharing** and **AI decision sharing**.
+This is why they connect naturally to IW3IP features such as **Consent VC-based conditions**, **audit logging**, **event sharing** (Part 2), and **AI-based decisions** (Part 3).
 
 ## What to read next
 

@@ -14,7 +14,7 @@ Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to aut
     This page uses [`iw3ip-wallet`](https://github.com/ertlnagoya/iw3ip-wallet),
     a fork of Sphereon mobile-wallet [1].
 
-!!! tip "Dataset choice"
+!!! tip "Choosing a dataset"
     The examples on this page use `home/env/temperature`. The same steps
     work with `home/event/possible_littering`, the webcam event from Stage 0
     ([Share detections, not raw frames](webcam-event-sharing.md)); substitute the dataset
@@ -251,7 +251,7 @@ PolicyToken properties:
 Request. Replace `<policy_token>` with the value after `token=` in the `policy_token_issued` line of the publisher log (see the end of this section).
 
 ```bash
-TOKEN=<policy_token>
+TOKEN='<policy_token>'
 
 curl -X POST http://$HOST_IP:8080/platform/ingest \
   -H "Authorization: Bearer $TOKEN" \
@@ -349,4 +349,4 @@ This hands-on (Stage 1) only covers **single-use write authorization**
 
 [4] Sphereon, "pex," GitHub repository, <https://github.com/Sphereon-Opensource/pex>
 
-[5] O. Terbu, D. Fett, and B. Campbell, "SD-JWT-based Verifiable Digital Credentials (SD-JWT VC)," IETF Internet-Draft draft-ietf-oauth-sd-jwt-vc-19, Aug. 2026, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>
+[5] O. Terbu, D. Fett, and B. Campbell, "SD-JWT-based Verifiable Digital Credentials (SD-JWT VC)," IETF Internet-Draft draft-ietf-oauth-sd-jwt-vc-19, Aug. 2026, <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc-19/>

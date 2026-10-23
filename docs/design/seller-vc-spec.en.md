@@ -315,6 +315,6 @@ The total is 2–3 weeks, roughly the same as Stage 5/6.
 - [SSI Viewer (Stage 3)](../hands-on/ha-ssi-viewer.md)
 - [SSI Service (Stage 4 prep)](../hands-on/ha-ssi-service.md)
 - [Marketplace × Wallet bridge (Stage 5)](../hands-on/marketplace-vc-bridge.md)
-- [Marketplace VC end-to-end (Stage 6)](../hands-on/marketplace-vc-end-to-end.md)
+- [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](../hands-on/marketplace-vc-end-to-end.md)
 - [Back the seller's identity with a Seller VC (Stage 7)](../hands-on/marketplace-seller-vc.md) (the hands-on created in C6)
 - [VC architecture overview](vc-architecture-overview.md) (the list of Stage numbers is in the "Hands-on stages" section (§5))

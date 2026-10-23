@@ -115,9 +115,9 @@ Identifier、分散型識別子) の方式で、ここではウォレットの�
 | Hardhat ローカルチェーン | チェーン基盤 | **無し** |
 | IPFS | データ本体ストア | **無し** (v1/v2 共通) |
 | PostgreSQL `ipfs_records` | メタデータインデックス | **無し** |
+| `iot-market-ui` ホーム + リスト + 既存 purchase 動線 | 商品発見と購入 | **無し** |
 
 → 実装では、v1 のデータ本体は IPFS ではなく保管庫 (simple-storage) にあり、`mediator-owner` が置く。IPFS にはメタデータだけを置く。v2 の `/platform/data` は、IPFS も保管庫も読まず、publisher が `/platform/ingest` で受け取ってメモリに持つ行を返す。
-| `iot-market-ui` ホーム + リスト + 既存 purchase 動線 | 商品発見と購入 | **無し** |
 
 ### 3.2 v2 で使うもの (新規に追加するものと、既存のものの再利用)
 

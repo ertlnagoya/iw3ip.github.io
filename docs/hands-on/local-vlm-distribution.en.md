@@ -10,7 +10,7 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
 >
 > **Time required**: approx. 40–60 min (the first model pull takes a while)
 
-!!! note "Where this page fits"
+!!! note "Where this page belongs"
     This is a Part 3 (intelligence integration) hands-on. Camera capture basics
     are covered in [Detect with a USB webcam (OpenCV)](webcam.md), and per-tier projection with a
     VLM is in §12 of [Tier by semantic level](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur). This
@@ -91,7 +91,10 @@ curl -s http://localhost:8080/health | jq .
 Expected output:
 
 ```text
-{"status": "ok", ...}
+{
+  "status": "ok",
+  "service": "publisher"
+}
 ```
 
 !!! tip "Choosing a model"
@@ -261,6 +264,6 @@ Without a template, implement one of these yourself:
 
 ## Related pages
 
-- Prerequisites: [Detect with a USB webcam (OpenCV)](webcam.md) / [Quickstart](../setup/quickstart.md)
+- Helpful to try first: [Detect with a USB webcam (OpenCV)](webcam.md)
 - Deep dive: DataUserVC × tiered access ([§8 media integration](data-user-vc-tiered-media.md#8-real-data-integration-option-b--http-media-gateway), [§12 VLM tier](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur)) / [Let an AI plan the steps (LLM Planner)](llm-planner.md)
 - Design: [Tiered access design spec (tier extension: semantic-level redaction)](data-user-vc-tiered-spec.md)

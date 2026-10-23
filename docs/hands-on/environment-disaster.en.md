@@ -38,7 +38,7 @@ Branches after that:
 - how `flood_risk_high` becomes `allowed` or `denied`
 - how to read `/platform/ingest` and `/audit/logs` separately
 
-## Common stumbling points
+## Common pitfalls
 
 - `dataset_id` and `event_type` are easy to mix up
 - the `purpose` in the request must match `allowed_purposes` in the Consent VC
@@ -350,7 +350,7 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
    ```
    Replace `<value after token=>` with the value after `token=` that is printed, and run:
    ```bash
-   POLICY=<value after token=>
+   POLICY='<value after token=>'
    ```
    If 5 minutes have passed or `policy_token_expired` is returned, redo the presentation and use the `token=` value from the last line printed above.
    ```bash

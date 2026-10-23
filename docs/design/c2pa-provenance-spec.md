@@ -3,10 +3,10 @@
 !!! abstract "このページの位置付け"
     [設計](index.md) の章の設計仕様です。
     市販の安価な IP カメラや USB ウェブカメラの映像と、センサーデータに、C2PA (Coalition for Content Provenance and Authenticity) [1] の規格に沿った来歴情報を付ける **Stage P** (Provenance) の設計仕様である。
-    署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた設計であり、そのうち P0 は実装した (§13)。
+    署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた設計であり、そのうち P0 の署名と検証は実装した (§10 の注記。Content Credentials Verify と c2patool での確認はまだ)。
     本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像](vc-architecture-overview.md) の §5)。
     Stage P は、Stage T の段階アクセス ([段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)) と Stage 7 の SellerVC ([SellerVC 設計仕様](seller-vc-spec.md)) の上に載せる。P0 の部分は、ハンズオン [画像の来歴を証明する](../hands-on/c2pa-provenance.md) で手元で動かせる。
-    本文中の P0〜P5 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、最初に作る最小限の実装) は P0〜P2 に当たる。ハンズオンで動かすのは P0 (と、P2 に含まれる Tier 2 の派生マニフェストの確認) で、P1 と P2 はまだ実装していない。
+    本文中の P0〜P5 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、最初に作る最小限の実装) は P0〜P2 に当たる。ハンズオンで動かすのは P0 (と、P2 に含まれる Tier 2 の派生マニフェストの確認) で、P1 と、P2 の残り (ProvenanceToken など) はまだ実装していない。
 
 本仕様は、写真や映像に**「誰が、いつ、どう撮って、どう加工したか」の記録を付け、その記録に電子署名をする**仕組みを IW3IP に組み込むための設計である。記録を改ざんすると署名が合わなくなるため、受け取った人が自分で本物かどうかを確かめられる。
 

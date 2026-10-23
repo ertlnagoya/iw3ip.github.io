@@ -123,18 +123,18 @@ service_token_issued jti=... token=... dataset=home/env/temperature ttl=3600s
 ## 4. Continuous ingest with ServiceToken
 
 ```bash
-SERVICE=<service_token>
+SERVICE='<service_token>'
 
 for i in 1 2 3 4 5; do
   curl -s -X POST http://$HOST_IP:8080/platform/ingest \
     -H "Authorization: Bearer $SERVICE" \
     -H "Content-Type: application/json" \
     -d "{\"dataset_id\":\"home/env/temperature\",\"value\":$((20 + i))}" \
-    | python3 -c "import json,sys; print(json.load(sys.stdin))"
+  echo
 done
 ```
 
-Expected: all 5 return `{"status":"received","count":N}`.
+Expected: all 5 return `{"status":"received","count":N}` (N is the number of rows ingested since the publisher started, and grows by one each time).
 
 Unlike PolicyToken, the second call doesn't trigger `403 policy_token_already_consumed`.
 
@@ -195,7 +195,7 @@ on purpose — to preserve the Stage 1 user-visible error name.
   who *should* issue them is a future policy decision
 
 Once these land, Stage 4 LLM Planner can prove its dataset access for
-each plan step via a VC presentation.
+each plan step via a VC presentation. This is why this page is called Stage 4 prep.
 
 ## Related
 

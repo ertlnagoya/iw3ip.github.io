@@ -1,4 +1,4 @@
-# Docs (MkDocs)
+# サイトの構築と編集
 
 このWebサイトは MkDocs [1] で構築されています。テーマには Material for MkDocs [2]、日本語と英語の切り替えには mkdocs-static-i18n [3] を使っています。
 

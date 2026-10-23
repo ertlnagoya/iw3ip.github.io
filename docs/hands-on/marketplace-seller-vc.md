@@ -4,7 +4,7 @@
 
 > **やること**: SellerVC を発行・提示して出品身元を裏付ける
 >
-> **前提**: [Marketplace VC end-to-end](marketplace-vc-end-to-end.md) (Stage 6)
+> **前提**: [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md)
 >
 > **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
@@ -81,18 +81,29 @@
 
 ## Step S0. 環境を最新コードに揃える
 
+最新のコードを取得します。
+
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
+```
 
-# 任意: on-chain owner verify を有効にする場合のみ
+on-chain owner verify を有効にする場合だけ、次を実行します (任意)。
+
+```bash
 echo "MARKETPLACE_HARDHAT_RPC=http://host.docker.internal:8545" >> infra/.env
+```
 
-# git pull 後は --build で publisher を作り直す。古いままだと owner verify が skipped のまま
+git pull の後は、`--build` で publisher を作り直します。古いままだと owner verify が skipped のままになります。
+
+```bash
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 sleep 5
+```
 
-# 5 種目の VC が出ているか
+5 種目の VC (SellerVC) が出ているかを確かめます。
+
+```bash
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer \
   | python3 -m json.tool | grep -A1 SellerVC
 ```
@@ -243,10 +254,9 @@ Step S2 で `SELLER` を設定したターミナル (リポジトリのトップ
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
-SELLER_ETH=<Step S3 の seller address>
-MERCH=<Step S3 の merchandise address>
-TX_HASH=<Step S3 の register tx hash>
-
+SELLER_ETH='<Step S3 の seller address>'
+MERCH='<Step S3 の merchandise address>'
+TX_HASH='<Step S3 の register tx hash>'
 curl -s -X POST http://$HOST_IP:8080/marketplace/register \
   -H "Authorization: Bearer $SELLER" \
   -H "Content-Type: application/json" \
@@ -317,7 +327,7 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 → ViewerToken 取得 → 取得の順に進めます。ViewerToken の有効期限は 60 秒なので、提示したらすぐに次のコマンドを実行し、`viewer_token_expired` が出たら提示からやり直してください。`<buyer の ViewerToken>` は、山かっこを含めて全体を [Stage 5 の Step 8](marketplace-vc-bridge.md#step-8-viewertoken-を取り出す) で取り出したトークンに置き換えてから実行します (zsh は `<` をリダイレクトとして扱います)。
 
 ```bash
-TOKEN=<buyer の ViewerToken>
+TOKEN='<buyer の ViewerToken>'
 curl -s -H "Authorization: Bearer $TOKEN" \
   "http://$HOST_IP:8080/platform/data?merchandise=$MERCH" | python3 -m json.tool
 ```
@@ -528,6 +538,6 @@ wallet の 400 が続く場合は、Hardhat を起動し直したあとに同じ
 
 - [SellerVC 設計仕様](../design/seller-vc-spec.md)
 - [Marketplace × Wallet bridge (Stage 5)](marketplace-vc-bridge.md)
-- [Marketplace VC end-to-end (Stage 6)](marketplace-vc-end-to-end.md)
+- [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md)
 - [SSI Service (Stage 4 prep)](ha-ssi-service.md)
 - [SSI Wallet (Stage 1)](ha-ssi-wallet.md)

@@ -74,7 +74,7 @@ source .venv/bin/activate
 python -m pip install c2pa-python pillow cryptography
 ```
 
-すでに `.venv` がある場合は、`source .venv/bin/activate` のあとに `python -m pip install ...` だけを実行します。新しく開いたターミナルでは、§2 以降のコマンドの前に、教材リポジトリのトップへ移動してから仮想環境を有効にします。§2 以降のコマンドは、教材リポジトリのトップから相対パスでファイルを指定しています。
+すでに `.venv` がある場合は、`source .venv/bin/activate` のあとに `python -m pip install ...` だけを実行します。uv などで作った `.venv` では `No module named pip` と表示されることがあります。その場合は「トラブル時」のとおり、`python -m ensurepip` を実行してからやり直します。新しく開いたターミナルでは、§2 以降のコマンドの前に、教材リポジトリのトップへ移動してから仮想環境を有効にします。§2 以降のコマンドは、教材リポジトリのトップから相対パスでファイルを指定しています。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -157,9 +157,9 @@ flowchart LR
 図の各段階で、プログラムは次のことをしています。
 
 1. **撮影画像に署名する**: 画像に、撮ったこと (`c2pa.actions`)、カメラ ID と撮影時刻 (`jp.ertl.iw3ip.capture`)、センサー値 (`jp.ertl.iw3ip.sensor`) を書いた来歴を付け、ゲートウェイの鍵で署名して `out/capture.jpg` に保存します
-2. **検証する**: CA を登録せずに検証すると `Valid` (署名は正しいが、署名した人を信頼してよいかは分からない)、`ca.pem` を登録して検証すると `Trusted` になります (1〜2 番目のチェック)
+2. **検証する**: CA を登録せずに検証すると `Valid` (署名は正しいが、署名した人を信頼してよいかは分からない)、`ca.pem` を登録して検証すると `Trusted` になります (1〜2 番目のチェック)。来歴に独自のアサーション (`jp.ertl.iw3ip.capture` と `jp.ertl.iw3ip.sensor`) が入っていることも確かめます (3 番目のチェック)
 3. **Tier 2 のブラー画像を作る**: 画像全体をぼかし、元の画像を「素材 (ingredient)」として参照する来歴を付けて `out/tier2.jpg` に保存します。このとき、元の来歴からサムネイル、カメラ ID、センサー値を削除 (redaction) します
-4. **漏れが無いかを確かめる**: Tier 2 の画像の来歴に、元の画像のサムネイル、カメラ ID、センサー値が残っていないことを確かめます (5〜10 番目のチェック)
+4. **漏れが無いかを確かめる**: Tier 2 の画像の検証が `Trusted` になることを確かめます (4 番目のチェック)。そのうえで、Tier 2 の画像の来歴に、元の画像のサムネイル、カメラ ID、センサー値が残っていないことを確かめます (5〜10 番目のチェック)
 5. **改ざんを見破れるかを確かめる**: Tier 2 の画像を 1 バイトだけ書き換えて検証し、`Invalid` になることを確かめます (11 番目のチェック)
 
 保存された 2 枚の画像は、次のようになります (左がダミーの撮影画像、右がぼかした Tier 2 の画像)。見た目はぼかしただけですが、右の画像の中には、左の画像の来歴の一部が入っています。中身は §4 で表示します。
@@ -199,10 +199,10 @@ EOF
     assertions: ['c2pa.actions.v2', 'jp.ertl.iw3ip.capture', 'jp.ertl.iw3ip.sensor']
     camera: {'camera_id': 'cam01', 'captured_at': '...', 'gateway_did': 'did:jwk:<gateway>'}
 === tier2.jpg
-  (this file) title: tier2.jpg | signer: iw3ip-gateway
-    assertions: ['c2pa.actions.v2', 'jp.ertl.iw3ip.derivation']
   (ingredient) title: capture.jpg | signer: iw3ip-gateway
     assertions: ['c2pa.actions.v2']
+  (this file) title: tier2.jpg | signer: iw3ip-gateway
+    assertions: ['c2pa.actions.v2', 'jp.ertl.iw3ip.derivation']
 ```
 
 見るところは次の 3 つです。
@@ -280,7 +280,7 @@ C2PA が保証するのは「この署名者がこの中身に署名した」こ
   - 確認: `.venv` を uv など pip を含まない方法で作った場合に起きます。`python -m ensurepip` を実行してから、もう一度 `python -m pip install ...` を実行する
 - 症状: `.../certs/chain.pem not found; run make_test_certs.py first`
   - 確認: §2 の `make_test_certs.py` を実行したか
-- 症状: `[FAIL] signer certificate name has no camera ID (iw3ip-gateway-cam01; rerun make_test_certs.py)`
+- 症状: `[FAIL] signer certificate name has no camera ID  (iw3ip-gateway-cam01; rerun make_test_certs.py)`
   - 確認: 以前の版の `make_test_certs.py` で作った証明書が残っています。`make_test_certs.py` を実行し直す
 - 症状: `webcam capture failed (no camera access, or every frame was black)`
   - 確認 (macOS): システム設定 → プライバシーとセキュリティ → カメラ で、使っているターミナルのアプリが許可されているか。許可したあとはターミナルを起動し直す

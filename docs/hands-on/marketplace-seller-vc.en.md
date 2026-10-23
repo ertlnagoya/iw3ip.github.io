@@ -4,7 +4,7 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
 
 > **What you'll do**: Issue and present a SellerVC to back the seller's identity
 >
-> **Prerequisites**: [Marketplace VC end-to-end](marketplace-vc-end-to-end.md) (Stage 6)
+> **Prerequisites**: [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md)
 >
 > **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
@@ -81,18 +81,29 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
 
 ## Step S0. Bring the environment up to the latest code
 
+Get the latest code.
+
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
+```
 
-# Optional: only when enabling on-chain owner verify
+Only when you enable on-chain owner verify, run the following (optional).
+
+```bash
 echo "MARKETPLACE_HARDHAT_RPC=http://host.docker.internal:8545" >> infra/.env
+```
 
-# After git pull, rebuild the publisher with --build, otherwise owner verify stays skipped
+After git pull, rebuild the publisher with `--build`. Otherwise owner verify stays skipped.
+
+```bash
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 sleep 5
+```
 
-# Is the fifth VC type exposed
+Check that the fifth VC type (SellerVC) is exposed.
+
+```bash
 curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer \
   | python3 -m json.tool | grep -A1 SellerVC
 ```
@@ -249,10 +260,9 @@ Run this in the terminal where you set `SELLER` in Step S2 (at the repository to
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
-SELLER_ETH=<seller address from Step S3>
-MERCH=<merchandise address from Step S3>
-TX_HASH=<register tx hash from Step S3>
-
+SELLER_ETH='<seller address from Step S3>'
+MERCH='<merchandise address from Step S3>'
+TX_HASH='<register tx hash from Step S3>'
 curl -s -X POST http://$HOST_IP:8080/marketplace/register \
   -H "Authorization: Bearer $SELLER" \
   -H "Content-Type: application/json" \
@@ -325,7 +335,7 @@ Then follow the procedure of the [Stage 5 hands-on](marketplace-vc-bridge.md): p
 → obtain a ViewerToken → fetch. The ViewerToken expires after 60 seconds, so run the next commands right after presenting; if you get `viewer_token_expired`, present again. Before running, replace the whole `<buyer ViewerToken>`, including the angle brackets, with the token you extracted as in [Stage 5 Step 8](marketplace-vc-bridge.md#step-8-obtain-a-viewertoken) (zsh treats `<` as a redirect).
 
 ```bash
-TOKEN=<buyer ViewerToken>
+TOKEN='<buyer ViewerToken>'
 curl -s -H "Authorization: Bearer $TOKEN" \
   "http://$HOST_IP:8080/platform/data?merchandise=$MERCH" | python3 -m json.tool
 ```
@@ -532,6 +542,6 @@ See also [Troubleshooting in Stage 5](marketplace-vc-bridge.md#troubleshooting)
 
 - [SellerVC design spec](../design/seller-vc-spec.md)
 - [Marketplace × Wallet bridge (Stage 5)](marketplace-vc-bridge.md)
-- [Marketplace VC end-to-end (Stage 6)](marketplace-vc-end-to-end.md)
+- [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md)
 - [SSI Service (Stage 4 prep)](ha-ssi-service.md)
 - [SSI Wallet (Stage 1)](ha-ssi-wallet.md)

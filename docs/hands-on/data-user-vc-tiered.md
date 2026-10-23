@@ -258,7 +258,7 @@ iw3ip-publisher  | {"ts": "...", "level": "INFO", "logger": "publisher.app.ssi.v
 `token=` の値をシェル変数 `VIEWER_TOKEN` に入れて、次を実行します。ViewerToken の有効期間は 60 秒なので、取り出したらすぐに使います。期限が切れたら、もう一度提示します。
 
 ```bash
-export VIEWER_TOKEN=<token= の値>
+export VIEWER_TOKEN='<token= の値>'
 curl -s -H "authorization: Bearer $VIEWER_TOKEN" \
      'localhost:8080/platform/data?dataset_id=home/event/possible_littering' | jq .
 ```
@@ -290,9 +290,7 @@ pip install fastapi uvicorn pydantic pydantic-settings httpx paho-mqtt \
 python -m pytest tests/test_data_user_vc_tiered.py -v
 ```
 
-スマートコントラクト `DataUserVerifier.sol` の重みと、`trust_score.py` の
-重みが一致することは、テストの 4 ケース（GovernmentOrganization / Enterprise /
-低スコア / score>=80 でも entity が違うと full にならない）で確認します。
+テストの 4 ケース（GovernmentOrganization / Enterprise / 低スコア / score>=80 でも entity が違うと full にならない）は、`trust_score.py` が返す trustScore と判定を、スマートコントラクト `DataUserVerifier.sol` の重みに合わせて手で書いた期待値と比べます。テストは `DataUserVerifier.sol` 自体を読み込んだり実行したりしないので、コントラクトの重みを変えたときは、`trust_score.py` とテストの期待値も合わせて直す必要があります。
 
 ## 7. 実機検証で観測した値
 

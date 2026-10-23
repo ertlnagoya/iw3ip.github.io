@@ -3,10 +3,10 @@
 !!! abstract "Where this page belongs"
     This is a design spec in the [Design](index.md) section.
     This is the design spec for **Stage P** (Provenance), which attaches provenance information that follows the C2PA (Coalition for Content Provenance and Authenticity) standard [1] to footage from low-cost commercial IP cameras and USB webcams, and to sensor data.
-    Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It was designed before implementation, and P0 of it is now implemented (§13).
+    Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It was designed before implementation, and the signing and validation of P0 are now implemented (see the note in §10; checks with Content Credentials Verify and c2patool are not done yet).
     "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview](vc-architecture-overview.md)).
     Stage P builds on the tiered access of Stage T ([Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)) and the SellerVC of Stage 7 ([SellerVC design spec](seller-vc-spec.md)). The P0 part can be run locally in the hands-on [Prove where an image came from](../hands-on/c2pa-provenance.md).
-    P0–P5 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation to build first) corresponds to P0–P2. The hands-on runs P0 (plus the check of the Tier 2 derivative manifest that belongs to P2); P1 and P2 are not implemented yet.
+    P0–P5 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation to build first) corresponds to P0–P2. The hands-on runs P0 (plus the check of the Tier 2 derivative manifest that belongs to P2); P1 and the rest of P2 (ProvenanceToken and so on) are not implemented yet.
 
 This spec is a design for adding to IW3IP a mechanism that **attaches to each photo or video a record of who took it, when, how, and how it was processed, and signs that record electronically**. Tampering with the record breaks the signature, so whoever receives the file can check for themselves whether it is genuine.
 

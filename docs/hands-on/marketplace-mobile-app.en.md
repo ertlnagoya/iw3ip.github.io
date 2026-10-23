@@ -107,7 +107,11 @@ Terminal D (iot-market-ui). If the iot-market-ui from Stage 5 or 6 is still runn
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
 git checkout main && git pull --ff-only
-# Rebuild the publisher and bridge from the pulled code. Calls from iot-market-ui need the CORS support of the publisher
+```
+
+Rebuild the publisher and bridge from the pulled code. Calls from iot-market-ui need the CORS support of the publisher. Then start iot-market-ui.
+
+```bash
 docker compose -f infra/docker-compose.yml --profile ssi-wallet --profile mv-bridge up --build -d
 
 cd iot-market-ui
@@ -207,8 +211,10 @@ tapping "もう入っています" (Already installed) twice takes you to STEP 3
     - After adding it, switch to `Hardhat localhost`
     - Account menu → "Import private key" → enter the private key of Account #2 (noted in Stage 5 Step 1). Only an account whose PubKey is registered (Stage 6 Step E0; if you have restarted Hardhat since, redo E0) can purchase
 1. Open MetaMask Mobile → in the built-in browser (the globe icon at the bottom right), open
-   `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
-   (Merchandise #0, created by the deploy script. Do not use #1, which may already have been purchased in Stage 5)
+   `http://<HOST_IP>:5173/merchandise/<Merchandise address>`.
+   Use a temperature Merchandise that you have not bought yet on the current chain (one of #0, #1 or #3; see the table in [Stage 6 Step E2](marketplace-vc-end-to-end.md) for the addresses).
+   Stage 6 Step E0 recreated the chain, so the Stage 5 purchases are gone. #3 was bought in Stage 6 Step E2. #0 or #1 cannot be used either if you re-bought it in Stage 6 Step E3 after the code expired.
+   For example, for #0 open `http://<HOST_IP>:5173/merchandise/0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0`
 2. (Optional) Hamburger menu → tap "Connect your Wallet" to connect MetaMask.
    On a phone-width screen the "Connect your wallet!" button at the top right is not shown. The button in step 3 connects automatically, so you can skip this step
 3. Press the "Purchase!" button and **Confirm** on the MetaMask side
@@ -239,7 +245,7 @@ On `/purchased/<txHash>`, tap **"ウォレットで開く" (Open in wallet)**.
 
 iw3ip-wallet launches and shows the "IW3IP Purchase Viewer (Event-only)" confirmation screen (shown as "IW3IP 購入閲覧（Tier 1 / イベントのみ）" in a Japanese-language wallet) → approve.
 
-The VC issuance code expires 30 minutes after the purchase claim. Receive the VC within 30 minutes of the Step M3 purchase. After it expires, the wallet fails to receive the VC (the publisher's `/issuer/token` returns `400 invalid_grant`). The same purchase only ever gives you the same code, so, as in F of [Troubleshooting in the Stage 5 hands-on](marketplace-vc-bridge.md#troubleshooting), buy a Merchandise you have not bought yet (see the table in [Stage 6 Step E2](marketplace-vc-end-to-end.md)) as in Step M3.
+The VC issuance code expires 30 minutes after the purchase claim. Receive the VC within 30 minutes of the Step M3 purchase. After it expires, the wallet fails to receive the VC (the publisher's `/issuer/token` returns `400 invalid_grant`). The same purchase only ever gives you the same code, so, as in F of [Troubleshooting in the Stage 5 hands-on](marketplace-vc-bridge.md#troubleshooting), buy a temperature Merchandise you have not bought yet (one of #0, #1 or #3; see the table in [Stage 6 Step E2](marketplace-vc-end-to-end.md)) as in Step M3. #2 (`home/event/possible_littering`) also works because it has a PurchaseViewerVC presentation definition, but in Step M5 you then read event data instead of temperature data. #4 (`home/event/flood_risk_high`) has no PurchaseViewerVC presentation definition, so you cannot get through Step M5 with it.
 
 ### Expected result
 
@@ -264,7 +270,8 @@ The VC issuance code expires 30 minutes after the purchase claim. Receive the VC
 2. The purchase from Step M3 is shown (dataset_id, merchandise, tx, date and time)
 3. Tap **"閲覧チケットを取得" (Get viewing ticket)** → on the page that opens, tap **"ウォレットで開く" (Open in wallet)** → choose the PurchaseViewerVC in the wallet and present it
 4. On the PC, check the token with `docker logs iw3ip-publisher 2>&1 | grep viewer_token_issued | tail -1`
-   (`2>&1` is needed because the publisher logs to stderr)
+   (`2>&1` is needed because the publisher logs to stderr).
+   Each publisher log line is JSON, and the token comes after `token=` inside its `"message"` (the same form as in [Stage 5 Step 8](marketplace-vc-bridge.md#step-8-obtain-a-viewertoken))
 5. Go back to `/my-data` and tap **"このデータを見る" (View this data)** for that purchase to show the "ViewerToken (Bearer)" field
 6. Paste that token into the "ViewerToken (Bearer)" field
 7. **"取得実行" (Fetch)** shows the JSON

@@ -100,7 +100,7 @@ The original design had the wallet present the DataUserVC over OID4VP and derive
 ## Trust scoring
 
 Implemented as a pure function in `publisher/app/ssi/trust_score.py`,
-mirroring `DataUserVerifier.sol`. Tests pin the two together.
+mirroring `DataUserVerifier.sol`. The tests (`tests/test_data_user_vc_tiered.py`) compare the Python results with expected values written by hand to match the contract's weights; they do not run the contract itself.
 
 ### Weights
 
@@ -140,7 +140,7 @@ purpose table keys are `CRIME SEARCH` and `TRAFFIC MANAGEMENT` (with a
 space, as on the Solidity side) and `RESEARCH`; the entityType table keys
 are `GOVERNMENTORGANIZATION`, `POLICE`, `ENTERPRISE`, and
 `RESEARCH ORGANIZATION` (with a space). Any value not in the table falls
-back to **5**. So `CrimeSearch` from the offer URL becomes `CRIMESEARCH`,
+back to **5**. So `CrimeSearch` sent as `data_user_attrs.purpose` to `/marketplace/claim` becomes `CRIMESEARCH`,
 does not match `CRIME SEARCH`, and scores 5 for purpose (which is why
 Tier 3 hits 80 = 35 + 5 + ..., not 35 + 25 + ...). Run-together forms such
 as `TrafficManagement` and `ResearchOrganization` also score 5. Hands-on
@@ -248,8 +248,9 @@ Keys not allowed are **omitted** (not nulled).
 So we re-implement only **the weights and thresholds** in Python and
 keep the contract as a future production-migration surface.
 
-`trust_score.py` is maintained as a **mirror** of `DataUserVerifier.sol`;
-when either changes, the test suite enforces parity.
+`trust_score.py` is maintained as a **mirror** of `DataUserVerifier.sol`.
+The tests do not load the contract, so when either changes, update the other
+and the tests' expected values by hand.
 
 ## ssi-ui
 
@@ -295,7 +296,7 @@ recipient can know *what happened* without learning *who did it*.
 | Tier | access level | Example (score) | Derivatives shipped |
 |---|---|---|---|
 | **3** Full | `full` | gov + crime + ISO27001 (80) | raw image / video + every text derivative |
-| **2** Access | `access` | enterprise + research + ISO27001 (75) | **face-blurred image** + **detailed text** (named entities present) |
+| **2** Access | `access` | enterprise + research + ISO27001 (75) | **face-blurred image** + **detailed text** (named entities present) + summary |
 | **1** Summary | `summary` (new) | enterprise + unknown purpose + legalCompliance only (50–59) | **summary text only** (PII-redacted, no image) |
 | 0 Denied | `denied` | unqualified (<50) | events only (the current implementation does not reject the claim) |
 

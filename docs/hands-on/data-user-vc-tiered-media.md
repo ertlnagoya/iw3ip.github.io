@@ -17,7 +17,7 @@
 
 [1 ページ目](data-user-vc-tiered.md)の §7 までで、ティアごとに `image_cid` / `video_cid` のキーが応答に含まれるかどうかが
 変わることを確認しました。ここでは**画像 / 動画の実体**も含めて、提供から受信までを
-通して実行します。提供側でダミーの JPEG / MP4 を生成し、publisher の `/media/upload` に
+通して実行します。提供側でサンプルの JPEG / MP4 を用意し、publisher の `/media/upload` に
 POST して、返ってきた URL を payload の `image_url` / `video_url` に入れます。
 
 ### 8.1 提供側スクリプトを実行する
@@ -44,12 +44,15 @@ python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 
 このスクリプトは次の 3 ステップを順に実行します。
 
-1. 1×1 JPEG / MP4 fixture を生成（`fixtures/` 配下）
+1. サンプルの JPEG / MP4 fixture を `fixtures/` 配下に用意（16×16 ピクセルの灰色の JPEG、285 バイト。MP4 は同じ JPEG のバイト列を `video/mp4` として扱うもので、再生はできません）
 2. `POST /media/upload` で 2 つアップロード（sha256 が同じファイルは重複保存しない）
 3. `image_url` / `video_url` 付きイベントを `/simulate/publish` に送る
 
 スクリプト出力に `image_url` / `video_url` の `http://<HOST_IP>:8080/media/...`
 形式の URL が表示されます。最後の `[publish]` の `status` が `allowed` なら成功です。`denied` の場合は、同意の登録を確認します。
+
+!!! note "以前にこのスクリプトを実行した場合"
+    以前の教材リポジトリの fixture は画像データを含まない 155 バイトの JPEG で、ブラウザや OpenCV、VLM で読み込めませんでした。`git pull` で教材リポジトリを更新してからスクリプトを実行すると、`fixtures/` 配下の古いファイルが新しい JPEG に自動で置き換わります。
 
 ### 8.2 受信側（既存の Tier 3 / 2 / 1 フロー）
 
@@ -59,7 +62,7 @@ python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 - **Tier 2 (enterprise)** → `event` + `image_url` のみ。`video_url` キーは欠落
 - **Tier 1 (default)** → `event` のみ
 
-iPhone Safari で `image_url` をタップすると、1×1 JPEG が表示されます。
+iPhone Safari で `image_url` をタップすると、小さな灰色の画像 (16×16 ピクセル) が表示されます。
 自分で用意した画像 / 動画を使う場合は、次のように指定します。
 
 ```bash
@@ -127,17 +130,17 @@ python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
 
-期待する出力は次のとおりです（`cid` フィールドが `bafk...` で始まります）。
+期待する出力は次のとおりです（`cid` フィールドが `bafk...` で始まります）。既定の fixture を使った場合、`sha256` と `cid` は下の値と同じになります。
 
 ```json
 [upload] {
   "image": {
     "url": "http://<HOST_IP>:8080/media/<sha256>.jpg",
-    "sha256": "...",
+    "sha256": "e6e34dda2552486336ad63a0ef24752c012963a3c08aaa234035caac7928e134",
     "content_type": "image/jpeg",
-    "byte_size": 155,
-    "cid": "bafkreigb...",
-    "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreigb..."
+    "byte_size": 285,
+    "cid": "bafkreihg4ng5ujksjbrtnlldudxsi5jmaeuwhi6arkvcgqbvzkwhskhbgq",
+    "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreihg4ng5ujksjbrtnlldudxsi5jmaeuwhi6arkvcgqbvzkwhskhbgq"
   },
   ...
 }

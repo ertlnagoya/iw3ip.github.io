@@ -14,9 +14,9 @@
 |---|---|---|
 | ローカルブロックチェーン | 売買の取引記録を残す | **Node.js** (`npx hardhat node`) |
 | マーケットプレイス UI | 出品・購入のブラウザ画面 | **Node.js** + ブラウザ + **MetaMask** |
-| データ保管庫 | データ本体を置く場所 | **Rust** (`cargo run`) |
+| データ保管庫・仲介プロセス | データ本体を置く場所と、出品・購入を仲介するプロセス (`mediator-owner` / `mediator-buyer`) | **Rust** (`cargo run`) |
 | ファイル分散保管 | データのコピーを分散保存 | **Docker** (IPFS コンテナ) |
-| publisher / 仲介サービス | 上のすべてをつなぐ | **Docker** |
+| publisher / bridge | 同意の確認、VC の発行と検証、購入の通知 | **Docker** |
 
 つまり、**Docker / Node.js / Rust / Git / ブラウザ + MetaMask** の 5 つが揃えば環境を構築できます。
 
@@ -185,7 +185,7 @@ cd Blockchain_IoT_Marketplace
 
 ## うまくいかないとき
 
-- ポートが競合している → [トラブルシュート](../operations/troubleshooting.md#10-ポートが競合する) の「10. ポートが競合する」
+- ポートが競合している → [トラブルシュート](../operations/troubleshooting.md#port-conflicts) の「10. ポートが競合する」
 - Docker のメモリ不足で落ちる → Docker Desktop のメモリを 6 GB 以上に
 - それ以外 → [FAQ](../operations/faq.md) を確認
 

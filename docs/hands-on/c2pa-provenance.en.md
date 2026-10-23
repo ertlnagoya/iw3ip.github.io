@@ -10,7 +10,7 @@ Attach "provenance" that follows the C2PA standard [1] to an image taken with a 
 >
 > **Time**: about 30–40 minutes
 
-!!! note "Where this page fits"
+!!! note "Where this page belongs"
     This hands-on runs P0 (the first step) of the [C2PA provenance pipeline design spec](../design/c2pa-provenance-spec.md) on your own machine.
     The C2PA mechanism and terms are explained in §2 "C2PA basics" of the design spec. The idea of Tiers 1–3 was covered in [Tier the response by trust](data-user-vc-tiered.md).
     The steps that build this into the publisher (P1 and later) are not a hands-on yet.
@@ -74,7 +74,7 @@ source .venv/bin/activate
 python -m pip install c2pa-python pillow cryptography
 ```
 
-If `.venv` already exists, run only `python -m pip install ...` after `source .venv/bin/activate`. In a newly opened terminal, before the commands from §2 on, move to the top of the course repository and then activate the virtual environment. The commands from §2 on name files with paths relative to the top of the course repository.
+If `.venv` already exists, run only `python -m pip install ...` after `source .venv/bin/activate`. A `.venv` created with uv or a similar tool may print `No module named pip`; in that case, run `python -m ensurepip` and try again, as described in "Troubleshooting". In a newly opened terminal, before the commands from §2 on, move to the top of the course repository and then activate the virtual environment. The commands from §2 on name files with paths relative to the top of the course repository.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -157,9 +157,9 @@ flowchart LR
 At each step in the diagram, the program does the following:
 
 1. **Sign the captured image**: attach provenance stating that it was captured (`c2pa.actions`), the camera ID and capture time (`jp.ertl.iw3ip.capture`), and sensor readings (`jp.ertl.iw3ip.sensor`), sign it with the gateway key, and save it as `out/capture.jpg`
-2. **Validate**: without registering the CA, the result is `Valid` (the signature is correct, but whether to trust the signer is unknown); with `ca.pem` registered, it is `Trusted` (checks 1–2)
+2. **Validate**: without registering the CA, the result is `Valid` (the signature is correct, but whether to trust the signer is unknown); with `ca.pem` registered, it is `Trusted` (checks 1–2). It also confirms that the custom assertions (`jp.ertl.iw3ip.capture` and `jp.ertl.iw3ip.sensor`) are in the provenance (check 3)
 3. **Make the Tier 2 blurred image**: blur the whole image, attach provenance that references the original as an "ingredient", and save it as `out/tier2.jpg`. At this point, the thumbnail, camera ID, and sensor readings are redacted from the original's provenance
-4. **Check for leaks**: confirm that the thumbnail of the original, the camera ID, and the sensor readings are not left in the provenance of the Tier 2 image (checks 5–10)
+4. **Check for leaks**: confirm that the Tier 2 image validates as `Trusted` (check 4). Then confirm that the thumbnail of the original, the camera ID, and the sensor readings are not left in the provenance of the Tier 2 image (checks 5–10)
 5. **Check that tampering is detected**: change one byte of the Tier 2 image, validate it, and confirm it becomes `Invalid` (check 11)
 
 The two saved images look like this (left: the dummy captured image; right: the blurred Tier 2 image). The right one only looks blurred, but it contains part of the left image's provenance. §4 prints what is inside.
@@ -199,10 +199,10 @@ It prints the following (`(this file)` and `(ingredient)` may appear in either o
     assertions: ['c2pa.actions.v2', 'jp.ertl.iw3ip.capture', 'jp.ertl.iw3ip.sensor']
     camera: {'camera_id': 'cam01', 'captured_at': '...', 'gateway_did': 'did:jwk:<gateway>'}
 === tier2.jpg
-  (this file) title: tier2.jpg | signer: iw3ip-gateway
-    assertions: ['c2pa.actions.v2', 'jp.ertl.iw3ip.derivation']
   (ingredient) title: capture.jpg | signer: iw3ip-gateway
     assertions: ['c2pa.actions.v2']
+  (this file) title: tier2.jpg | signer: iw3ip-gateway
+    assertions: ['c2pa.actions.v2', 'jp.ertl.iw3ip.derivation']
 ```
 
 Look at three things:
@@ -280,7 +280,7 @@ In this hands-on, the camera and the gateway (the signing program) are on the sa
   - Check: this happens when `.venv` was created by a method that does not include pip, such as uv. Run `python -m ensurepip`, then run `python -m pip install ...` again
 - Symptom: `.../certs/chain.pem not found; run make_test_certs.py first`
   - Check: did you run `make_test_certs.py` from §2?
-- Symptom: `[FAIL] signer certificate name has no camera ID (iw3ip-gateway-cam01; rerun make_test_certs.py)`
+- Symptom: `[FAIL] signer certificate name has no camera ID  (iw3ip-gateway-cam01; rerun make_test_certs.py)`
   - Check: a certificate made by an older version of `make_test_certs.py` is left over. Run `make_test_certs.py` again
 - Symptom: `webcam capture failed (no camera access, or every frame was black)`
   - Check (macOS): under System Settings → Privacy & Security → Camera, is the terminal app you use allowed? Restart the terminal after allowing it
