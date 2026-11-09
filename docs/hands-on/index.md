@@ -54,6 +54,7 @@ v2 は v1 を置き換えるものではなく、v1 に追加する経路です�
 | A | [スマホアプリで購入から閲覧まで](marketplace-mobile-app.md) | PurchaseViewerVC (スマホだけで操作) |
 | T | [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) | DataUserVC |
 | P | [画像の来歴を証明する](c2pa-provenance.md) | なし (C2PA の署名に X.509 証明書を使う。publisher とウォレットは不要) |
+| P | [来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) | PurchaseViewerVC (プログラムの中のウォレットが使う。スマホは不要) |
 
 VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-architecture-overview.md) にまとめています。
 
@@ -125,7 +126,7 @@ export HOST_IP=192.168.1.20
 | 基本を一通り | Part 1 全部 (約 1.5 時間。1.2 のデバイスは 1 つ選ぶ) |
 | 安全な共有まで | Part 1 → Part 2 の 2.1〜2.3 (+ 約 4 時間) |
 | マーケット連携の v2 まで | Part 1 → Part 2 の 2.4 まで (+ 約 4 時間) |
-| 段階アクセスまで | Part 2 の 2.5 まで (+ 約 1 時間。画像・動画の配信と意味レベルの段階化まで進む場合は、さらに約 3 時間。C2PA で画像の来歴を証明する (Stage P) 場合は、さらに約 30〜40 分) |
+| 段階アクセスまで | Part 2 の 2.5 まで (+ 約 1 時間。画像・動画の配信と意味レベルの段階化まで進む場合は、さらに約 3 時間。C2PA で画像の来歴を証明する (Stage P) 場合は、さらに約 30〜40 分。来歴を publisher とチェーンにつなぐ場合は、さらに約 40〜60 分) |
 | AI 統合まで | Part 3 まで (+ 約 5 時間) |
 
 時間は、各ページの冒頭にある所要時間を合計した目安です。「+」は、1 つ上の行までにかかる時間に加えて必要な時間です。
@@ -146,7 +147,7 @@ export HOST_IP=192.168.1.20
 | **Part 2 / データ処理を入れる**<sup>※</sup> | ✓ | ✓ <small>(Tier 3 実機時)</small> | ✓ <small>(同)</small> | ✓ | – | ✓ <small>(OpenCV / VLM 任意)</small> |
 | **Part 3 / 知能統合** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
 
-※ このサブグループのうち、[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) は Python だけで動き、publisher、ブロックチェーン、MetaMask、SSI ウォレットと VC を使いません。
+※ このサブグループのうち、[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) は Python だけで動き、publisher、ブロックチェーン、MetaMask、SSI ウォレットと VC を使いません。続きの [来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) は publisher と Hardhat を使いますが、MetaMask とスマホのウォレットは使いません。
 
 ### 主に使う VC (Verifiable Credential) の種類
 
@@ -292,6 +293,7 @@ export HOST_IP=192.168.1.20
 - [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) — 続きの §12〜§13
 - 設計の背景: [段階アクセスの設計仕様](data-user-vc-tiered-spec.md) ([設計](../design/index.md) の章)
 - [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) — 段階アクセスで配る画像に、C2PA の来歴を付けて署名する (publisher やウォレットは不要)
+- [来歴を publisher とチェーンにつなぐ (C2PA / Stage P)](c2pa-provenance-publisher.md) — publisher で来歴を検証し、Tier 2 の画像に署名し、トークンをチェーンに記録して、Tier ごとの来歴の見え方を確かめる
 
 ### Part 2 の成功判定
 

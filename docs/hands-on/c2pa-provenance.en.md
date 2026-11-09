@@ -13,7 +13,7 @@ Attach "provenance" that follows the C2PA standard [1] to an image taken with a 
 !!! note "Where this page belongs"
     This hands-on runs P0 (the first step) of the [C2PA provenance pipeline design spec](../design/c2pa-provenance-spec.md) on your own machine.
     The C2PA mechanism and terms are explained in §2 "C2PA basics" of the design spec. The idea of Tiers 1–3 was covered in [Tier the response by trust](data-user-vc-tiered.md).
-    The steps that build this into the publisher (P1 and later) are not a hands-on yet.
+    Building this into the publisher (P1 and P2) is covered in [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md).
 
 ## Goal
 
@@ -102,16 +102,18 @@ python examples/hands_on/c2pa_provenance/make_test_certs.py
 It prints the following (the path depends on your environment).
 
 ```
-wrote .../examples/hands_on/c2pa_provenance/certs/ca.pem, chain.pem, gw.key (CN=iw3ip-gateway)
+wrote .../examples/hands_on/c2pa_provenance/certs/ca.pem, chain.pem, gw.key (CN=iw3ip-gateway), publisher_chain.pem, publisher.key (CN=iw3ip-publisher)
 ```
 
-The three files it creates are:
+The three files this page uses are:
 
 | File | Content | Role |
 | --- | --- | --- |
 | `ca.pem` | Certificate of your own CA | The validator registers it as "I trust this CA" |
 | `chain.pem` | Gateway certificate and CA certificate | Embedded in the image with the signature to show who signed |
 | `gw.key` | Gateway private key | Used for signing. Never give it to anyone |
+
+`publisher_chain.pem` and `publisher.key` are the publisher's certificate and private key. This page does not use them; [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md) does.
 
 Note that the certificate name (CN) is `iw3ip-gateway` and does not contain the camera ID (`cam01`). This is because the certificate name cannot be redacted even from the blurred image made later (§4).
 

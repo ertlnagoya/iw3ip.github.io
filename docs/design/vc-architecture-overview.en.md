@@ -96,6 +96,7 @@ Details of each stage:
 | T | [data-user-vc-tiered](../hands-on/data-user-vc-tiered.md) | DataUserVC + trust score + `allowed_views` to tier the `/platform/data` output |
 | A | [marketplace-mobile-app](../hands-on/marketplace-mobile-app.md) | Use `iot-market-ui` as a PWA on the phone, from purchase through VC receipt to viewing |
 | P | [c2pa-provenance](../hands-on/c2pa-provenance.md) | No VC. Prove image provenance with C2PA signing using X.509 certificates. Prerequisite stages: none (runs with only the repository and Python; no publisher or wallet needed) |
+| P | [c2pa-provenance-publisher](../hands-on/c2pa-provenance-publisher.md) | Validation at the publisher's `/media/upload`, signing of the Tier 2 image, ProvenanceToken issuance, and per-tier `provenance`. The tiers are checked with PurchaseViewerVC and DataUserVC attributes (a wallet inside the program) |
 
 ## 6. v1 / v2 marketplaces running side by side
 

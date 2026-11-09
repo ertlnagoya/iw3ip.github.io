@@ -95,6 +95,7 @@ Phase 2 hands-on の依存グラフ
 | T | [data-user-vc-tiered](../hands-on/data-user-vc-tiered.md) | DataUserVC + 信頼スコア + `allowed_views` で `/platform/data` の出力を段階化 |
 | A | [marketplace-mobile-app](../hands-on/marketplace-mobile-app.md) | `iot-market-ui` を PWA としてスマホで使い、購入から VC 受領、閲覧まで |
 | P | [c2pa-provenance](../hands-on/c2pa-provenance.md) | VC は使わない。X.509 証明書による C2PA の署名で画像の来歴を証明する。前提となるステージは無い (リポジトリと Python だけで動き、publisher とウォレットは不要) |
+| P | [c2pa-provenance-publisher](../hands-on/c2pa-provenance-publisher.md) | publisher の `/media/upload` での検証、Tier 2 の画像への署名、ProvenanceToken の発行、Tier ごとの `provenance` の見せ方。Tier の確認に PurchaseViewerVC と DataUserVC の属性を使う (プログラムの中のウォレット) |
 
 ## 6. v1 / v2 マーケットプレイスの並走
 

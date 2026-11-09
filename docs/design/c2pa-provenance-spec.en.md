@@ -3,10 +3,10 @@
 !!! abstract "Where this page belongs"
     This is a design spec in the [Design](index.md) section.
     This is the design spec for **Stage P** (Provenance), which attaches provenance information that follows the C2PA (Coalition for Content Provenance and Authenticity) standard [1] to footage from low-cost commercial IP cameras and USB webcams, and to sensor data.
-    Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It was designed before implementation, and the signing and validation of P0 are now implemented (see the note in §10; checks with Content Credentials Verify and c2patool are not done yet).
+    Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It was designed before implementation, and P0–P2 are now implemented (see the note in §10; checks with Content Credentials Verify and c2patool are not done yet).
     "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview](vc-architecture-overview.md)).
-    Stage P builds on the tiered access of Stage T ([Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)) and the SellerVC of Stage 7 ([SellerVC design spec](seller-vc-spec.md)). The P0 part can be run locally in the hands-on [Prove where an image came from](../hands-on/c2pa-provenance.md).
-    P0–P5 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation to build first) corresponds to P0–P2. The hands-on runs P0 (plus the check of the Tier 2 derivative manifest that belongs to P2); P1 and the rest of P2 (ProvenanceToken and so on) are not implemented yet.
+    Stage P builds on the tiered access of Stage T ([Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)) and the SellerVC of Stage 7 ([SellerVC design spec](seller-vc-spec.md)). The P0 part can be run locally in the hands-on [Prove where an image came from](../hands-on/c2pa-provenance.md). P1 and P2 can be run in the hands-on [Connect provenance to the publisher and the chain](../hands-on/c2pa-provenance-publisher.md).
+    P0–P5 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation to build first) corresponds to P0–P2. The hands-on pages run P0–P2; P3 and later are not implemented yet.
 
 This spec is a design for adding to IW3IP a mechanism that **attaches to each photo or video a record of who took it, when, how, and how it was processed, and signs that record electronically**. Tampering with the record breaks the signature, so whoever receives the file can check for themselves whether it is genuine.
 
@@ -393,11 +393,13 @@ Adds `c2pa` to the existing response (`{url, sha256, content_type, byte_size, ci
     "present": true,
     "manifest_label": "urn:c2pa:...",
     "validation_state": "Valid",
-    "signer": "CN=iw3ip-gateway",
+    "signer": "iw3ip-gateway",
     "trusted": false
   }
 }
 ```
+
+→ In the implementation, `signer` holds only the name (CN) of the signer's certificate, and the failure codes the SDK returns go in `failure_codes`. On a publisher without the C2PA check, `c2pa` is `null`. The validation result is stored as `.c2pa/<sha256>.json` in the media store (not served under `/media/`), and the pipeline reads it through `image_url`. The image format is read from the first bytes of the file, not from the filename (renaming a tampered JPEG does not skip the check). A file that embeds a manifest the SDK cannot read (a manifest damaged in the middle) is not treated as a file without provenance; it is refused as `Invalid` (`failure_codes` is `c2pa.unreadable`).
 
 The publisher reads the manifest with the c2pa-python Reader (the class that reads and validates a manifest) and records the validation result. The SDK reports the result as one of three states: `Invalid`, `Valid`, or `Trusted`.
 
@@ -425,6 +427,8 @@ Adds `provenance` to each row. What is shown depends on the tier.
 | `provenance.derived_sha256` | sha256 of the summary text (§5.5) | 1 + 2 + 3 |
 | `provenance.signer` | Signer name | 2 + 3 |
 
+→ The implementation adds these fields too. `redacted_manifest_label` (the manifest identifier of the Tier 2 image) is shown only to tiers that receive the Tier 2 image (`image_redacted`); `token_contract` (the token contract address) and `anchor_tx` (the minting transaction) are shown to every tier, like `token_id`. `derived_sha256` is shown only to tiers that receive the summary text (`description_summary`): the summary text is short and predictable, so showing its sha256 to tiers that do not receive it would let them confirm a guessed text. `signer` is shown to tiers that receive `image` or `image_redacted`. The hands-on checks this with the three tiers of VLM tiering (full, access, summary).
+
 ### 7.3 Audit log
 
 Adds new `raw_topic` values:
@@ -432,6 +436,8 @@ Adds new `raw_topic` values:
 - `provenance/verified` — the manifest was validated at upload time
 - `provenance/derived` — a manifest was attached to a derivative
 - `provenance/anchored` — a token was issued on chain
+
+→ In the implementation, the Tier 2 image the publisher makes is also stored through `/media/upload`, so `provenance/verified` is recorded for the Tier 2 image as well. When an upload is refused as `Invalid`, `action` is `deny`.
 
 ## 8. Chain integration (NFTs)
 
@@ -458,6 +464,8 @@ Putting `sellerDid` on a public chain lets anyone link records from the same sel
 Issuing a token per frame makes transaction fees and processing time a problem. The MVP issues **one token per detection event**.
 For segments of continuous recording, a Merkle root built from the hashes of the segments over a fixed period is combined into one token (P3). A Merkle root is the single hash left after repeatedly pairing hashes and hashing each pair. Recording that one value is enough to prove later which segments were included.
 
+→ In the implementation, one token is issued each time the pipeline processes an event whose image (`image_url`) passed the provenance check. The contract issues one token per image (sha256), so the publisher checks `tokenOfAsset` before minting and reuses an existing token (the row's `provenance` gets `token_reused: true`, and no `provenance/anchored` record is written). The token is issued before the row is sent, because the row carries the token ID. If sending the row fails, the token remains, and a retry reuses it. Tokens are issued with `eth_sendTransaction` from an unlocked account of the Hardhat node (the first account by default). This keeps keys out of the publisher, but it is for local trials only and cannot be used in production. `tokenURI` returns JSON holding the four values of §8.1 as a data URI.
+
 ### 8.3 Circular reference
 
 The token ID is not known until the token is issued, so it cannot go into the capture manifest. The MVP uses a **one-way binding in which the chain references the manifest**.
@@ -467,6 +475,8 @@ If the manifest should also reference the token, adding it later with a C2PA upd
 
 The existing Merchandise lists per dataset, such as a temperature time series or camera events. One dataset contains many images and videos, and a ProvenanceToken represents the provenance of one of them. Combining things of different granularity in one contract would require changing how Merchandise is traded, so ProvenanceToken is a separate contract.
 The address of the ProvenanceToken contract goes into the Merchandise's additional info to link the two.
+
+→ In the implementation, the link to Merchandise is not built yet. `sellerDid` is filled only for events sent through `/provider/publish` with a SellerToken; it is empty for events sent through `/simulate/publish`.
 
 ## 9. Evaluation plan
 
@@ -502,7 +512,7 @@ C2PA also has a mechanism for finding stripped provenance again from the pixels,
 | **P4** | RTSP IP camera and Raspberry Pi, TPM signing, evaluation in §9 | Commercial IP camera, Raspberry Pi |
 | **P5** | Hands-on (JA + EN) | — |
 
-→ In the implementation, the P0 program (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) signs a dummy image drawn by the program by default (it uses a webcam only with `--webcam`). It validates with the SDK Reader only; Content Credentials Verify and c2patool are not used. On the other hand, the P0 program already builds and checks the Tier 2 derivative manifest and redaction listed under P2. P1 (integration into `/media/upload`) and P2's ProvenanceToken and so on are not implemented in the course repository yet.
+→ In the implementation, the P0 program (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) signs a dummy image drawn by the program by default (it uses a webcam only with `--webcam`). It validates with the SDK Reader only; Content Credentials Verify and c2patool are not used. On the other hand, the P0 program already builds and checks the Tier 2 derivative manifest and redaction listed under P2. P1 (integration into `/media/upload`) and P2's ProvenanceToken are implemented as `publisher/app/c2pa_provenance.py`, `iot-market/contracts/ProvenanceToken.sol` and so on, and checked end to end with `examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py` (notes in §7 and §8). The gateway is a program on the same PC, not a Raspberry Pi.
 
 ## 11. Open questions
 

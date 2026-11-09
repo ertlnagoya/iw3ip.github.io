@@ -3,10 +3,10 @@
 !!! abstract "このページの位置付け"
     [設計](index.md) の章の設計仕様です。
     市販の安価な IP カメラや USB ウェブカメラの映像と、センサーデータに、C2PA (Coalition for Content Provenance and Authenticity) [1] の規格に沿った来歴情報を付ける **Stage P** (Provenance) の設計仕様である。
-    署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた設計であり、そのうち P0 の署名と検証は実装した (§10 の注記。Content Credentials Verify と c2patool での確認はまだ)。
+    署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた設計であり、そのうち P0〜P2 は実装した (§10 の注記。Content Credentials Verify と c2patool での確認はまだ)。
     本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像](vc-architecture-overview.md) の §5)。
-    Stage P は、Stage T の段階アクセス ([段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)) と Stage 7 の SellerVC ([SellerVC 設計仕様](seller-vc-spec.md)) の上に載せる。P0 の部分は、ハンズオン [画像の来歴を証明する](../hands-on/c2pa-provenance.md) で手元で動かせる。
-    本文中の P0〜P5 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、最初に作る最小限の実装) は P0〜P2 に当たる。ハンズオンで動かすのは P0 (と、P2 に含まれる Tier 2 の派生マニフェストの確認) で、P1 と、P2 の残り (ProvenanceToken など) はまだ実装していない。
+    Stage P は、Stage T の段階アクセス ([段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)) と Stage 7 の SellerVC ([SellerVC 設計仕様](seller-vc-spec.md)) の上に載せる。P0 の部分は、ハンズオン [画像の来歴を証明する](../hands-on/c2pa-provenance.md) で手元で動かせる。P1 と P2 は、ハンズオン [来歴を publisher とチェーンにつなぐ](../hands-on/c2pa-provenance-publisher.md) で動かせる。
+    本文中の P0〜P5 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、最初に作る最小限の実装) は P0〜P2 に当たる。ハンズオンで動かせるのは P0〜P2 で、P3 以降はまだ実装していない。
 
 本仕様は、写真や映像に**「誰が、いつ、どう撮って、どう加工したか」の記録を付け、その記録に電子署名をする**仕組みを IW3IP に組み込むための設計である。記録を改ざんすると署名が合わなくなるため、受け取った人が自分で本物かどうかを確かめられる。
 
@@ -393,11 +393,13 @@ SellerVC は VC なので、SellerVC を「誰が提供したか」の証明と�
     "present": true,
     "manifest_label": "urn:c2pa:...",
     "validation_state": "Valid",
-    "signer": "CN=iw3ip-gateway",
+    "signer": "iw3ip-gateway",
     "trusted": false
   }
 }
 ```
+
+→ 実装では、`signer` は署名者の証明書の名前 (CN) だけを返し、SDK が返した失敗のコードを `failure_codes` に入れる。C2PA の確認を有効にしていない publisher では、`c2pa` は `null` になる。検証の結果は、画像の保存先の `.c2pa/<sha256>.json` に保存し (`/media/` からは配らない)、パイプラインが `image_url` から読む。画像の形式は、ファイル名ではなくファイルの先頭のバイトから判断する (改ざんした JPEG の拡張子を変えて送っても検証を避けられない)。マニフェストが埋め込まれているのに SDK が読めないファイル (マニフェストの途中が壊れたもの) は、来歴の無いファイルとして扱わず、`Invalid` (`failure_codes` は `c2pa.unreadable`) として拒否する。
 
 publisher は c2pa-python の Reader (マニフェストを読んで検証するクラス) でマニフェストを読み、検証の結果を記録する。SDK は検証の結果を `Invalid`、`Valid`、`Trusted` の 3 つで返す。
 
@@ -425,6 +427,8 @@ publisher が信頼する CA は、SDK の設定 `trust.user_anchors` に登録�
 | `provenance.derived_sha256` | 要約テキストの sha256 (§5.5) | 1 + 2 + 3 |
 | `provenance.signer` | 署名者の名前 | 2 + 3 |
 
+→ 実装では、次の項目も加えた。`redacted_manifest_label` (Tier 2 の画像のマニフェストの識別子) は Tier 2 の画像 (`image_redacted`) を受け取る tier だけに見せ、`token_contract` (トークンのコントラクトのアドレス) と `anchor_tx` (発行のトランザクション) は `token_id` と同じく全 tier に見せる。`derived_sha256` は、要約の文章 (`description_summary`) を受け取る tier だけに見せる。要約の文章は短く予測しやすいため、受け取らない tier に sha256 を見せると、推測した文章が正しいかを確かめられてしまうためである。`signer` は、`image` ないしは `image_redacted` を受け取る tier に見せる。ハンズオンでは、VLM の段階化を有効にした 3 つの tier (full、access、summary) で、この見せ方を確かめる。
+
 ### 7.3 監査ログ
 
 新しい `raw_topic` を加える。
@@ -432,6 +436,8 @@ publisher が信頼する CA は、SDK の設定 `trust.user_anchors` に登録�
 - `provenance/verified` — アップロードの時点でマニフェストを検証した
 - `provenance/derived` — 派生データにマニフェストを付けた
 - `provenance/anchored` — チェーンにトークンを発行した
+
+→ 実装では、publisher が作った Tier 2 の画像も `/media/upload` を通して保存するため、Tier 2 の画像についても `provenance/verified` が記録される。`Invalid` で拒否したときは、`action` が `deny` になる。
 
 ## 8. チェーンとの連携 (NFT 化)
 
@@ -458,6 +464,8 @@ publisher が信頼する CA は、SDK の設定 `trust.user_anchors` に登録�
 1 フレームごとに発行すると、取引の手数料と処理時間が問題になる。MVP では**検知イベント 1 件につき 1 トークン**とする。
 常時録画の断片を扱う場合は、一定時間分の断片のハッシュから Merkle 根を作って 1 トークンにまとめる (P3)。Merkle 根は、多数のハッシュを 2 つずつ組にしてハッシュを取ることを繰り返し、最後に残った 1 つのハッシュである。1 つの値を記録するだけで、どの断片が含まれていたかを後から証明できる。
 
+→ 実装では、来歴の検証に通った画像 (`image_url`) を含むイベントをパイプラインが処理するたびに、トークンを 1 つ発行する。同じ画像 (同じ sha256) はコントラクトが 1 回しか発行しないため、publisher は発行の前に `tokenOfAsset` で確かめ、すでにあるトークンを使う (行の `provenance` に `token_reused: true` が入り、`provenance/anchored` は記録しない)。トークンは、行を送る前に発行する (行にトークンの ID を入れるため)。行の送信に失敗した場合はトークンだけが残るが、やり直したときは同じトークンを使う。トークンは、Hardhat ノードの鍵がロックされていないアカウント (既定では 1 番目のアカウント) から `eth_sendTransaction` で発行する。publisher に鍵を置かずに済む反面、手元で試すための方法であり、本番では使えない。`tokenURI` は、§8.1 の 4 つの値を入れた JSON を data URI で返す。
+
 ### 8.3 循環参照
 
 トークンの ID は発行するまで決まらないため、撮影マニフェストにトークンの ID は入れられない。MVP では**チェーン側からマニフェストを参照する一方向の結び付け**とする。
@@ -467,6 +475,8 @@ publisher が信頼する CA は、SDK の設定 `trust.user_anchors` に登録�
 
 既存の Merchandise は、温度の時系列やカメラのイベントといった dataset 単位で出品する。1 つの dataset には多数の画像や映像が含まれ、ProvenanceToken はそのうちの 1 件ずつの来歴を表す。単位が違うものを 1 つのコントラクトにまとめると、Merchandise の売買の仕組みを変える必要が出るため、別のコントラクトにする。
 Merchandise の追加情報に ProvenanceToken のコントラクトのアドレスを入れて、2 つを結び付ける。
+
+→ 実装では、Merchandise との結び付けはまだ作っていない。`sellerDid` は、SellerToken で `/provider/publish` から送ったイベントのときだけ入り、`/simulate/publish` から送ったときは空になる。
 
 ## 9. 評価計画
 
@@ -502,7 +512,7 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 | **P4** | RTSP の IP カメラと Raspberry Pi、TPM での署名、§9 の評価 | 市販 IP カメラ・Raspberry Pi |
 | **P5** | ハンズオン (JA + EN) | — |
 
-→ 実装では、P0 のプログラム (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) は、既定ではプログラムが描いたダミー画像に署名する (ウェブカメラは `--webcam` を付けたときだけ使う)。検証には SDK の Reader だけを使い、Content Credentials Verify と c2patool は使っていない。一方で、P2 に挙げた Tier 2 の派生マニフェストと削除 (redaction) は、P0 のプログラムですでに作って確かめている。P1 (`/media/upload` への組み込み) と P2 の ProvenanceToken などは、教材リポジトリにはまだ実装していない。
+→ 実装では、P0 のプログラム (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) は、既定ではプログラムが描いたダミー画像に署名する (ウェブカメラは `--webcam` を付けたときだけ使う)。検証には SDK の Reader だけを使い、Content Credentials Verify と c2patool は使っていない。一方で、P2 に挙げた Tier 2 の派生マニフェストと削除 (redaction) は、P0 のプログラムですでに作って確かめている。P1 (`/media/upload` への組み込み) と P2 の ProvenanceToken は、`publisher/app/c2pa_provenance.py`、`iot-market/contracts/ProvenanceToken.sol` などとして実装し、`examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py` で一通り確かめた (§7、§8 の注記)。ゲートウェイは Raspberry Pi ではなく、同じ PC で動くプログラムである。
 
 ## 11. オープンクエスチョン
 

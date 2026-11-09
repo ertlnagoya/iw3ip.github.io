@@ -13,7 +13,7 @@
 !!! note "このページの位置付け"
     [C2PA 来歴パイプラインの設計仕様](../design/c2pa-provenance-spec.md) の P0 (最初の段階) を手元で動かすハンズオンです。
     C2PA の仕組みと用語は、設計仕様の §2「C2PA の基本」で説明しています。Tier 1〜3 の考え方は [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) で扱いました。
-    publisher に組み込んで動かす段階 (P1 以降) は、まだハンズオンになっていません。
+    publisher に組み込んで動かす段階 (P1・P2) は、[来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) で扱います。
 
 ## 目的
 
@@ -102,16 +102,18 @@ python examples/hands_on/c2pa_provenance/make_test_certs.py
 次のように表示されます (パスは環境によって変わります)。
 
 ```
-wrote .../examples/hands_on/c2pa_provenance/certs/ca.pem, chain.pem, gw.key (CN=iw3ip-gateway)
+wrote .../examples/hands_on/c2pa_provenance/certs/ca.pem, chain.pem, gw.key (CN=iw3ip-gateway), publisher_chain.pem, publisher.key (CN=iw3ip-publisher)
 ```
 
-作られる 3 つのファイルの役割は次のとおりです。
+このページで使う 3 つのファイルの役割は次のとおりです。
 
 | ファイル | 中身 | 役割 |
 | --- | --- | --- |
 | `ca.pem` | 自分で作った CA の証明書 | 検証する側が「この CA を信頼する」と登録する |
 | `chain.pem` | ゲートウェイの証明書と CA の証明書 | 署名と一緒に画像に埋め込まれ、誰が署名したかを示す |
 | `gw.key` | ゲートウェイの秘密鍵 | 署名に使う。人に渡してはいけない |
+
+`publisher_chain.pem` と `publisher.key` は、publisher の証明書と秘密鍵です。このページでは使わず、[来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) で使います。
 
 証明書の名前 (CN) が `iw3ip-gateway` で、カメラ ID (`cam01`) を含まないことに注目してください。証明書の名前は、あとで作るブラー画像からも削除できないためです (§4)。
 
