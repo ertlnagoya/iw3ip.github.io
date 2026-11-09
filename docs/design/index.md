@@ -21,7 +21,7 @@
 | [Marketplace VC Bridge 設計仕様](marketplace-vc-bridge-spec.md) | マーケットプレイスと SSI ウォレットの接続 (v1 / v2) | [Stage 5](../hands-on/marketplace-vc-bridge.md)、[Stage 6](../hands-on/marketplace-vc-end-to-end.md) |
 | [SellerVC 設計仕様](seller-vc-spec.md) | 出品者の身元の確認 | [Stage 7](../hands-on/marketplace-seller-vc.md) |
 | [段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md) | 受信者の信頼度に応じた出し分け (DataUserVC、VLM による派生データ) | [Stage T](../hands-on/data-user-vc-tiered.md) の 3 ページ |
-| [C2PA 来歴パイプライン設計仕様](c2pa-provenance-spec.md) | 画像の来歴の記録と署名 | [Stage P](../hands-on/c2pa-provenance.md)、[publisher とチェーンとの連携](../hands-on/c2pa-provenance-publisher.md) |
+| [C2PA 来歴パイプライン設計仕様](c2pa-provenance-spec.md) | 画像の来歴の記録と署名 | [Stage P](../hands-on/c2pa-provenance.md)、[publisher とチェーンとの連携](../hands-on/c2pa-provenance-publisher.md)、[VLM の要約の来歴](../hands-on/c2pa-provenance-vlm.md) |
 | [LLM Planner 置き換え仕様](../hands-on/llm-planner-spec.md) | 地域安全アシスタントの planner を LLM に置き換えるときの設計の境界 | [LLM Planner](../hands-on/llm-planner.md) |
 
 ## 設計仕様の読み方

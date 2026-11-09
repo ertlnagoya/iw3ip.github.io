@@ -190,14 +190,14 @@ c2pa-python 0.38.1 / c2pa-rs 0.91.3
 [PASS] P2 capture thumbnail / camera / sensor are redacted  (leaked=[])
 [PASS] P2 camera ID appears nowhere in the Tier 2 bytes  (0 hit(s))
   full     views=['event', 'image', 'video', 'image_redacted', 'description_full', 'description_summary']
-           image_url=yes image_url_redacted=yes provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'redacted_manifest_label', 'signer', 'token_contract', 'token_id', 'validation_state']
+           image_url=yes image_url_redacted=yes provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'redacted_manifest_label', 'signer', 'summary_card_url', 'summary_manifest_label', 'token_contract', 'token_id', 'validation_state']
   access   views=['event', 'image_redacted', 'description_full', 'description_summary']
-           image_url=no image_url_redacted=yes provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'redacted_manifest_label', 'signer', 'token_contract', 'token_id', 'validation_state']
+           image_url=no image_url_redacted=yes provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'redacted_manifest_label', 'signer', 'summary_card_url', 'summary_manifest_label', 'token_contract', 'token_id', 'validation_state']
   summary  views=['event', 'description_summary']
-           image_url=no image_url_redacted=no provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'token_contract', 'token_id', 'validation_state']
+           image_url=no image_url_redacted=no provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'summary_card_url', 'summary_manifest_label', 'token_contract', 'token_id', 'validation_state']
 [PASS] tier full sees signer and the Tier 2 manifest
 [PASS] tier access sees the Tier 2 manifest but not the raw image
-[PASS] tier summary sees only label, state, token and the summary hash
+[PASS] tier summary sees label, state, token and the summary hash, not the signer
 [PASS] summary text matches provenance.derived_sha256
 [PASS] P2 ProvenanceToken anchors the manifest label and image sha256  (token #1)
 [PASS] audit log has provenance/verified
@@ -280,8 +280,9 @@ flowchart TB
 | `derived_sha256` | 要約の文 (`description_summary`) の sha256。要約の文を受け取る Tier だけに届く |
 | `signer` | 撮影画像の署名者の名前 |
 | `redacted_manifest_label` | Tier 2 の画像のマニフェストの識別子 |
+| `summary_card_url`、`summary_manifest_label` | 要約の文を描いて署名した要約カードの URL と、そのマニフェストの識別子 (P3)。要約の文を受け取る Tier だけに届く |
 
-summary の Tier の利用者には、画像が届きません。そのため、要約の文が本物の映像から作られたことは、C2PA の来歴では示せません。代わりに、`derived_sha256` (要約の文の sha256) と監査ログの記録で結び付けます (設計仕様の §5.5)。プログラムの 14 番目のチェックは、受け取った要約の文の sha256 が `derived_sha256` と同じかを調べています。
+summary の Tier の利用者には、画像が届きません。このページのプログラムの 14 番目のチェックは、受け取った要約の文の sha256 が `derived_sha256` と同じかだけを調べています。要約の文が署名された撮影画像から作られたことは、publisher が署名した要約カード (`summary_card_url`) で確かめられます。その手順は、次のページ [VLM の要約から元の画像をたどる](c2pa-provenance-vlm.md) で扱います。
 
 !!! warning "Tier をまたいで突き合わせられる"
     `manifest_label` と `token_id` は、すべての Tier に同じ値で届きます。そのため、異なる Tier の利用者が手元のデータを持ち寄ると、同じ撮影から作られた行だと分かります。これは設計仕様の §7.2 のとおりの動作で、来歴と段階的な開示を両立させるうえで残っている課題です。
@@ -298,6 +299,7 @@ curl -s "http://localhost:8080/audit/logs?limit=50" | python -c "import json,sys
 
 ```
 provenance/anchored allow token:1:tx=0xf60e...:manifest=urn:c2pa:0e72...
+provenance/derived allow tier1:urn:c2pa:5f7d...:ingredient=urn:c2pa:0e72...
 provenance/derived allow tier2:urn:c2pa:6631...:ingredient=urn:c2pa:0e72...
 provenance/verified allow c2pa:Trusted:urn:c2pa:6631...:trusted=true
 provenance/verified deny c2pa:Invalid:urn:c2pa:0e72...:trusted=false
@@ -308,7 +310,7 @@ provenance/verified allow c2pa:Trusted:urn:c2pa:0e72...:trusted=true
 | `raw_topic` | 書かれる時点 | `reason` の例 |
 | --- | --- | --- |
 | `provenance/verified` | `/media/upload` で来歴を検証したとき | `c2pa:Trusted:urn:c2pa:...:trusted=true` |
-| `provenance/derived` | Tier 2 の画像に来歴を付けたとき | `tier2:urn:c2pa:...:ingredient=urn:c2pa:...` |
+| `provenance/derived` | Tier 2 の画像や要約カードに来歴を付けたとき | `tier2:urn:c2pa:...:ingredient=urn:c2pa:...` (要約カードは `tier1:...`) |
 | `provenance/anchored` | トークンを発行したとき | `token:1:tx=0x...:manifest=urn:c2pa:...` |
 
 `provenance/verified` は 4 件あります。下から順に、撮影画像、書き換えた撮影画像、拡張子を変えた書き換えた撮影画像、publisher が作った Tier 2 の画像です。書き換えた画像の記録は、`action` が `deny` になります。Tier 2 の画像も `/media/upload` を通して保存するため、同じように検証の記録が残ります。
@@ -344,7 +346,7 @@ sellerDid     (none)
 - 前のページと同じく、カメラとゲートウェイの間の区間 (設計仕様の §4) と、写っている内容が事実かどうかは確かめられません
 - トークンは、Hardhat ノードの、鍵がロックされていないアカウントで発行しています。本番では、publisher の鍵を安全に保管し、自分で署名したトランザクションを送る必要があります
 - publisher の顔検出は正面の顔だけを見つけます。横顔や小さな顔はぼけないことがあります ([意味レベルで段階化する](data-user-vc-tiered-semantic.md) の顔ブラーと同じ制約)
-- 動画 (断片化 MP4) と、センサーの時系列データの来歴は、まだ扱っていません (設計仕様の P3)
+- 動画 (断片化 MP4) と、センサーの時系列データの来歴は、まだ扱っていません (設計仕様の P4)
 
 ## 元の設定に戻す
 

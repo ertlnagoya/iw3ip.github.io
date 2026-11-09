@@ -55,6 +55,7 @@ v2 は v1 を置き換えるものではなく、v1 に追加する経路です�
 | T | [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) | DataUserVC |
 | P | [画像の来歴を証明する](c2pa-provenance.md) | なし (C2PA の署名に X.509 証明書を使う。publisher とウォレットは不要) |
 | P | [来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) | PurchaseViewerVC (プログラムの中のウォレットが使う。スマホは不要) |
+| P | [VLM の要約から元の画像をたどる](c2pa-provenance-vlm.md) | PurchaseViewerVC (プログラムの中のウォレットが使う。スマホは不要) |
 
 VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-architecture-overview.md) にまとめています。
 
@@ -147,7 +148,7 @@ export HOST_IP=192.168.1.20
 | **Part 2 / データ処理を入れる**<sup>※</sup> | ✓ | ✓ <small>(Tier 3 実機時)</small> | ✓ <small>(同)</small> | ✓ | – | ✓ <small>(OpenCV / VLM 任意)</small> |
 | **Part 3 / 知能統合** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
 
-※ このサブグループのうち、[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) は Python だけで動き、publisher、ブロックチェーン、MetaMask、SSI ウォレットと VC を使いません。続きの [来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) は publisher と Hardhat を使いますが、MetaMask とスマホのウォレットは使いません。
+※ このサブグループのうち、[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) は Python だけで動き、publisher、ブロックチェーン、MetaMask、SSI ウォレットと VC を使いません。続きの [来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) と [VLM の要約から元の画像をたどる](c2pa-provenance-vlm.md) は publisher と Hardhat を使いますが、MetaMask とスマホのウォレットは使いません。
 
 ### 主に使う VC (Verifiable Credential) の種類
 
@@ -294,6 +295,7 @@ export HOST_IP=192.168.1.20
 - 設計の背景: [段階アクセスの設計仕様](data-user-vc-tiered-spec.md) ([設計](../design/index.md) の章)
 - [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) — 段階アクセスで配る画像に、C2PA の来歴を付けて署名する (publisher やウォレットは不要)
 - [来歴を publisher とチェーンにつなぐ (C2PA / Stage P)](c2pa-provenance-publisher.md) — publisher で来歴を検証し、Tier 2 の画像に署名し、トークンをチェーンに記録して、Tier ごとの来歴の見え方を確かめる
+- [VLM の要約から元の画像をたどる (C2PA / Stage P)](c2pa-provenance-vlm.md) — VLM の要約を描いた要約カードに publisher が署名し、要約の文だけを受け取った人が撮影画像とトークンまでたどる
 
 ### Part 2 の成功判定
 

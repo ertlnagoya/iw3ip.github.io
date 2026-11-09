@@ -190,14 +190,14 @@ c2pa-python 0.38.1 / c2pa-rs 0.91.3
 [PASS] P2 capture thumbnail / camera / sensor are redacted  (leaked=[])
 [PASS] P2 camera ID appears nowhere in the Tier 2 bytes  (0 hit(s))
   full     views=['event', 'image', 'video', 'image_redacted', 'description_full', 'description_summary']
-           image_url=yes image_url_redacted=yes provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'redacted_manifest_label', 'signer', 'token_contract', 'token_id', 'validation_state']
+           image_url=yes image_url_redacted=yes provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'redacted_manifest_label', 'signer', 'summary_card_url', 'summary_manifest_label', 'token_contract', 'token_id', 'validation_state']
   access   views=['event', 'image_redacted', 'description_full', 'description_summary']
-           image_url=no image_url_redacted=yes provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'redacted_manifest_label', 'signer', 'token_contract', 'token_id', 'validation_state']
+           image_url=no image_url_redacted=yes provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'redacted_manifest_label', 'signer', 'summary_card_url', 'summary_manifest_label', 'token_contract', 'token_id', 'validation_state']
   summary  views=['event', 'description_summary']
-           image_url=no image_url_redacted=no provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'token_contract', 'token_id', 'validation_state']
+           image_url=no image_url_redacted=no provenance=['anchor_tx', 'derived_sha256', 'manifest_label', 'summary_card_url', 'summary_manifest_label', 'token_contract', 'token_id', 'validation_state']
 [PASS] tier full sees signer and the Tier 2 manifest
 [PASS] tier access sees the Tier 2 manifest but not the raw image
-[PASS] tier summary sees only label, state, token and the summary hash
+[PASS] tier summary sees label, state, token and the summary hash, not the signer
 [PASS] summary text matches provenance.derived_sha256
 [PASS] P2 ProvenanceToken anchors the manifest label and image sha256  (token #1)
 [PASS] audit log has provenance/verified
@@ -280,8 +280,9 @@ The fields of `provenance` hold the following.
 | `derived_sha256` | sha256 of the summary sentence (`description_summary`); reaches only tiers that receive the summary |
 | `signer` | Name of the captured image's signer |
 | `redacted_manifest_label` | Manifest identifier of the Tier 2 image |
+| `summary_card_url`, `summary_manifest_label` | URL of the summary card (the summary sentence drawn and signed) and its manifest identifier (P3); reach only tiers that receive the summary |
 
-No image reaches users of the summary tier. So C2PA provenance cannot show that the summary sentence was made from genuine footage. Instead, `derived_sha256` (the sha256 of the summary sentence) and the audit log link the two (§5.5 of the design spec). Check 14 of the program checks that the sha256 of the received summary sentence equals `derived_sha256`.
+No image reaches users of the summary tier. Check 14 of this page's program only checks that the sha256 of the received summary sentence equals `derived_sha256`. That the summary sentence was made from a signed capture can be checked with the summary card signed by the publisher (`summary_card_url`). The next page, [Trace a VLM summary back to the image](c2pa-provenance-vlm.md), covers how.
 
 !!! warning "Rows can be matched across tiers"
     `manifest_label` and `token_id` reach every tier with the same values. So when users of different tiers bring their data together, they can tell that the rows were made from the same capture. This is the behaviour §7.2 of the design spec specifies, and an open problem in combining provenance with tiered disclosure.
@@ -298,6 +299,7 @@ It prints something like the following (identifiers and transaction numbers chan
 
 ```
 provenance/anchored allow token:1:tx=0xf60e...:manifest=urn:c2pa:0e72...
+provenance/derived allow tier1:urn:c2pa:5f7d...:ingredient=urn:c2pa:0e72...
 provenance/derived allow tier2:urn:c2pa:6631...:ingredient=urn:c2pa:0e72...
 provenance/verified allow c2pa:Trusted:urn:c2pa:6631...:trusted=true
 provenance/verified deny c2pa:Invalid:urn:c2pa:0e72...:trusted=false
@@ -308,7 +310,7 @@ provenance/verified allow c2pa:Trusted:urn:c2pa:0e72...:trusted=true
 | `raw_topic` | When it is written | Example `reason` |
 | --- | --- | --- |
 | `provenance/verified` | When `/media/upload` validates provenance | `c2pa:Trusted:urn:c2pa:...:trusted=true` |
-| `provenance/derived` | When provenance is attached to the Tier 2 image | `tier2:urn:c2pa:...:ingredient=urn:c2pa:...` |
+| `provenance/derived` | When provenance is attached to the Tier 2 image or the summary card | `tier2:urn:c2pa:...:ingredient=urn:c2pa:...` (`tier1:...` for the summary card) |
 | `provenance/anchored` | When a token is issued | `token:1:tx=0x...:manifest=urn:c2pa:...` |
 
 There are four `provenance/verified` records. From the bottom: the captured image, the changed captured image, the changed captured image with a new extension, and the Tier 2 image the publisher made. The records of the changed images have `action` `deny`. The Tier 2 image is also stored through `/media/upload`, so it gets a validation record too.
@@ -344,7 +346,7 @@ sellerDid     (none)
 - As on the previous page, it cannot confirm the section between the camera and the gateway (§4 of the design spec), nor whether what the image shows is true
 - Tokens are issued from an unlocked account of the Hardhat node. In production the publisher has to keep its key safe and send transactions it signs itself
 - The publisher's face detector only finds frontal faces. Profile and small faces may not be blurred (the same limit as the face blur in [Tier by semantic level](data-user-vc-tiered-semantic.md))
-- Video (fragmented MP4) and the provenance of sensor time series are not covered yet (P3 of the design spec)
+- Video (fragmented MP4) and the provenance of sensor time series are not covered yet (P4 of the design spec)
 
 ## Return to the normal settings
 

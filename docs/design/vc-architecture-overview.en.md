@@ -97,6 +97,7 @@ Details of each stage:
 | A | [marketplace-mobile-app](../hands-on/marketplace-mobile-app.md) | Use `iot-market-ui` as a PWA on the phone, from purchase through VC receipt to viewing |
 | P | [c2pa-provenance](../hands-on/c2pa-provenance.md) | No VC. Prove image provenance with C2PA signing using X.509 certificates. Prerequisite stages: none (runs with only the repository and Python; no publisher or wallet needed) |
 | P | [c2pa-provenance-publisher](../hands-on/c2pa-provenance-publisher.md) | Validation at the publisher's `/media/upload`, signing of the Tier 2 image, ProvenanceToken issuance, and per-tier `provenance`. The tiers are checked with PurchaseViewerVC and DataUserVC attributes (a wallet inside the program) |
+| P | [c2pa-provenance-vlm](../hands-on/c2pa-provenance-vlm.md) | The publisher signs a summary card that shows the VLM's summary (P3). A Tier 1 user traces the summary text to the capture's manifest and the ProvenanceToken |
 
 ## 6. v1 / v2 marketplaces running side by side
 

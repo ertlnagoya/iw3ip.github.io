@@ -96,6 +96,7 @@ Phase 2 hands-on の依存グラフ
 | A | [marketplace-mobile-app](../hands-on/marketplace-mobile-app.md) | `iot-market-ui` を PWA としてスマホで使い、購入から VC 受領、閲覧まで |
 | P | [c2pa-provenance](../hands-on/c2pa-provenance.md) | VC は使わない。X.509 証明書による C2PA の署名で画像の来歴を証明する。前提となるステージは無い (リポジトリと Python だけで動き、publisher とウォレットは不要) |
 | P | [c2pa-provenance-publisher](../hands-on/c2pa-provenance-publisher.md) | publisher の `/media/upload` での検証、Tier 2 の画像への署名、ProvenanceToken の発行、Tier ごとの `provenance` の見せ方。Tier の確認に PurchaseViewerVC と DataUserVC の属性を使う (プログラムの中のウォレット) |
+| P | [c2pa-provenance-vlm](../hands-on/c2pa-provenance-vlm.md) | VLM の要約を描いた要約カードへの publisher の署名 (P3)。Tier 1 の利用者が、要約の文から撮影画像のマニフェストと ProvenanceToken までたどる |
 
 ## 6. v1 / v2 マーケットプレイスの並走
 

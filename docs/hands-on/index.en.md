@@ -55,6 +55,7 @@ This site uses three kinds of numbering.
 | T | [Tier the response by trust](data-user-vc-tiered.md) | DataUserVC |
 | P | [Prove where an image came from](c2pa-provenance.md) | none (C2PA signing with X.509 certificates; no publisher or wallet needed) |
 | P | [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md) | PurchaseViewerVC (used by a wallet inside the program; no phone needed) |
+| P | [Trace a VLM summary back to the image](c2pa-provenance-vlm.md) | PurchaseViewerVC (used by a wallet inside the program; no phone needed) |
 
 The mapping between VCs and tokens is summarized in [VC Architecture Overview](../design/vc-architecture-overview.md).
 
@@ -147,7 +148,7 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 | **Part 2 / Process data before sharing**<sup>*</sup> | ✓ | ✓ <small>(for Tier 3 e2e)</small> | ✓ <small>(same)</small> | ✓ | – | ✓ <small>(OpenCV / VLM optional)</small> |
 | **Part 3 / Intelligence integration** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
 
-\* In this sub-group, [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) runs with Python only and uses no publisher, blockchain, MetaMask, SSI wallet, or VC. The follow-up, [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md), uses the publisher and Hardhat but no MetaMask or phone wallet.
+\* In this sub-group, [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) runs with Python only and uses no publisher, blockchain, MetaMask, SSI wallet, or VC. The follow-ups, [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md) and [Trace a VLM summary back to the image](c2pa-provenance-vlm.md), use the publisher and Hardhat but no MetaMask or phone wallet.
 
 ### VCs used
 
@@ -290,6 +291,7 @@ Switch the response between Tier 3 (video + everything), Tier 2 (image + derived
 - Design background: [Tiered access design spec](data-user-vc-tiered-spec.md) (in the [Design](../design/index.md) section)
 - [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) — sign the images delivered with tiered access with C2PA provenance (no publisher or wallet needed)
 - [Connect provenance to the publisher and the chain (C2PA / Stage P)](c2pa-provenance-publisher.md) — verify provenance at the publisher, sign the Tier 2 image, record a token on chain, and check what provenance each tier sees
+- [Trace a VLM summary back to the image (C2PA / Stage P)](c2pa-provenance-vlm.md) — the publisher signs a summary card with the VLM's summary, and someone who receives only the text traces it to the capture and the token
 
 ### Done when…
 

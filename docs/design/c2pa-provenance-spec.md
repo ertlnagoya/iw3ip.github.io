@@ -3,10 +3,10 @@
 !!! abstract "このページの位置付け"
     [設計](index.md) の章の設計仕様です。
     市販の安価な IP カメラや USB ウェブカメラの映像と、センサーデータに、C2PA (Coalition for Content Provenance and Authenticity) [1] の規格に沿った来歴情報を付ける **Stage P** (Provenance) の設計仕様である。
-    署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた設計であり、そのうち P0〜P2 は実装した (§10 の注記。Content Credentials Verify と c2patool での確認はまだ)。
+    署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた設計であり、そのうち P0〜P3 は実装した (§10 の注記。Content Credentials Verify と c2patool での確認はまだ)。
     本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像](vc-architecture-overview.md) の §5)。
-    Stage P は、Stage T の段階アクセス ([段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)) と Stage 7 の SellerVC ([SellerVC 設計仕様](seller-vc-spec.md)) の上に載せる。P0 の部分は、ハンズオン [画像の来歴を証明する](../hands-on/c2pa-provenance.md) で手元で動かせる。P1 と P2 は、ハンズオン [来歴を publisher とチェーンにつなぐ](../hands-on/c2pa-provenance-publisher.md) で動かせる。
-    本文中の P0〜P5 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、最初に作る最小限の実装) は P0〜P2 に当たる。ハンズオンで動かせるのは P0〜P2 で、P3 以降はまだ実装していない。
+    Stage P は、Stage T の段階アクセス ([段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)) と Stage 7 の SellerVC ([SellerVC 設計仕様](seller-vc-spec.md)) の上に載せる。P0 の部分は、ハンズオン [画像の来歴を証明する](../hands-on/c2pa-provenance.md) で手元で動かせる。P1 と P2 は、ハンズオン [来歴を publisher とチェーンにつなぐ](../hands-on/c2pa-provenance-publisher.md) で、P3 は [VLM の要約から元の画像をたどる](../hands-on/c2pa-provenance-vlm.md) で動かせる。
+    本文中の P0〜P6 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、最初に作る最小限の実装) は P0〜P2 に当たる。ハンズオンで動かせるのは P0〜P3 で、P4 以降はまだ実装していない。
 
 本仕様は、写真や映像に**「誰が、いつ、どう撮って、どう加工したか」の記録を付け、その記録に電子署名をする**仕組みを IW3IP に組み込むための設計である。記録を改ざんすると署名が合わなくなるため、受け取った人が自分で本物かどうかを確かめられる。
 
@@ -134,7 +134,7 @@ flowchart TB
   class IPC,SEN,MP4,TPM todo
 ```
 
-緑の枠は実装した部分 (P0〜P2)、灰色の点線の枠はまだ実装していない部分 (P3、P4) である。
+緑の枠は実装した部分 (P0〜P3)、灰色の点線の枠はまだ実装していない部分 (P4、P5) である。
 
 図の用語は次のとおりである。
 
@@ -150,7 +150,7 @@ flowchart TB
 | 区間 | 想定する脅威 | 本仕様での扱い |
 | --- | --- | --- |
 | カメラ → ゲートウェイ (RTSP / USB) | 映像の差し替え、録画の再送 | MVP では対策しない。閉じた LAN に置くことを前提にする。将来は ONVIF Media Signing [5][6] に対応したカメラと比べる |
-| ゲートウェイの内部 | 署名鍵の盗難、署名前の改ざん | MVP では鍵をファイルに置く。P4 で TPM 2.0 またはセキュアエレメント (ATECC608 など) に移す |
+| ゲートウェイの内部 | 署名鍵の盗難、署名前の改ざん | MVP では鍵をファイルに置く。P5 で TPM 2.0 またはセキュアエレメント (ATECC608 など) に移す |
 | ゲートウェイ → publisher | 転送中の改ざん | ハードバインディングで検出できる。攻撃者はゲートウェイの秘密鍵を持たないため、改ざんした後に同じ署名者として署名し直せない |
 | publisher の内部 | 派生データの捏造 | 派生データにも publisher の鍵で署名し、元データを素材として参照する |
 | チェーン | 来歴の事後の書き換え | マニフェストのハッシュをトークンに記録する |
@@ -236,7 +236,7 @@ Stage T の派生データに、元データを素材として参照するマニ
 | --- | --- | --- | --- |
 | 3 Full | 生の画像・動画 | (撮影マニフェストのまま) | — |
 | 2 Access | 顔ブラー画像 | `c2pa.opened`、`c2pa.edited`、`c2pa.redacted` の順 | 生の画像 |
-| 1 Summary | 要約テキスト | — (§5.5) | — |
+| 1 Summary | 要約テキスト (SVG の要約カードに入れる) | `c2pa.created` (AI が生成)、`c2pa.redacted` の順 | 生の画像 (`inputTo`) |
 
 Tier 2 の 3 つのアクションの意味は次のとおりである。
 
@@ -351,13 +351,34 @@ C2PA は画像・動画・音声などのメディアを対象にした規格で
 | B | 一定時間ごとのセンサー値のハッシュを、定期的に撮るスナップショットのマニフェストに入れる | 連続したデータも、映像の来歴とつなげられる | 生のセンサー値は別に保管し、ハッシュで照合する必要がある |
 | C | C2PA を使わず、ゲートウェイの DID で署名した VC としてセンサー値を配る | 既存の SSI の仕組み (機器に持たせる ServiceVC、§6.3) を使える | 映像の来歴とは別の検証経路になる |
 
-推奨: MVP では検知イベントに結び付く値を案 A で扱う。連続した時系列は案 B と案 C を P3 で比べる。
+推奨: MVP では検知イベントに結び付く値を案 A で扱う。連続した時系列は案 B と案 C を P4 で比べる。
 
 ### 5.5 テキストの派生 (Tier 1)
 
-VLM の要約テキストは、C2PA が対象とするメディアの形式に当たらない。
-MVP では、`/platform/data` の行に元データのマニフェストの識別子と、要約テキストの sha256 を入れ、publisher の監査ログで結び付ける (§7)。
-C2PA の仕様の範囲で扱えるかどうかは §11 のオープンクエスチョンとする。
+VLM の要約テキストは、C2PA が対象とするメディアの形式に当たらない。c2pa-python 0.38.1 も、`text/plain` への署名を `type is unsupported` で断る (§13)。
+MVP (P2) では、`/platform/data` の行に元データのマニフェストの識別子と、要約テキストの sha256 (`derived_sha256`) を入れ、publisher の監査ログで結び付けた (§7)。ただし、この結び付けは publisher の記録であり、Tier 1 の受信者が自分で確かめる手段が無かった。
+
+P3 では、要約テキストを SVG の画像 (要約カード) に描き、publisher がそのカードに署名する。SVG は SDK が署名できる形式であり、カードはそのまま画像として表示できる。カードのマニフェストは次のとおりである。
+
+| 項目 | 中身 |
+| --- | --- |
+| 素材 | 撮影画像 (`relationship` は `inputTo`、VLM への入力を表す)。Tier 2 と同じく、サムネイル、`jp.ertl.iw3ip.capture`、`jp.ertl.iw3ip.sensor` を削除する |
+| アクション | `c2pa.created` (`digitalSourceType` は IPTC の `trainedAlgorithmicMedia` [7]、`softwareAgent` はモデル名)、続いて削除ごとの `c2pa.redacted` |
+| `jp.ertl.iw3ip.derivation` | `tier: 1`、`kind: vlm_summary`、`text_sha256` (要約テキストそのものの sha256)、`model`、`prompt_sha256` (要約を作らせたプロンプトの sha256) |
+
+カードの文字は折り返して描くため、テキストとの結び付けは描いた文字ではなく、署名された `text_sha256` で行う。Tier 1 の受信者は、次の順に確かめる。
+
+```mermaid
+flowchart LR
+  T["受け取った要約テキスト"] -->|"sha256 が一致"| D["カードの text_sha256<br>(publisher の署名付き)"]
+  D --> C["要約カードのマニフェスト<br>Trusted か"]
+  C -->|"素材 (inputTo)"| M["撮影画像のマニフェスト<br>(識別子が manifest_label と同じ)"]
+  M -->|"同じ識別子"| N["ProvenanceToken の<br>manifestLabel"]
+```
+
+カードは `/media/<sha256>.svg` として publisher が保存し、URL を `provenance.summary_card_url` で配る。`/media/upload` は引き続き SVG を受け付けない。カードを配るときは、`Content-Security-Policy: default-src 'none'` を付けて、スクリプトや外部の読み込みを止める。
+
+署名で示せるのは、どの撮影画像から、どのモデルとプロンプトで、誰がテキストを作ったかである。テキストに個人につながる情報が含まれていないことは示せない。それは、モデルとプロンプトで決まる。ハンズオン [VLM の要約から元の画像をたどる](../hands-on/c2pa-provenance-vlm.md) の §4 では、llava の要約が絵の人物の性別と年齢層を書き、そのカードも `Trusted` になった。
 
 ## 6. 署名と鍵
 
@@ -387,7 +408,7 @@ SDK の条件とは別に、署名用の証明書の名前 (CN) にはカメラ 
 c2pa-python は、署名の処理を呼び出し側の関数 (コールバック) で行える [3]。この仕組みを使って、鍵の置き場所を段階的に移す。
 
 1. P0〜P2: 鍵を PEM ファイル (鍵を文字にして保存するファイル形式) として置く。ファイルを盗まれると鍵も盗まれるため、SDK の文書でも開発用に限るとされている
-2. P4: TPM 2.0 またはセキュアエレメントで署名し、鍵を機器の外に出さない
+2. P5: TPM 2.0 またはセキュアエレメントで署名し、鍵を機器の外に出さない
 
 ### 6.3 DID との関係
 
@@ -396,7 +417,7 @@ ServiceVC は、機器やサービスが継続して書き込んでよいこと�
 2 つを結び付ける方法として、CAWG (Creator Assertions Working Group、C2PA の来歴に作成者の身元を加える方法を定める作業部会) の identity assertion [10] がある。
 CAWG の identity assertion には、X.509 証明書で署名する方式と、VC を集約する方式 (identity claims aggregation) がある。
 SellerVC は VC なので、SellerVC を「誰が提供したか」の証明として使うには、VC をそのまま扱える後者が向いている。ただし、CAI の SDK は後者の検証にだけ対応し、署名には対応していない [2]。
-そのため MVP では `jp.ertl.iw3ip.capture` に `gateway_did` を入れるだけにして、CAWG との統合は P3 で検討する。
+そのため MVP では `jp.ertl.iw3ip.capture` に `gateway_did` を入れるだけにして、CAWG との統合は P4 で検討する。
 
 ## 7. publisher の拡張
 
@@ -455,6 +476,8 @@ publisher が信頼する CA は、SDK の設定 `trust.user_anchors` に登録�
 | `provenance.derived_sha256` | 要約テキストの sha256 (§5.5) | ○ | ○ | ○ | 要約テキストを受け取る tier |
 | `provenance.signer` | 署名者の名前 | ○ | ○ | — | 画像 (元ないしはブラー) を受け取る tier |
 | `provenance.redacted_manifest_label` | Tier 2 の画像のマニフェストの識別子 | ○ | ○ | — | ブラー画像を受け取る tier |
+| `provenance.summary_card_url` | 署名した要約カードの URL (§5.5、P3) | ○ | ○ | ○ | 要約テキストを受け取る tier |
+| `provenance.summary_manifest_label` | 要約カードのマニフェストの識別子 (P3) | ○ | ○ | ○ | 要約テキストを受け取る tier |
 
 → 実装では、表のうち `redacted_manifest_label` を加えた。`token_contract` (トークンのコントラクトのアドレス) と `anchor_tx` (発行のトランザクション) も、`token_id` と同じく常に見せる。`derived_sha256` を要約テキストを受け取る tier だけに見せるのは、要約テキストが短く予測しやすいためである。受け取らない tier に sha256 を見せると、推測した文が正しいかを確かめられてしまう。
 
@@ -468,7 +491,11 @@ publisher が信頼する CA は、SDK の設定 `trust.user_anchors` に登録�
 - `provenance/derived` — 派生データにマニフェストを付けた
 - `provenance/anchored` — チェーンにトークンを発行した
 
-→ 実装では、publisher が作った Tier 2 の画像も `/media/upload` を通して保存するため、Tier 2 の画像についても `provenance/verified` が記録される。`Invalid` で拒否したときは、`action` が `deny` になる。
+→ 実装では、次のようにした。
+
+- publisher が作った Tier 2 の画像も `/media/upload` を通して保存するため、Tier 2 の画像についても `provenance/verified` が記録される。`Invalid` で拒否したときは、`action` が `deny` になる
+- `provenance/derived` の `reason` は、Tier 2 の画像では `tier2:<識別子>:ingredient=<撮影画像の識別子>`、要約カード (P3) では `tier1:<識別子>:ingredient=<撮影画像の識別子>` になる
+- 要約カードは `/media/upload` を通さずに保存するため、`provenance/verified` は記録されない。publisher は署名の直後にカードを検証し、`Invalid` なら配らない
 
 ## 8. チェーンとの連携 (NFT 化)
 
@@ -493,7 +520,7 @@ publisher が信頼する CA は、SDK の設定 `trust.user_anchors` に登録�
 ### 8.2 発行の単位
 
 1 フレームごとに発行すると、取引の手数料と処理時間が問題になる。MVP では**検知イベント 1 件につき 1 トークン**とする。
-常時録画の断片を扱う場合は、一定時間分の断片のハッシュから Merkle 根を作って 1 トークンにまとめる (P3)。Merkle 根は、多数のハッシュを 2 つずつ組にしてハッシュを取ることを繰り返し、最後に残った 1 つのハッシュである。1 つの値を記録するだけで、どの断片が含まれていたかを後から証明できる。
+常時録画の断片を扱う場合は、一定時間分の断片のハッシュから Merkle 根を作って 1 トークンにまとめる (P4)。Merkle 根は、多数のハッシュを 2 つずつ組にしてハッシュを取ることを繰り返し、最後に残った 1 つのハッシュである。1 つの値を記録するだけで、どの断片が含まれていたかを後から証明できる。
 
 → 実装では、次のようにした。
 
@@ -506,7 +533,7 @@ publisher が信頼する CA は、SDK の設定 `trust.user_anchors` に登録�
 ### 8.3 循環参照
 
 トークンの ID は発行するまで決まらないため、撮影マニフェストにトークンの ID は入れられない。MVP では**チェーン側からマニフェストを参照する一方向の結び付け**とする。
-マニフェストからトークンを参照させたい場合は、C2PA の update manifest (中身を変えずに来歴だけを追記するためのマニフェスト) [1] で後から追記する方法を P3 で検討する。
+マニフェストからトークンを参照させたい場合は、C2PA の update manifest (中身を変えずに来歴だけを追記するためのマニフェスト) [1] で後から追記する方法を P4 で検討する。
 
 ### 8.4 既存の Merchandise との関係
 
@@ -545,25 +572,28 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 | **P0** | ウェブカメラで静止画を撮り、c2pa-python で署名する。Content Credentials Verify [11] (ファイルの来歴を表示する CAI の Web サイト) と c2patool (CAI のコマンドラインの検証ツール) で検証する | Mac だけ | 実装した (検証は SDK だけ) |
 | **P1** | 検知イベントのときだけ署名付きの JPEG を作り、`/media/upload` で検証して監査ログに記録する (§7) | USB ウェブカメラ | 実装した |
 | **P2** | Tier 2 の派生マニフェスト (§5.3) と、ProvenanceToken の発行 (§8) | ＋Hardhat | 実装した (Merchandise との結び付けは未) |
-| **P3** | 断片化 MP4、センサーデータの案 B と案 C、CAWG と SellerVC の統合、update manifest | ＋センサー | 未着手 |
-| **P4** | RTSP の IP カメラと Raspberry Pi、TPM での署名、§9 の評価 | 市販 IP カメラ・Raspberry Pi | 未着手 |
-| **P5** | ハンズオン (JA + EN) | — | P0〜P2 の分を作った |
+| **P3** | Tier 1 の要約テキストの来歴 (§5.5 の要約カード) | ＋VLM (stub か Ollama) | 実装した |
+| **P4** | 断片化 MP4、センサーデータの案 B と案 C、CAWG と SellerVC の統合、update manifest | ＋センサー | 未着手 |
+| **P5** | RTSP の IP カメラと Raspberry Pi、TPM での署名、§9 の評価 | 市販 IP カメラ・Raspberry Pi | 未着手 |
+| **P6** | ハンズオン (JA + EN) | — | P0〜P3 の分を作った |
 
 → 実装の補足は次のとおりである。
 
 - P0 のプログラム (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) は、既定ではプログラムが描いた絵 (人とペットボトル) に署名する。ウェブカメラは `--webcam` を付けたときだけ使う。検証には SDK の Reader だけを使い、Content Credentials Verify と c2patool は使っていない
 - P2 に挙げた Tier 2 の派生マニフェストと削除 (redaction) は、P0 のプログラムでも作って調べている
 - P1 と P2 は `publisher/app/c2pa_provenance.py`、`iot-market/contracts/ProvenanceToken.sol` などとして実装し、`examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py` で一通り動くことを調べた (§7、§8 の注記)
+- P3 は `C2paProvenance.sign_summary` などとして実装し、`examples/hands_on/c2pa_provenance/p3_vlm_summary.py` で一通り動くことを調べた。VLM は stub と Ollama の llava の両方で試した (§5.5)
 - ゲートウェイは Raspberry Pi ではなく、同じ PC で動くプログラムである
 
 ## 11. オープンクエスチョン
 
 1. **常時録画の扱い**
-   - C2PA 2.3 では、終わりの時刻が決まっていないライブ映像での時間範囲の扱いが加わった [1]。CAI の SDK がどこまで対応しているかを P3 の着手時に確かめる
+   - C2PA 2.3 では、終わりの時刻が決まっていないライブ映像での時間範囲の扱いが加わった [1]。CAI の SDK がどこまで対応しているかを P4 の着手時に確かめる
    - 推奨: MVP は検知イベントの切り出しに限る
 2. **Tier 1 の要約テキストの来歴**
-   - C2PA の範囲で扱うか、§5.5 のように監査ログで結び付けるか
-   - 推奨: MVP は監査ログで結び付ける
+   - C2PA の範囲で扱うか、監査ログで結び付けるか
+   - MVP (P2) は監査ログで結び付けた。P3 では、SVG の要約カードに署名して C2PA の範囲で扱った (§5.5)
+   - 残る問い: テキストのファイルに直接マニフェストを入れる方法が、C2PA の仕様の改訂や SDK の対応で使えるようになったときに、要約カードからその方法に移すか
 3. **顔ブラーを表すアクション**
    - `c2pa.edited` と `c2pa.filtered` のどちらが適切か。顔を隠す加工は編集上の変更に当たるか
    - 推奨: `c2pa.edited` にして、`jp.ertl.iw3ip.derivation` で加工の種類を明示する
@@ -602,11 +632,12 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 | アサーションの削除 | 3 つとも消え、派生ファイルは `Trusted` のまま |
 | 改ざんの検出 | 派生ファイルの画素データの 1 バイトを変えると、`Invalid` (`assertion.dataHash.mismatch`) になった |
 | 削除で取り除けない情報 | 撮影マニフェストの題名を `cam01-20261022T101500Z.jpg` にすると、素材のアサーションを削除しても、素材の題名を省略しても、Tier 2 の派生ファイルに残った。証明書の名前 `iw3ip-gateway-cam01` と通し番号も残った (§5.2 と §6.1 の対策を加えた) |
+| テキストへの署名 (2026 年 11 月 9 日、P3 の前に確認) | `text/plain` は `type is unsupported`、`application/c2pa` (マニフェストだけのファイル) は `no data to hash` で断られた。SVG では署名でき、文字を 1 つ変えると `Invalid` (`assertion.dataHash.mismatch`) になった。素材の関係を `inputTo` にして `c2pa.created` で始めるマニフェストも `Trusted` になった |
 | 削除した値の salt | SDK は各アサーションに 16 バイトの salt を付けており、派生ファイルに残るハッシュから、削除した値を総当たりで復元することはできない |
 
 検証のプログラムは、本体リポジトリの `examples/hands_on/c2pa_provenance/` に置いた。
 
-Content Credentials Verify [11] での確認と、RTSP のカメラ、断片化 MP4、Raspberry Pi での計測はまだ行っていない (P0〜P4 で行う)。
+Content Credentials Verify [11] での確認と、RTSP のカメラ、断片化 MP4、Raspberry Pi での計測はまだ行っていない (P0、P4、P5 で行う)。
 
 ## 参考文献
 
