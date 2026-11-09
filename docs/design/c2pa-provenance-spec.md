@@ -44,7 +44,7 @@ publisher のメディアゲートウェイは、アップロードされた画�
 - marketplace で売られている Merchandise の中身が、出品者の主張どおりのデータか
 
 監視カメラの映像を、犯罪の手がかりや防災の情報として共有するには、「この映像は本物か」に答えられることが前提になる。
-生成 AI で映像をもっともらしく作れるようになったため、この問いの重要性は増している。
+生成 AI で本物と見分けにくい映像を作れるようになり、見た目だけでは本物かどうかを判断できなくなっている。
 
 sha256 をチェーンに記録するだけでは、この問いに答えられない。sha256 は「このファイルが記録したときから変わっていない」ことしか示さず、誰がどのような経緯で作ったファイルかは示さないからである。
 C2PA では、撮影した機器の鍵による電子署名と、加工の履歴 (どのファイルから何をして作ったか) をファイルに付ける。そのため「誰が作ったか」と「どこから来たか」を、受け取った人が確かめられる。
@@ -114,18 +114,27 @@ X.509 証明書は、Web サイトの HTTPS で使われているのと同じ形
 
 ```mermaid
 flowchart TB
-  CAM["IP カメラ (RTSP)\nUSB ウェブカメラ"] -->|"無認証の区間"| GW
-  SEN["センサー\n(温度・人感など)"] -->|"MQTT"| GW
+  CAM["USB ウェブカメラ"] -->|"無認証の区間"| GW
+  IPC["IP カメラ (RTSP)"] -.->|"無認証の区間"| GW
+  SEN["センサー<br>(温度・人感など)"] -.->|"MQTT"| GW
   subgraph GW["エッジゲートウェイ"]
-    CUT["切り出し\nJPEG / 断片化 MP4"] --> SIGN["c2pa-python で\nマニフェストを付けて署名"]
-    KEY[("署名鍵\nファイル → TPM")] -.-> SIGN
+    CUT["切り出し<br>JPEG"] --> SIGN["c2pa-python で<br>マニフェストを付けて署名"]
+    MP4["断片化 MP4"] -.-> SIGN
+    KEY[("署名鍵<br>(ファイル)")] -.-> SIGN
+    TPM[("TPM")] -.-> SIGN
   end
-  SIGN -->|"POST /media/upload"| PUB["publisher\nマニフェストを検証\n監査ログ"]
-  PUB --> IPFS["kubo IPFS\nCID"]
-  PUB --> DER["Stage T の派生\n顔ブラー / VLM 要約\n素材として元を参照"]
-  PUB -->|"ハッシュと CID だけ"| NFT["ERC-721\nProvenanceToken\n(Hardhat)"]
-  DER --> VIEW["DataUserVC で\n段階的に配信"]
+  SIGN -->|"POST /media/upload"| PUB["publisher<br>マニフェストを検証<br>監査ログ"]
+  PUB --> IPFS["kubo IPFS<br>CID"]
+  PUB --> DER["Stage T の派生<br>顔ブラー / VLM 要約<br>素材として元を参照"]
+  PUB -->|"ハッシュと CID だけ"| NFT["ERC-721<br>ProvenanceToken<br>(Hardhat)"]
+  DER --> VIEW["DataUserVC で<br>段階的に配信"]
+  classDef done fill:#e3f4e8,stroke:#2e7d32,color:#1b5e20
+  classDef todo fill:#f2f2f2,stroke:#9e9e9e,stroke-dasharray:4 3,color:#616161
+  class CAM,CUT,SIGN,KEY,PUB,IPFS,DER,NFT,VIEW done
+  class IPC,SEN,MP4,TPM todo
 ```
+
+緑の枠は実装した部分 (P0〜P2)、灰色の点線の枠はまだ実装していない部分 (P3、P4) である。
 
 図の用語は次のとおりである。
 
@@ -261,7 +270,7 @@ flowchart LR
   A5 -.-> DEL
 ```
 
-ここで、**プライバシー上の見落としやすい問題**がある。素材を取り込むと、既定では次の 2 つも派生ファイルに入る (§13 で確かめた)。
+ここで、**プライバシー上の問題**がある。素材を取り込むと、既定では次の 2 つも派生ファイルに入る (§13 で確かめた)。
 
 - ブラー前の画像のサムネイル。仕様では、素材のマニフェストにあるサムネイルを参照することが推奨されている [1]。SDK も素材のサムネイルとして、元のマニフェストの `c2pa.thumbnail.claim` を参照する。顔ブラー画像に、ブラー前の顔のサムネイルが入ってしまう
 - 素材のマニフェストにあるアサーション。カメラ ID やセンサー値が、Tier 2 の受信者にも見える
@@ -273,6 +282,17 @@ flowchart LR
 3. 削除しても素材のマニフェストの署名は検証できる。そのため「Tier 3 の元データから作られた」ことだけを Tier 2 の受信者に示せる
 
 削除しても署名が壊れないのは、素材のクレームには各アサーションの**ハッシュだけ**が入っているからである。アサーションの中身を取り除いても、クレームとその署名は変わらない。検証する側は、派生マニフェストの「どのアサーションを削除したか」の記録を見て、中身が無いアサーションを正当な削除として扱う。
+
+```mermaid
+flowchart LR
+  SIG["撮影画像の署名<br>(iw3ip-gateway)"] -->|"署名の対象"| CL["クレーム<br>各アサーションのハッシュと<br>画素のデータのハッシュ"]
+  CL -.->|"ハッシュ"| A1["c2pa.actions<br>(残る)"]
+  CL -.->|"ハッシュ"| A2["jp.ertl.iw3ip.capture<br>(中身を削除)"]
+  CL -.->|"ハッシュ"| A3["jp.ertl.iw3ip.sensor<br>(中身を削除)"]
+  classDef removed fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class A2,A3 removed
+```
+
 削除した値はハッシュとしてクレームに残るが、SDK は各アサーションにランダムな値 (salt) を混ぜてからハッシュを計算するため、ハッシュから元の値を推測することはできない (§13)。
 
 Tier 2 の派生マニフェストの定義は、次のようになる (`<capture>` は素材のマニフェストの識別子)。
@@ -307,7 +327,7 @@ Tier 2 の派生マニフェストの定義は、次のようになる (`<captur
 
 派生マニフェスト自身のサムネイルはブラー後の画像から作られるため、残してよい。
 
-素材のマニフェストの `jp.ertl.iw3ip.detection` (検知イベントのラベル、スコア、検知モデル) は削除せず、Tier 2 の派生ファイルに残す。検知イベントは、Stage T ではどの Tier の受信者にも届く情報であり (イベントだけを受け取る Tier 0 を含む)、Tier 2 の受信者に見えても新たに漏れる情報は無いからである。むしろ「何を検知して切り出した画像か」が分かることは、Tier 2 の受信者が画像を判断する手がかりになる。
+素材のマニフェストの `jp.ertl.iw3ip.detection` (検知イベントのラベル、スコア、検知モデル) は削除せず、Tier 2 の派生ファイルに残す。検知イベントは、Stage T ではどの Tier の受信者にも届く情報であり (イベントだけを受け取る Tier 0 を含む)、Tier 2 の受信者に見えても新たに漏れる情報は無いからである。また、「何を検知して切り出した画像か」が分かれば、Tier 2 の受信者は画像を判断する手がかりにできる。
 ただし、検知イベントに人名や車のナンバーのような個人を特定できる値を入れる場合は、この前提が崩れるため、`jp.ertl.iw3ip.detection` も削除の対象に加える。
 
 一方、次の 2 つは削除では取り除けず、Tier 2 の派生ファイルに残る (§13 で確かめた)。派生ファイルは、素材のマニフェストのクレームと署名をそのまま取り込むためである。
@@ -399,7 +419,13 @@ SellerVC は VC なので、SellerVC を「誰が提供したか」の証明と�
 }
 ```
 
-→ 実装では、`signer` は署名者の証明書の名前 (CN) だけを返し、SDK が返した失敗のコードを `failure_codes` に入れる。C2PA の確認を有効にしていない publisher では、`c2pa` は `null` になる。検証の結果は、画像の保存先の `.c2pa/<sha256>.json` に保存し (`/media/` からは配らない)、パイプラインが `image_url` から読む。画像の形式は、ファイル名ではなくファイルの先頭のバイトから判断する (改ざんした JPEG の拡張子を変えて送っても検証を避けられない)。マニフェストが埋め込まれているのに SDK が読めないファイル (マニフェストの途中が壊れたもの) は、来歴の無いファイルとして扱わず、`Invalid` (`failure_codes` は `c2pa.unreadable`) として拒否する。
+→ 実装では、次のようにした。
+
+- `signer` は、署名者の証明書の名前 (CN) だけを返す。SDK が返した失敗のコードは `failure_codes` に入れる
+- C2PA の確認を有効にしていない publisher では、`c2pa` は `null` になる
+- 検証の結果は、画像の保存先の `.c2pa/<sha256>.json` に保存し、パイプラインが `image_url` から読む。このファイルは `/media/` からは配らない
+- 画像の形式は、ファイル名を見ずに、ファイルの先頭のバイトで判断する。改ざんした JPEG の拡張子を変えて送っても、検証は避けられない
+- マニフェストが埋め込まれているのに SDK が読めないファイル (マニフェストの途中が壊れたもの) は、`Invalid` として拒否する (`failure_codes` は `c2pa.unreadable`)。来歴の無いファイルとしては扱わない
 
 publisher は c2pa-python の Reader (マニフェストを読んで検証するクラス) でマニフェストを読み、検証の結果を記録する。SDK は検証の結果を `Invalid`、`Valid`、`Trusted` の 3 つで返す。
 
@@ -419,15 +445,20 @@ publisher が信頼する CA は、SDK の設定 `trust.user_anchors` に登録�
 
 各行に `provenance` を加える。Tier によって見せる範囲を変える。
 
-| キー | 内容 | 露出する tier |
-| --- | --- | --- |
-| `provenance.manifest_label` | 元データのマニフェストの識別子 | 全 tier |
-| `provenance.validation_state` | publisher での検証の結果 | 全 tier |
-| `provenance.token_id` | §8 のトークンの ID | 全 tier |
-| `provenance.derived_sha256` | 要約テキストの sha256 (§5.5) | 1 + 2 + 3 |
-| `provenance.signer` | 署名者の名前 | 2 + 3 |
+次の表は、VLM の段階化を有効にしたとき (Tier 3 = full、Tier 2 = access、Tier 1 = summary) の見せ方である。○ は見せる、— は見せないことを表す。
 
-→ 実装では、次の項目も加えた。`redacted_manifest_label` (Tier 2 の画像のマニフェストの識別子) は Tier 2 の画像 (`image_redacted`) を受け取る tier だけに見せ、`token_contract` (トークンのコントラクトのアドレス) と `anchor_tx` (発行のトランザクション) は `token_id` と同じく全 tier に見せる。`derived_sha256` は、要約の文章 (`description_summary`) を受け取る tier だけに見せる。要約の文章は短く予測しやすいため、受け取らない tier に sha256 を見せると、推測した文章が正しいかを確かめられてしまうためである。`signer` は、`image` ないしは `image_redacted` を受け取る tier に見せる。ハンズオンでは、VLM の段階化を有効にした 3 つの tier (full、access、summary) で、この見せ方を確かめる。
+| キー | 内容 | Tier 3 | Tier 2 | Tier 1 | 見せる条件 |
+| --- | --- | :---: | :---: | :---: | --- |
+| `provenance.manifest_label` | 元データのマニフェストの識別子 | ○ | ○ | ○ | 常に |
+| `provenance.validation_state` | publisher での検証の結果 | ○ | ○ | ○ | 常に |
+| `provenance.token_id` | §8 のトークンの ID | ○ | ○ | ○ | 常に |
+| `provenance.derived_sha256` | 要約テキストの sha256 (§5.5) | ○ | ○ | ○ | 要約テキストを受け取る tier |
+| `provenance.signer` | 署名者の名前 | ○ | ○ | — | 画像 (元ないしはブラー) を受け取る tier |
+| `provenance.redacted_manifest_label` | Tier 2 の画像のマニフェストの識別子 | ○ | ○ | — | ブラー画像を受け取る tier |
+
+→ 実装では、表のうち `redacted_manifest_label` を加えた。`token_contract` (トークンのコントラクトのアドレス) と `anchor_tx` (発行のトランザクション) も、`token_id` と同じく常に見せる。`derived_sha256` を要約テキストを受け取る tier だけに見せるのは、要約テキストが短く予測しやすいためである。受け取らない tier に sha256 を見せると、推測した文が正しいかを確かめられてしまう。
+
+![Tier ごとに届く画像、文、provenance の項目 (ハンズオンでの出力)](../assets/c2pa-tier-views.png)
 
 ### 7.3 監査ログ
 
@@ -464,7 +495,13 @@ publisher が信頼する CA は、SDK の設定 `trust.user_anchors` に登録�
 1 フレームごとに発行すると、取引の手数料と処理時間が問題になる。MVP では**検知イベント 1 件につき 1 トークン**とする。
 常時録画の断片を扱う場合は、一定時間分の断片のハッシュから Merkle 根を作って 1 トークンにまとめる (P3)。Merkle 根は、多数のハッシュを 2 つずつ組にしてハッシュを取ることを繰り返し、最後に残った 1 つのハッシュである。1 つの値を記録するだけで、どの断片が含まれていたかを後から証明できる。
 
-→ 実装では、来歴の検証に通った画像 (`image_url`) を含むイベントをパイプラインが処理するたびに、トークンを 1 つ発行する。同じ画像 (同じ sha256) はコントラクトが 1 回しか発行しないため、publisher は発行の前に `tokenOfAsset` で確かめ、すでにあるトークンを使う (行の `provenance` に `token_reused: true` が入り、`provenance/anchored` は記録しない)。トークンは、行を送る前に発行する (行にトークンの ID を入れるため)。行の送信に失敗した場合はトークンだけが残るが、やり直したときは同じトークンを使う。トークンは、Hardhat ノードの鍵がロックされていないアカウント (既定では 1 番目のアカウント) から `eth_sendTransaction` で発行する。publisher に鍵を置かずに済む反面、手元で試すための方法であり、本番では使えない。`tokenURI` は、§8.1 の 4 つの値を入れた JSON を data URI で返す。
+→ 実装では、次のようにした。
+
+- 来歴の検証に通った画像 (`image_url`) を含むイベントをパイプラインが処理するたびに、トークンを 1 つ発行する
+- コントラクトは同じ画像 (同じ sha256) に 1 回しか発行しない。publisher は発行の前に `tokenOfAsset` で調べ、すでにトークンがあればそれを使う (行の `provenance` に `token_reused: true` が入り、`provenance/anchored` は記録しない)
+- トークンは、行を送る前に発行する。行にトークンの ID を入れるためである。行の送信に失敗するとトークンだけが残るが、やり直したときは同じトークンを使う
+- トークンは、Hardhat ノードの、鍵がロックされていないアカウント (既定では 1 番目) から `eth_sendTransaction` で発行する。publisher に鍵を置かずに済むが、手元で試すための方法であり、本番では使えない
+- `tokenURI` は、§8.1 の 4 つの値を入れた JSON を data URI で返す
 
 ### 8.3 循環参照
 
@@ -503,16 +540,21 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 
 ## 10. マイルストーン
 
-| ID | 内容 | 機材 |
-| --- | --- | --- |
-| **P0** | ウェブカメラで静止画を撮り、c2pa-python で署名する。Content Credentials Verify [11] (ファイルの来歴を表示する CAI の Web サイト) と c2patool (CAI のコマンドラインの検証ツール) で検証する | Mac だけ |
-| **P1** | 検知イベントのときだけ署名付きの JPEG を作り、`/media/upload` で検証して監査ログに記録する (§7) | USB ウェブカメラ |
-| **P2** | Tier 2 の派生マニフェスト (§5.3) と、ProvenanceToken の発行 (§8) | ＋Hardhat |
-| **P3** | 断片化 MP4、センサーデータの案 B と案 C、CAWG と SellerVC の統合、update manifest | ＋センサー |
-| **P4** | RTSP の IP カメラと Raspberry Pi、TPM での署名、§9 の評価 | 市販 IP カメラ・Raspberry Pi |
-| **P5** | ハンズオン (JA + EN) | — |
+| ID | 内容 | 機材 | 状態 |
+| --- | --- | --- | --- |
+| **P0** | ウェブカメラで静止画を撮り、c2pa-python で署名する。Content Credentials Verify [11] (ファイルの来歴を表示する CAI の Web サイト) と c2patool (CAI のコマンドラインの検証ツール) で検証する | Mac だけ | 実装した (検証は SDK だけ) |
+| **P1** | 検知イベントのときだけ署名付きの JPEG を作り、`/media/upload` で検証して監査ログに記録する (§7) | USB ウェブカメラ | 実装した |
+| **P2** | Tier 2 の派生マニフェスト (§5.3) と、ProvenanceToken の発行 (§8) | ＋Hardhat | 実装した (Merchandise との結び付けは未) |
+| **P3** | 断片化 MP4、センサーデータの案 B と案 C、CAWG と SellerVC の統合、update manifest | ＋センサー | 未着手 |
+| **P4** | RTSP の IP カメラと Raspberry Pi、TPM での署名、§9 の評価 | 市販 IP カメラ・Raspberry Pi | 未着手 |
+| **P5** | ハンズオン (JA + EN) | — | P0〜P2 の分を作った |
 
-→ 実装では、P0 のプログラム (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) は、既定ではプログラムが描いたダミー画像に署名する (ウェブカメラは `--webcam` を付けたときだけ使う)。検証には SDK の Reader だけを使い、Content Credentials Verify と c2patool は使っていない。一方で、P2 に挙げた Tier 2 の派生マニフェストと削除 (redaction) は、P0 のプログラムですでに作って確かめている。P1 (`/media/upload` への組み込み) と P2 の ProvenanceToken は、`publisher/app/c2pa_provenance.py`、`iot-market/contracts/ProvenanceToken.sol` などとして実装し、`examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py` で一通り確かめた (§7、§8 の注記)。ゲートウェイは Raspberry Pi ではなく、同じ PC で動くプログラムである。
+→ 実装の補足は次のとおりである。
+
+- P0 のプログラム (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) は、既定ではプログラムが描いた絵 (人とペットボトル) に署名する。ウェブカメラは `--webcam` を付けたときだけ使う。検証には SDK の Reader だけを使い、Content Credentials Verify と c2patool は使っていない
+- P2 に挙げた Tier 2 の派生マニフェストと削除 (redaction) は、P0 のプログラムでも作って調べている
+- P1 と P2 は `publisher/app/c2pa_provenance.py`、`iot-market/contracts/ProvenanceToken.sol` などとして実装し、`examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py` で一通り動くことを調べた (§7、§8 の注記)
+- ゲートウェイは Raspberry Pi ではなく、同じ PC で動くプログラムである
 
 ## 11. オープンクエスチョン
 
@@ -572,7 +614,7 @@ Content Credentials Verify [11] での確認と、RTSP のカメラ、断片化 
 
 [2] Content Authenticity Initiative, "c2pa-rs: Rust SDK for C2PA," GitHub, <https://github.com/contentauth/c2pa-rs>
 
-[3] Content Authenticity Initiative, "c2pa-python: Python binding for the C2PA SDK," GitHub, <https://github.com/contentauth/c2pa-python>
+[3] Content Authenticity Initiative, "c2pa-python: Python binding for c2pa-rs library," GitHub, <https://github.com/contentauth/c2pa-python>
 
 [4] W. Entriken, D. Shirley, J. Evans, N. Sachs, "ERC-721: Non-Fungible Token Standard," Ethereum Improvement Proposals, no. 721, 2018, <https://eips.ethereum.org/EIPS/eip-721>
 

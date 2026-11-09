@@ -44,7 +44,7 @@ Nobody can check the following, however:
 - Whether the content of a Merchandise sold on the marketplace is what the seller claims
 
 Sharing surveillance footage as crime leads or disaster information presupposes being able to answer "is this footage real?".
-Generative AI can now produce convincing footage, which makes the question more important.
+Generative AI can now produce footage that is hard to tell from the real thing, so appearance alone no longer shows whether footage is genuine.
 
 Recording a sha256 on chain does not answer this question. A sha256 only shows that "this file has not changed since it was recorded"; it does not show who made the file or how.
 C2PA attaches to the file an electronic signature made with the capturing device's key, plus the processing history (which file it was made from and what was done). That lets the recipient check both "who made it" and "where it came from".
@@ -114,18 +114,27 @@ A validator keeps a list of CAs it trusts. If the signer's certificate was issue
 
 ```mermaid
 flowchart TB
-  CAM["IP camera (RTSP)\nUSB webcam"] -->|"unauthenticated link"| GW
-  SEN["Sensors\n(temperature, motion, ...)"] -->|"MQTT"| GW
+  CAM["USB webcam"] -->|"unauthenticated link"| GW
+  IPC["IP camera (RTSP)"] -.->|"unauthenticated link"| GW
+  SEN["Sensors<br>(temperature, motion, ...)"] -.->|"MQTT"| GW
   subgraph GW["Edge gateway"]
-    CUT["Clip\nJPEG / fragmented MP4"] --> SIGN["Attach manifest and sign\nwith c2pa-python"]
-    KEY[("Signing key\nfile → TPM")] -.-> SIGN
+    CUT["Clip<br>JPEG"] --> SIGN["Attach manifest and sign<br>with c2pa-python"]
+    MP4["Fragmented MP4"] -.-> SIGN
+    KEY[("Signing key<br>(file)")] -.-> SIGN
+    TPM[("TPM")] -.-> SIGN
   end
-  SIGN -->|"POST /media/upload"| PUB["publisher\nvalidates manifest\naudit log"]
-  PUB --> IPFS["kubo IPFS\nCID"]
-  PUB --> DER["Stage T derivatives\nface blur / VLM summary\nreference original as ingredient"]
-  PUB -->|"hash and CID only"| NFT["ERC-721\nProvenanceToken\n(Hardhat)"]
-  DER --> VIEW["Tiered delivery\nwith DataUserVC"]
+  SIGN -->|"POST /media/upload"| PUB["publisher<br>validates manifest<br>audit log"]
+  PUB --> IPFS["kubo IPFS<br>CID"]
+  PUB --> DER["Stage T derivatives<br>face blur / VLM summary<br>reference original as ingredient"]
+  PUB -->|"hash and CID only"| NFT["ERC-721<br>ProvenanceToken<br>(Hardhat)"]
+  DER --> VIEW["Tiered delivery<br>with DataUserVC"]
+  classDef done fill:#e3f4e8,stroke:#2e7d32,color:#1b5e20
+  classDef todo fill:#f2f2f2,stroke:#9e9e9e,stroke-dasharray:4 3,color:#616161
+  class CAM,CUT,SIGN,KEY,PUB,IPFS,DER,NFT,VIEW done
+  class IPC,SEN,MP4,TPM todo
 ```
+
+Green boxes are implemented (P0–P2); grey dashed boxes are not implemented yet (P3, P4).
 
 Terms in the diagram:
 
@@ -261,7 +270,7 @@ flowchart LR
   A5 -.-> DEL
 ```
 
-There is an **easily overlooked privacy problem** here. By default, importing an ingredient also puts the following two things into the derived file (confirmed in §13):
+There is a **privacy problem** here. By default, importing an ingredient also puts the following two things into the derived file (confirmed in §13):
 
 - A thumbnail of the unblurred image. The specification recommends referencing the thumbnail in the ingredient's manifest [1], and the SDK uses the original manifest's `c2pa.thumbnail.claim` as the ingredient thumbnail. A thumbnail of the unblurred face ends up in the face-blurred image
 - The assertions in the ingredient's manifest. The camera ID and sensor readings become visible to Tier 2 recipients as well
@@ -273,6 +282,17 @@ Tier 2 derivatives therefore do the following:
 3. The ingredient manifest's signature still validates after redaction, so Tier 2 recipients can be shown only that "this was made from the Tier 3 original"
 
 The signature survives redaction because the ingredient's claim contains **only the hashes** of its assertions. Removing an assertion's content leaves the claim and its signature unchanged. The validator reads the derivative manifest's record of "which assertions were redacted" and treats the assertions without content as legitimately redacted.
+
+```mermaid
+flowchart LR
+  SIG["Signature of the capture<br>(iw3ip-gateway)"] -->|"signs"| CL["Claim<br>hashes of each assertion<br>and of the pixel data"]
+  CL -.->|"hash"| A1["c2pa.actions<br>(kept)"]
+  CL -.->|"hash"| A2["jp.ertl.iw3ip.capture<br>(content redacted)"]
+  CL -.->|"hash"| A3["jp.ertl.iw3ip.sensor<br>(content redacted)"]
+  classDef removed fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class A2,A3 removed
+```
+
 The redacted values remain in the claim as hashes, but the SDK mixes a random value (salt) into each assertion before hashing, so the original values cannot be guessed from the hashes (§13).
 
 The definition of a Tier 2 derivative manifest looks like this (`<capture>` is the identifier of the ingredient's manifest):
@@ -399,7 +419,13 @@ Adds `c2pa` to the existing response (`{url, sha256, content_type, byte_size, ci
 }
 ```
 
-→ In the implementation, `signer` holds only the name (CN) of the signer's certificate, and the failure codes the SDK returns go in `failure_codes`. On a publisher without the C2PA check, `c2pa` is `null`. The validation result is stored as `.c2pa/<sha256>.json` in the media store (not served under `/media/`), and the pipeline reads it through `image_url`. The image format is read from the first bytes of the file, not from the filename (renaming a tampered JPEG does not skip the check). A file that embeds a manifest the SDK cannot read (a manifest damaged in the middle) is not treated as a file without provenance; it is refused as `Invalid` (`failure_codes` is `c2pa.unreadable`).
+→ The implementation does the following.
+
+- `signer` holds only the name (CN) of the signer's certificate. The failure codes the SDK returns go in `failure_codes`
+- On a publisher without the C2PA check, `c2pa` is `null`
+- The validation result is stored as `.c2pa/<sha256>.json` in the media store, and the pipeline reads it through `image_url`. This file is not served under `/media/`
+- The image format is read from the first bytes of the file and the filename is ignored. Renaming a tampered JPEG does not skip the check
+- A file that embeds a manifest the SDK cannot read (a manifest damaged in the middle) is refused as `Invalid` (`failure_codes` is `c2pa.unreadable`). It is not treated as a file without provenance
 
 The publisher reads the manifest with the c2pa-python Reader (the class that reads and validates a manifest) and records the validation result. The SDK reports the result as one of three states: `Invalid`, `Valid`, or `Trusted`.
 
@@ -419,15 +445,20 @@ The CA that the publisher trusts is registered in the SDK setting `trust.user_an
 
 Adds `provenance` to each row. What is shown depends on the tier.
 
-| Key | Content | Exposed to tier |
-| --- | --- | --- |
-| `provenance.manifest_label` | Identifier of the original's manifest | All tiers |
-| `provenance.validation_state` | Validation result at the publisher | All tiers |
-| `provenance.token_id` | ID of the token in §8 | All tiers |
-| `provenance.derived_sha256` | sha256 of the summary text (§5.5) | 1 + 2 + 3 |
-| `provenance.signer` | Signer name | 2 + 3 |
+The table shows what each tier sees with VLM tiering on (Tier 3 = full, Tier 2 = access, Tier 1 = summary). ✓ means shown, — means not shown.
 
-→ The implementation adds these fields too. `redacted_manifest_label` (the manifest identifier of the Tier 2 image) is shown only to tiers that receive the Tier 2 image (`image_redacted`); `token_contract` (the token contract address) and `anchor_tx` (the minting transaction) are shown to every tier, like `token_id`. `derived_sha256` is shown only to tiers that receive the summary text (`description_summary`): the summary text is short and predictable, so showing its sha256 to tiers that do not receive it would let them confirm a guessed text. `signer` is shown to tiers that receive `image` or `image_redacted`. The hands-on checks this with the three tiers of VLM tiering (full, access, summary).
+| Key | Content | Tier 3 | Tier 2 | Tier 1 | Shown when |
+| --- | --- | :---: | :---: | :---: | --- |
+| `provenance.manifest_label` | Identifier of the original's manifest | ✓ | ✓ | ✓ | always |
+| `provenance.validation_state` | Validation result at the publisher | ✓ | ✓ | ✓ | always |
+| `provenance.token_id` | ID of the token in §8 | ✓ | ✓ | ✓ | always |
+| `provenance.derived_sha256` | sha256 of the summary text (§5.5) | ✓ | ✓ | ✓ | the tier receives the summary text |
+| `provenance.signer` | Signer name | ✓ | ✓ | — | the tier receives an image (original or blurred) |
+| `provenance.redacted_manifest_label` | Manifest identifier of the Tier 2 image | ✓ | ✓ | — | the tier receives the blurred image |
+
+→ The implementation adds `redacted_manifest_label` from this table. `token_contract` (the token contract address) and `anchor_tx` (the minting transaction) are always shown too, like `token_id`. `derived_sha256` goes only to tiers that receive the summary text because the summary text is short and predictable: showing its sha256 to other tiers would let them confirm a guessed sentence.
+
+![Images, text and provenance fields each tier receives (output of the hands-on)](../assets/c2pa-tier-views.en.png)
 
 ### 7.3 Audit log
 
@@ -464,7 +495,13 @@ Putting `sellerDid` on a public chain lets anyone link records from the same sel
 Issuing a token per frame makes transaction fees and processing time a problem. The MVP issues **one token per detection event**.
 For segments of continuous recording, a Merkle root built from the hashes of the segments over a fixed period is combined into one token (P3). A Merkle root is the single hash left after repeatedly pairing hashes and hashing each pair. Recording that one value is enough to prove later which segments were included.
 
-→ In the implementation, one token is issued each time the pipeline processes an event whose image (`image_url`) passed the provenance check. The contract issues one token per image (sha256), so the publisher checks `tokenOfAsset` before minting and reuses an existing token (the row's `provenance` gets `token_reused: true`, and no `provenance/anchored` record is written). The token is issued before the row is sent, because the row carries the token ID. If sending the row fails, the token remains, and a retry reuses it. Tokens are issued with `eth_sendTransaction` from an unlocked account of the Hardhat node (the first account by default). This keeps keys out of the publisher, but it is for local trials only and cannot be used in production. `tokenURI` returns JSON holding the four values of §8.1 as a data URI.
+→ The implementation does the following.
+
+- One token is issued each time the pipeline processes an event whose image (`image_url`) passed the provenance check
+- The contract issues one token per image (sha256). The publisher checks `tokenOfAsset` before minting and reuses an existing token (the row's `provenance` gets `token_reused: true`, and no `provenance/anchored` record is written)
+- The token is issued before the row is sent, because the row carries the token ID. If sending the row fails, the token remains, and a retry reuses it
+- Tokens are issued with `eth_sendTransaction` from an unlocked account of the Hardhat node (the first account by default). This keeps keys out of the publisher, but it is for local trials only and cannot be used in production
+- `tokenURI` returns JSON holding the four values of §8.1 as a data URI
 
 ### 8.3 Circular reference
 
@@ -503,16 +540,21 @@ C2PA also has a mechanism for finding stripped provenance again from the pixels,
 
 ## 10. Milestones
 
-| ID | Content | Equipment |
-| --- | --- | --- |
-| **P0** | Take a still with a webcam, sign it with c2pa-python, and validate it with Content Credentials Verify [11] (CAI's website that shows a file's provenance) and c2patool (CAI's command-line validator) | Mac only |
-| **P1** | Produce a signed JPEG only on detection events, validate it at `/media/upload`, and record it in the audit log (§7) | USB webcam |
-| **P2** | Tier 2 derivative manifests (§5.3) and ProvenanceToken issuance (§8) | + Hardhat |
-| **P3** | Fragmented MP4, sensor options B and C, CAWG and SellerVC integration, update manifests | + sensors |
-| **P4** | RTSP IP camera and Raspberry Pi, TPM signing, evaluation in §9 | Commercial IP camera, Raspberry Pi |
-| **P5** | Hands-on (JA + EN) | — |
+| ID | Content | Equipment | Status |
+| --- | --- | --- | --- |
+| **P0** | Take a still with a webcam, sign it with c2pa-python, and validate it with Content Credentials Verify [11] (CAI's website that shows a file's provenance) and c2patool (CAI's command-line validator) | Mac only | Done (validated with the SDK only) |
+| **P1** | Produce a signed JPEG only on detection events, validate it at `/media/upload`, and record it in the audit log (§7) | USB webcam | Done |
+| **P2** | Tier 2 derivative manifests (§5.3) and ProvenanceToken issuance (§8) | + Hardhat | Done (link to Merchandise not yet) |
+| **P3** | Fragmented MP4, sensor options B and C, CAWG and SellerVC integration, update manifests | + sensors | Not started |
+| **P4** | RTSP IP camera and Raspberry Pi, TPM signing, evaluation in §9 | Commercial IP camera, Raspberry Pi | Not started |
+| **P5** | Hands-on (JA + EN) | — | Done for P0–P2 |
 
-→ In the implementation, the P0 program (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) signs a dummy image drawn by the program by default (it uses a webcam only with `--webcam`). It validates with the SDK Reader only; Content Credentials Verify and c2patool are not used. On the other hand, the P0 program already builds and checks the Tier 2 derivative manifest and redaction listed under P2. P1 (integration into `/media/upload`) and P2's ProvenanceToken are implemented as `publisher/app/c2pa_provenance.py`, `iot-market/contracts/ProvenanceToken.sol` and so on, and checked end to end with `examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py` (notes in §7 and §8). The gateway is a program on the same PC, not a Raspberry Pi.
+→ Notes on the implementation:
+
+- The P0 program (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) signs a picture the program draws (a person and a plastic bottle) by default. It uses a webcam only with `--webcam`. It validates with the SDK Reader only; Content Credentials Verify and c2patool are not used
+- The Tier 2 derivative manifest and redaction listed under P2 are also built and checked by the P0 program
+- P1 and P2 are implemented as `publisher/app/c2pa_provenance.py`, `iot-market/contracts/ProvenanceToken.sol` and so on, and checked end to end with `examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py` (notes in §7 and §8)
+- The gateway is a program on the same PC, not a Raspberry Pi
 
 ## 11. Open questions
 
@@ -572,7 +614,7 @@ Checking with Content Credentials Verify [11], RTSP cameras, fragmented MP4, and
 
 [2] Content Authenticity Initiative, "c2pa-rs: Rust SDK for C2PA," GitHub, <https://github.com/contentauth/c2pa-rs>
 
-[3] Content Authenticity Initiative, "c2pa-python: Python binding for the C2PA SDK," GitHub, <https://github.com/contentauth/c2pa-python>
+[3] Content Authenticity Initiative, "c2pa-python: Python binding for c2pa-rs library," GitHub, <https://github.com/contentauth/c2pa-python>
 
 [4] W. Entriken, D. Shirley, J. Evans, N. Sachs, "ERC-721: Non-Fungible Token Standard," Ethereum Improvement Proposals, no. 721, 2018, <https://eips.ethereum.org/EIPS/eip-721>
 

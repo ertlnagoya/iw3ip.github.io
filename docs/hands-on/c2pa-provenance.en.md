@@ -1,8 +1,8 @@
 # Prove where an image came from (C2PA / Stage P)
 
-Attach "provenance" that follows the C2PA standard [1] to an image taken with a camera, and sign it electronically. Then make a blurred Tier 2 image and confirm that, while the link to the original is kept, neither the camera ID nor the unblurred image leaks.
+Attach "provenance" that follows the C2PA standard [1] to an image taken with a camera, and sign it electronically. Next, make a blurred Tier 2 image. The Tier 2 image keeps its link to the original but does not contain the camera ID or the unblurred image. You will see this by running the programs.
 
-> **What you do**: sign a captured image with provenance, and confirm that the provenance of the Tier 2 blurred image no longer carries information that points to a person and that tampering is detected
+> **What you do**: sign a captured image with provenance. See that the provenance of the Tier 2 blurred image no longer carries information that points to a person, and that tampering is detected
 >
 > **Prerequisites**: Python 3.10 or later. The publisher, the blockchain, and the phone wallet are not used
 >
@@ -18,8 +18,8 @@ Attach "provenance" that follows the C2PA standard [1] to an image taken with a 
 ## Goal
 
 Sharing surveillance-camera images as crime leads or disaster information requires being able to answer "is this image real?".
-In this hands-on, you attach provenance (a manifest) describing "who took it, when, how, and how it was processed" to an image, sign it, and confirm by actually running it that the recipient can judge for themselves whether the image is genuine.
-You also learn about an easily overlooked problem where the provenance itself leaks information that points to a person, and how to prevent it.
+In this hands-on, you attach provenance (a manifest) describing "who took it, when, how, and how it was processed" to an image and sign it. The recipient can validate that provenance and judge for themselves whether the image is genuine.
+The page also covers a second problem: the provenance itself can leak information that points to a person, and how to prevent that.
 
 ## What this page covers
 
@@ -55,12 +55,12 @@ These 4 steps are enough at first.
 
 1. Create a virtual environment (venv) and install the C2PA SDK (§1)
 2. Create the test certificate (§2)
-3. Run signing and validation once with a dummy image and confirm `all checks passed` (§3)
+3. Run signing and validation once with the image the program draws, and see `all checks passed` (§3)
 4. Print the provenance and see with your own eyes that the camera ID is gone from the Tier 2 image (§4)
 
 Next branches:
 
-- To confirm by hand that tampering is detected: go to §5
+- To try by hand that tampering is detected: go to §5
 - To try with a real camera image: go to §6
 
 ## 1. Setup
@@ -83,7 +83,7 @@ source .venv/bin/activate
 
 We write `python -m pip install` instead of `pip install` because, depending on how the virtual environment was created, it may have no `pip` command, and another `pip` already on the PC gets called instead. `python -m pip` always installs into the virtual environment's Python.
 
-Check that it is installed.
+Check whether it is installed.
 
 ```bash
 python -c "import c2pa; print(c2pa.sdk_version())"
@@ -115,11 +115,22 @@ The three files this page uses are:
 
 `publisher_chain.pem` and `publisher.key` are the publisher's certificate and private key. This page does not use them; [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md) does.
 
-Note that the certificate name (CN) is `iw3ip-gateway` and does not contain the camera ID (`cam01`). This is because the certificate name cannot be redacted even from the blurred image made later (§4).
+The following diagram shows how the certificates and the signature relate. If the validator registers `ca.pem` as a trusted CA, a signature made with a certificate that CA issued becomes `Trusted`. If not, a correct signature only reaches `Valid`.
+
+```mermaid
+flowchart LR
+  CA["Your own CA<br>(ca.pem)"] -->|"issues"| GW["Gateway certificate<br>(chain.pem, key gw.key)"]
+  CA -->|"issues"| PB["Publisher certificate<br>(used on the next page)"]
+  GW -->|"signs"| IMG["Provenance of capture.jpg"]
+  V["Validator"] -->|"registers as a trusted CA"| CA
+  V -->|"validates"| IMG
+```
+
+The certificate name (CN) is `iw3ip-gateway` and does not contain the camera ID (`cam01`), because the certificate name cannot be redacted even from the blurred image made later (§4).
 
 ## 3. Run signing and validation once
 
-Run everything once with a dummy image (an image the program draws, with a circle standing in for a face).
+Run everything once with a park scene the program draws (a person and a plastic bottle).
 
 ```bash
 python examples/hands_on/c2pa_provenance/p0_sign_verify.py
@@ -159,21 +170,21 @@ flowchart LR
 At each step in the diagram, the program does the following:
 
 1. **Sign the captured image**: attach provenance stating that it was captured (`c2pa.actions`), the camera ID and capture time (`jp.ertl.iw3ip.capture`), and sensor readings (`jp.ertl.iw3ip.sensor`), sign it with the gateway key, and save it as `out/capture.jpg`
-2. **Validate**: without registering the CA, the result is `Valid` (the signature is correct, but whether to trust the signer is unknown); with `ca.pem` registered, it is `Trusted` (checks 1–2). It also confirms that the custom assertions (`jp.ertl.iw3ip.capture` and `jp.ertl.iw3ip.sensor`) are in the provenance (check 3)
+2. **Validate**: without registering the CA, the result is `Valid` (the signature is correct, but whether to trust the signer is unknown); with `ca.pem` registered, it is `Trusted` (checks 1–2). It also checks that the custom assertions (`jp.ertl.iw3ip.capture` and `jp.ertl.iw3ip.sensor`) are in the provenance (check 3)
 3. **Make the Tier 2 blurred image**: blur the whole image, attach provenance that references the original as an "ingredient", and save it as `out/tier2.jpg`. At this point, the thumbnail, camera ID, and sensor readings are redacted from the original's provenance
-4. **Check for leaks**: confirm that the Tier 2 image validates as `Trusted` (check 4). Then confirm that the thumbnail of the original, the camera ID, and the sensor readings are not left in the provenance of the Tier 2 image (checks 5–10)
-5. **Check that tampering is detected**: change one byte of the Tier 2 image, validate it, and confirm it becomes `Invalid` (check 11)
+4. **Check for leaks**: check whether the Tier 2 image validates as `Trusted` (check 4). Next, check that the thumbnail of the original, the camera ID, and the sensor readings are not left in the provenance of the Tier 2 image (checks 5–10)
+5. **Try tampering**: change one byte of the Tier 2 image, validate it, and check whether it becomes `Invalid` (check 11)
 
-The two saved images look like this (left: the dummy captured image; right: the blurred Tier 2 image). The right one only looks blurred, but it contains part of the left image's provenance. §4 prints what is inside.
+The two saved images look like this (left: the captured image; right: the blurred Tier 2 image). The right one only looks blurred, but it contains part of the left image's provenance. §4 prints what is inside.
 
-![The dummy captured image (capture.jpg) and the blurred Tier 2 image (tier2.jpg)](../assets/c2pa-capture-vs-tier2.png)
+![The captured image drawn by the program (capture.jpg) and the blurred Tier 2 image (tier2.jpg)](../assets/c2pa-capture-vs-tier2.png)
 
 !!! note "About the blur"
     The program in this hands-on blurs the whole image without detecting faces. Blurring only faces was covered by the face blur in [Tier by semantic level](data-user-vc-tiered-semantic.md).
 
 ## 4. Look inside the provenance
 
-Look at the provenance itself, not just the check results. The following command reads the provenance of both images and prints the manifests and assertions they contain.
+Now look at the provenance with your own eyes. The following command reads the provenance of both images and prints the manifests and assertions they contain.
 
 ```bash
 python - <<'EOF'
@@ -213,7 +224,17 @@ Look at three things:
 - `tier2.jpg` contains the original's provenance as `(ingredient)`, which shows that "this image was made from the original"
 - However, only `c2pa.actions.v2` (the record that it was captured) remains in `(ingredient)`; the camera ID and sensor readings were redacted. Even so, `tier2.jpg` still validates as `Trusted`
 
-The signature survives redaction because the original's signature covers the **hashes** of its assertions. Removing the content leaves the hashes, so the signature still validates. See §5.3 of the design spec for details.
+The signature survives redaction because the original's signature covers the **hashes** of its assertions. What is signed is the "claim", a list of those hashes. Removing an assertion's content changes neither the claim nor its signature (see the diagram). See §5.3 of the design spec for details.
+
+```mermaid
+flowchart LR
+  SIG["Signature of the capture<br>(iw3ip-gateway)"] -->|"signs"| CL["Claim<br>hashes of each assertion<br>and of the pixel data"]
+  CL -.->|"hash"| A1["c2pa.actions<br>(kept)"]
+  CL -.->|"hash"| A2["jp.ertl.iw3ip.capture<br>(content redacted)"]
+  CL -.->|"hash"| A3["jp.ertl.iw3ip.sensor<br>(content redacted)"]
+  classDef removed fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class A2,A3 removed
+```
 
 The `title` and `signer` of `(ingredient)` cannot be redacted and remain. That is why the captured image's title (`capture.jpg`) and the certificate name (`iw3ip-gateway`) do not contain the camera ID.
 
@@ -243,7 +264,7 @@ tampered.jpg Invalid ['signingCredential.untrusted', 'assertion.dataHash.mismatc
 ```
 
 This command validates without registering the CA, so even the original is `Valid` (`signingCredential.untrusted`) rather than `Trusted`. The tampered image additionally shows `assertion.dataHash.mismatch` (the pixel-data hash does not match) and becomes `Invalid`.
-A one-byte difference that is almost invisible to the eye is still caught by validating the provenance.
+A one-byte difference that the eye cannot see is still caught by validating the provenance.
 
 ## 6. Capture with a webcam
 
@@ -254,7 +275,7 @@ python -m pip install "opencv-python<5"
 python examples/hands_on/c2pa_provenance/p0_sign_verify.py --webcam
 ```
 
-Success if, as in §3, all 11 checks are `PASS` and `all checks passed` is printed. Open the captured image and the blurred image to check them (on macOS).
+Success if, as in §3, all 11 checks are `PASS` and `all checks passed` is printed. Open the captured image and the blurred image to look at them (on macOS).
 
 ```bash
 open examples/hands_on/c2pa_provenance/out/capture.jpg examples/hands_on/c2pa_provenance/out/tier2.jpg
@@ -295,4 +316,4 @@ In this hands-on, the camera and the gateway (the signing program) are on the sa
 
 [1] C2PA, "C2PA Technical Specification, Version 2.3," <https://spec.c2pa.org/specifications/specifications/2.3/specs/C2PA_Specification.html>
 
-[2] Content Authenticity Initiative, "c2pa-python: Python binding for the C2PA SDK," GitHub, <https://github.com/contentauth/c2pa-python>
+[2] Content Authenticity Initiative, "c2pa-python: Python binding for c2pa-rs library," GitHub, <https://github.com/contentauth/c2pa-python>
