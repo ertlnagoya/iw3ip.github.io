@@ -1,8 +1,12 @@
 # 来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)
 
-[画像の来歴を証明する](c2pa-provenance.md) では、C2PA [1] の来歴の署名と検証を手元の PC だけで確かめました。このページでは、同じ署名済みの画像を IW3IP の publisher に送り、publisher が来歴を検証し、ぼかした Tier 2 の画像に自分で署名し、来歴のハッシュをブロックチェーンにトークンとして記録するところまでを動かします。最後に、データ利用者の Tier ごとに、来歴のどこまでが見えるかを確かめます。
+[画像の来歴を証明する](c2pa-provenance.md) では、C2PA [1] の来歴の署名と検証を、手元の PC だけで試しました。このページでは、署名した画像を IW3IP の publisher に送ります。publisher は来歴を検証し、顔をぼかした Tier 2 の画像を作って自分の鍵で署名し、来歴のハッシュをブロックチェーンにトークンとして記録します。最後に、データ利用者の Tier ごとに、来歴のどこまでが見えるかを調べます。
 
-> **やること**: 署名済みの画像を publisher に送り、検証、Tier 2 の画像への署名、トークンの発行、Tier ごとの来歴の見え方、監査ログを確かめる
+![撮影画像 (p1_capture.jpg) と、publisher が顔をぼかして署名した Tier 2 の画像 (p2_tier2.jpg)](../assets/c2pa-publisher-capture-vs-tier2.png)
+
+このページで作る 2 枚の画像です。左はゲートウェイが署名した撮影画像、右は publisher が顔をぼかして署名し直した Tier 2 の画像です。見た目はぼかしただけですが、右の画像には「左の画像から作った」ことを示す来歴が入っています。
+
+> **やること**: 署名した画像を publisher に送り、publisher による検証、Tier 2 の画像の署名、トークンの発行、Tier ごとの来歴の見え方、監査ログを見る
 >
 > **前提**: [画像の来歴を証明する](c2pa-provenance.md) の §1〜§3 を終えていること。Docker と Node.js が使えること。スマホのウォレットは使いません
 >
@@ -13,27 +17,27 @@
 !!! note "このページの位置付け"
     [C2PA 来歴パイプラインの設計仕様](../design/c2pa-provenance-spec.md) の P1 と P2 を動かすハンズオンです。
     P1 は publisher での検証と監査ログ (設計仕様の §7.1、§7.3)、P2 は Tier 2 の画像の来歴 (§5.3)、Tier ごとの来歴の見せ方 (§7.2)、トークンの発行 (§8) です。
-    Tier 1〜3 と DataUserVC の考え方は [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) と [意味レベルで段階化する](data-user-vc-tiered-semantic.md) で扱いました。
+    Tier 1〜3 と DataUserVC は [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) と [意味レベルで段階化する](data-user-vc-tiered-semantic.md) で扱いました。
 
 ## 目的
 
-前のページでは、ゲートウェイ (カメラの隣で署名するプログラム) と、来歴を確かめるプログラムが同じ PC の中にありました。実際の運用では、画像を受け取るのは publisher であり、publisher がデータ利用者に Tier ごとの中身を配ります。
-このページでは、publisher が「受け取った画像が本物か」を確かめ、ぼかした画像にも来歴を付け、それを誰に、どこまで見せるかを、実際に動かして確かめます。
+前のページでは、ゲートウェイ (カメラの隣で署名するプログラム) も、来歴を確かめるプログラムも、同じ PC の中で動きました。実際の運用では、画像を受け取るのは publisher で、publisher がデータ利用者に Tier ごとの中身を配ります。
+このページでは、publisher の立場で 3 つのことを試します。受け取った画像が本物かを確かめること、ぼかした画像にも来歴を付けること、その来歴を誰にどこまで見せるかを決めることです。
 
 ## このページで分かること
 
-- publisher の `/media/upload` が、来歴の無い画像、署名済みの画像、改ざんされた画像をどう扱うか
-- publisher が Tier 2 のブラー画像に自分の鍵で署名し、元の画像の来歴から個人につながる情報を削除する流れ
+- publisher の `/media/upload` が、来歴の無い画像、署名済みの画像、改ざんした画像をそれぞれどう扱うか
+- publisher が Tier 2 の画像に自分の鍵で署名し、元の画像の来歴からカメラ ID などを消す流れ
 - 来歴のハッシュを ERC-721 のトークン (ProvenanceToken) としてチェーンに記録する方法
 - Tier (full、access、summary) ごとに、`/platform/data` の来歴 (`provenance`) のどの項目が見えるか
 - 監査ログの `provenance/verified`、`provenance/derived`、`provenance/anchored`
 
 ## つまずきやすい点
 
-- `make_test_certs.py` は、このページのために publisher の証明書 (`publisher_chain.pem`、`publisher.key`) も作るように変わりました。前のページの §2 で作った証明書しか無い場合は、作り直します (§1)
-- publisher は Docker のコンテナで動き、証明書は `examples/hands_on/c2pa_provenance/certs/` を読み取り専用でマウントして読みます。証明書を作り直したら、publisher を起動し直します
-- ProvenanceToken のアドレスは、Hardhat ノードを起動し直すと変わることがあります。§2 で表示されたアドレスを §3 で使います
-- このページの設定では、publisher は Hardhat ノードの、鍵がロックされていないアカウントでトークンを発行します。手元で試すための方法で、本番では使えません
+- `make_test_certs.py` は、このページのために publisher の証明書 (`publisher_chain.pem`、`publisher.key`) も作るようになりました。前のページの §2 で作った証明書には publisher の証明書が無いため、作り直します (§1)
+- publisher は Docker のコンテナで動き、`examples/hands_on/c2pa_provenance/certs/` を読み取り専用でマウントして証明書を読みます。証明書を作り直したら、publisher を起動し直します
+- ProvenanceToken のアドレスは、Hardhat ノードを起動し直すと変わることがあります。§3 では、§2 で表示されたアドレスを使います
+- この設定では、publisher は Hardhat ノードの、鍵がロックされていないアカウントでトークンを発行します。手元で試すための方法で、本番では使えません
 
 ## 前提
 
@@ -49,14 +53,16 @@
 - [publisher を C2PA の設定で起動する Compose の設定 (docker-compose.c2pa.yml)](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/infra/docker-compose.c2pa.yml)
 - [演習説明 (README)](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/c2pa_provenance/README.md)
 
-`p1p2_publisher_flow.py` は、ゲートウェイとデータ利用者の両方の役を 1 つのプログラムで行い、18 項目の確認の結果を `PASS` / `FAIL` で表示します。データ利用者の役では、スマホのウォレットの代わりに、プログラムの中のウォレットが PurchaseViewerVC を受け取って提示します。
+`p1p2_publisher_flow.py` は、ゲートウェイとデータ利用者の 2 役を 1 つのプログラムでこなし、18 項目の確認の結果を `PASS` / `FAIL` で表示します。データ利用者の役では、スマホのウォレットの代わりに、プログラムの中のウォレットが PurchaseViewerVC を受け取って提示します。
+
+既定では、プログラムが描いた公園の絵 (人とペットボトル) に署名します。人の顔は、publisher の顔検出 (OpenCV) が見つけられるように描いてあるため、Tier 2 の画像では顔がぼけます。自分の写真や、ウェブカメラで撮った画像でも試せます (§4 の最後)。
 
 ## 最短ルート
 
 1. 証明書を作り直し、`iot-market/` で `npm install` を実行する (§1)
 2. Hardhat ノードを起動し、ProvenanceToken をデプロイする (§2)
 3. C2PA の設定で publisher を起動する (§3)
-4. `p1p2_publisher_flow.py` を実行し、`all checks passed` を確かめる (§4)
+4. `p1p2_publisher_flow.py` を実行し、`all checks passed` と表示されるのを見る (§4)
 
 その後の分岐:
 
@@ -65,7 +71,7 @@
 
 ## 1. 準備
 
-教材リポジトリの最新版を取り込み、前のページで作った仮想環境を有効にします。
+教材リポジトリを最新にして、前のページで作った仮想環境を有効にします。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -87,11 +93,11 @@ wrote .../certs/ca.pem, chain.pem, gw.key (CN=iw3ip-gateway), publisher_chain.pe
 
 | ファイル | 中身 | 使う場所 |
 | --- | --- | --- |
-| `ca.pem` | 自分で作った CA の証明書 | publisher が信頼する CA として登録する (検証で `Trusted` になる) |
+| `ca.pem` | 自分で作った CA の証明書 | publisher が信頼する CA として登録する (検証の結果が `Trusted` になる) |
 | `chain.pem`、`gw.key` | ゲートウェイの証明書と秘密鍵 | プログラムが撮影画像に署名する |
-| `publisher_chain.pem`、`publisher.key` | publisher の証明書と秘密鍵 | publisher が Tier 2 のブラー画像に署名する |
+| `publisher_chain.pem`、`publisher.key` | publisher の証明書と秘密鍵 | publisher が Tier 2 の画像に署名する |
 
-ProvenanceToken は OpenZeppelin [3] の ERC-721 [4] の実装を使います。`iot-market/` で依存関係を入れ直します。
+ProvenanceToken は、OpenZeppelin [3] の ERC-721 [4] の実装を使います。`iot-market/` で依存関係を入れ直します。
 
 ```bash
 cd iot-market
@@ -123,9 +129,9 @@ Contract "ProvenanceToken" with 0x5FbDB2315678afecb367f032d93F642f64180aa3 deplo
 minter: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 ```
 
-アドレス (`0x5FbD...`) は §3 で使います。Hardhat ノードを起動した直後に最初にデプロイすると、このアドレスになります。ほかのコントラクトを先にデプロイしていた場合は、表示されたアドレスを使います。
+アドレス (`0x5FbD...`) は §3 で使います。Hardhat ノードを起動して最初にデプロイしたコントラクトは、このアドレスになります。ほかのコントラクトを先にデプロイしていた場合は、表示されたアドレスを使います。
 
-ProvenanceToken は、1 つの検知イベントの画像ごとに 1 つのトークンを発行し、次の 4 つの値を記録します。画像そのものはチェーンに載せません。
+ProvenanceToken は、検知イベントの画像 1 枚につき 1 つのトークンを発行し、次の 4 つの値を記録します。画像そのものはチェーンに載せません。
 
 | 項目 | 内容 |
 | --- | --- |
@@ -150,12 +156,12 @@ PROVENANCE_TOKEN_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 \
 | `C2PA_ENABLED` | `true` | `/media/upload` で来歴を検証する (P1) |
 | `C2PA_TRUST_ANCHORS_PATH` | `/c2pa/ca.pem` | 信頼する CA |
 | `C2PA_SIGNER_CHAIN_PATH`、`C2PA_SIGNER_KEY_PATH` | `/c2pa/publisher_chain.pem`、`/c2pa/publisher.key` | Tier 2 の画像に署名する publisher の証明書と鍵 (P2) |
-| `IMAGE_REDACTION_BACKEND` | `opencv` | 顔を検出してぼかし、Tier 2 の画像を作る |
-| `VLM_BACKEND` | `stub` | 決まった要約の文章を作る (Tier 1 の summary 用。VLM のモデルは使わない) |
+| `IMAGE_REDACTION_BACKEND` | `opencv` | 顔を見つけてぼかし、Tier 2 の画像を作る |
+| `VLM_BACKEND` | `stub` | 決まった文の要約を作る (Tier 1 の summary 用。VLM のモデルは使わない) |
 | `PROVENANCE_TOKEN_ADDRESS`、`PROVENANCE_RPC_URL` | §2 のアドレス、`http://host.docker.internal:8545` | トークンを発行する先 (P2) |
 | `PLATFORM_INGEST_READ_ENABLED` | `true` | 確認のため、認証なしで全部の行を読めるようにする |
 
-起動したことを確かめます。
+起動したか確かめます。
 
 ```bash
 curl -s http://localhost:8080/health
@@ -169,7 +175,7 @@ curl -s http://localhost:8080/health
 python examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py
 ```
 
-成功すると、次のように表示されます (マニフェストの識別子は実行ごとに変わります)。
+成功すると、次のように表示されます (マニフェストの識別子は実行のたびに変わります)。
 
 ```
 c2pa-python 0.38.1 / c2pa-rs 0.91.3
@@ -202,57 +208,93 @@ outputs: .../out/p1_capture.jpg, .../out/p2_tier2.jpg
 all checks passed
 ```
 
-処理の流れは、次の図のとおりです。
+処理の順番を、次の図に示します。図の番号は、下の説明の番号と同じです。
 
 ```mermaid
-flowchart LR
-  GW["ゲートウェイ\n(プログラム)\n撮影画像に署名"] -->|"POST /media/upload"| UP["publisher\n来歴を検証\nInvalid は 400"]
-  GW -->|"POST /simulate/publish"| PIPE["publisher のパイプライン"]
-  PIPE --> BLUR["顔をぼかし\npublisher の鍵で署名\n元の来歴の一部を削除"]
-  PIPE --> VLM["要約の文章\n(Tier 1)"]
-  PIPE --> NFT["ProvenanceToken\nを発行"]
-  BLUR --> DATA["/platform/data\nTier ごとに\n来歴の一部を見せる"]
-  VLM --> DATA
-  NFT --> DATA
-  W["データ利用者\n(プログラムの中の\nウォレット)"] -->|"ViewerToken"| DATA
+sequenceDiagram
+  autonumber
+  participant G as ゲートウェイ<br>(プログラム)
+  participant P as publisher
+  participant C as Hardhat ノード<br>(ProvenanceToken)
+  participant U as データ利用者<br>(プログラムの中のウォレット)
+  G->>G: 撮影画像に来歴を付けて署名
+  G->>P: POST /media/upload (署名済み、改ざん、来歴なし)
+  P-->>G: Trusted / 400 c2pa_invalid / present: false
+  G->>P: POST /simulate/publish (image_url 付きのイベント)
+  P->>P: 顔をぼかし、Tier 2 の画像に署名、要約を作る
+  P->>C: mint (マニフェストの識別子、sha256)
+  U->>P: PurchaseViewerVC を提示して ViewerToken を得る
+  P-->>U: /platform/data (Tier に応じた provenance)
 ```
 
-図の各段階で、プログラムと publisher は次のことをしています。
-
 1. **撮影画像に署名する**: 前のページと同じく、カメラ ID、撮影時刻、センサー値を書いた来歴を付けて、ゲートウェイの鍵で署名します (`out/p1_capture.jpg`)
-2. **publisher が検証する (P1)**: 来歴の無い画像は従来どおり受け付けます (`present: false`)。署名済みの画像は `Trusted` と判定されます。1 バイト書き換えた画像は `400 c2pa_invalid` で拒否され、保存されません。拡張子を `.webp` に変えて送っても拒否されます。publisher は、ファイル名ではなく、ファイルの先頭のバイトから画像の形式を判断するためです (1〜4 番目のチェック)
-3. **イベントを送る (P2)**: 撮影画像の URL (`image_url`) を入れたイベントを `/simulate/publish` で送ります。publisher は、顔をぼかした Tier 2 の画像を作り、それに publisher の鍵で署名します。このとき、撮影画像を「素材 (ingredient)」として参照し、撮影画像の来歴からサムネイル、カメラ ID、センサー値を削除します。あわせて、要約の文章を作り、ProvenanceToken を発行します (5〜7 番目のチェック)
-4. **Tier 2 の画像を自分で確かめる**: Tier 2 の画像を取得し、`Trusted` であること、署名者が `iw3ip-publisher` であること、削除したはずの情報とカメラ ID が残っていないことを確かめます (`out/p2_tier2.jpg`、8〜10 番目のチェック)
-5. **Tier ごとの見え方を確かめる**: full、access、summary の 3 つの Tier の DataUserVC の属性で PurchaseViewerVC を受け取り、提示して ViewerToken を得てから、`/platform/data` を読みます (11〜14 番目のチェック。§5)
-6. **チェーンと監査ログを確かめる**: トークンの `tokenURI` を読み、撮影画像のマニフェストの識別子と sha256 が記録されていることを確かめます。監査ログに 3 種類の記録があることも確かめます (15〜18 番目のチェック。§6)
+2. **画像を publisher に送る**: 署名済みの画像のほか、1 バイト書き換えた画像と、来歴の無い画像も送ります
+3. **publisher が検証する (P1)**: 来歴の無い画像は、これまでどおり受け付けます (`present: false`)。署名済みの画像は `Trusted` になります。書き換えた画像は `400 c2pa_invalid` で断り、保存しません。拡張子を `.webp` に変えて送っても断ります。publisher は、ファイル名を見ずに、ファイルの先頭のバイトで画像の形式を判断するためです (1〜4 番目のチェック)
+4. **イベントを送る**: 撮影画像の URL (`image_url`) を入れたイベントを、`/simulate/publish` で送ります
+5. **Tier 2 の画像を作る (P2)**: publisher は顔をぼかした画像を作り、自分の鍵で署名します。このとき、撮影画像を「素材 (ingredient)」として参照し、撮影画像の来歴からサムネイル、カメラ ID、センサー値を消します (下の図で説明します)。あわせて要約の文を作ります (5〜7 番目のチェック)。プログラムは Tier 2 の画像を取得し、`Trusted` であること、署名者が `iw3ip-publisher` であること、消した情報とカメラ ID が残っていないことを調べます (`out/p2_tier2.jpg`、8〜10 番目のチェック)
+6. **トークンを発行する (P2)**: publisher は、撮影画像のマニフェストの識別子と sha256 を ProvenanceToken に記録します。プログラムはトークンの `tokenURI` を読んで中身を調べます (15 番目のチェック)
+7. **データ利用者がウォレットで VC を提示する**: full、access、summary の 3 つの Tier の DataUserVC の属性で PurchaseViewerVC を受け取り、提示して ViewerToken を得ます
+8. **Tier ごとに読む**: ViewerToken で `/platform/data` を読み、Tier ごとに見える項目を調べます (11〜14 番目のチェック。§5)。最後に、監査ログに 3 種類の記録があることを調べます (16〜18 番目のチェック。§6)
+
+Tier 2 の画像 (`p2_tier2.jpg`) の中の来歴は、次の図のようになっています。publisher のマニフェストの中に、撮影画像のマニフェストが素材として入っています。赤い枠は消した項目、黄色い枠は消せずに残る項目です。
+
+```mermaid
+flowchart TB
+  subgraph PUB["publisher のマニフェスト (署名: iw3ip-publisher)"]
+    A1["c2pa.actions<br>opened → edited → redacted"]
+    A2["jp.ertl.iw3ip.derivation<br>(tier: 2、kind: face_blur)"]
+    A3["サムネイル (ぼかした後の画像)"]
+  end
+  subgraph CAP["素材: 撮影画像のマニフェスト (署名: iw3ip-gateway)"]
+    B1["c2pa.actions (created)"]
+    B2["jp.ertl.iw3ip.capture<br>カメラ ID、撮影時刻"]
+    B3["jp.ertl.iw3ip.sensor<br>センサー値"]
+    B4["サムネイル (ぼかす前の画像)"]
+    B5["題名、署名者の証明書"]
+  end
+  PUB -->|"素材として参照"| CAP
+  classDef removed fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  classDef kept fill:#fff4cc,stroke:#b7950b,color:#7d6608
+  class B2,B3,B4 removed
+  class B5 kept
+```
+
+撮影画像のマニフェストを丸ごと消すと、「本物の撮影画像から作った」ことを示せなくなります。そこで、個人やカメラにつながる項目だけを消します。消しても撮影画像の署名は検証でき、Tier 2 の画像を受け取った人は「署名された撮影画像から作られた」ことだけを知ります。題名と署名者の証明書は、署名の対象そのものに含まれるため消せません。そのため、ゲートウェイは題名にカメラ ID や撮影時刻を入れず、証明書の名前にもカメラ ID を入れません (前のページの §4)。
+
+!!! note "自分の写真やウェブカメラで試す"
+    `--image <ファイルのパス>` を付けると手元の写真 (JPEG か PNG) に、`--webcam` を付けるとウェブカメラで撮った画像に署名して、同じ流れを試せます。`--webcam` には OpenCV が要ります (前のページの §6)。publisher の顔検出は正面の顔だけを見つけるため、横顔の写真ではぼけないことがあります。
 
 ## 5. Tier ごとに見える来歴
 
-`/platform/data` の各行には、`provenance` という項目が付きます。publisher は、Tier ごとに `provenance` の中の項目を選んで返します。
+`/platform/data` の各行には、`provenance` という項目が付きます。publisher は、Tier ごとに、届ける画像と文、`provenance` の中の項目を選びます。
 
-| 項目 | 中身 | full | access | summary |
-| --- | --- | --- | --- | --- |
-| `manifest_label` | 撮影画像のマニフェストの識別子 | ○ | ○ | ○ |
-| `validation_state` | publisher での検証の結果 (`Trusted` など) | ○ | ○ | ○ |
-| `token_id`、`token_contract`、`anchor_tx` | ProvenanceToken の番号、アドレス、発行のトランザクション | ○ | ○ | ○ |
-| `derived_sha256` | 要約の文章 (`description_summary`) の sha256。要約の文章を受け取る Tier だけに見せる | ○ | ○ | ○ |
-| `signer` | 撮影画像の署名者の名前 | ○ | ○ | — |
-| `redacted_manifest_label` | Tier 2 の画像のマニフェストの識別子 | ○ | ○ | — |
+![Tier ごとに届くもの。full には撮影画像と Tier 2 の画像、access には Tier 2 の画像だけが届き、summary には画像が届かず要約の文だけが届く。provenance のうち signer と redacted_manifest_label は summary には届かない](../assets/c2pa-tier-views.png)
 
-summary の Tier の利用者は、画像を受け取りません。そのため、要約の文章が本物の映像から作られたことは、C2PA の来歴ではなく、`derived_sha256` (要約の文章の sha256) と、監査ログの記録で結び付けます (設計仕様の §5.5)。プログラムの 14 番目のチェックは、受け取った要約の文章の sha256 が `derived_sha256` と一致することを確かめています。
+`provenance` の各項目の中身は次のとおりです。
+
+| 項目 | 中身 |
+| --- | --- |
+| `manifest_label` | 撮影画像のマニフェストの識別子 |
+| `validation_state` | publisher での検証の結果 (`Trusted` など) |
+| `token_id` | ProvenanceToken の番号 (`token_contract` と `anchor_tx` も同じ Tier に届く) |
+| `derived_sha256` | 要約の文 (`description_summary`) の sha256。要約の文を受け取る Tier だけに届く |
+| `signer` | 撮影画像の署名者の名前 |
+| `redacted_manifest_label` | Tier 2 の画像のマニフェストの識別子 |
+
+summary の Tier の利用者には、画像が届きません。そのため、要約の文が本物の映像から作られたことは、C2PA の来歴では示せません。代わりに、`derived_sha256` (要約の文の sha256) と監査ログの記録で結び付けます (設計仕様の §5.5)。プログラムの 14 番目のチェックは、受け取った要約の文の sha256 が `derived_sha256` と同じかを調べています。
 
 !!! warning "Tier をまたいで突き合わせられる"
-    `manifest_label` と `token_id` は、すべての Tier に同じ値で見えます。そのため、異なる Tier の利用者が手元のデータを持ち寄ると、同じ撮影から作られた行であることが分かります。これは設計仕様の §7.2 のとおりの動作で、来歴と段階的な開示を両立させるうえでの課題の 1 つです。
+    `manifest_label` と `token_id` は、すべての Tier に同じ値で届きます。そのため、異なる Tier の利用者が手元のデータを持ち寄ると、同じ撮影から作られた行だと分かります。これは設計仕様の §7.2 のとおりの動作で、来歴と段階的な開示を両立させるうえで残っている課題です。
 
 ## 6. 監査ログとチェーンを見る
 
-監査ログのうち、来歴に関する記録を、新しい順に表示します。
+監査ログのうち、来歴に関する記録を新しい順に表示します。
 
 ```bash
 curl -s "http://localhost:8080/audit/logs?limit=50" | python -c "import json,sys; [print(r['raw_topic'], r['action'], r['reason']) for r in json.load(sys.stdin) if r['raw_topic'].startswith('provenance/')]"
 ```
 
-次のように表示されます (識別子とトランザクションの番号は実行ごとに変わります)。
+次のように表示されます (識別子とトランザクションの番号は実行のたびに変わります)。
 
 ```
 provenance/anchored allow token:1:tx=0xf60e...:manifest=urn:c2pa:0e72...
@@ -263,17 +305,15 @@ provenance/verified deny c2pa:Invalid:urn:c2pa:0e72...:trusted=false
 provenance/verified allow c2pa:Trusted:urn:c2pa:0e72...:trusted=true
 ```
 
-3 種類の記録の意味は次のとおりです。
-
 | `raw_topic` | 書かれる時点 | `reason` の例 |
 | --- | --- | --- |
 | `provenance/verified` | `/media/upload` で来歴を検証したとき | `c2pa:Trusted:urn:c2pa:...:trusted=true` |
 | `provenance/derived` | Tier 2 の画像に来歴を付けたとき | `tier2:urn:c2pa:...:ingredient=urn:c2pa:...` |
 | `provenance/anchored` | トークンを発行したとき | `token:1:tx=0x...:manifest=urn:c2pa:...` |
 
-改ざんした画像を送ったときは、`provenance/verified` の記録の `action` が `deny` になります。`provenance/verified` は 4 件あります。下から順に、撮影画像、改ざんした撮影画像、拡張子を変えた改ざんした撮影画像、publisher が作った Tier 2 の画像です。Tier 2 の画像も `/media/upload` を通して保存されるため、同じように検証されます。
+`provenance/verified` は 4 件あります。下から順に、撮影画像、書き換えた撮影画像、拡張子を変えた書き換えた撮影画像、publisher が作った Tier 2 の画像です。書き換えた画像の記録は、`action` が `deny` になります。Tier 2 の画像も `/media/upload` を通して保存するため、同じように検証の記録が残ります。
 
-チェーンに記録された内容は、プログラムが `tokenURI` を読んで確かめています (15 番目のチェック)。自分で読むときは、`iot-market/` で次のスクリプトを実行します。`TOKEN_ADDRESS` には §2 のアドレスを、`TOKEN_ID` にはトークンの番号を入れます。
+チェーンの記録は、`iot-market/` で次のスクリプトを実行して読めます。`TOKEN_ADDRESS` には §2 のアドレスを、`TOKEN_ID` にはトークンの番号を入れます。
 
 ```bash
 cd iot-market
@@ -295,15 +335,16 @@ sellerDid     (none)
 ## 成功例
 
 - §4 で 18 項目がすべて `PASS` になり、`all checks passed` と表示される
+- `out/p2_tier2.jpg` を開くと、顔がぼけている
 - §5 で、summary の Tier の `provenance` に `signer` と `redacted_manifest_label` が無い
 - §6 で、監査ログに `provenance/verified`、`provenance/derived`、`provenance/anchored` の記録がある
 
 ## このハンズオンで確かめられないこと
 
-- 前のページと同じく、カメラとゲートウェイの間の区間 (設計仕様の §4) と、写っている内容が事実であることは確かめられません
-- トークンの発行には、Hardhat ノードの鍵がロックされていないアカウントを使っています。本番では、publisher の鍵を安全に保管し、自分で署名したトランザクションを送る必要があります
-- ウェブカメラの画像を使っても、顔の検出は正面の顔だけです。横顔や小さな顔はぼかされないことがあります ([意味レベルで段階化する](data-user-vc-tiered-semantic.md) の顔ブラーと同じ制約)
-- 動画 (断片化 MP4) と、センサーの時系列のデータの来歴は、まだ扱っていません (設計仕様の P3)
+- 前のページと同じく、カメラとゲートウェイの間の区間 (設計仕様の §4) と、写っている内容が事実かどうかは確かめられません
+- トークンは、Hardhat ノードの、鍵がロックされていないアカウントで発行しています。本番では、publisher の鍵を安全に保管し、自分で署名したトランザクションを送る必要があります
+- publisher の顔検出は正面の顔だけを見つけます。横顔や小さな顔はぼけないことがあります ([意味レベルで段階化する](data-user-vc-tiered-semantic.md) の顔ブラーと同じ制約)
+- 動画 (断片化 MP4) と、センサーの時系列データの来歴は、まだ扱っていません (設計仕様の P3)
 
 ## 元の設定に戻す
 
@@ -326,6 +367,8 @@ docker compose -f infra/docker-compose.yml up -d publisher
   - 確認: `docker compose -f infra/docker-compose.yml logs publisher | grep provenance` に `provenance mint failed` が出ていないか
 - 症状: `[FAIL] P2 Tier 2 image has its own manifest`
   - 確認: `docker compose -f infra/docker-compose.yml logs publisher | grep -i redaction` で、ぼかしの処理が失敗していないか。`--build` を付けて publisher を作り直したか
+- 症状: `p2_tier2.jpg` の顔がぼけていない
+  - 確認: `--image` で渡した写真の顔が、横向きや小さすぎではないか。オプションなしの既定の絵で、顔がぼけるかを試す
 - 症状: `HH411: The library @openzeppelin/contracts ... is not installed`
   - 確認: §1 の `npm install` を `iot-market/` で実行したか
 
