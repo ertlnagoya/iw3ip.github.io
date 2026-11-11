@@ -3,7 +3,7 @@
 ## Goal
 
 SSI, DID, and VC often appear together, which makes their boundaries hard to see at first.  
-This chapter separates their roles and then reconnects them inside the IW3IP design.
+This chapter explains each role separately and then shows how IW3IP combines them.
 
 - understand Self-Sovereign Identity (SSI)
 - understand how DID and VC are used in policy decisions
@@ -21,8 +21,6 @@ This chapter separates their roles and then reconnects them inside the IW3IP des
 - SSI is the design philosophy
 - DID identifies a subject
 - VC expresses verifiable claims about that subject
-
-As a practical starting analogy, it is helpful to read this as: **DID = ID, VC = certificate, SSI = user-controlled identity architecture**.
 
 ### Why They Matter
 

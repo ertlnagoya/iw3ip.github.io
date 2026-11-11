@@ -1,6 +1,6 @@
 # Tier the response by trust (DataUserVC / Stage T)
 
-Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC). Delivering the actual image / video bytes (§8–§11) continues in [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md), and semantic intermediate representation and trust-aware rendering (§12–§13) in [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — long but thorough across the three pages.
+Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC). Delivering the actual image / video bytes (§8–§11) continues in [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md), and semantic intermediate representation and trust-aware rendering (§12–§13) in [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md). The three pages together make a long hands-on.
 
 > **What you'll do**: Watch the response narrow from video → image → event only as the trust level drops
 >

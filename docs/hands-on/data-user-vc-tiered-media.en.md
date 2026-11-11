@@ -175,8 +175,9 @@ Open any of these on the buyer's iPhone Safari:
 | Publisher IPFS proxy | `http://<HOST_IP>:8080/ipfs/<cid>` |
 | Public IPFS gateway | `https://ipfs.io/ipfs/<cid>` (needs internet) |
 
-The last entry is the punchline: even with the publisher offline, the
-CID is enough to fetch the asset from any cooperating peer.
+If the last one, the **public IPFS gateway**, returns the data, you have confirmed
+that the CID alone is enough to fetch it even when the publisher is offline
+(content addressing works).
 
 ### 9.4 Pros, caveats, and follow-ups
 
@@ -238,7 +239,7 @@ PC Chrome:      http://<HOST_IP>:8080/buyer/start?ds=home/event/possible_litteri
 5. The wallet receives `redirect_uri = /viewer?vt=...&ds=...` and...
 6. ...Safari **resumes automatically and the image / video renders**.
 
-No more URL-copy-paste.
+You do not need to copy and paste URLs as in the curl steps.
 
 ### 10.3 Cross-device (PC + iPhone) flow
 
@@ -260,7 +261,7 @@ No more URL-copy-paste.
 - Raw row JSON tucked under a `<details>` toggle.
 
 If the ViewerToken's 60-second TTL has expired you get a 401 plus a
-human-readable nudge to "reload from /buyer/start."
+message asking you to "reload from /buyer/start."
 
 ### 10.5 What each tier looks like (real-device screenshots)
 
@@ -285,7 +286,7 @@ labels.
 
 Below are real-device `/viewer` screenshots from iPhone Safari (`◀ SphereonWallet`
 in the top-left = Safari was opened by the wallet via `redirect_uri`). The
-badge color and which media keys disappear tell the tier story at a glance.
+badge color and which media keys disappear show which tier was used.
 
 | Tier 3 (gov / Full) | Tier 2 (enterprise / Access) | Tier 1 (default / Event-only) |
 |---|---|---|
@@ -297,7 +298,7 @@ badge color and which media keys disappear tell the tier story at a glance.
 The three screenshots come from the **same dataset** (`home/event/possible_littering`)
 fetched with three different PurchaseViewerVC tiers. The server-side data is
 identical — what changes is which keys ViewerToken's `allowed_views` lets
-through. That's Stage T's whole point.
+through.
 
 ### 10.6 Why both devices matter
 
@@ -314,7 +315,7 @@ through. That's Stage T's whole point.
 | Symptom | Fix |
 |---|---|
 | iPhone deeplink doesn't open the wallet | Tap the visible 「ウォレットで開く」 ("Open in wallet") link; check Safari's "Open in App" permission |
-| PC doesn't show a QR | The browser couldn't reach the CDN (`cdn.jsdelivr.net`). Plug in. |
+| PC doesn't show a QR | The browser couldn't reach the CDN (`cdn.jsdelivr.net`). It fails in an offline environment |
 | PC poll never finishes | Confirm the wallet actually presented a valid VC: `docker compose -f infra/docker-compose.yml logs publisher` should show a `200 /verifier/response` |
 | `/viewer` returns 401 | ViewerToken TTL (60 s) lapsed. Reload `/buyer/start` |
 | `/buyer/start` shows a red box headed "データを閲覧する権限がありません" | See §10.8 below |
@@ -377,7 +378,7 @@ flow.
 ```
 
 `/provider/start` is the SellerVC counterpart of `/buyer/start` — same
-OID4VP plumbing, just with `vc_kind=SellerVC` and a SellerToken minted
+OID4VP implementation pattern, just with `vc_kind=SellerVC` and a SellerToken minted
 on success.
 
 ### 11.1 Open the page
@@ -422,9 +423,9 @@ Click through to land on `/provider?pt=<seller_token>&ds=<chosen ds>`.
 
 ### 11.3 Three ways to provide data
 
-The `/provider` page exposes **three peer-equivalent input modes**, all
-funneling through the same `/media/upload` URL/CID delivery — the
-receiver side at `/viewer` cannot tell which one was used.
+The `/provider` page has **three input modes**. All of them go through
+the same `/media/upload` URL/CID delivery, so the receiver side at
+`/viewer` shows the data the same way whichever one was used.
 
 | Mode | Behaviour | Best on |
 |---|---|---|
@@ -489,8 +490,8 @@ the same dataset. Open it in a separate tab, present a Tier 3
 PurchaseViewerVC, and the image / video you just published renders in
 `/viewer` (the same screen as §10.5 screenshots).
 
-That makes the full **provide → auth → publish → receive → verify** loop
-a **two-tab** experience in the browser.
+The whole **provide → auth → publish → receive → verify** flow runs in
+**two browser tabs**.
 
 !!! success "Verified end-to-end (2026-04-30)"
     A `video/quicktime` clip recorded on iPhone Safari, published via
@@ -599,7 +600,7 @@ opens the camera directly in iOS Safari.
   - Expected `video/mp4`, but iPhone Safari saves recordings as **QuickTime (`.MOV`)**.
 - [x] Publish response: `status: allowed`, `dataset_id=home/event/possible_littering`, `seller_token_jti=49bf45c467a65ddc`, `register_count=1`
 - [x] Receiver `/viewer` (macOS Safari, Tier 3 PurchaseViewerVC.full): green badge `tier: event+image+video` and the `<video>` tag plays the clip inline
-  - **macOS Safari natively plays `video/quicktime`** — important data point: Stage T option B handles QuickTime end-to-end.
+  - **macOS Safari natively plays `video/quicktime`**. This confirms that Option B (HTTP media gateway) handles the QuickTime format.
 
 **Screenshots**:
 
@@ -665,7 +666,7 @@ VP8 when VP9 is unavailable.
 
 **Goal**: confirm codec selection branches between modern (17+) and legacy
 (≤16) Safari. **Real-device validation on 2026-04-30 found Safari 17+
-has native WebM/VP9 support**, so the long-standing MP4-fallback
+has native WebM/VP9 support**, so the original MP4-fallback
 assumption only applies to legacy Safari.
 
 **Steps**: same as B in macOS Safari.

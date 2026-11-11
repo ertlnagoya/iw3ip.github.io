@@ -10,7 +10,7 @@ The implementation steps are covered in [Let an AI plan the steps (LLM Planner)]
 
 - the design boundary when replacing the planner with an LLM planner
 - the reason for keeping the existing evaluator / actuator / API as they are
-- the importance of deciding allow lists, validators, and fallback first
+- the reason for deciding allow lists, validators, and fallback first
 
 ## Common pitfalls
 
@@ -223,7 +223,7 @@ Good example:
 
 ## Evaluation Points
 
-Understanding deepens if learners can confirm the following in the exercise:
+In the exercise, check the following:
 
 1. explain the difference between the rule-based planner and the LLM planner
 2. explain both the flexibility and the danger of the LLM

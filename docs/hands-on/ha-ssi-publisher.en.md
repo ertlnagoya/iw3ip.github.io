@@ -162,7 +162,7 @@ Expected:
 {"status":"denied","dataset_id":"home/energy/power","reason":"no_matching_consent"}
 ```
 
-The important point here is that a request can have the correct structure and still be rejected when `purpose` does not match. Next, inspect the same overall behavior through the MQTT path.
+A request with the correct structure is still rejected when `purpose` does not match. Next, check the same decision through the MQTT path.
 
 ## Phase 1: Inspect MQTT ingestion and audit logs
 

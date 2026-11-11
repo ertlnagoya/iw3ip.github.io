@@ -248,7 +248,7 @@ Keys not allowed are **omitted** (not nulled).
 - the local Hardhat node loses state on restart
 
 So we re-implement only **the weights and thresholds** in Python and
-keep the contract as a future production-migration surface.
+keep the contract as a candidate for a future move to production.
 
 `trust_score.py` is maintained as a **mirror** of `DataUserVerifier.sol`.
 The tests do not load the contract, so when either changes, update the other
@@ -289,9 +289,9 @@ At the initial implementation, the suite totalled 88 tests (75 existing + 13 new
 The design so far (matching §1–§7 of [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) and §8–§9 of its follow-up page, [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md)) gates access by **dropping media keys** (Tier 2 hides video,
 Tier 1 hides image and video). The next step is to **derive new content
 from the same source via VLM inference + face blurring (frontal faces in the MVP) and project
-those derivatives per tier**. Tier 1 is no longer "you get nothing
-useful"; it now ships a **PII-redacted summary** so a low-trust
-recipient can know *what happened* without learning *who did it*.
+those derivatives per tier**. Tier 1 receives a **summary text with
+private information removed**. A low-trust recipient can learn *what
+happened* but not *who did it*.
 
 ### Updated tier definitions
 
@@ -395,7 +395,7 @@ so the receiver can tell what was skipped.
 ### Face blur
 
 - **MVP**: OpenCV Haar cascade face detection + Gaussian blur, dedup on
-  the resulting bytes' sha256 so re-runs are free
+  the resulting bytes' sha256 so re-runs do not store duplicates
 - **Future**: license plates (OCR-based), screens (sharp-rectangle
   detection), ID badges, etc., as plug-ins behind a `RedactionPipeline`
   interface
@@ -407,7 +407,7 @@ VLM nor the blur runs: Tier 3 sees the video as before, and Tier 2 gets the even
 
 ### Redaction-leak detection (research TODO)
 
-VLMs structurally cannot guarantee PII removal from `description_summary`.
+A VLM may fail to remove all PII from `description_summary`.
 This spec **separates detection into a post-check stage** and records it
 as a research TODO; the MVP does not ship it.
 

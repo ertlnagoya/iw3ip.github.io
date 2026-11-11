@@ -214,7 +214,7 @@ Checkpoints:
 - `audit/logs` contains `allow`
 - `dataset_id`, `purpose`, `message_hash`, and `raw_topic` are visible
 
-The important point here is not only whether data was sent, but also under which conditions it was allowed.
+From the audit log, read whether the data was sent and also under which conditions it was sent.
 
 Example output:
 
@@ -361,7 +361,7 @@ Related files:
 - [payload_flood_risk_high.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_flood_risk_high.json)
 - [payload_possible_littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ha_demo/payload_possible_littering.json)
 
-By the end of Phase 2, it should be clear that a valid MQTT path does not automatically mean that sharing is allowed. Phase 3 then takes the accepted events and forwards them into the assistant layer for request interpretation and execution.
+This confirms that data sent through the same MQTT path is not always shared. In Phase 3, you pass the shared events to the assistant and check request interpretation and execution.
 
 ## Phase 3: Confirm assistant planning and execution
 
@@ -426,7 +426,7 @@ Expected:
 - `execution.evaluation.triggered` is `true`
 - `actions_executed` includes `light_on` and `send_notification`
 
-At this stage, the important point is that request interpretation (`plan`) and execution against observed events (`execute`) are separate steps.
+This confirms that request interpretation (`plan`) and execution against observed events (`execute`) are separate steps.
 
 Example output:
 
@@ -468,7 +468,7 @@ This sample lets you go through Phase 1, Phase 2, and Phase 3 in a single enviro
   - pass publisher events to the assistant and execute the plan
   - inspect `triggered` and `actions_executed`
 
-This page therefore also serves as a connection point to the following hands-on pages:
+After this page, you can continue with the following hands-on pages:
 
 - [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) (Phase 1)
 - [Share disaster events](environment-disaster.md) (Phase 2)
@@ -484,19 +484,19 @@ docker compose -f infra/docker-compose.yml --profile ha-demo --profile ha-demo-p
 
 ## Future extensions
 
-This sample is the entry point for understanding the basic IW3IP path with Home Assistant. If you want to expand the scope later, the following environments are natural next steps.
+This sample covered the basic IW3IP path. Later, it could be connected to external environments such as the following.
 
 ### FIWARE
 
-FIWARE is an IoT platform family centered on `Context Broker` and `IoT Agent` components for cities, facilities, and multi-organization data flows [1]. It is heavier than Home Assistant, but it is a strong candidate when you want to study cross-system sharing and subscription-based notification. Its official tutorials [2] walk through the components step by step.
+FIWARE is an IoT platform family centered on `Context Broker` and `IoT Agent` components for cities, facilities, and multi-organization data flows [1]. It is heavier than Home Assistant, but it suits research extensions that involve data sharing across multiple parties and subscription-based notification. Its official tutorials [2] walk through the components step by step.
 
 ### Eclipse Ditto
 
-Eclipse Ditto is a digital-twin platform for device state and command handling [3]. Combined with IW3IP Phase 3, it is useful when you want to trace not only shared events but also later state updates and control results. Connecting devices over MQTT is described in [4].
+Eclipse Ditto is a digital-twin platform for device state and command handling [3]. Combined with IW3IP Phase 3, it lets you trace the chain from shared events to decisions, state updates, and control results. Connecting devices over MQTT is described in [4].
 
 ### CARLA
 
-CARLA is a simulator for urban spaces, vehicles, pedestrians, and virtual sensors [5]. It is much heavier than Home Assistant, but it becomes useful when you want advanced event-generation scenarios for safety, disaster response, and mobility in Phase 2 or Phase 3. Its usage is described in the documentation [6].
+CARLA is a simulator for urban spaces, vehicles, pedestrians, and virtual sensors [5]. It takes more effort to set up, but it can generate events for regional safety, disaster response, and traffic, and can serve as an evaluation environment for Phase 2 / 3. Its usage is described in the documentation [6].
 
 ## References
 

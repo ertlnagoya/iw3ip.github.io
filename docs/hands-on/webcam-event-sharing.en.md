@@ -238,7 +238,7 @@ Checkpoints:
 - `purpose` is `community_cleaning` or `advertising`
 - `message_hash` is recorded
 
-By this point, it should be clear that the center of Phase 2 is no longer detection itself, but conditional sharing. The last step is to reproduce the same logic through the MQTT path.
+Finally, try the same sharing through the MQTT path.
 
 ## Phase 2: Confirm the same policy through MQTT
 
@@ -316,8 +316,8 @@ backed by a verifiable credential and how the consent is transmitted.
 ### How to try it (sketch)
 
 Gating every MQTT event through the wallet doesn't fit PolicyToken's
-single-use semantics. Instead, send **one event** by hand to feel the
-flow:
+single-use semantics. Instead, we recommend sending **one event** with
+curl:
 
 A phone wallet cannot reach the PC's `localhost`, so open the URLs from §4–§5 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) in a PC browser with `<HOST_IP>` replaced by the PC's LAN IP (see [Hands-on](index.md#host-ip) for how to find it).
 

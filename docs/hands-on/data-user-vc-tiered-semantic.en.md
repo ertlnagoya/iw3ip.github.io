@@ -1,6 +1,6 @@
 # Tier by semantic level (VLM and semantic representation / Stage T)
 
-This page continues [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) (§0–§7) and [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) (§8–§11). It goes all the way to semantic intermediate representation and trust-aware rendering. Section numbers continue from the first page (§12–§13).
+This page continues [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) (§0–§7) and [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) (§8–§11). It covers converting footage into a semantic intermediate representation and changing the output by the receiver's trust (trust-aware rendering). Section numbers continue from the first page (§12–§13).
 
 > **What you'll do**: Derive new content with VLM inference and face blurring and project it per tier, then run trust-aware rendering on the semantic intermediate representation (SIR)
 >
@@ -15,8 +15,8 @@ This page continues [Tier the response by trust (DataUserVC / Stage T)](data-use
 §1–§11 (the first page, [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md), and the second page, [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md)) gate access by **dropping media keys** — Tier 2 hides video,
 Tier 1 hides image and video. §12 derives **new content from the same
 source via VLM inference + face blurring (frontal faces in the MVP)** and projects those
-derivatives per tier. Tier 1 stops being "you get nothing useful" and
-ships a **PII-redacted summary** instead.
+derivatives per tier. This lets Tier 1 receivers get a **summary text
+with private information removed**.
 
 Design rationale: see [Tiered access design spec](data-user-vc-tiered-spec.md#tier-vlm), "Tier extension".
 
@@ -315,8 +315,8 @@ emitted only when a backend such as opencv is set and the blur fails).
 effect; this is not the same as the 3-tier projection with `VLM_BACKEND` empty.
 
 `image_url` / `video_url` always remain visible at Tier 3 even when
-derivatives are degraded — the receiver contract is "expected key
-missing → check `processing_warnings`".
+derivatives are degraded. When an expected key is missing, the receiver
+can check `processing_warnings` to see why.
 
 ### 12.8 Relation to §11 (PWA Provider)
 
@@ -376,7 +376,7 @@ Pulled `moondream` (1.7 GB, ~1/3 of llava) and re-ran the same pipeline:
 | Current long two-stage prompts | Long output (`full_len=280, summary_len=172`) | **Fragments only** (`full_len=3, summary_len=10`) |
 | Simple prompt ("Describe this image.") | Works but verbose | **High quality**: "A man with a beard and glasses... blurred green landscape" |
 
-**Finding**: a small VLM (moondream) is dramatically faster but **does not respond well to the current long 2-stage prompts**. Either tune prompts per-backend (a `prompts: {model -> str}` dict in `vlm_client.py`) or unify all backends on shorter prompts.
+**Finding**: a small VLM (moondream) is much faster but **does not respond well to the current long 2-stage prompts**. Either tune prompts per-backend (a `prompts: {model -> str}` dict in `vlm_client.py`) or unify all backends on shorter prompts.
 
 Short-prompt unification trades off redaction-strength expressiveness, so we chose a per-model prompt table. This is now implemented: `_PROMPT_TABLE` in `publisher/app/vlm_client.py` picks short prompts (`moondream`, `bakllava`) or the long ones (`llava`) by model-name prefix. Models not in the table use the long prompts.
 

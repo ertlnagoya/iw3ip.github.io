@@ -42,7 +42,7 @@ Pipeline:
 
 ## Common issues
 
-- ConsentVC and ViewerVC are **distinct**. Presenting a ConsentVC won't unlock `/platform/data`
+- ConsentVC and ViewerVC are **distinct**. Presenting a ConsentVC does not let you read `/platform/data`
 - `/platform/data` only accepts ViewerToken (PolicyToken is rejected)
 - ViewerToken TTL is 60 s. After expiry, present again
 

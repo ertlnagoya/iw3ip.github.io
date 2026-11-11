@@ -228,7 +228,7 @@ Checkpoints:
 
 are all kept together as one execution record.
 
-Phase 3 goes beyond event sharing: it is the stage that handles planning, evaluation, and execution together in response to a request. The final section organizes the difference from Phase 2.
+The final section organizes the difference from Phase 2.
 
 ## Phase 3: Organize the difference from Phase 2
 

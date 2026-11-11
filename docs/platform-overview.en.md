@@ -14,7 +14,7 @@ flowchart LR
   C --> F["Expected outcomes\nuser-led control\nauditability\nstep-by-step sustainable operation"]
 ```
 
-The point of this figure is that IW3IP is not just adding new technology. It is redesigning data sharing around **granularity control, consent conditions, and auditability** in response to concrete social problems.
+IW3IP aims to redesign data sharing around **granularity control, consent conditions, and auditability** together.
 
 ## What is happening in society today
 
@@ -100,8 +100,7 @@ The central research question of IW3IP can be stated as follows:
 
 **Can we keep the practical value of IoT data sharing while giving users stronger control over devices and data?**
 
-This is not only about secure storage.  
-It is about representing and enforcing who can use which data, for what purpose, for how long, and under what user-defined conditions.
+Besides protecting data, IW3IP builds a mechanism that represents and enforces who can use which data, for what purpose, for how long, and under what user-defined conditions.
 
 ## What IW3IP aims to provide
 
@@ -121,7 +120,7 @@ To do that, IW3IP combines the following elements:
 - DID / VC
   - to make permissions, roles, and consent conditions easier to evaluate programmatically
 
-An important idea in IW3IP is that the system should **not assume that raw data must always be collected and shared**.  
+IW3IP does **not assume that raw data must always be collected and shared**.  
 Depending on the situation, the platform should be able to share:
 
 - raw data
@@ -137,7 +136,7 @@ For example, in safety or community monitoring scenarios, it may be better to sh
 
 plus minimal metadata such as time, place, and confidence, instead of sharing continuous recorded video.
 
-It is also important that the system not depend entirely on a municipality or a single large operator.  
+The system also does not depend entirely on a municipality or a single large operator.  
 IW3IP is designed so that people can gradually combine:
 
 - devices already deployed in homes or shops
@@ -212,7 +211,7 @@ The system then separates the work into the following steps:
 2. evaluate event counts such as `possible_littering`
 3. execute actions such as `light_on` and `send_notification` when conditions are satisfied
 
-In other words, Phase 3 is the stage where the platform evolves from **data sharing infrastructure into decision and control infrastructure**.
+Phase 3 is the stage that extends the platform from **data sharing infrastructure into decision and control infrastructure**.
 
 #### Phase 3 Role Diagram
 
@@ -225,12 +224,12 @@ flowchart LR
   D --> E
 ```
 
-The key point is that Phase 3 should not be treated as one black-box "AI" component.  
-Instead, it is better to separate **request interpretation, evaluation, control, and auditability** so that, for example, the planner can later be replaced by an LLM while the evaluator remains rule-based.
+Phase 3 does not put the AI processing into one component.  
+It separates **request interpretation, evaluation, control, and auditability**, so that, for example, the planner can be replaced by an LLM while the evaluator remains rule-based.
 
 ## Summary
 
-The questions IW3IP sets out to answer are simple:
+IW3IP sets out to answer three questions:
 
 - Can people decide more directly how their own data is used?
 - Can systems automatically enforce those conditions?
@@ -240,7 +239,7 @@ Blockchain, Hardhat, SSI, DID, and VC are each independent technologies, but IW3
 
 ## Background visible in public information
 
-The issues discussed on this page are not purely hypothetical. Publicly available sources show related real-world problems.
+The issues discussed on this page are based on the following public sources.
 
 - The National Police Agency of Japan reported 82,563 missing-person reports received in 2024 [1].
 - The National Police Agency also provides online procedures for lost-property reporting and search, showing that everyday "lost and found" problems remain important at scale [2], [3].
@@ -294,7 +293,7 @@ In these use cases, sharing all raw data is often less important than sharing:
 - summary values
 - purpose-limited data
 
-This is why they connect naturally to IW3IP features such as **Consent VC-based conditions**, **audit logging**, **event sharing** (Part 2), and **AI-based decisions** (Part 3).
+IW3IP's **Consent VC-based conditions**, **audit logging**, **event sharing** (Part 2), and **AI-based decisions** (Part 3) address this requirement.
 
 ## What to read next
 

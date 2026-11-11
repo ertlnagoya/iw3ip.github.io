@@ -2,7 +2,7 @@
 
 ## Goal
 
-Blockchain is widely discussed, but it is often unclear what it is actually good for and where it should not be used.  
+Blockchain is good at some kinds of processing and poor at others.  
 This chapter first explains the general mechanism and then places it inside the IW3IP architecture.
 
 - understand what blockchain is used for
@@ -12,7 +12,7 @@ This chapter first explains the general mechanism and then places it inside the 
 
 ### Minimum Concepts
 
-At minimum, these four terms cover the essentials.
+Understand the following four terms.
 
 - Ledger: a record of transactions
 - Block: a unit that groups transactions
@@ -33,7 +33,7 @@ Each block contains the hash of the block before it. Rewriting a past block chan
 
 ### What It Is Good At, and What It Is Not
 
-Blockchain is not a universal tool. You need to decide what to put on it and what to leave to other systems.
+When you use blockchain, you need to decide what to record on it and what to leave to other systems.
 
 - Good at:
   - tracing who recorded what and when
@@ -78,7 +78,7 @@ The samples in this site prioritize one idea first: what to record and what not 
 
 ### What Is On-Chain vs Off-Chain Here
 
-If this is left vague, neither the reasons to use blockchain nor the reasons not to become clear.  
+Recording something on the blockchain is called on-chain, and keeping it outside the blockchain is called off-chain.  
 IW3IP separates information suited to verification and audit trails from information that is large or updated frequently.
 
 - On-chain candidates:

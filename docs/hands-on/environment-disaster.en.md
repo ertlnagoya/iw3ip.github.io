@@ -241,7 +241,7 @@ Checkpoints:
 - `purpose` is `disaster_response` or `advertising`
 - `message_hash` is recorded
 
-By this point, it should be clear that Phase 2 is not only about generating an event, but about being able to explain why the event is shared or rejected. The last step is to confirm the same behavior through the MQTT path.
+The goal of Phase 2 is to be able to explain under which conditions an event is shared. Finally, confirm the same behavior through the MQTT path.
 
 ## Phase 2: Confirm the same policy through MQTT
 
@@ -314,15 +314,15 @@ the wallet using the same dataset as the main hands-on.
 
 The **decision logic is identical**: `(dataset_id, purpose)` decides
 `allow` / `deny`. What changes is whether the consenter's identity is
-backed by a verifiable credential and how the consent travels. In a
-disaster-response setting, the resident's wallet asserts "I authorize
-sharing of my district's data."
+backed by a verifiable credential and how the consent is delivered. In a
+disaster-response setting, a resident can present a consent VC from the
+wallet to allow sharing of their district's data.
 
 ### How to try it (sketch)
 
 Gating every MQTT event through the wallet doesn't fit PolicyToken's
-single-use semantics. Instead, send **one event** by hand to feel the
-flow:
+single-use semantics. Instead, we recommend sending **one event** with
+curl:
 
 A phone wallet cannot reach the PC's `localhost`, so open the URLs below in a PC browser with `<HOST_IP>` replaced by the PC's LAN IP (see [Hands-on](index.md#host-ip) for how to find it).
 

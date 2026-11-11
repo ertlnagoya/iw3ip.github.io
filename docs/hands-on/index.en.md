@@ -283,7 +283,7 @@ Deliver the data after purchase with **PurchaseViewerVC + ViewerToken** instead 
 
 ### 2.5 Tiered access by trust (Stage T / P)
 
-Switch the response between Tier 3 (video + everything), Tier 2 (image + derived), and Tier 1 (summary only) based on the user's **DataUserVC**. Goes all the way to **semantic intermediate representation + trust-aware rendering**.
+Switch the response between Tier 3 (video + everything), Tier 2 (image + derived), and Tier 1 (summary only) based on the user's **DataUserVC**. The later pages also cover structured data that describes the image content (a semantic intermediate representation) and rendering that changes by trust level (trust-aware rendering).
 
 - [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)
 - [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — continues with §8–§11
@@ -309,7 +309,7 @@ Switch the response between Tier 3 (video + everything), Tier 2 (image + derived
 - An AI breaks a free-form request ("show me recent anomalies") into a **plan**
 - Explain, configuration by configuration, what leaves the PC before the data reaches the AI
 - That plan **executes** against sample event data and returns a response
-- A frontend demo ties it all together
+- Check the whole flow end to end, up to the frontend demo
 
 ### 3.1 Enrich camera data with a local VLM
 

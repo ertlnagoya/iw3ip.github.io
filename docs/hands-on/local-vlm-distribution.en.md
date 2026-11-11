@@ -1,6 +1,6 @@
 # Enrich camera data with a local VLM
 
-Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-language model)** running on the PC, attach semantic text to them, and distribute that AI-enriched data over the IoT data-distribution platform. The key point is that the images never leave for an external cloud — the analysis is done entirely locally.
+Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-language model)** running on the PC, attach semantic text to them, and distribute that AI-enriched data over the IoT data-distribution platform. The images are not sent to an external cloud, and the analysis runs entirely on the PC.
 
 > **What you'll do**: analyze a webcam image with a local VLM and distribute the generated semantic data (descriptions) over the platform
 >
@@ -14,12 +14,12 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
     This is a Part 3 (intelligence integration) hands-on. Camera capture basics
     are covered in [Detect with a USB webcam (OpenCV)](webcam.md), and per-tier projection with a
     VLM is in §12 of [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur). This
-    page focuses on experiencing "**camera → local VLM → distribute semantic
+    page covers "**camera → local VLM → distribute semantic
     data**" as a single flow.
 
 ## Goal
 
-Instead of distributing raw images, distribute the **semantic derivatives** a local VLM produces. You generate a detailed description (`description_full`) and a privacy-scrubbed summary (`description_summary`), and experience a design that preserves privacy and data sovereignty by running the AI locally.
+Instead of distributing raw images, distribute the **semantic derivatives** a local VLM produces. You generate a detailed description (`description_full`) and a privacy-scrubbed summary (`description_summary`), and check a design that preserves privacy and data sovereignty by running the AI locally.
 
 ## What this page covers
 
@@ -184,7 +184,7 @@ If you started with `VLM_BACKEND` set as in §1, the publisher also calls the VL
     [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md#3-three-marketplaceclaim-calls)) (`/platform/data` returns 401
     for a plain GET). Projecting `description_full` / `description_summary` per
     trust tier is covered in §12 of [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur).
-    The core of this page is "camera → local model semantic enrichment →
+    This page covers "camera → local model semantic enrichment →
     distribute over the platform".
 
 ## 5. Verification points
@@ -265,5 +265,5 @@ Without a template, implement one of these yourself:
 ## Related pages
 
 - Helpful to try first: [Detect with a USB webcam (OpenCV)](webcam.md)
-- Deep dive: DataUserVC × tiered access ([§8 media integration](data-user-vc-tiered-media.md#8-real-data-integration-option-b--http-media-gateway), [§12 VLM tier](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur)) / [Let an AI plan the steps (LLM Planner)](llm-planner.md)
+- Details: DataUserVC × tiered access ([§8 media integration](data-user-vc-tiered-media.md#8-real-data-integration-option-b--http-media-gateway), [§12 VLM tier](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur)) / [Let an AI plan the steps (LLM Planner)](llm-planner.md)
 - Design: [Tiered access design spec](data-user-vc-tiered-spec.md)

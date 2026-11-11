@@ -76,7 +76,7 @@ The HUSKYLENS2 and USB webcam bridges and the exercise programs (`problem_progra
 
 ### Smartphone + SSI wallet app
 
-A container for the VCs (digital credentials) you receive.
+Used in Part 2 (Feature Extensions) to receive and store VCs (digital credentials).
 
 - iPhone or Android works
 - App to use: **iw3ip-wallet** ([ertlnagoya/iw3ip-wallet](https://github.com/ertlnagoya/iw3ip-wallet)), a fork of the open-source Sphereon Wallet
@@ -173,7 +173,7 @@ All checked → head to [Quickstart (run the stack)](quickstart.md).
 
 - Recommended: **WSL2 + Docker Desktop**.
 - Installing WSL: <https://learn.microsoft.com/windows/wsl/>
-- If path-separator issues bite, prefer doing everything inside WSL2.
+- If you run into problems such as path separators, do the hands-on work inside WSL2.
 
 ### macOS
 
@@ -195,7 +195,7 @@ All checked → head to [Quickstart (run the stack)](quickstart.md).
 | Term | Short meaning |
 |---|---|
 | **Terminal** | The text-based command app (macOS: Terminal, Windows: PowerShell or WSL) |
-| **Container** | A "boxed" application that Docker runs |
+| **Container** | A unit that packages an application with its runtime environment. Docker runs it |
 | **Extension** | A small add-on inside a browser. MetaMask is one |
 
 For the full vocab list, see the mini-glossary in [Environment Setup](index.md#mini-glossary).

@@ -228,7 +228,7 @@ curl http://localhost:8090/assistant/executions
 
 が 1 つの履歴として残ります。
 
-Phase 3 はイベント共有にとどまらず、要求に応じた計画・判定・実行をまとめて扱う段階です。最後に Phase 2 との違いを整理します。
+最後に Phase 2 との違いを整理します。
 
 ## Phase 3: Phase 2 との違いを整理する
 
