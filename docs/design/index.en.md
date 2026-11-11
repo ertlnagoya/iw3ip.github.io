@@ -21,7 +21,7 @@ Read it after the hands-on when you want to know why things behave as they do, w
 | [Marketplace VC Bridge spec](marketplace-vc-bridge-spec.md) | connecting the marketplace and the SSI wallet (v1 / v2) | [Stage 5](../hands-on/marketplace-vc-bridge.md), [Stage 6](../hands-on/marketplace-vc-end-to-end.md) |
 | [SellerVC spec](seller-vc-spec.md) | verifying the seller's identity | [Stage 7](../hands-on/marketplace-seller-vc.md) |
 | [Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md) | tailoring the response to the receiver's trust level (DataUserVC, VLM-derived data) | the three [Stage T](../hands-on/data-user-vc-tiered.md) pages |
-| [C2PA Provenance Pipeline spec](c2pa-provenance-spec.md) | recording and signing the provenance of images | [Stage P](../hands-on/c2pa-provenance.md) |
+| [C2PA Provenance Pipeline spec](c2pa-provenance-spec.md) | recording and signing image provenance, validation at the publisher, recording on chain, provenance of VLM summaries (P0–P3 implemented) | [Stage P, P0](../hands-on/c2pa-provenance.md), [P1 and P2 (connecting to the publisher and the chain)](../hands-on/c2pa-provenance-publisher.md), [P3 (provenance of VLM summaries)](../hands-on/c2pa-provenance-vlm.md) |
 | [LLM Planner replacement spec](../hands-on/llm-planner-spec.md) | design boundaries for replacing the regional safety assistant's planner with an LLM | [LLM Planner](../hands-on/llm-planner.md) |
 
 ## How to read the design specs

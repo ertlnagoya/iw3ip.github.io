@@ -39,7 +39,7 @@ P0 が最優先で、P1、P2 の順に進めます。
 ## 最小チェックリスト
 
 - [ ] `docker compose up` で環境を起動できる
-- [ ] Consent VC登録前後で `denied -> allowed` に変化することを確認した
+- [ ] 同意 (consent) の JSON レコードを `/consents` に登録する前後で、`denied -> allowed` に変化することを確認した
 - [ ] `dataset_id` と `purpose` が判定キーであることを説明できる
 - [ ] Hardhat が「開発用ローカルチェーン」であることを説明できる
 - [ ] DID/VC が「誰がどの条件でアクセスできるか」を担うことを説明できる

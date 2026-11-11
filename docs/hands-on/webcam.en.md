@@ -123,9 +123,11 @@ Once event files are generated in mock mode, the next step is to switch to the p
 
 ### 2. USB webcam
 
-Webcam mode uses an object-detection model (YOLO). Install `ultralytics` and `opencv-python` into the venv as described in the prerequisites, then, in a terminal with that venv active, go back to the `webcam-bridge` folder (`cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge`) and run the command. On the first run the model file (`yolov8n.pt`, a few MB) is downloaded automatically.
+Webcam mode uses an object-detection model (YOLO). Install `ultralytics` and `opencv-python` into the venv as described in the prerequisites. The first two lines of the command below move to the `webcam-bridge` folder and activate that venv. On the first run the model file (`yolov8n.pt`, a few MB) is downloaded automatically.
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge
+source ../.venv/bin/activate
 python3 webcam_litter_bridge.py \
   --mode webcam \
   --camera-index 0 \

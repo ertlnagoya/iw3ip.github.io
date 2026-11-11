@@ -1,8 +1,8 @@
 # 画像の来歴を証明する (C2PA / Stage P)
 
-カメラで撮った画像に、C2PA [1] の規格に沿った「来歴」を付けて電子署名します。そのうえで、ぼかしをかけた Tier 2 の画像を作り、元の画像とのつながりを保ったまま、カメラ ID やぼかす前の画像が漏れないことを確認します。
+カメラで撮った画像に、C2PA [1] の規格に沿った「来歴」を付けて電子署名します。次に、ぼかした Tier 2 の画像を作ります。Tier 2 の画像は元の画像とのつながりを保ちますが、カメラ ID やぼかす前の画像は含みません。このことを、プログラムを動かして見ていきます。
 
-> **やること**: 撮影画像に来歴を付けて署名し、Tier 2 のブラー画像の来歴から個人につながる情報が消えていること、改ざんが見破れることを確かめる
+> **やること**: 撮影画像に来歴を付けて署名する。Tier 2 のブラー画像の来歴から、個人につながる情報が消えていることと、改ざんが見破れることを見る
 >
 > **前提**: Python 3.10 以上が使えること。publisher、ブロックチェーン、スマホのウォレットは使いません
 >
@@ -13,13 +13,13 @@
 !!! note "このページの位置付け"
     [C2PA 来歴パイプラインの設計仕様](../design/c2pa-provenance-spec.md) の P0 (最初の段階) を手元で動かすハンズオンです。
     C2PA の仕組みと用語は、設計仕様の §2「C2PA の基本」で説明しています。Tier 1〜3 の考え方は [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) で扱いました。
-    publisher に組み込んで動かす段階 (P1 以降) は、まだハンズオンになっていません。
+    publisher に組み込んで動かす段階 (P1・P2) は、[来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) で扱います。
 
 ## 目的
 
 監視カメラの画像を犯罪の手がかりや防災の情報として共有するには、「この画像は本物か」に答えられる必要があります。
-このハンズオンでは、画像に「誰が、いつ、どう撮って、どう加工したか」を書いた来歴 (マニフェスト) を付けて署名し、受け取った人が本物かどうかを自分で判断できることを、実際に動かして確認します。
-あわせて、来歴そのものから個人につながる情報が漏れるという見落としやすい問題と、その防ぎ方を学びます。
+このハンズオンでは、画像に「誰が、いつ、どう撮って、どう加工したか」を書いた来歴 (マニフェスト) を付けて署名します。受け取った人は、その来歴を検証して、本物かどうかを自分で判断できます。
+もう 1 つ、来歴そのものから個人につながる情報が漏れる問題と、その防ぎ方も扱います。
 
 ## このページで分かること
 
@@ -55,12 +55,12 @@
 
 1. 仮想環境 (venv) を作り、C2PA の SDK を入れる (§1)
 2. テスト用の証明書を作る (§2)
-3. ダミー画像で署名と検証を一通り動かし、`all checks passed` を確かめる (§3)
-4. 来歴の中身を表示して、Tier 2 の画像からカメラ ID が消えていることを自分の目で確かめる (§4)
+3. プログラムが描いた絵で署名と検証を一通り動かし、`all checks passed` と表示されるのを見る (§3)
+4. 来歴の中身を表示して、Tier 2 の画像からカメラ ID が消えていることを自分の目で見る (§4)
 
 その後の分岐:
 
-- 改ざんが見破れることを自分の手で確かめたい場合: §5 へ進みます
+- 改ざんが見破れることを自分の手で試したい場合: §5 へ進みます
 - 実際のカメラ画像で試したい場合: §6 へ進みます
 
 ## 1. 準備
@@ -83,7 +83,7 @@ source .venv/bin/activate
 
 `pip install` ではなく `python -m pip install` と書くのは、仮想環境の作り方によっては `pip` コマンドが無く、PC に前から入っている別の `pip` が呼ばれてしまうことがあるためです。`python -m pip` なら、必ず仮想環境の Python に入ります。
 
-入ったことを確かめます。
+入ったかどうかを調べます。
 
 ```bash
 python -c "import c2pa; print(c2pa.sdk_version())"
@@ -102,10 +102,10 @@ python examples/hands_on/c2pa_provenance/make_test_certs.py
 次のように表示されます (パスは環境によって変わります)。
 
 ```
-wrote .../examples/hands_on/c2pa_provenance/certs/ca.pem, chain.pem, gw.key (CN=iw3ip-gateway)
+wrote .../examples/hands_on/c2pa_provenance/certs/ca.pem, chain.pem, gw.key (CN=iw3ip-gateway), publisher_chain.pem, publisher.key (CN=iw3ip-publisher)
 ```
 
-作られる 3 つのファイルの役割は次のとおりです。
+このページで使う 3 つのファイルの役割は次のとおりです。
 
 | ファイル | 中身 | 役割 |
 | --- | --- | --- |
@@ -113,17 +113,30 @@ wrote .../examples/hands_on/c2pa_provenance/certs/ca.pem, chain.pem, gw.key (CN=
 | `chain.pem` | ゲートウェイの証明書と CA の証明書 | 署名と一緒に画像に埋め込まれ、誰が署名したかを示す |
 | `gw.key` | ゲートウェイの秘密鍵 | 署名に使う。人に渡してはいけない |
 
-証明書の名前 (CN) が `iw3ip-gateway` で、カメラ ID (`cam01`) を含まないことに注目してください。証明書の名前は、あとで作るブラー画像からも削除できないためです (§4)。
+`publisher_chain.pem` と `publisher.key` は、publisher の証明書 (CN は `iw3ip-publisher`) と秘密鍵です。同じ CA が発行します。このページでは使わず、[来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) で、publisher が Tier 2 の画像に署名するのに使います。このページでは、Tier 2 の画像もゲートウェイの鍵で署名します。
+
+証明書と署名の関係は、次の図のとおりです。検証する側が `ca.pem` を「信頼する CA」として登録していれば、その CA が発行した証明書で付けた署名は `Trusted` になります。登録していなければ、署名が正しくても `Valid` 止まりです。
+
+```mermaid
+flowchart LR
+  CA["自分で作った CA<br>(ca.pem)"] -->|"発行"| GW["ゲートウェイの証明書<br>(chain.pem、鍵は gw.key)"]
+  CA -->|"発行"| PB["publisher の証明書<br>(次のページで使う)"]
+  GW -->|"署名"| IMG["capture.jpg の来歴"]
+  V["検証する側"] -->|"信頼する CA として登録"| CA
+  V -->|"検証"| IMG
+```
+
+証明書の名前 (CN) は `iw3ip-gateway` で、カメラ ID (`cam01`) を含みません。証明書の名前は、あとで作るブラー画像からも削除できないためです (§4)。
 
 ## 3. 署名と検証を一通り動かす
 
-ダミー画像 (プログラムが描いた、顔の代わりの丸がある画像) を使って、一通り動かします。
+プログラムが描いた公園の絵 (人とペットボトル) を使って、一通り動かします。
 
 ```bash
 python examples/hands_on/c2pa_provenance/p0_sign_verify.py
 ```
 
-成功すると、次のように表示されます。
+成功すると、次のように表示されます。1 行目の版の番号は、環境によって変わります (`c2pa-python 0.38.2 / c2pa-rs 0.91.6` などと表示されることがあります)。
 
 ```
 c2pa-python 0.38.1 / c2pa-rs 0.91.3
@@ -157,21 +170,21 @@ flowchart LR
 図の各段階で、プログラムは次のことをしています。
 
 1. **撮影画像に署名する**: 画像に、撮ったこと (`c2pa.actions`)、カメラ ID と撮影時刻 (`jp.ertl.iw3ip.capture`)、センサー値 (`jp.ertl.iw3ip.sensor`) を書いた来歴を付け、ゲートウェイの鍵で署名して `out/capture.jpg` に保存します
-2. **検証する**: CA を登録せずに検証すると `Valid` (署名は正しいが、署名した人を信頼してよいかは分からない)、`ca.pem` を登録して検証すると `Trusted` になります (1〜2 番目のチェック)。来歴に独自のアサーション (`jp.ertl.iw3ip.capture` と `jp.ertl.iw3ip.sensor`) が入っていることも確かめます (3 番目のチェック)
+2. **検証する**: CA を登録せずに検証すると `Valid` (署名は正しいが、署名した人を信頼してよいかは分からない)、`ca.pem` を登録して検証すると `Trusted` になります (1〜2 番目のチェック)。来歴に独自のアサーション (`jp.ertl.iw3ip.capture` と `jp.ertl.iw3ip.sensor`) が入っていることも調べます (3 番目のチェック)
 3. **Tier 2 のブラー画像を作る**: 画像全体をぼかし、元の画像を「素材 (ingredient)」として参照する来歴を付けて `out/tier2.jpg` に保存します。このとき、元の来歴からサムネイル、カメラ ID、センサー値を削除 (redaction) します
-4. **漏れが無いかを確かめる**: Tier 2 の画像の検証が `Trusted` になることを確かめます (4 番目のチェック)。そのうえで、Tier 2 の画像の来歴に、元の画像のサムネイル、カメラ ID、センサー値が残っていないことを確かめます (5〜10 番目のチェック)
-5. **改ざんを見破れるかを確かめる**: Tier 2 の画像を 1 バイトだけ書き換えて検証し、`Invalid` になることを確かめます (11 番目のチェック)
+4. **漏れが無いかを調べる**: Tier 2 の画像の検証が `Trusted` になるかを調べます (4 番目のチェック)。次に、Tier 2 の画像の来歴に、元の画像のサムネイル、カメラ ID、センサー値が残っていないかを調べます (5〜10 番目のチェック)
+5. **改ざんを見破れるかを試す**: Tier 2 の画像を 1 バイトだけ書き換えて検証し、`Invalid` になるかを調べます (11 番目のチェック)
 
-保存された 2 枚の画像は、次のようになります (左がダミーの撮影画像、右がぼかした Tier 2 の画像)。見た目はぼかしただけですが、右の画像の中には、左の画像の来歴の一部が入っています。中身は §4 で表示します。
+保存された 2 枚の画像は、次のようになります (左が撮影画像、右がぼかした Tier 2 の画像)。見た目はぼかしただけですが、右の画像の中には、左の画像の来歴の一部が入っています。中身は §4 で表示します。
 
-![ダミーの撮影画像 (capture.jpg) と、ぼかした Tier 2 の画像 (tier2.jpg)](../assets/c2pa-capture-vs-tier2.png)
+![プログラムが描いた撮影画像 (capture.jpg) と、ぼかした Tier 2 の画像 (tier2.jpg)](../assets/c2pa-capture-vs-tier2.png)
 
 !!! note "ぼかしについて"
     このハンズオンのプログラムは、顔を検出せずに画像全体をぼかします。顔だけをぼかす処理は、[意味レベルで段階化する](data-user-vc-tiered-semantic.md) の顔ブラーで扱いました。
 
 ## 4. 来歴の中身を見る
 
-確認の結果だけでなく、来歴の中身を自分の目で見てみます。次のコマンドは、2 つの画像の来歴を読み、含まれているマニフェストとアサーションを表示します。
+来歴の中身を、自分の目で見てみます。次のコマンドは、2 つの画像の来歴を読み、含まれているマニフェストとアサーションを表示します。
 
 ```bash
 python - <<'EOF'
@@ -211,7 +224,17 @@ EOF
 - `tier2.jpg` には、元の画像の来歴が `(ingredient)` として入っており、「この画像は元の画像から作られた」ことが分かります
 - ただし、`(ingredient)` に残っているのは `c2pa.actions.v2` (撮ったという記録) だけで、カメラ ID とセンサー値は削除されています。それでも `tier2.jpg` の検証は `Trusted` のままです
 
-削除しても署名が壊れないのは、元の来歴の署名が、各アサーションの**ハッシュ**に対して付いているためです。中身を取り除いてもハッシュは残るので、署名は検証できます。詳しくは設計仕様の §5.3 を参照してください。
+削除しても署名が壊れないのは、元の来歴の署名が、各アサーションの**ハッシュ**に対して付いているためです。署名の対象は、ハッシュを並べた「クレーム」です。アサーションの中身を取り除いても、クレームとその署名は変わりません (次の図)。詳しくは設計仕様の §5.3 を参照してください。
+
+```mermaid
+flowchart LR
+  SIG["撮影画像の署名<br>(iw3ip-gateway)"] -->|"署名の対象"| CL["クレーム<br>各アサーションのハッシュと<br>画素のデータのハッシュ"]
+  CL -.->|"ハッシュ"| A1["c2pa.actions<br>(残る)"]
+  CL -.->|"ハッシュ"| A2["jp.ertl.iw3ip.capture<br>(中身を削除)"]
+  CL -.->|"ハッシュ"| A3["jp.ertl.iw3ip.sensor<br>(中身を削除)"]
+  classDef removed fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class A2,A3 removed
+```
 
 `(ingredient)` の `title` と `signer` は、削除できずに残っています。そのため、撮影画像の題名 (`capture.jpg`) と証明書の名前 (`iw3ip-gateway`) には、カメラ ID を入れていません。
 
@@ -241,7 +264,7 @@ tampered.jpg Invalid ['signingCredential.untrusted', 'assertion.dataHash.mismatc
 ```
 
 このコマンドは CA を登録せずに検証しているので、元の画像も `Trusted` ではなく `Valid` (`signingCredential.untrusted`) になります。書き換えた画像には、それに加えて `assertion.dataHash.mismatch` (画素のデータのハッシュが合わない) が出て、`Invalid` になります。
-見た目ではほとんど区別できない 1 バイトの違いでも、来歴の検証で見破れます。
+見た目では区別できない 1 バイトの違いでも、来歴の検証で見破れます。
 
 ## 6. ウェブカメラで撮る
 
@@ -252,7 +275,7 @@ python -m pip install "opencv-python<5"
 python examples/hands_on/c2pa_provenance/p0_sign_verify.py --webcam
 ```
 
-§3 と同じく 11 項目が `PASS` になり、`all checks passed` と表示されれば成功です。撮った画像とブラー画像を開いて確かめます (macOS の場合)。
+§3 と同じく 11 項目が `PASS` になり、`all checks passed` と表示されれば成功です。撮った画像とブラー画像を開いて見ます (macOS の場合)。
 
 ```bash
 open examples/hands_on/c2pa_provenance/out/capture.jpg examples/hands_on/c2pa_provenance/out/tier2.jpg
@@ -293,4 +316,4 @@ C2PA が保証するのは「この署名者がこの中身に署名した」こ
 
 [1] C2PA, "C2PA Technical Specification, Version 2.3," <https://spec.c2pa.org/specifications/specifications/2.3/specs/C2PA_Specification.html>
 
-[2] Content Authenticity Initiative, "c2pa-python: Python binding for the C2PA SDK," GitHub, <https://github.com/contentauth/c2pa-python>
+[2] Content Authenticity Initiative, "c2pa-python: Python binding for c2pa-rs library," GitHub, <https://github.com/contentauth/c2pa-python>

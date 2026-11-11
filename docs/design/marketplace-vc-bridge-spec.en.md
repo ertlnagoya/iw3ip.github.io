@@ -6,7 +6,7 @@
     The existing system is called **v1** and the system implemented by this spec is called **v2**;
     the common parts and the derived parts are stated explicitly. This document is the draft for milestone M1 (design freeze) in §11.
     "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview](vc-architecture-overview.md)).
-    This spec corresponds to the Stage 5 hands-on [marketplace-vc-bridge](../hands-on/marketplace-vc-bridge.md).
+    This spec corresponds to the hands-on [Hand a credential to the buyer's wallet (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md).
 
 ## 1. Relationship between v1 and v2
 
@@ -393,8 +393,8 @@ The e2e (end-to-end) test uses the hands-on procedure as is.
 
 ## 13. Related documents
 
-- [SSI Wallet hands-on (Stage 1)](../hands-on/ha-ssi-wallet.md)
-- [SSI Viewer hands-on (Stage 3)](../hands-on/ha-ssi-viewer.md)
-- [SSI Service hands-on (Stage 4 prep)](../hands-on/ha-ssi-service.md)
-- [Marketplace × Wallet bridge hands-on (Stage 5)](../hands-on/marketplace-vc-bridge.md)
+- [Authenticate the data provider (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md)
+- [Authenticate the viewer (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md)
+- [Authenticate machines (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
+- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md)
 - [VC architecture overview](vc-architecture-overview.md) (the list of Stage numbers is in the "Hands-on stages" section (§5))

@@ -40,7 +40,7 @@ This site uses three kinds of numbering.
 
 - **Part 1–3**: the learning order on this site (Basic, Feature Extensions, Intelligence Integration).
 - **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see [Phase structure in the platform overview](../platform-overview.md#phase-structure)).
-- **Stage 0–7, A, T, P**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0) and image provenance signing (Stage P, which uses no VC). Each page assumes the earlier Stages are done, except Stage P, which does not use the earlier Stages and runs on its own with only the course repository and Python. There is no Stage 2.
+- **Stage 0–7, A, T, P**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0) and image provenance signing (Stage P). Each page assumes the earlier Stages are done. The exception is the first Stage P page (P0), which uses neither the earlier Stages nor any VC and runs on its own with only the course repository and Python. The following P1–P3 pages connect to the publisher and the chain and use per-tier ViewerTokens (obtained with a PurchaseViewerVC). There is no Stage 2.
 
 | Stage | Hands-on | VC |
 |---|---|---|
@@ -54,6 +54,8 @@ This site uses three kinds of numbering.
 | A | [Marketplace as a phone app](marketplace-mobile-app.md) | PurchaseViewerVC (phone only) |
 | T | [Tier the response by trust](data-user-vc-tiered.md) | DataUserVC |
 | P | [Prove where an image came from](c2pa-provenance.md) | none (C2PA signing with X.509 certificates; no publisher or wallet needed) |
+| P | [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
+| P | [Trace a VLM summary back to the image](c2pa-provenance-vlm.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
 
 The mapping between VCs and tokens is summarized in [VC Architecture Overview](../design/vc-architecture-overview.md).
 
@@ -125,12 +127,12 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
 | Cover all of Basic | All of Part 1 (approx. 1.5 hours; pick one device in §1.2) |
 | Reach safe / conditional sharing | Part 1 → Part 2 §2.1–§2.3 (+ approx. 4 hours) |
 | Reach v2 marketplace integration | Part 1 → Part 2 §2.4 (+ approx. 4 hours) |
-| Reach tiered access | Through Part 2 §2.5 (+ approx. 1 hour; about 3 more hours to cover image/video delivery and semantic-level tiering, and about 30–40 more minutes to prove image provenance with C2PA (Stage P)) |
+| Reach tiered access | Through Part 2 §2.5 (+ approx. 1 hour; about 3 more hours to cover image/video delivery and semantic-level tiering, about 30–40 more minutes to prove image provenance with C2PA (Stage P), about 40–60 more minutes to connect provenance to the publisher and the chain, and about 20–30 more minutes to trace a VLM summary back to the image) |
 | Reach AI integration | Through Part 3 (+ approx. 5 hours) |
 
 The times are sums of the estimates at the top of each page. A "+" means time needed on top of the row above.
 
-Each hands-on page opens with a "What you'll learn / Prerequisites / What you need / Time required" block. If you get stuck partway, see [Troubleshooting](../operations/troubleshooting.md).
+Each hands-on page opens with a "What you'll do / Prerequisites / What you need / Time required" block. If you get stuck partway, see [Troubleshooting](../operations/troubleshooting.md).
 
 ## Tech stack at a glance
 
@@ -143,10 +145,10 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 | **Part 2 / Share events (Stage 0)** | ✓ | – | – | ✓ <small>(appendix only)</small> | – | – |
 | **Part 2 / Add authentication** | ✓ | – | – | ✓ | – | – |
 | **Part 2 / Wire wallet to marketplace (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
-| **Part 2 / Process data before sharing**<sup>*</sup> | ✓ | ✓ <small>(for Tier 3 e2e)</small> | ✓ <small>(same)</small> | ✓ | – | ✓ <small>(OpenCV / VLM optional)</small> |
+| **Part 2 / Process data and add provenance**<sup>*</sup> | ✓ | ✓ <small>(for Tier 3 e2e)</small> | ✓ <small>(same)</small> | ✓ | – | ✓ <small>(OpenCV / VLM optional)</small> |
 | **Part 3 / Intelligence integration** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
 
-\* In this sub-group, [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) runs with Python only and uses no publisher, blockchain, MetaMask, SSI wallet, or VC.
+\* In this sub-group, [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) runs with Python only and uses no publisher, blockchain, MetaMask, SSI wallet, or VC. The follow-ups, [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md) and [Trace a VLM summary back to the image](c2pa-provenance-vlm.md), use the publisher and Hardhat, and a wallet inside the program receives a PurchaseViewerVC to get a per-tier ViewerToken. They use no MetaMask or phone wallet.
 
 ### VCs used
 
@@ -155,7 +157,7 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 | Part 2 / Share events (Stage 0) | ✓ <small>(appendix only)</small> | – | – | – | – | – |
 | Part 2 / Add authentication | ✓ | ✓ | ✓ | – | – | – |
 | Part 2 / Wire wallet to marketplace (v2) | – | – | ✓ | ✓ | ✓ | – |
-| Part 2 / Process data before sharing<sup>*</sup> | – | – | – | ✓ | – | ✓ |
+| Part 2 / Process data and add provenance<sup>*</sup> | – | – | – | ✓ | – | ✓ |
 
 ### Reading the tables
 
@@ -287,7 +289,9 @@ Switch the response between Tier 3 (video + everything), Tier 2 (image + derived
 - [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — continues with §8–§11
 - [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — continues with §12–§13
 - Design background: [Tiered access design spec](data-user-vc-tiered-spec.md) (in the [Design](../design/index.md) section)
-- [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) — sign the images delivered with tiered access with C2PA provenance (no publisher or wallet needed)
+- [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) — P0. Sign the images delivered with tiered access with C2PA provenance (no publisher or wallet needed)
+- [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md) — verify provenance at the publisher, sign the Tier 2 image, record a token on chain, and check what provenance each tier sees
+- [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md) — the publisher signs a summary card with the VLM's summary, and someone who receives only the text traces it to the capture and the token
 
 ### Done when…
 

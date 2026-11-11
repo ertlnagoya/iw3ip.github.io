@@ -40,7 +40,7 @@ v2 は v1 を置き換えるものではなく、v1 に追加する経路です�
 
 - **Part 1〜3**: このサイトでの学習順です。基本、機能拡張、知能統合の順に進みます。
 - **Phase 1〜3**: 基盤の発展段階です。Phase 1 はデータ共有、Phase 2 はイベント共有、Phase 3 は AI による判断と制御を指します（[プラットフォーム概要のフェーズ構成](../platform-overview.md#フェーズ構成)）。
-- **Stage 0〜7、A、T、P**: Part 2 のうち、VC を使うハンズオンと、その準備 (Stage 0)、画像の来歴の署名 (Stage P。VC は使わない) に付けた通し番号です。各ページは、前の Stage を済ませていることを前提にしています。ただし、Stage P は前の Stage を使わず、教材リポジトリと Python だけで単独で動かせます。Stage 2 は欠番です。
+- **Stage 0〜7、A、T、P**: Part 2 のうち、VC を使うハンズオンと、その準備 (Stage 0)、画像の来歴の署名 (Stage P) に付けた通し番号です。各ページは、前の Stage を済ませていることを前提にしています。ただし、Stage P の最初のページ (P0) は前の Stage と VC を使わず、教材リポジトリと Python だけで単独で動かせます。続きの P1〜P3 のページは publisher とチェーンにつなぎ、Tier ごとの ViewerToken (PurchaseViewerVC で得る) を使います。Stage 2 は欠番です。
 
 | Stage | ハンズオン | 扱う VC |
 |---|---|---|
@@ -54,6 +54,8 @@ v2 は v1 を置き換えるものではなく、v1 に追加する経路です�
 | A | [スマホアプリで購入から閲覧まで](marketplace-mobile-app.md) | PurchaseViewerVC (スマホだけで操作) |
 | T | [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) | DataUserVC |
 | P | [画像の来歴を証明する](c2pa-provenance.md) | なし (C2PA の署名に X.509 証明書を使う。publisher とウォレットは不要) |
+| P | [来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) | PurchaseViewerVC (DataUserVC の属性で Tier が決まる。プログラムの中のウォレットが使うため、スマホは不要) |
+| P | [VLM の要約から元の画像をたどる](c2pa-provenance-vlm.md) | PurchaseViewerVC (DataUserVC の属性で Tier が決まる。プログラムの中のウォレットが使うため、スマホは不要) |
 
 VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-architecture-overview.md) にまとめています。
 
@@ -125,12 +127,12 @@ export HOST_IP=192.168.1.20
 | 基本を一通り | Part 1 全部 (約 1.5 時間。1.2 のデバイスは 1 つ選ぶ) |
 | 安全な共有まで | Part 1 → Part 2 の 2.1〜2.3 (+ 約 4 時間) |
 | マーケット連携の v2 まで | Part 1 → Part 2 の 2.4 まで (+ 約 4 時間) |
-| 段階アクセスまで | Part 2 の 2.5 まで (+ 約 1 時間。画像・動画の配信と意味レベルの段階化まで進む場合は、さらに約 3 時間。C2PA で画像の来歴を証明する (Stage P) 場合は、さらに約 30〜40 分) |
+| 段階アクセスまで | Part 2 の 2.5 まで (+ 約 1 時間。画像・動画の配信と意味レベルの段階化まで進む場合は、さらに約 3 時間。C2PA で画像の来歴を証明する (Stage P) 場合は、さらに約 30〜40 分。来歴を publisher とチェーンにつなぐ場合は、さらに約 40〜60 分。VLM の要約から元の画像をたどる場合は、さらに約 20〜30 分) |
 | AI 統合まで | Part 3 まで (+ 約 5 時間) |
 
 時間は、各ページの冒頭にある所要時間を合計した目安です。「+」は、1 つ上の行までにかかる時間に加えて必要な時間です。
 
-各ハンズオンページの先頭には **「このハンズオンで分かること」「前提」「使うもの」「所要時間」** を載せています。途中で詰まったら [トラブルシュート](../operations/troubleshooting.md) を参照してください。
+各ハンズオンページの先頭には **「やること」「前提」「使うもの」「所要時間」** を載せています。途中で詰まったら [トラブルシュート](../operations/troubleshooting.md) を参照してください。
 
 ## 使う技術要素の早見表
 
@@ -143,19 +145,19 @@ export HOST_IP=192.168.1.20
 | **Part 2 / イベントを共有してみよう (Stage 0)** | ✓ | – | – | ✓ <small>(補論のみ)</small> | – | – |
 | **Part 2 / 認証してみよう (SSI)** | ✓ | – | – | ✓ | – | – |
 | **Part 2 / マーケットと連携 (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
-| **Part 2 / データ処理を入れる**<sup>※</sup> | ✓ | ✓ <small>(Tier 3 実機時)</small> | ✓ <small>(同)</small> | ✓ | – | ✓ <small>(OpenCV / VLM 任意)</small> |
+| **Part 2 / データ処理と来歴を入れる**<sup>※</sup> | ✓ | ✓ <small>(Tier 3 実機時)</small> | ✓ <small>(同)</small> | ✓ | – | ✓ <small>(OpenCV / VLM 任意)</small> |
 | **Part 3 / 知能統合** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
 
-※ このサブグループのうち、[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) は Python だけで動き、publisher、ブロックチェーン、MetaMask、SSI ウォレットと VC を使いません。
+※ このサブグループのうち、[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) は Python だけで動き、publisher、ブロックチェーン、MetaMask、SSI ウォレットと VC を使いません。続きの [来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) と [VLM の要約から元の画像をたどる](c2pa-provenance-vlm.md) は publisher と Hardhat を使い、プログラムの中のウォレットで PurchaseViewerVC を受け取って Tier ごとの ViewerToken を得ます。MetaMask とスマホのウォレットは使いません。
 
 ### 主に使う VC (Verifiable Credential) の種類
 
 | サブグループ | Consent | Viewer | Service | Purchase&shy;Viewer | Seller | DataUser |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
-| Part 2 / イベントを共有してみよう | ✓ <small>(補論のみ)</small> | – | – | – | – | – |
+| Part 2 / イベントを共有してみよう (Stage 0) | ✓ <small>(補論のみ)</small> | – | – | – | – | – |
 | Part 2 / 認証してみよう | ✓ | ✓ | ✓ | – | – | – |
 | Part 2 / マーケットと連携 (v2) | – | – | ✓ | ✓ | ✓ | – |
-| Part 2 / データ処理を入れる<sup>※</sup> | – | – | – | ✓ | – | ✓ |
+| Part 2 / データ処理と来歴を入れる<sup>※</sup> | – | – | – | ✓ | – | ✓ |
 
 ### 表の見方
 
@@ -291,7 +293,9 @@ export HOST_IP=192.168.1.20
 - [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — 続きの §8〜§11
 - [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) — 続きの §12〜§13
 - 設計の背景: [段階アクセスの設計仕様](data-user-vc-tiered-spec.md) ([設計](../design/index.md) の章)
-- [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) — 段階アクセスで配る画像に、C2PA の来歴を付けて署名する (publisher やウォレットは不要)
+- [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) — P0。段階アクセスで配る画像に、C2PA の来歴を付けて署名する (publisher やウォレットは不要)
+- [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) — publisher で来歴を検証し、Tier 2 の画像に署名し、トークンをチェーンに記録して、Tier ごとの来歴の見え方を確かめる
+- [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md) — VLM の要約を描いた要約カードに publisher が署名し、要約の文だけを受け取った人が撮影画像とトークンまでたどる
 
 ### Part 2 の成功判定
 

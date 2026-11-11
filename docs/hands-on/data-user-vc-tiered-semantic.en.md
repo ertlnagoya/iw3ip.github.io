@@ -78,7 +78,7 @@ Wait for `vlm-pull` to finish pulling `llava` (first time only, multi-GB):
 docker compose -f infra/docker-compose.yml logs -f vlm-pull
 ```
 
-When the line `vlm model llava ready` appears, exit with Ctrl+C.
+When the line `vlm model llava ready` appears, exit with Ctrl+C. If you set `VLM_MODEL=moondream`, the line is `vlm model moondream ready`.
 
 Check that the publisher is up:
 
@@ -241,12 +241,12 @@ The blur runs each time an event is published (not when `/platform/data` is read
 ### 12.6 Inspecting VLM output
 
 Compare `description_full` (Tier 2/3) against `description_summary`
-(Tier 1+) to confirm proper-noun stripping. First present the Tier 3 (12.3.a) PurchaseViewerVC as in §12.4, then set the `token=` value in the `"message"` of the publisher's `viewer_token_issued` log line (`docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`) with `export VIEWER_TOKEN_TIER3=<token value>`. The ViewerToken expires after 60 seconds, so right away run the following to fetch every key at Tier 3:
+(Tier 1+) to confirm proper-noun stripping. First present the Tier 3 (12.3.a) PurchaseViewerVC as in §12.4, then set the `token=` value in the `"message"` of the publisher's `viewer_token_issued` log line (`docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`) with `export VIEWER_TOKEN_TIER3='<token value>'`. The ViewerToken expires after 60 seconds, so right away run the following to fetch every key at Tier 3. The `rows` of `/platform/data` are listed oldest first, so `.rows[-1]` shows the last row (the event you published most recently):
 
 ```bash
 curl -s -H "authorization: Bearer $VIEWER_TOKEN_TIER3" \
      'localhost:8080/platform/data?dataset_id=home/event/possible_littering' \
-  | jq '.rows[0] | {description_full, description_summary, description_model}'
+  | jq '.rows[-1] | {description_full, description_summary, description_model}'
 ```
 
 Example output:
@@ -283,8 +283,7 @@ To stop the VLM only, stop vlm with:
 docker compose -f infra/docker-compose.yml stop vlm
 ```
 
-Then publish an event with `provider_with_media.py` as in §12.2.1. The
-`/platform/data` response looks like this:
+Then publish an event with `provider_with_media.py` as in §12.2.1. The ViewerToken expires after 60 seconds, so the one you set earlier no longer works. Get a new ViewerToken as in §12.4, then fetch `/platform/data`. The last row of the response looks like this:
 
 - `processing_warnings` contains `vlm_unavailable`
 - `image_url_redacted` is still generated, because face blur does not use the VLM (with the default grey image there is no face, so nothing is blurred)
@@ -303,8 +302,8 @@ VLM_BACKEND=ollama VLM_MODEL=llava VLM_TIMEOUT_SEC=600 IMAGE_REDACTION_BACKEND= 
 `VLM_BACKEND` and the other variables are set at the start of the command so that the publisher restarts with the 4 tiers even in a new terminal where the variables exported in §12.2 are gone. If you used `VLM_MODEL=moondream` in §12.2, change `VLM_MODEL=llava` to `VLM_MODEL=moondream`.
 
 Restarting the publisher clears the claims and rows kept in memory.
-Publish the event again as in §12.2.1 and redo the claims and
-presentations in §12.4; the `/platform/data` response then looks like this:
+Publish the event again as in §12.2.1, and redo the claims and
+presentations in §12.4 to get a new ViewerToken. Fetch `/platform/data` with that ViewerToken; the last row of the response looks like this:
 
 - `processing_warnings` contains `vlm_unavailable`
 - Tier 2 and Tier 1 receivers get no image keys and no `description_*` keys, only the event

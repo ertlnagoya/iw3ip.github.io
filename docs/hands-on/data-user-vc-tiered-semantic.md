@@ -69,7 +69,7 @@ docker compose -f infra/docker-compose.yml --profile vlm up -d \
 docker compose -f infra/docker-compose.yml logs -f vlm-pull
 ```
 
-`vlm model llava ready` の行が出たら、Ctrl+C で抜けます。
+`vlm model llava ready` の行が出たら、Ctrl+C で抜けます。`VLM_MODEL=moondream` を設定した場合は、`vlm model moondream ready` と出ます。
 
 publisher が起動していることを確認します。
 
@@ -218,12 +218,12 @@ publisher は内部で次の順に処理します。
 Tier 2 / 3 で取得した `description_full` と Tier 1 の `description_summary` を
 並べると、**人名・固有名詞が除かれているか**を確認できます。
 
-先に、§12.4 と同じ手順で Tier 3 (12.3.a) の PurchaseViewerVC を提示し、publisher のログの `viewer_token_issued` 行 (`docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`) の `"message"` にある `token=` の値を `export VIEWER_TOKEN_TIER3=<token= の値>` で入れます。ViewerToken の有効期限は 60 秒なので、入れたらすぐに次を実行し、Tier 3 で全キーを取得します。
+先に、§12.4 と同じ手順で Tier 3 (12.3.a) の PurchaseViewerVC を提示し、publisher のログの `viewer_token_issued` 行 (`docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep viewer_token_issued | tail -n 1`) の `"message"` にある `token=` の値を `export VIEWER_TOKEN_TIER3='<token= の値>'` で入れます。ViewerToken の有効期限は 60 秒なので、入れたらすぐに次を実行し、Tier 3 で全キーを取得します。`/platform/data` の `rows` は古い順に並ぶので、`.rows[-1]` で最後の行 (いちばん新しく流したイベント) を見ます。
 
 ```bash
 curl -s -H "authorization: Bearer $VIEWER_TOKEN_TIER3" \
      'localhost:8080/platform/data?dataset_id=home/event/possible_littering' \
-  | jq '.rows[0] | {description_full, description_summary, description_model}'
+  | jq '.rows[-1] | {description_full, description_summary, description_model}'
 ```
 
 期待される出力例:
@@ -262,7 +262,7 @@ VLM だけを停止する場合は、次のコマンドで vlm を止めます�
 docker compose -f infra/docker-compose.yml stop vlm
 ```
 
-この状態で §12.2.1 の `provider_with_media.py` でイベントを流すと、`/platform/data` の応答は次のようになります。
+この状態で §12.2.1 の `provider_with_media.py` でイベントを流します。ViewerToken の有効期限は 60 秒なので、前に入れた ViewerToken はもう使えません。§12.4 と同じ手順で新しい ViewerToken を取り直してから `/platform/data` を取得します。応答の最後の行は次のようになります。
 
 - `processing_warnings` に `vlm_unavailable` が出ます
 - 顔ブラーは VLM を使わないので、`image_url_redacted` は生成されます（既定の灰色の画像では、顔が無いので何もぼかされません）
@@ -279,7 +279,7 @@ VLM_BACKEND=ollama VLM_MODEL=llava VLM_TIMEOUT_SEC=600 IMAGE_REDACTION_BACKEND= 
 
 §12.2 で `export` した環境変数が残っていない新しいターミナルでも、4 段階の tier のまま起動し直せるように、`VLM_BACKEND` などをコマンドの先頭で指定しています。§12.2 で `VLM_MODEL=moondream` を使った場合は、`VLM_MODEL=llava` を `VLM_MODEL=moondream` に変えます。
 
-publisher を起動し直すと、メモリに保存していた claim と行は消えます。§12.2.1 でイベントを流し直し、§12.4 で claim と提示をやり直すと、`/platform/data` の応答は次のようになります。
+publisher を起動し直すと、メモリに保存していた claim と行は消えます。§12.2.1 でイベントを流し直し、§12.4 で claim と提示をやり直して新しい ViewerToken を取得します。その ViewerToken で `/platform/data` を取得すると、応答の最後の行は次のようになります。
 
 - `processing_warnings` に `vlm_unavailable` が出ます
 - Tier 2 と Tier 1 の受信者は、画像のキーも `description_*` のキーも受け取らず、event だけになります

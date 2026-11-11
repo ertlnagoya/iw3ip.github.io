@@ -4,7 +4,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 > **やること**: PWA として iot-market-ui をスマホで使い、購入と VC 取得を進める
 >
-> **前提**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)、[Stage 6](marketplace-vc-end-to-end.md) の Step E0 (デプロイと公開鍵の登録)
+> **前提**: [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md)、[Stage 6](marketplace-vc-end-to-end.md) の Step E0 (デプロイと公開鍵の登録)
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet) + MetaMask モバイル
 >
@@ -23,7 +23,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
     Merchandise リストから選びます。`home/event/possible_littering` (Merchandise #2)
     を選べば、Stage 0 (Stage の一覧は
     [ハンズオンの概要](index.md#part-phase-stage) を参照)
-    [webcam-event-sharing](webcam-event-sharing.md) と同じカメライベントが、
+    [検知イベントだけを共有する](webcam-event-sharing.md) と同じカメライベントが、
     購入経由 (PurchaseViewerVC) で読めるところまで確認できます。
     `home/event/flood_risk_high` (Merchandise #4) は PurchaseViewerVC の
     Presentation Definition が登録されていないため、閲覧まで進めません。
@@ -56,9 +56,9 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 ## 先に読むページ
 
-- [VC Architecture Overview](../design/vc-architecture-overview.md) — 全体像
-- [Stage 5: Marketplace × Wallet bridge](marketplace-vc-bridge.md) — 購入動線の元ハンズオン
-- [Stage 7: Marketplace Seller VC](marketplace-seller-vc.md) — Seller 側の動線
+- [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md) — 全体像
+- [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) — 購入動線の元ハンズオン
+- [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) — Seller 側の動線
 
 ## 前提
 
@@ -285,7 +285,7 @@ VC 発行用のコードの有効期限は、購入の申告から 30 分です�
 }
 ```
 
-Merchandise #0 は seller 登録をしていないので、`seller_did` は `"unknown"` です。
+Step M3 で買った Merchandise (#0・#1・#3 のどれか) は seller 登録をしていないので、`seller_did` は `"unknown"` です。
 `seller_did` に seller の `did:jwk:...` が入るのは、Stage 7 の Step S3〜S4 で新しく
 deploy・登録した Merchandise を、その後 publisher を作り直さずに購入した場合だけです
 (seller の対応付けは publisher のメモリにあり、作り直すと消えます。Stage 7 で使った
@@ -373,7 +373,7 @@ Safari のキャッシュ。
 
 ## 関連
 
-- [VC Architecture Overview](../design/vc-architecture-overview.md)
-- [Stage 5: Marketplace × Wallet bridge](marketplace-vc-bridge.md)
-- [Stage 6: ServiceVC × PurchaseViewerVC end-to-end](marketplace-vc-end-to-end.md)
-- [Stage 7: Marketplace Seller VC](marketplace-seller-vc.md)
+- [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md)
+- [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md)
+- [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md)
+- [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md)

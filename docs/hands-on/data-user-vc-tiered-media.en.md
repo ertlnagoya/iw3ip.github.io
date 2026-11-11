@@ -158,12 +158,12 @@ working.
 ### 9.3 Receiver: CID or URL — pick one
 
 `/platform/data` now hands back **both** `image_cid` and `image_url`
-for Tier 2 / Tier 3. `$VIEWER_TOKEN` is a Tier 3 ViewerToken extracted as in [§4](data-user-vc-tiered.md#4-issue-purchaseviewervc-present-fetch-platformdata) of the first page (valid for 60 seconds):
+for Tier 2 / Tier 3. `$VIEWER_TOKEN` is a Tier 3 ViewerToken extracted as in [§4](data-user-vc-tiered.md#4-issue-purchaseviewervc-present-fetch-platformdata) of the first page (valid for 60 seconds). The `rows` are listed oldest first, so `.rows[-1]` shows the last row (the event published in §9.2):
 
 ```bash
 curl -s -H "authorization: Bearer $VIEWER_TOKEN" \
   "http://$HOST_IP:8080/platform/data?dataset_id=home/event/possible_littering" \
-  | jq --arg h "$HOST_IP" '.rows[0] | {image_cid, image_url, ipfs_gateway: ("http://"+$h+":8080/ipfs/"+.image_cid)}'
+  | jq --arg h "$HOST_IP" '.rows[-1] | {image_cid, image_url, ipfs_gateway: ("http://"+$h+":8080/ipfs/"+.image_cid)}'
 ```
 
 Open any of these on the buyer's iPhone Safari:

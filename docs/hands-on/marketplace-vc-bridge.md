@@ -4,7 +4,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 
 > **やること**: 購入 → bridge → PurchaseViewerVC → wallet → ViewerToken → 取得
 >
-> **前提**: [最短起動](../setup/quickstart.md) と [HA SSI Wallet](ha-ssi-wallet.md)
+> **前提**: [最短起動](../setup/quickstart.md) と [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md)
 >
 > **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
@@ -392,11 +392,11 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=2" | python3 -m json.tool
 →
 ```json
 {
-  "raw_topic": "marketplace/claim",
-  "subject_did": "eth:0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-  "purpose": "purchase",
-  "reason": "claim_received:2b417b32e6566830:tx=0x4e7c3e0a...",
-  ...
+    "raw_topic": "marketplace/claim",
+    "subject_did": "eth:0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "purpose": "purchase",
+    "reason": "claim_received:2b417b32e6566830:tx=0x4e7c3e0a...",
+    ...
 }
 ```
 
@@ -466,11 +466,11 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 →
 ```json
 {
-  "raw_topic": "marketplace/issued",
-  "subject_did": "did:jwk:eyJhbG...",
-  "purpose": "purchase_link",
-  "reason": "eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c3e0a...",
-  "holder_did": "did:jwk:eyJhbG..."
+    "raw_topic": "marketplace/issued",
+    "subject_did": "did:jwk:eyJhbG...",
+    "purpose": "purchase_link",
+    "reason": "eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c3e0a...",
+    "holder_did": "did:jwk:eyJhbG..."
 }
 ```
 
@@ -536,12 +536,14 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ```json
 {
-  "dataset_id": "home/env/temperature",
-  "count": 0,
-  "read_count": 1,
-  "seller_did": "unknown",
-  "allowed_views": ["event"],
-  "rows": []
+    "dataset_id": "home/env/temperature",
+    "count": 0,
+    "read_count": 1,
+    "seller_did": "unknown",
+    "allowed_views": [
+        "event"
+    ],
+    "rows": []
 }
 ```
 
@@ -559,7 +561,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 →
 ```json
 {
-  "detail": "viewer_token_expired"
+    "detail": "viewer_token_expired"
 }
 ```
 
@@ -760,6 +762,6 @@ INFO:     172.18.0.1:54321 - "POST /issuer/token HTTP/1.1" 400 Bad Request
 ## 関連
 
 - [Marketplace VC Bridge 設計仕様 (v1/v2)](../design/marketplace-vc-bridge-spec.md) — 全体構造
-- [SSI Wallet (Stage 1)](ha-ssi-wallet.md) — 書き込み単回認可
-- [SSI Viewer (Stage 3)](ha-ssi-viewer.md) — 複数回の読み出しを認可 (v1、dataset を直接指定)
-- [SSI Service (Stage 4 prep)](ha-ssi-service.md) — M2M 連続書き込み
+- [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) — 書き込み単回認可
+- [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) — 複数回の読み出しを認可 (v1、dataset を直接指定)
+- [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) — M2M 連続書き込み

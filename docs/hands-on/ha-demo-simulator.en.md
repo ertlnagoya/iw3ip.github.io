@@ -500,9 +500,9 @@ CARLA is a simulator for urban spaces, vehicles, pedestrians, and virtual sensor
 
 ## References
 
-[1] FIWARE Foundation, "FIWARE," <https://www.fiware.org/>
+[1] FIWARE Foundation, "FIWARE," <https://fiware.org/>
 
-[2] FIWARE Foundation, "FIWARE Step-By-Step Tutorials (NGSI-v2 Step-by-Step)," <https://fiware-tutorials.readthedocs.io/en/latest/>
+[2] FIWARE Foundation, "NGSI-v2 Smart Supermarket Tutorials," <https://fiware-tutorials.readthedocs.io/en/latest/>
 
 [3] Eclipse Foundation, "Eclipse Ditto," <https://eclipse.dev/ditto/>
 

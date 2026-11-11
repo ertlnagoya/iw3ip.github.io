@@ -59,7 +59,7 @@ JavaScript の実行環境です。マーケットプレイスの UI とブロ�
 マーケットプレイスでデータを購入する際に使います。Part 1 (基本) で使用します。
 
 - ブラウザ: Chrome / Edge / Firefox / Brave のいずれでも構いません
-- [MetaMask](https://metamask.io/) — 拡張機能をブラウザにインストール
+- [MetaMask](https://metamask.com/) — 拡張機能をブラウザにインストール
 - ローカルチェーンに接続するための Ethereum 系ウォレットです
 
 ## 任意 (一部のハンズオンで使う)

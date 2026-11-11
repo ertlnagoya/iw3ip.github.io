@@ -196,6 +196,6 @@ If you cannot connect or the purchase does not proceed, check the troubleshootin
 
 ## References
 
-[1] MetaMask, "MetaMask," <https://metamask.io/>
+[1] MetaMask, "MetaMask," <https://metamask.com/>
 
 [2] Vite, "Vite," <https://vite.dev/>

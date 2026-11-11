@@ -3,10 +3,10 @@
 !!! abstract "Where this page belongs"
     This is a design spec in the [Design](index.md) section.
     This is the design spec for **Stage P** (Provenance), which attaches provenance information that follows the C2PA (Coalition for Content Provenance and Authenticity) standard [1] to footage from low-cost commercial IP cameras and USB webcams, and to sensor data.
-    Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It was designed before implementation, and the signing and validation of P0 are now implemented (see the note in §10; checks with Content Credentials Verify and c2patool are not done yet).
+    Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It was designed before implementation; P0–P3 are now implemented and on the main branch of the course repository (see the note in §10; checks with Content Credentials Verify and c2patool are not done yet).
     "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview](vc-architecture-overview.md)).
-    Stage P builds on the tiered access of Stage T ([Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)) and the SellerVC of Stage 7 ([SellerVC design spec](seller-vc-spec.md)). The P0 part can be run locally in the hands-on [Prove where an image came from](../hands-on/c2pa-provenance.md).
-    P0–P5 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation to build first) corresponds to P0–P2. The hands-on runs P0 (plus the check of the Tier 2 derivative manifest that belongs to P2); P1 and the rest of P2 (ProvenanceToken and so on) are not implemented yet.
+    Stage P builds on the tiered access of Stage T ([Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)) and the SellerVC of Stage 7 ([SellerVC design spec](seller-vc-spec.md)). The P0 part can be run locally in the hands-on [Prove where an image came from](../hands-on/c2pa-provenance.md). P1 and P2 can be run in the hands-on [Connect provenance to the publisher and the chain](../hands-on/c2pa-provenance-publisher.md), and P3 in [Trace a VLM summary back to the image](../hands-on/c2pa-provenance-vlm.md).
+    P0–P6 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation to build first) corresponds to P0–P2. P0–P3 are implemented and can be run in the hands-on pages; P4 and later are not implemented yet.
 
 This spec is a design for adding to IW3IP a mechanism that **attaches to each photo or video a record of who took it, when, how, and how it was processed, and signs that record electronically**. Tampering with the record breaks the signature, so whoever receives the file can check for themselves whether it is genuine.
 
@@ -19,7 +19,7 @@ This spec is a design for adding to IW3IP a mechanism that **attaches to each ph
 
 ## Before you read
 
-- It is easier to follow after finishing "Process data before sharing" in Part 2 of the hands-on (such as [Tier the response by trust](../hands-on/data-user-vc-tiered.md)). Tiers 1–3, DataUserVC, the publisher, and `/media/upload` are used without explanation
+- It is easier to follow after finishing "Process data and add provenance" in Part 2 of the hands-on (such as [Tier the response by trust](../hands-on/data-user-vc-tiered.md)). Tiers 1–3, DataUserVC, the publisher, and `/media/upload` are used without explanation
 - Basic knowledge of DIDs and VCs ([SSI/DID/VC basics](../foundations/ssi-did-vc-basics.md)) is assumed. §2 explains C2PA signing by comparing it with VCs
 
 ## Common pitfalls
@@ -44,7 +44,7 @@ Nobody can check the following, however:
 - Whether the content of a Merchandise sold on the marketplace is what the seller claims
 
 Sharing surveillance footage as crime leads or disaster information presupposes being able to answer "is this footage real?".
-Generative AI can now produce convincing footage, which makes the question more important.
+Generative AI can now produce footage that is hard to tell from the real thing, so appearance alone no longer shows whether footage is genuine.
 
 Recording a sha256 on chain does not answer this question. A sha256 only shows that "this file has not changed since it was recorded"; it does not show who made the file or how.
 C2PA attaches to the file an electronic signature made with the capturing device's key, plus the processing history (which file it was made from and what was done). That lets the recipient check both "who made it" and "where it came from".
@@ -114,18 +114,27 @@ A validator keeps a list of CAs it trusts. If the signer's certificate was issue
 
 ```mermaid
 flowchart TB
-  CAM["IP camera (RTSP)\nUSB webcam"] -->|"unauthenticated link"| GW
-  SEN["Sensors\n(temperature, motion, ...)"] -->|"MQTT"| GW
+  CAM["USB webcam"] -->|"unauthenticated link"| GW
+  IPC["IP camera (RTSP)"] -.->|"unauthenticated link"| GW
+  SEN["Sensors<br>(temperature, motion, ...)"] -.->|"MQTT"| GW
   subgraph GW["Edge gateway"]
-    CUT["Clip\nJPEG / fragmented MP4"] --> SIGN["Attach manifest and sign\nwith c2pa-python"]
-    KEY[("Signing key\nfile → TPM")] -.-> SIGN
+    CUT["Clip<br>JPEG"] --> SIGN["Attach manifest and sign<br>with c2pa-python"]
+    MP4["Fragmented MP4"] -.-> SIGN
+    KEY[("Signing key<br>(file)")] -.-> SIGN
+    TPM[("TPM")] -.-> SIGN
   end
-  SIGN -->|"POST /media/upload"| PUB["publisher\nvalidates manifest\naudit log"]
-  PUB --> IPFS["kubo IPFS\nCID"]
-  PUB --> DER["Stage T derivatives\nface blur / VLM summary\nreference original as ingredient"]
-  PUB -->|"hash and CID only"| NFT["ERC-721\nProvenanceToken\n(Hardhat)"]
-  DER --> VIEW["Tiered delivery\nwith DataUserVC"]
+  SIGN -->|"POST /media/upload"| PUB["publisher<br>validates manifest<br>audit log"]
+  PUB --> IPFS["kubo IPFS<br>CID"]
+  PUB --> DER["Stage T derivatives<br>face blur / VLM summary<br>reference original as ingredient"]
+  PUB -->|"hash and CID only"| NFT["ERC-721<br>ProvenanceToken<br>(Hardhat)"]
+  DER --> VIEW["Tiered delivery<br>with DataUserVC"]
+  classDef done fill:#e3f4e8,stroke:#2e7d32,color:#1b5e20
+  classDef todo fill:#f2f2f2,stroke:#9e9e9e,stroke-dasharray:4 3,color:#616161
+  class CAM,CUT,SIGN,KEY,PUB,IPFS,DER,NFT,VIEW done
+  class IPC,SEN,MP4,TPM todo
 ```
+
+Green boxes are implemented and on main (P0–P3); grey dashed boxes are not implemented yet (P4, P5).
 
 Terms in the diagram:
 
@@ -141,7 +150,7 @@ Low-cost commercial IP cameras and webcams have neither a signing key nor a sign
 | Segment | Threat considered | Handling in this spec |
 | --- | --- | --- |
 | Camera → gateway (RTSP / USB) | Swapped footage, replayed recordings | Not addressed in the MVP. Assumes a closed LAN. Later, compare with cameras that support ONVIF Media Signing [5][6] |
-| Inside the gateway | Stolen signing key, tampering before signing | MVP keeps the key in a file. P4 moves it to a TPM 2.0 or a secure element (such as ATECC608) |
+| Inside the gateway | Stolen signing key, tampering before signing | MVP keeps the key in a file. P5 moves it to a TPM 2.0 or a secure element (such as ATECC608) |
 | Gateway → publisher | Tampering in transit | Detected by the hard binding. An attacker does not have the gateway's private key, so they cannot re-sign the tampered file as the same signer |
 | Inside the publisher | Fabricated derivatives | Derivatives are also signed with the publisher's key and reference the original as an ingredient |
 | Chain | Rewriting provenance after the fact | The manifest hash is recorded in a token |
@@ -227,7 +236,7 @@ The publisher attaches to each Stage T derivative a manifest that references the
 | --- | --- | --- | --- |
 | 3 Full | Raw image / video | (capture manifest as is) | — |
 | 2 Access | Face-blurred image | `c2pa.opened`, `c2pa.edited`, `c2pa.redacted`, in that order | Raw image |
-| 1 Summary | Summary text | — (§5.5) | — |
+| 1 Summary | Summary text (put in an SVG summary card) | `c2pa.created` (AI-generated), then `c2pa.redacted` | The raw image (`inputTo`) |
 
 The three Tier 2 actions mean the following:
 
@@ -261,7 +270,7 @@ flowchart LR
   A5 -.-> DEL
 ```
 
-There is an **easily overlooked privacy problem** here. By default, importing an ingredient also puts the following two things into the derived file (confirmed in §13):
+There is a **privacy problem** here. By default, importing an ingredient also puts the following two things into the derived file (confirmed in §13):
 
 - A thumbnail of the unblurred image. The specification recommends referencing the thumbnail in the ingredient's manifest [1], and the SDK uses the original manifest's `c2pa.thumbnail.claim` as the ingredient thumbnail. A thumbnail of the unblurred face ends up in the face-blurred image
 - The assertions in the ingredient's manifest. The camera ID and sensor readings become visible to Tier 2 recipients as well
@@ -273,6 +282,17 @@ Tier 2 derivatives therefore do the following:
 3. The ingredient manifest's signature still validates after redaction, so Tier 2 recipients can be shown only that "this was made from the Tier 3 original"
 
 The signature survives redaction because the ingredient's claim contains **only the hashes** of its assertions. Removing an assertion's content leaves the claim and its signature unchanged. The validator reads the derivative manifest's record of "which assertions were redacted" and treats the assertions without content as legitimately redacted.
+
+```mermaid
+flowchart LR
+  SIG["Signature of the capture<br>(iw3ip-gateway)"] -->|"signs"| CL["Claim<br>hashes of each assertion<br>and of the pixel data"]
+  CL -.->|"hash"| A1["c2pa.actions<br>(kept)"]
+  CL -.->|"hash"| A2["jp.ertl.iw3ip.capture<br>(content redacted)"]
+  CL -.->|"hash"| A3["jp.ertl.iw3ip.sensor<br>(content redacted)"]
+  classDef removed fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class A2,A3 removed
+```
+
 The redacted values remain in the claim as hashes, but the SDK mixes a random value (salt) into each assertion before hashing, so the original values cannot be guessed from the hashes (§13).
 
 The definition of a Tier 2 derivative manifest looks like this (`<capture>` is the identifier of the ingredient's manifest):
@@ -331,13 +351,34 @@ C2PA is a standard for media such as images, video, and audio, and defines no fo
 | B | Put the hash of each interval's readings into the manifest of a periodic snapshot | Continuous data can also be linked to the footage provenance | Raw readings must be stored separately and matched by hash |
 | C | Skip C2PA and distribute readings as a VC signed with the gateway's DID | Reuses the existing SSI mechanism (the ServiceVC given to devices, §6.3) | A verification path separate from the footage provenance |
 
-Recommendation: in the MVP, handle readings tied to detection events with option A. Compare options B and C for continuous time series in P3.
+Recommendation: in the MVP, handle readings tied to detection events with option A. Compare options B and C for continuous time series in P4.
 
 ### 5.5 Text derivatives (Tier 1)
 
-The VLM summary text is not one of the media formats C2PA covers.
-In the MVP, each `/platform/data` row carries the identifier of the original's manifest and the sha256 of the summary text, and the publisher's audit log links them (§7).
-Whether this can be handled within the C2PA specification is left as an open question in §11.
+The VLM summary text is not one of the media formats C2PA covers. c2pa-python 0.38.1 also refuses to sign `text/plain` with `type is unsupported` (§13).
+In the MVP (P2), each `/platform/data` row carries the identifier of the original's manifest and the sha256 of the summary text (`derived_sha256`), and the publisher's audit log links them (§7). That link, however, is the publisher's own record; a Tier 1 recipient had no way to check it.
+
+In P3, the publisher draws the summary text into an SVG image (the summary card) and signs the card. SVG is a format the SDK can sign, and the card can be shown as an image as it is. The card's manifest is as follows.
+
+| Item | Content |
+| --- | --- |
+| Ingredient | The capture (`relationship` is `inputTo`, the input to the VLM). As for Tier 2, the thumbnail, `jp.ertl.iw3ip.capture` and `jp.ertl.iw3ip.sensor` are redacted |
+| Actions | `c2pa.created` (`digitalSourceType` is IPTC's `trainedAlgorithmicMedia` [7], `softwareAgent` is the model name), followed by one `c2pa.redacted` per redaction |
+| `jp.ertl.iw3ip.derivation` | `tier: 1`, `kind: vlm_summary`, `text_sha256` (sha256 of the exact summary text), `model`, `prompt_sha256` (sha256 of the prompt that produced the summary) |
+
+The card wraps the text into lines, so the binding to the text is the signed `text_sha256`, not the drawn characters. A Tier 1 recipient checks in this order.
+
+```mermaid
+flowchart LR
+  T["Received summary text"] -->|"sha256 matches"| D["text_sha256 in the card<br>(signed by the publisher)"]
+  D --> C["Summary card manifest<br>Trusted?"]
+  C -->|"ingredient (inputTo)"| M["Capture manifest<br>(same identifier as manifest_label)"]
+  M -->|"same identifier"| N["manifestLabel of<br>the ProvenanceToken"]
+```
+
+The publisher stores the card as `/media/<sha256>.svg` and gives its URL in `provenance.summary_card_url`. `/media/upload` still refuses SVG. The card is served with `Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'` and `X-Content-Type-Options: nosniff`, which block scripts and external loads. Inline styles are allowed, but scripts are not.
+
+The signature shows from which capture, with which model and prompt, and by whom the text was made. It does not show that the text is free of information that points to a person; that is decided by the model and the prompt. In §4 of the hands-on [Trace a VLM summary back to the image](../hands-on/c2pa-provenance-vlm.md), llava's summary gave the gender and age group of the figure in the picture, and its card was still `Trusted`.
 
 ## 6. Signing and keys
 
@@ -367,7 +408,7 @@ Apart from the SDK's conditions, the signing certificate's name (CN) must not co
 c2pa-python lets the caller perform signing in its own function (a callback) [3]. This is used to move the key step by step.
 
 1. P0–P2: keep the key as a PEM file (a file format that stores the key as text). Stealing the file steals the key, so the SDK documentation also says this is for development only
-2. P4: sign with a TPM 2.0 or secure element so the key never leaves the device
+2. P5: sign with a TPM 2.0 or secure element so the key never leaves the device
 
 ### 6.3 Relation to DIDs
 
@@ -376,7 +417,7 @@ ServiceVC is a VC stating that a device or service may write continuously ([Auth
 The identity assertion of CAWG (Creator Assertions Working Group, the working group defining how to add the creator's identity to C2PA provenance) [10] is one way to bind the two.
 The CAWG identity assertion has a mode signed with an X.509 certificate and a mode that aggregates VCs (identity claims aggregation).
 SellerVC is a VC, so the latter, which handles VCs as they are, suits using SellerVC as proof of "who provided this". The CAI SDK, however, can only validate the latter, not sign it [2].
-The MVP therefore only puts `gateway_did` in `jp.ertl.iw3ip.capture`, and integration with CAWG is considered in P3.
+The MVP therefore only puts `gateway_did` in `jp.ertl.iw3ip.capture`, and integration with CAWG is considered in P4.
 
 ## 7. Publisher extensions
 
@@ -393,11 +434,19 @@ Adds `c2pa` to the existing response (`{url, sha256, content_type, byte_size, ci
     "present": true,
     "manifest_label": "urn:c2pa:...",
     "validation_state": "Valid",
-    "signer": "CN=iw3ip-gateway",
+    "signer": "iw3ip-gateway",
     "trusted": false
   }
 }
 ```
+
+→ The implementation does the following.
+
+- `signer` holds only the name (CN) of the signer's certificate. The failure codes the SDK returns go in `failure_codes`
+- On a publisher without the C2PA check, `c2pa` is `null`
+- The validation result is stored as `.c2pa/<sha256>.json` in the media store, and the pipeline reads it through `image_url`. This file is not served under `/media/`
+- The image format is read from the first bytes of the file and the filename is ignored. Renaming a tampered JPEG does not skip the check
+- A file that embeds a manifest the SDK cannot read (a manifest damaged in the middle) is refused as `Invalid` (`failure_codes` is `c2pa.unreadable`). It is not treated as a file without provenance
 
 The publisher reads the manifest with the c2pa-python Reader (the class that reads and validates a manifest) and records the validation result. The SDK reports the result as one of three states: `Invalid`, `Valid`, or `Trusted`.
 
@@ -417,13 +466,22 @@ The CA that the publisher trusts is registered in the SDK setting `trust.user_an
 
 Adds `provenance` to each row. What is shown depends on the tier.
 
-| Key | Content | Exposed to tier |
-| --- | --- | --- |
-| `provenance.manifest_label` | Identifier of the original's manifest | All tiers |
-| `provenance.validation_state` | Validation result at the publisher | All tiers |
-| `provenance.token_id` | ID of the token in §8 | All tiers |
-| `provenance.derived_sha256` | sha256 of the summary text (§5.5) | 1 + 2 + 3 |
-| `provenance.signer` | Signer name | 2 + 3 |
+The table shows what each tier sees with VLM tiering on (Tier 3 = full, Tier 2 = access, Tier 1 = summary). ✓ means shown, — means not shown.
+
+| Key | Content | Tier 3 | Tier 2 | Tier 1 | Shown when |
+| --- | --- | :---: | :---: | :---: | --- |
+| `provenance.manifest_label` | Identifier of the original's manifest | ✓ | ✓ | ✓ | always |
+| `provenance.validation_state` | Validation result at the publisher | ✓ | ✓ | ✓ | always |
+| `provenance.token_id` | ID of the token in §8 | ✓ | ✓ | ✓ | always |
+| `provenance.derived_sha256` | sha256 of the summary text (§5.5) | ✓ | ✓ | ✓ | the tier receives the summary text |
+| `provenance.signer` | Signer name | ✓ | ✓ | — | the tier receives an image (original or blurred) |
+| `provenance.redacted_manifest_label` | Manifest identifier of the Tier 2 image | ✓ | ✓ | — | the tier receives the blurred image |
+| `provenance.summary_card_url` | URL of the signed summary card (§5.5, P3) | ✓ | ✓ | ✓ | the tier receives the summary text |
+| `provenance.summary_manifest_label` | Manifest identifier of the summary card (P3) | ✓ | ✓ | ✓ | the tier receives the summary text |
+
+→ The implementation adds `redacted_manifest_label` from this table. `token_contract` (the token contract address) and `anchor_tx` (the minting transaction) are always shown too, like `token_id`. `derived_sha256` goes only to tiers that receive the summary text because the summary text is short and predictable: showing its sha256 to other tiers would let them confirm a guessed sentence.
+
+![Images, text and provenance fields each tier receives (output of the hands-on)](../assets/c2pa-tier-views.en.png)
 
 ### 7.3 Audit log
 
@@ -432,6 +490,12 @@ Adds new `raw_topic` values:
 - `provenance/verified` — the manifest was validated at upload time
 - `provenance/derived` — a manifest was attached to a derivative
 - `provenance/anchored` — a token was issued on chain
+
+→ The implementation works as follows.
+
+- The Tier 2 image the publisher makes is also stored through `/media/upload`, so `provenance/verified` is recorded for the Tier 2 image as well. When an upload is refused as `Invalid`, `action` is `deny`
+- The `reason` of `provenance/derived` is `tier2:<label>:ingredient=<capture label>` for the Tier 2 image and `tier1:<label>:ingredient=<capture label>` for the summary card (P3)
+- The summary card is stored without going through `/media/upload`, so no `provenance/verified` is recorded for it. The publisher validates the card right after signing it and does not hand it out if it is `Invalid`
 
 ## 8. Chain integration (NFTs)
 
@@ -456,17 +520,27 @@ Putting `sellerDid` on a public chain lets anyone link records from the same sel
 ### 8.2 Issuance granularity
 
 Issuing a token per frame makes transaction fees and processing time a problem. The MVP issues **one token per detection event**.
-For segments of continuous recording, a Merkle root built from the hashes of the segments over a fixed period is combined into one token (P3). A Merkle root is the single hash left after repeatedly pairing hashes and hashing each pair. Recording that one value is enough to prove later which segments were included.
+For segments of continuous recording, a Merkle root built from the hashes of the segments over a fixed period is combined into one token (P4). A Merkle root is the single hash left after repeatedly pairing hashes and hashing each pair. Recording that one value is enough to prove later which segments were included.
+
+→ The implementation does the following.
+
+- One token is issued each time the pipeline processes an event whose image (`image_url`) passed the provenance check
+- The contract issues one token per image (sha256). The publisher checks `tokenOfAsset` before minting and reuses an existing token (the row's `provenance` gets `token_reused: true`, and no `provenance/anchored` record is written)
+- The token is issued before the row is sent, because the row carries the token ID. If sending the row fails, the token remains, and a retry reuses it
+- Tokens are issued with `eth_sendTransaction` from an unlocked account of the Hardhat node (the first account by default). This keeps keys out of the publisher, but it is for local trials only and cannot be used in production
+- `tokenURI` returns JSON holding the four values of §8.1 as a data URI
 
 ### 8.3 Circular reference
 
 The token ID is not known until the token is issued, so it cannot go into the capture manifest. The MVP uses a **one-way binding in which the chain references the manifest**.
-If the manifest should also reference the token, adding it later with a C2PA update manifest (a manifest for appending provenance without changing the content) [1] is considered in P3.
+If the manifest should also reference the token, adding it later with a C2PA update manifest (a manifest for appending provenance without changing the content) [1] is considered in P4.
 
 ### 8.4 Relation to the existing Merchandise
 
 The existing Merchandise lists per dataset, such as a temperature time series or camera events. One dataset contains many images and videos, and a ProvenanceToken represents the provenance of one of them. Combining things of different granularity in one contract would require changing how Merchandise is traded, so ProvenanceToken is a separate contract.
 The address of the ProvenanceToken contract goes into the Merchandise's additional info to link the two.
+
+→ In the implementation, the link to Merchandise is not built yet. `sellerDid` is filled only for events sent through `/provider/publish` with a SellerToken; it is empty for events sent through `/simulate/publish`.
 
 ## 9. Evaluation plan
 
@@ -493,25 +567,33 @@ C2PA also has a mechanism for finding stripped provenance again from the pixels,
 
 ## 10. Milestones
 
-| ID | Content | Equipment |
-| --- | --- | --- |
-| **P0** | Take a still with a webcam, sign it with c2pa-python, and validate it with Content Credentials Verify [11] (CAI's website that shows a file's provenance) and c2patool (CAI's command-line validator) | Mac only |
-| **P1** | Produce a signed JPEG only on detection events, validate it at `/media/upload`, and record it in the audit log (§7) | USB webcam |
-| **P2** | Tier 2 derivative manifests (§5.3) and ProvenanceToken issuance (§8) | + Hardhat |
-| **P3** | Fragmented MP4, sensor options B and C, CAWG and SellerVC integration, update manifests | + sensors |
-| **P4** | RTSP IP camera and Raspberry Pi, TPM signing, evaluation in §9 | Commercial IP camera, Raspberry Pi |
-| **P5** | Hands-on (JA + EN) | — |
+| ID | Content | Equipment | Status |
+| --- | --- | --- | --- |
+| **P0** | Take a still with a webcam, sign it with c2pa-python, and validate it with Content Credentials Verify [11] (CAI's website that shows a file's provenance) and c2patool (CAI's command-line validator) | Mac only | Done (validated with the SDK only) |
+| **P1** | Produce a signed JPEG only on detection events, validate it at `/media/upload`, and record it in the audit log (§7) | USB webcam | Done |
+| **P2** | Tier 2 derivative manifests (§5.3) and ProvenanceToken issuance (§8) | + Hardhat | Done (link to Merchandise not yet) |
+| **P3** | Provenance of the Tier 1 summary text (the summary card in §5.5) | + VLM (stub or Ollama) | Done |
+| **P4** | Fragmented MP4, sensor options B and C, CAWG and SellerVC integration, update manifests | + sensors | Not started |
+| **P5** | RTSP IP camera and Raspberry Pi, TPM signing, evaluation in §9 | Commercial IP camera, Raspberry Pi | Not started |
+| **P6** | Hands-on (JA + EN) | — | Done for P0–P3 |
 
-→ In the implementation, the P0 program (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) signs a dummy image drawn by the program by default (it uses a webcam only with `--webcam`). It validates with the SDK Reader only; Content Credentials Verify and c2patool are not used. On the other hand, the P0 program already builds and checks the Tier 2 derivative manifest and redaction listed under P2. P1 (integration into `/media/upload`) and P2's ProvenanceToken and so on are not implemented in the course repository yet.
+→ Notes on the implementation (all P0–P3 code is on the main branch of the course repository):
+
+- The P0 program (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) signs a picture the program draws (a person and a plastic bottle) by default. It uses a webcam only with `--webcam`. It validates with the SDK Reader only; Content Credentials Verify and c2patool are not used
+- The Tier 2 derivative manifest and redaction listed under P2 are also built and checked by the P0 program
+- P1 and P2 are implemented as `publisher/app/c2pa_provenance.py`, `iot-market/contracts/ProvenanceToken.sol` and so on, and checked end to end with `examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py` (notes in §7 and §8)
+- P3 is implemented as `C2paProvenance.sign_summary` and so on, and checked end to end with `examples/hands_on/c2pa_provenance/p3_vlm_summary.py`. The VLM was tried both as the stub and as Ollama's llava (§5.5)
+- The gateway is a program on the same PC, not a Raspberry Pi
 
 ## 11. Open questions
 
 1. **Continuous recording**
-   - C2PA 2.3 added handling of time ranges for live video whose end time is undefined [1]. How far the CAI SDK supports this is checked when P3 starts
+   - C2PA 2.3 added handling of time ranges for live video whose end time is undefined [1]. How far the CAI SDK supports this is checked when P4 starts
    - Recommendation: limit the MVP to clips cut on detection events
 2. **Provenance of the Tier 1 summary text**
-   - Handle it within C2PA, or link it through the audit log as in §5.5?
-   - Recommendation: link it through the audit log in the MVP
+   - Handle it within C2PA, or link it through the audit log?
+   - The MVP (P2) linked it through the audit log. P3 handles it within C2PA by signing an SVG summary card (§5.5)
+   - Remaining question: once a revision of the C2PA specification or SDK support allows a manifest inside a text file, should the summary card be replaced by it?
 3. **Action that represents face blurring**
    - Which is more appropriate, `c2pa.edited` or `c2pa.filtered`? Does hiding faces count as an editorial change?
    - Recommendation: use `c2pa.edited` and state the kind of processing in `jp.ertl.iw3ip.derivation`
@@ -550,19 +632,20 @@ Before P0, we checked on a Mac whether §5.2, §5.3, §6, and §7.1 of this spec
 | Assertion redaction | All three were removed and the derived file stayed `Trusted` |
 | Tamper detection | Changing one byte of the derived file's pixel data made it `Invalid` (`assertion.dataHash.mismatch`) |
 | Information redaction cannot remove | With the capture manifest titled `cam01-20261022T101500Z.jpg`, the title remained in the Tier 2 derived file even after redacting the ingredient's assertions and omitting the ingredient title. The certificate name `iw3ip-gateway-cam01` and serial number also remained (the countermeasures in §5.2 and §6.1 were added) |
+| Signing text (November 9, 2026, before P3) | `text/plain` was refused with `type is unsupported`, and `application/c2pa` (a manifest-only file) with `no data to hash`. SVG could be signed, and changing one character made it `Invalid` (`assertion.dataHash.mismatch`). A manifest that starts with `c2pa.created` and has an `inputTo` ingredient was also `Trusted` |
 | Salt on redacted values | The SDK adds a 16-byte salt to each assertion, so redacted values cannot be brute-forced from the hashes left in the derived file |
 
 The check program is in `examples/hands_on/c2pa_provenance/` of the main repository.
 
-Checking with Content Credentials Verify [11], RTSP cameras, fragmented MP4, and measurements on a Raspberry Pi have not been done yet (they are done in P0–P4).
+Checks with Content Credentials Verify [11] and c2patool have not been done yet; P0 validated only with the SDK's Reader (see the notes in §10). RTSP cameras, fragmented MP4, and measurements on a Raspberry Pi have not been done yet either; they belong to P4 and P5.
 
 ## References
 
 [1] C2PA, "C2PA Technical Specification, Version 2.3," <https://spec.c2pa.org/specifications/specifications/2.3/specs/C2PA_Specification.html>
 
-[2] Content Authenticity Initiative, "c2pa-rs: Rust SDK for C2PA," GitHub, <https://github.com/contentauth/c2pa-rs>
+[2] Content Authenticity Initiative, "c2pa-rs: Rust SDK for the core C2PA (Coalition for Content Provenance and Authenticity) specification," GitHub, <https://github.com/contentauth/c2pa-rs>
 
-[3] Content Authenticity Initiative, "c2pa-python: Python binding for the C2PA SDK," GitHub, <https://github.com/contentauth/c2pa-python>
+[3] Content Authenticity Initiative, "c2pa-python: Python binding for c2pa-rs library," GitHub, <https://github.com/contentauth/c2pa-python>
 
 [4] W. Entriken, D. Shirley, J. Evans, N. Sachs, "ERC-721: Non-Fungible Token Standard," Ethereum Improvement Proposals, no. 721, 2018, <https://eips.ethereum.org/EIPS/eip-721>
 

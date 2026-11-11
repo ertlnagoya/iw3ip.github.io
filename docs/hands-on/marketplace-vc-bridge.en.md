@@ -4,7 +4,7 @@ This is the core v2 hands-on. A marketplace purchase triggers the issuance of a 
 
 > **What you'll do**: Purchase → bridge → PurchaseViewerVC → wallet → ViewerToken → fetch
 >
-> **Prerequisites**: [Quickstart](../setup/quickstart.md) and [HA SSI Wallet](ha-ssi-wallet.md)
+> **Prerequisites**: [Quickstart](../setup/quickstart.md) and [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
 >
 > **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
@@ -407,11 +407,11 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=2" | python3 -m json.tool
 
 ```json
 {
-  "raw_topic": "marketplace/claim",
-  "subject_did": "eth:0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-  "purpose": "purchase",
-  "reason": "claim_received:2b417b32e6566830:tx=0x4e7c3e0a...",
-  ...
+    "raw_topic": "marketplace/claim",
+    "subject_did": "eth:0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "purpose": "purchase",
+    "reason": "claim_received:2b417b32e6566830:tx=0x4e7c3e0a...",
+    ...
 }
 ```
 
@@ -483,11 +483,11 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 
 ```json
 {
-  "raw_topic": "marketplace/issued",
-  "subject_did": "did:jwk:eyJhbG...",
-  "purpose": "purchase_link",
-  "reason": "eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c3e0a...",
-  "holder_did": "did:jwk:eyJhbG..."
+    "raw_topic": "marketplace/issued",
+    "subject_did": "did:jwk:eyJhbG...",
+    "purpose": "purchase_link",
+    "reason": "eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c3e0a...",
+    "holder_did": "did:jwk:eyJhbG..."
 }
 ```
 
@@ -556,12 +556,14 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ```json
 {
-  "dataset_id": "home/env/temperature",
-  "count": 0,
-  "read_count": 1,
-  "seller_did": "unknown",
-  "allowed_views": ["event"],
-  "rows": []
+    "dataset_id": "home/env/temperature",
+    "count": 0,
+    "read_count": 1,
+    "seller_did": "unknown",
+    "allowed_views": [
+        "event"
+    ],
+    "rows": []
 }
 ```
 
@@ -581,7 +583,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ```json
 {
-  "detail": "viewer_token_expired"
+    "detail": "viewer_token_expired"
 }
 ```
 
@@ -786,6 +788,6 @@ The first line is the publisher's error log, a one-line JSON (`logger` is `ssi.e
 ## Related
 
 - [Marketplace VC Bridge design spec (v1/v2)](../design/marketplace-vc-bridge-spec.md) — overall structure
-- [SSI Wallet (Stage 1)](ha-ssi-wallet.md) — single-use write authorization
-- [SSI Viewer (Stage 3)](ha-ssi-viewer.md) — multi-use read authorization (v1, dataset specified directly)
-- [SSI Service (Stage 4 prep)](ha-ssi-service.md) — M2M continuous writes
+- [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) — single-use write authorization
+- [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) — multi-use read authorization (v1, dataset specified directly)
+- [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) — M2M continuous writes

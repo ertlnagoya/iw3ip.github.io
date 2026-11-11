@@ -250,7 +250,7 @@ console に表示された `seller`、`merchandise`、`deploy tx`、`register tx
 
 ### 操作
 
-Step S2 で `SELLER` を設定したターミナル (リポジトリのトップ) で実行します。最初の 3 行の `<…>` は、山かっこを含めて全体を Step S3 でメモした値に置き換えてから実行してください (zsh は `<` をリダイレクトとして扱うため、そのままではエラーになります)。
+Step S2 で `SELLER` を設定したターミナル (リポジトリのトップ) で実行します。最初の 3 行の `<…>` は、山かっこを含めて全体を Step S3 でメモした値に置き換えてから実行してください。置き換え忘れても、引用符で囲んでいるのでエラーにはならず、その文字列がそのまま送られます。`MARKETPLACE_HARDHAT_RPC` が未設定なら、でたらめなアドレスが登録されてしまいます (設定済みなら HTTP 502 `chain_rpc_failed` で失敗します)。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -272,13 +272,13 @@ curl -s -X POST http://$HOST_IP:8080/marketplace/register \
 
 ```json
 {
-  "registered": true,
-  "merchandise_address": "0x...",
-  "seller_did": "did:jwk:...",
-  "dataset_id": "home/env/temperature",
-  "tx_hash": "0x...",
-  "register_count": 1,
-  "owner_verify": "skipped"
+    "registered": true,
+    "merchandise_address": "0x...",
+    "seller_did": "did:jwk:...",
+    "dataset_id": "home/env/temperature",
+    "tx_hash": "0x...",
+    "register_count": 1,
+    "owner_verify": "skipped"
 }
 ```
 
@@ -298,11 +298,11 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 → 直近に:
 ```json
 {
-  "raw_topic": "marketplace/seller_registered",
-  "subject_did": "did:jwk:...",
-  "purpose": "register",
-  "reason": "seller_register:jti=...:merchandise=0x...:eth=0x...:tx=0x...:owner_verify=skipped",
-  "holder_did": "did:jwk:..."
+    "raw_topic": "marketplace/seller_registered",
+    "subject_did": "did:jwk:...",
+    "purpose": "register",
+    "reason": "seller_register:jti=...:merchandise=0x...:eth=0x...:tx=0x...:owner_verify=skipped",
+    "holder_did": "did:jwk:..."
 }
 ```
 
@@ -324,9 +324,12 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 ```
 
 その後、[Stage 5 ハンズオン](marketplace-vc-bridge.md) の手順で MetaMask 購入 → wallet 受領
-→ ViewerToken 取得 → 取得の順に進めます。ViewerToken の有効期限は 60 秒なので、提示したらすぐに次のコマンドを実行し、`viewer_token_expired` が出たら提示からやり直してください。`<buyer の ViewerToken>` は、山かっこを含めて全体を [Stage 5 の Step 8](marketplace-vc-bridge.md#step-8-viewertoken-を取り出す) で取り出したトークンに置き換えてから実行します (zsh は `<` をリダイレクトとして扱います)。
+→ ViewerToken 取得 → 取得の順に進めます。ViewerToken の有効期限は 60 秒なので、提示したらすぐに次のコマンドを実行し、`viewer_token_expired` が出たら提示からやり直してください。`<buyer の ViewerToken>` は、山かっこを含めて全体を [Stage 5 の Step 8](marketplace-vc-bridge.md#step-8-viewertoken-を取り出す) で取り出したトークンに置き換えてから実行します。置き換え忘れると、その文字列がそのままトークンとして送られ、401 (`viewer_token_unknown`) で失敗します。
+
+次のコマンドは、Step S4 で設定した `$MERCH` を使います。Step S4 と同じターミナルで実行してください。最初の行で `MERCH=0x...` と表示されれば大丈夫です。`MERCH=` のあとが空なら別のターミナルなので、先に `MERCH='<Step S3 の merchandise address>'` の `<…>` を Step S3 でメモした値に置き換えて実行します。
 
 ```bash
+echo "MERCH=$MERCH"
 TOKEN='<buyer の ViewerToken>'
 curl -s -H "Authorization: Bearer $TOKEN" \
   "http://$HOST_IP:8080/platform/data?merchandise=$MERCH" | python3 -m json.tool
@@ -336,12 +339,14 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ```json
 {
-  "dataset_id": "home/env/temperature",
-  "count": N,
-  "read_count": 1,
-  "seller_did": "did:jwk:...(seller の DID)",
-  "allowed_views": ["event"],
-  "rows": [...]
+    "dataset_id": "home/env/temperature",
+    "count": N,
+    "read_count": 1,
+    "seller_did": "did:jwk:...(seller の DID)",
+    "allowed_views": [
+        "event"
+    ],
+    "rows": [...]
 }
 ```
 
@@ -486,15 +491,21 @@ let r; try { r = await (await pk.registerKey("[buyer-key]")).wait(); console.log
 
 seller (Account #1) を使う場合も同様に登録すること。
 
-### G. Bridge ログに新しい Purchase event が出ない / wallet が `/issuer/token` で 400
+### G. Bridge ログに新しい Purchase event が出ない / bridge が止まる / wallet が `/issuer/token` で 400
 
-**原因**: bridge listener は起動時に取得した block cursor から先のみを
-ポーリングする。Hardhat を再起動すると block 番号が 0 にリセットされる
-ので、bridge は「過去」の block しか見えなくなる。あるいは wallet が
-旧チェーンで発行された pre_authorized_code を再利用しようとして
-publisher 側で consumed 扱いになり 400 を返す。
+**原因**: bridge は起動時に IoTMarket から Merchandise の一覧を読み、そのときの block 番号から先だけを見ます。Hardhat を再起動するとチェーンが空になり、block 番号も 0 に戻ります。
 
-**対処**: bridge コンテナを強制再作成して cursor をリセット:
+- 動いている bridge は、古い block 番号より先しか見ないので、新しい Purchase event を拾いません
+- bridge を作り直しても、IoTMarket がまだ deploy されていなければ、一覧を読めずに `bridge: fatal` を出して終了します (exit 1)。自動では再起動しません
+
+wallet の 400 は、旧チェーンで発行された pre_authorized_code を再利用しようとして、publisher 側で使用済みと扱われたときに出ます。
+
+**対処**: 次の順にやり直します。
+
+1. コントラクトを deploy し直します ([E](#e-hardhat-ノードを再起動した後getstate-等が-0x-で返り-bad_data-になる) の手順)。buyer の公開鍵も登録し直します ([F](#f-チェーン再デプロイ後account-2-の購入が-0x295f0a57-で-revert-する) の手順)
+2. publisher を作り直す場合 (下の 400 が続く場合) は、ここで作り直します。publisher のメモリ上の SellerToken と seller の登録が消えるので、Step S2 からやり直します
+3. Step S3 で Merchandise を deploy して登録し直し、Step S4 で seller binding をやり直します。新しいチェーンでは Merchandise のアドレスも変わるので、S3 で表示された値を使います。publisher を作り直していなくても S4 は必要です
+4. S3 のあとで bridge を作り直します。bridge は作り直した時点の Merchandise だけを監視するので、S3 より前に作り直すと、新しい Merchandise を監視しません
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -503,17 +514,26 @@ sleep 5
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
 ```
 
-期待する出力:
+期待する出力 (Merchandise の数は、deploy script の 5 個に S3 の分を足した数になります):
 
 ```text
+bridge: listening to 6 merchandise(s)
 bridge: starting poll from block <現在の番号>
+bridge: started rpc=http://host.docker.internal:8545 market=0x... publisher=http://publisher:8080
 ```
 
-その後、再度 `Merchandise.purchase()` を実行すると新しい Purchase event
-を捕捉できる。古い deeplink は破棄して、新しい `bridge: claim ok` 行から
-取り直すこと。
+`bridge: fatal` が出ている場合は、IoTMarket がまだ deploy されていません。手順 1 に戻ります。
 
-wallet の 400 が続く場合は、Hardhat を起動し直したあとに同じ購入をして、取引の ID (tx hash) が前回と同じになっている可能性がある。publisher は同じ取引 ID には前回の使用済みのコードを返すので、publisher も作り直す (`docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge`)。publisher のメモリ上の SellerToken と seller の登録も消えるので、Step S2 と S4 をやり直す。取り込んだデータ (Stage 6 Step E1 で書き込んだ行) も消えるので、S5 で行を見たい場合は Stage 6 Step E1 の書き込みもやり直す。
+その後、再度 `Merchandise.purchase()` を実行すると新しい Purchase event を捕捉できます。古い deeplink は破棄して、新しい `bridge: claim ok` 行から取り直してください。
+
+wallet の 400 が続く場合は、Hardhat を起動し直したあとに同じ購入をして、取引の ID (tx hash) が前回と同じになっている可能性があります。publisher は同じ取引 ID には前回の使用済みのコードを返すので、手順 2 で publisher も作り直します。
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher
+```
+
+このあと Step S2〜S4 をやり直し、最後に上の手順で bridge を作り直します。取り込んだデータ (Stage 6 Step E1 で書き込んだ行) も消えるので、S5 で行を見たい場合は Stage 6 Step E1 の書き込みもやり直します。
 
 ### H. その他
 
@@ -537,7 +557,7 @@ wallet の 400 が続く場合は、Hardhat を起動し直したあとに同じ
 ## 関連
 
 - [SellerVC 設計仕様](../design/seller-vc-spec.md)
-- [Marketplace × Wallet bridge (Stage 5)](marketplace-vc-bridge.md)
+- [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md)
 - [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md)
-- [SSI Service (Stage 4 prep)](ha-ssi-service.md)
-- [SSI Wallet (Stage 1)](ha-ssi-wallet.md)
+- [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md)
+- [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md)

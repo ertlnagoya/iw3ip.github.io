@@ -256,7 +256,7 @@ Note down the four values shown in the console: `seller`, `merchandise`, `deploy
 
 ### Steps
 
-Run this in the terminal where you set `SELLER` in Step S2 (at the repository top). Before running, replace each whole `<…>` in the first three lines, including the angle brackets, with the value you noted in Step S3 (zsh treats `<` as a redirect, so running them as is fails).
+Run this in the terminal where you set `SELLER` in Step S2 (at the repository top). Before running, replace each whole `<…>` in the first three lines, including the angle brackets, with the value you noted in Step S3. If you forget, nothing errors out, because the values are quoted: the placeholder text is sent as is. When `MARKETPLACE_HARDHAT_RPC` is not set, a bogus address gets registered (when it is set, the call fails with HTTP 502 `chain_rpc_failed`).
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -278,13 +278,13 @@ curl -s -X POST http://$HOST_IP:8080/marketplace/register \
 
 ```json
 {
-  "registered": true,
-  "merchandise_address": "0x...",
-  "seller_did": "did:jwk:...",
-  "dataset_id": "home/env/temperature",
-  "tx_hash": "0x...",
-  "register_count": 1,
-  "owner_verify": "skipped"
+    "registered": true,
+    "merchandise_address": "0x...",
+    "seller_did": "did:jwk:...",
+    "dataset_id": "home/env/temperature",
+    "tx_hash": "0x...",
+    "register_count": 1,
+    "owner_verify": "skipped"
 }
 ```
 
@@ -305,11 +305,11 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 
 ```json
 {
-  "raw_topic": "marketplace/seller_registered",
-  "subject_did": "did:jwk:...",
-  "purpose": "register",
-  "reason": "seller_register:jti=...:merchandise=0x...:eth=0x...:tx=0x...:owner_verify=skipped",
-  "holder_did": "did:jwk:..."
+    "raw_topic": "marketplace/seller_registered",
+    "subject_did": "did:jwk:...",
+    "purpose": "register",
+    "reason": "seller_register:jti=...:merchandise=0x...:eth=0x...:tx=0x...:owner_verify=skipped",
+    "holder_did": "did:jwk:..."
 }
 ```
 
@@ -332,9 +332,12 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 ```
 
 Then follow the procedure of the [Stage 5 hands-on](marketplace-vc-bridge.md): purchase with MetaMask → receive in the wallet
-→ obtain a ViewerToken → fetch. The ViewerToken expires after 60 seconds, so run the next commands right after presenting; if you get `viewer_token_expired`, present again. Before running, replace the whole `<buyer ViewerToken>`, including the angle brackets, with the token you extracted as in [Stage 5 Step 8](marketplace-vc-bridge.md#step-8-obtain-a-viewertoken) (zsh treats `<` as a redirect).
+→ obtain a ViewerToken → fetch. The ViewerToken expires after 60 seconds, so run the next commands right after presenting; if you get `viewer_token_expired`, present again. Before running, replace the whole `<buyer ViewerToken>`, including the angle brackets, with the token you extracted as in [Stage 5 Step 8](marketplace-vc-bridge.md#step-8-obtain-a-viewertoken). If you forget, the placeholder text is sent as the token and the call fails with 401 (`viewer_token_unknown`).
+
+The next command uses the `$MERCH` you set in Step S4. Run it in the same terminal as Step S4. The first line should print `MERCH=0x...`. If nothing follows `MERCH=`, you are in a different terminal: first run `MERCH='<merchandise address from Step S3>'` with the `<…>` replaced by the value you noted in Step S3.
 
 ```bash
+echo "MERCH=$MERCH"
 TOKEN='<buyer ViewerToken>'
 curl -s -H "Authorization: Bearer $TOKEN" \
   "http://$HOST_IP:8080/platform/data?merchandise=$MERCH" | python3 -m json.tool
@@ -344,12 +347,14 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ```json
 {
-  "dataset_id": "home/env/temperature",
-  "count": N,
-  "read_count": 1,
-  "seller_did": "did:jwk:...(the seller's DID)",
-  "allowed_views": ["event"],
-  "rows": [...]
+    "dataset_id": "home/env/temperature",
+    "count": N,
+    "read_count": 1,
+    "seller_did": "did:jwk:...(the seller's DID)",
+    "allowed_views": [
+        "event"
+    ],
+    "rows": [...]
 }
 ```
 
@@ -492,15 +497,21 @@ let r; try { r = await (await pk.registerKey("[buyer-key]")).wait(); console.log
 
 Register in the same way when you use the seller (Account #1).
 
-### G. No new Purchase event appears in the bridge log / the wallet gets 400 at `/issuer/token`
+### G. No new Purchase event appears in the bridge log / the bridge stops / the wallet gets 400 at `/issuer/token`
 
-**Cause**: The bridge listener polls only blocks after the block cursor obtained at
-startup. Restarting Hardhat resets the block number to 0,
-so the bridge can see only "past" blocks. Alternatively, the wallet tries to
-reuse a pre_authorized_code issued on the old chain, and
-the publisher treats it as consumed and returns 400.
+**Cause**: At startup, the bridge reads the list of Merchandise from IoTMarket and watches only blocks after the block number at that moment. Restarting Hardhat empties the chain and resets the block number to 0.
 
-**Fix**: Force-recreate the bridge container to reset the cursor:
+- A bridge that is still running watches only blocks after the old block number, so it misses new Purchase events
+- If you recreate the bridge while IoTMarket is not deployed yet, it cannot read the list, prints `bridge: fatal`, and exits (exit 1). It does not restart on its own
+
+The wallet's 400 appears when the wallet tries to reuse a pre_authorized_code issued on the old chain and the publisher treats it as already used.
+
+**Fix**: Redo the steps in this order.
+
+1. Redeploy the contracts (the steps in [E](#e-after-restarting-the-hardhat-node-getstate-and-similar-calls-return-0x-and-fail-with-bad_data)). Register the buyer's public key again as well (the steps in [F](#f-after-redeploying-the-chain-a-purchase-by-account-2-reverts-with-0x295f0a57))
+2. If you recreate the publisher (when the 400 below persists), do it now. The SellerToken and the seller registration in the publisher's memory are cleared, so redo from Step S2
+3. Deploy and register the Merchandise again in Step S3, and redo the seller binding in Step S4. On the new chain the Merchandise address also changes, so use the values printed in S3. S4 is needed even if you did not recreate the publisher
+4. Recreate the bridge after S3. The bridge watches only the Merchandise that exist when it is recreated, so if you recreate it before S3, it does not watch the new Merchandise
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -509,16 +520,26 @@ sleep 5
 docker logs iw3ip-mv-bridge 2>&1 | tail -5
 ```
 
-Expected output:
+Expected output (the number of Merchandise is the five from the deploy script plus the one from S3):
 
 ```text
+bridge: listening to 6 merchandise(s)
 bridge: starting poll from block <current number>
+bridge: started rpc=http://host.docker.internal:8545 market=0x... publisher=http://publisher:8080
 ```
 
-After that, running `Merchandise.purchase()` again lets the bridge capture the new Purchase event.
-Discard the old deeplink and take a new one from the new `bridge: claim ok` line.
+If you see `bridge: fatal`, IoTMarket is not deployed yet. Go back to step 1.
 
-If the wallet still gets 400, you may have repeated the same purchase after restarting Hardhat, so the transaction ID (tx hash) is the same as before. The publisher returns the previous, already used code for the same transaction ID, so recreate the publisher as well (`docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge`). This also clears the SellerToken and the seller registration held in the publisher's memory, so redo Steps S2 and S4. The ingested rows (written in Stage 6 Step E1) are cleared too; redo Stage 6 Step E1 if you want rows in S5.
+After that, running `Merchandise.purchase()` again lets the bridge capture the new Purchase event. Discard the old deeplink and take a new one from the new `bridge: claim ok` line.
+
+If the wallet still gets 400, you may have repeated the same purchase after restarting Hardhat, so the transaction ID (tx hash) is the same as before. The publisher returns the previous, already used code for the same transaction ID, so recreate the publisher as well in step 2.
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher
+```
+
+Then redo Steps S2–S4, and finally recreate the bridge as shown above. The ingested rows (written in Stage 6 Step E1) are cleared too; redo Stage 6 Step E1 if you want rows in S5.
 
 ### H. Other issues
 
@@ -541,7 +562,7 @@ See also [Troubleshooting in Stage 5](marketplace-vc-bridge.md#troubleshooting)
 ## Related
 
 - [SellerVC design spec](../design/seller-vc-spec.md)
-- [Marketplace × Wallet bridge (Stage 5)](marketplace-vc-bridge.md)
+- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md)
 - [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md)
-- [SSI Service (Stage 4 prep)](ha-ssi-service.md)
-- [SSI Wallet (Stage 1)](ha-ssi-wallet.md)
+- [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md)
+- [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
