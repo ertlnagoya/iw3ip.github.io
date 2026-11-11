@@ -124,9 +124,11 @@ mock でイベントファイルが生成されることを確認できたら、
 
 ### 2. 実機（USB webcam）
 
-実機モードでは、物体検出のモデル (YOLO) を使います。前提のとおり venv に `ultralytics` と `opencv-python` を入れ、その venv を有効にしたターミナルで、`webcam-bridge` フォルダに戻ってから (`cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge`) 実行します。初回の実行時に、モデルのファイル (`yolov8n.pt`、数 MB) が自動でダウンロードされます。
+実機モードでは、物体検出のモデル (YOLO) を使います。前提のとおり venv に `ultralytics` と `opencv-python` を入れておきます。下のコマンドの最初の 2 行で `webcam-bridge` フォルダに移動し、その venv を有効にします。初回の実行時に、モデルのファイル (`yolov8n.pt`、数 MB) が自動でダウンロードされます。
 
 ```bash
+cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge
+source ../.venv/bin/activate
 python3 webcam_litter_bridge.py \
   --mode webcam \
   --camera-index 0 \

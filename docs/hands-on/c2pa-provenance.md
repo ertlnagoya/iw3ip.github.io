@@ -113,7 +113,7 @@ wrote .../examples/hands_on/c2pa_provenance/certs/ca.pem, chain.pem, gw.key (CN=
 | `chain.pem` | ゲートウェイの証明書と CA の証明書 | 署名と一緒に画像に埋め込まれ、誰が署名したかを示す |
 | `gw.key` | ゲートウェイの秘密鍵 | 署名に使う。人に渡してはいけない |
 
-`publisher_chain.pem` と `publisher.key` は、publisher の証明書と秘密鍵です。このページでは使わず、[来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) で使います。
+`publisher_chain.pem` と `publisher.key` は、publisher の証明書 (CN は `iw3ip-publisher`) と秘密鍵です。同じ CA が発行します。このページでは使わず、[来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) で、publisher が Tier 2 の画像に署名するのに使います。このページでは、Tier 2 の画像もゲートウェイの鍵で署名します。
 
 証明書と署名の関係は、次の図のとおりです。検証する側が `ca.pem` を「信頼する CA」として登録していれば、その CA が発行した証明書で付けた署名は `Trusted` になります。登録していなければ、署名が正しくても `Valid` 止まりです。
 
@@ -136,7 +136,7 @@ flowchart LR
 python examples/hands_on/c2pa_provenance/p0_sign_verify.py
 ```
 
-成功すると、次のように表示されます。
+成功すると、次のように表示されます。1 行目の版の番号は、環境によって変わります (`c2pa-python 0.38.2 / c2pa-rs 0.91.6` などと表示されることがあります)。
 
 ```
 c2pa-python 0.38.1 / c2pa-rs 0.91.3

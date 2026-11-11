@@ -34,7 +34,7 @@
 
 ## つまずきやすい点
 
-- `make_test_certs.py` は、このページのために publisher の証明書 (`publisher_chain.pem`、`publisher.key`) も作るようになりました。前のページの §2 で作った証明書には publisher の証明書が無いため、作り直します (§1)
+- `make_test_certs.py` は、ゲートウェイの証明書 (CN は `iw3ip-gateway`) と publisher の証明書 (CN は `iw3ip-publisher`) を、同じテスト用の CA (`IW3IP Test CA`) で発行します。publisher は、自分の証明書で Tier 2 の画像と要約カードに署名します。古い版の `make_test_certs.py` で作った証明書には publisher の証明書が無いため、§1 で作り直します
 - publisher は Docker のコンテナで動き、`examples/hands_on/c2pa_provenance/certs/` を読み取り専用でマウントして証明書を読みます。証明書を作り直したら、publisher を起動し直します
 - ProvenanceToken のアドレスは、Hardhat ノードを起動し直すと変わることがあります。§3 では、§2 で表示されたアドレスを使います
 - この設定では、publisher は Hardhat ノードの、鍵がロックされていないアカウントでトークンを発行します。手元で試すための方法で、本番では使えません
@@ -79,7 +79,7 @@ git pull
 source .venv/bin/activate
 ```
 
-証明書を作り直します。このページでは、ゲートウェイの証明書に加えて、publisher の証明書も使います。
+証明書を作り直します。このページでは、ゲートウェイの証明書に加えて、publisher の証明書も使います。前のページの §2 で作った証明書にも publisher の証明書は入っていますが、念のため作り直します。
 
 ```bash
 python examples/hands_on/c2pa_provenance/make_test_certs.py
@@ -95,7 +95,7 @@ wrote .../certs/ca.pem, chain.pem, gw.key (CN=iw3ip-gateway), publisher_chain.pe
 | --- | --- | --- |
 | `ca.pem` | 自分で作った CA の証明書 | publisher が信頼する CA として登録する (検証の結果が `Trusted` になる) |
 | `chain.pem`、`gw.key` | ゲートウェイの証明書と秘密鍵 | プログラムが撮影画像に署名する |
-| `publisher_chain.pem`、`publisher.key` | publisher の証明書と秘密鍵 | publisher が Tier 2 の画像に署名する |
+| `publisher_chain.pem`、`publisher.key` | publisher の証明書と秘密鍵 (CN は `iw3ip-publisher`) | publisher が Tier 2 の画像と要約カードに署名する |
 
 ProvenanceToken は、OpenZeppelin [3] の ERC-721 [4] の実装を使います。`iot-market/` で依存関係を入れ直します。
 
@@ -122,7 +122,7 @@ npx hardhat run scripts/deployProvenanceToken.ts --network localhost
 cd ..
 ```
 
-次のように表示されます。
+次のように表示されます。コントラクトを初めてコンパイルするときは、先頭に `Compiled ...` で始まる行が出ることがあります。
 
 ```
 Contract "ProvenanceToken" with 0x5FbDB2315678afecb367f032d93F642f64180aa3 deployed
@@ -175,7 +175,7 @@ curl -s http://localhost:8080/health
 python examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py
 ```
 
-成功すると、次のように表示されます (マニフェストの識別子は実行のたびに変わります)。
+成功すると、次のように表示されます (マニフェストの識別子は実行のたびに変わります)。1 行目の版の番号は、環境によって変わります (`c2pa-python 0.38.2 / c2pa-rs 0.91.6` などと表示されることがあります)。
 
 ```
 c2pa-python 0.38.1 / c2pa-rs 0.91.3
@@ -359,7 +359,7 @@ docker compose -f infra/docker-compose.yml up -d publisher
 ## トラブル時
 
 - 症状: `.../certs/publisher_chain.pem not found; run make_test_certs.py first`
-  - 確認: §1 の `make_test_certs.py` を実行したか。前のページで作った証明書には、publisher の証明書がありません
+  - 確認: §1 の `make_test_certs.py` を実行したか。古い版の `make_test_certs.py` で作った証明書には、publisher の証明書がありません
 - 症状: `[FAIL] P1 signed capture is Trusted at the publisher  (200 Valid ...)`
   - 確認: 証明書を作り直したあと、publisher を起動し直したか (§3 のコマンドをもう一度実行する)。publisher は起動したときに `ca.pem` を読みます
 - 症状: `[FAIL] P1 unsigned image is accepted without provenance  (200 c2pa=None)`

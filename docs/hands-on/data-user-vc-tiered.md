@@ -290,7 +290,7 @@ pip install fastapi uvicorn pydantic pydantic-settings httpx paho-mqtt \
 python -m pytest tests/test_data_user_vc_tiered.py -v
 ```
 
-テストの 4 ケース（GovernmentOrganization / Enterprise / 低スコア / score>=80 でも entity が違うと full にならない）は、`trust_score.py` が返す trustScore と判定を、スマートコントラクト `DataUserVerifier.sol` の重みに合わせて手で書いた期待値と比べます。テストは `DataUserVerifier.sol` 自体を読み込んだり実行したりしないので、コントラクトの重みを変えたときは、`trust_score.py` とテストの期待値も合わせて直す必要があります。
+このファイルには 42 個のテストがあります。そのうち trustScore を計算する関数を調べる最初の 4 個のテスト（`test_trust_` で始まるもの。GovernmentOrganization / Enterprise / 低スコア / score>=80 でも entity が違うと full にならない）は、`trust_score.py` が返す trustScore と判定を、スマートコントラクト `DataUserVerifier.sol` の重みに合わせて手で書いた期待値と比べます。テストは `DataUserVerifier.sol` 自体を読み込んだり実行したりしないので、コントラクトの重みを変えたときは、`trust_score.py` とテストの期待値も合わせて直す必要があります。
 
 ## 7. 実機検証で観測した値
 

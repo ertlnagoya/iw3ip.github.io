@@ -16,4 +16,4 @@ A. 不要です。ブロックチェーンは手元の PC で動かす Hardhat �
 
 ## Q. Part、Phase、Stage は何が違いますか？
 
-A. Part はこのサイトでの学習順、Phase は基盤の発展段階、Stage は Part 2 の VC を中心とするハンズオンに付けた通し番号です (準備の Stage 0 と、VC を使わずに画像の来歴を署名する Stage P も含みます)。対応は [ハンズオンの概要](../hands-on/index.md#part-phase-stage) にまとめています。
+A. Part はこのサイトでの学習順、Phase は基盤の発展段階、Stage は Part 2 の VC を中心とするハンズオンに付けた通し番号です (準備の Stage 0 と、画像の来歴を署名する Stage P も含みます。Stage P の P0 は VC を使わずに単独で動き、P1〜P3 は publisher とチェーンにつないで Tier ごとのトークンを使います)。対応は [ハンズオンの概要](../hands-on/index.md#part-phase-stage) にまとめています。

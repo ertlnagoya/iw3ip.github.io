@@ -6,13 +6,13 @@ In [Prove where an image came from](c2pa-provenance.md) you tried C2PA [1] signi
 
 These are the two images you make on this page. On the left is the captured image signed by the gateway; on the right is the Tier 2 image the publisher blurred and signed again. It looks merely blurred, but the right image carries provenance showing that it was made from the left one.
 
-> **What you do**: send a signed image to the publisher and look at the publisher's validation, the signing of the Tier 2 image, the token, what provenance each tier sees, and the audit log
+> **What you'll do**: send a signed image to the publisher and look at the publisher's validation, the signing of the Tier 2 image, the token, what provenance each tier sees, and the audit log
 >
 > **Prerequisites**: §1–§3 of [Prove where an image came from](c2pa-provenance.md) are done. Docker and Node.js are available. The phone wallet is not used
 >
-> **What you use**: a PC (a USB webcam or built-in camera is optional)
+> **What you need**: a PC (a USB webcam or built-in camera is optional)
 >
-> **Time**: about 40–60 minutes
+> **Time required**: approx. 40–60 minutes
 
 !!! note "Where this page belongs"
     This hands-on runs P1 and P2 of the [C2PA provenance pipeline design spec](../design/c2pa-provenance-spec.md).
@@ -34,7 +34,7 @@ On this page you try three things from the publisher's side: checking that a rec
 
 ## Common pitfalls
 
-- `make_test_certs.py` now also makes the publisher's certificate (`publisher_chain.pem`, `publisher.key`) for this page. The certificates from §2 of the previous page do not include it, so make them again (§1)
+- `make_test_certs.py` issues the gateway certificate (CN `iw3ip-gateway`) and the publisher certificate (CN `iw3ip-publisher`) from the same test CA (`IW3IP Test CA`). The publisher signs the Tier 2 image and the summary card with its own certificate. Certificates made with an older `make_test_certs.py` do not include the publisher's, so make them again in §1
 - The publisher runs in a Docker container and reads the certificates from `examples/hands_on/c2pa_provenance/certs/`, mounted read-only. After remaking the certificates, restart the publisher
 - The ProvenanceToken address can change when you restart the Hardhat node. In §3, use the address printed in §2
 - With these settings, the publisher issues tokens from an unlocked account of the Hardhat node. This is for local trials only and cannot be used in production
@@ -79,7 +79,7 @@ git pull
 source .venv/bin/activate
 ```
 
-Remake the certificates. This page uses the publisher's certificate in addition to the gateway's.
+Remake the certificates. This page uses the publisher's certificate in addition to the gateway's. The certificates from §2 of the previous page already include the publisher's, but make them again to be safe.
 
 ```bash
 python examples/hands_on/c2pa_provenance/make_test_certs.py
@@ -95,7 +95,7 @@ wrote .../certs/ca.pem, chain.pem, gw.key (CN=iw3ip-gateway), publisher_chain.pe
 | --- | --- | --- |
 | `ca.pem` | Certificate of your own CA | Registered as the CA the publisher trusts (validation becomes `Trusted`) |
 | `chain.pem`, `gw.key` | Gateway certificate and private key | The program signs the captured image |
-| `publisher_chain.pem`, `publisher.key` | Publisher certificate and private key | The publisher signs the Tier 2 image |
+| `publisher_chain.pem`, `publisher.key` | Publisher certificate and private key (CN `iw3ip-publisher`) | The publisher signs the Tier 2 image and the summary card |
 
 The ProvenanceToken uses OpenZeppelin's [3] ERC-721 [4] implementation. Reinstall the dependencies in `iot-market/`.
 
@@ -122,7 +122,7 @@ npx hardhat run scripts/deployProvenanceToken.ts --network localhost
 cd ..
 ```
 
-It prints the following.
+It prints the following. The first time the contracts are compiled, a line starting with `Compiled ...` may appear first.
 
 ```
 Contract "ProvenanceToken" with 0x5FbDB2315678afecb367f032d93F642f64180aa3 deployed
@@ -175,7 +175,7 @@ It succeeded if `{"status":"ok","service":"publisher"}` is printed.
 python examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py
 ```
 
-On success it prints the following (manifest identifiers change every run).
+On success it prints the following (manifest identifiers change every run). The version numbers on the first line depend on your environment (you may see, for example, `c2pa-python 0.38.2 / c2pa-rs 0.91.6`).
 
 ```
 c2pa-python 0.38.1 / c2pa-rs 0.91.3
@@ -359,7 +359,7 @@ docker compose -f infra/docker-compose.yml up -d publisher
 ## Troubleshooting
 
 - Symptom: `.../certs/publisher_chain.pem not found; run make_test_certs.py first`
-  - Check: did you run `make_test_certs.py` in §1? The certificates from the previous page do not include the publisher's
+  - Check: did you run `make_test_certs.py` in §1? Certificates made with an older `make_test_certs.py` do not include the publisher's
 - Symptom: `[FAIL] P1 signed capture is Trusted at the publisher  (200 Valid ...)`
   - Check: did you restart the publisher after remaking the certificates (run the §3 command again)? The publisher reads `ca.pem` when it starts
 - Symptom: `[FAIL] P1 unsigned image is accepted without provenance  (200 c2pa=None)`

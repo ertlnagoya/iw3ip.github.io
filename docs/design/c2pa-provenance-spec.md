@@ -3,10 +3,10 @@
 !!! abstract "このページの位置付け"
     [設計](index.md) の章の設計仕様です。
     市販の安価な IP カメラや USB ウェブカメラの映像と、センサーデータに、C2PA (Coalition for Content Provenance and Authenticity) [1] の規格に沿った来歴情報を付ける **Stage P** (Provenance) の設計仕様である。
-    署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた設計であり、そのうち P0〜P3 は実装した (§10 の注記。Content Credentials Verify と c2patool での確認はまだ)。
+    署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた設計であり、そのうち P0〜P3 は実装して、教材リポジトリの main に入っている (§10 の注記。Content Credentials Verify と c2patool での確認はまだ)。
     本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像](vc-architecture-overview.md) の §5)。
     Stage P は、Stage T の段階アクセス ([段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)) と Stage 7 の SellerVC ([SellerVC 設計仕様](seller-vc-spec.md)) の上に載せる。P0 の部分は、ハンズオン [画像の来歴を証明する](../hands-on/c2pa-provenance.md) で手元で動かせる。P1 と P2 は、ハンズオン [来歴を publisher とチェーンにつなぐ](../hands-on/c2pa-provenance-publisher.md) で、P3 は [VLM の要約から元の画像をたどる](../hands-on/c2pa-provenance-vlm.md) で動かせる。
-    本文中の P0〜P6 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、最初に作る最小限の実装) は P0〜P2 に当たる。ハンズオンで動かせるのは P0〜P3 で、P4 以降はまだ実装していない。
+    本文中の P0〜P6 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、最初に作る最小限の実装) は P0〜P2 に当たる。P0〜P3 は実装済みでハンズオンで動かせる。P4 以降はまだ実装していない。
 
 本仕様は、写真や映像に**「誰が、いつ、どう撮って、どう加工したか」の記録を付け、その記録に電子署名をする**仕組みを IW3IP に組み込むための設計である。記録を改ざんすると署名が合わなくなるため、受け取った人が自分で本物かどうかを確かめられる。
 
@@ -19,7 +19,7 @@
 
 ## 読む前に
 
-- ハンズオンの Part 2 の「データ処理を入れてみよう」([信頼度に応じて見せる中身を変える](../hands-on/data-user-vc-tiered.md) など) を終えていると読みやすい。Tier 1〜3、DataUserVC、publisher、`/media/upload` は説明なしで使う
+- ハンズオンの Part 2 の「データ処理と来歴を入れてみよう」([信頼度に応じて見せる中身を変える](../hands-on/data-user-vc-tiered.md) など) を終えていると読みやすい。Tier 1〜3、DataUserVC、publisher、`/media/upload` は説明なしで使う
 - DID と VC の基本 ([SSI/DID/VC 基礎](../foundations/ssi-did-vc-basics.md)) を前提にする。C2PA の署名の仕組みは、§2 で VC と対応させて説明する
 
 ## つまずきやすい点
@@ -134,7 +134,7 @@ flowchart TB
   class IPC,SEN,MP4,TPM todo
 ```
 
-緑の枠は実装した部分 (P0〜P3)、灰色の点線の枠はまだ実装していない部分 (P4、P5) である。
+緑の枠は実装して main に入っている部分 (P0〜P3)、灰色の点線の枠はまだ実装していない部分 (P4、P5) である。
 
 図の用語は次のとおりである。
 
@@ -376,7 +376,7 @@ flowchart LR
   M -->|"同じ識別子"| N["ProvenanceToken の<br>manifestLabel"]
 ```
 
-カードは `/media/<sha256>.svg` として publisher が保存し、URL を `provenance.summary_card_url` で配る。`/media/upload` は引き続き SVG を受け付けない。カードを配るときは、`Content-Security-Policy: default-src 'none'` を付けて、スクリプトや外部の読み込みを止める。
+カードは `/media/<sha256>.svg` として publisher が保存し、URL を `provenance.summary_card_url` で配る。`/media/upload` は引き続き SVG を受け付けない。カードを配るときは、`Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'` と `X-Content-Type-Options: nosniff` を付けて、スクリプトや外部の読み込みを止める。インラインのスタイルだけは許すが、スクリプトは許さない。
 
 署名で示せるのは、どの撮影画像から、どのモデルとプロンプトで、誰がテキストを作ったかである。テキストに個人につながる情報が含まれていないことは示せない。それは、モデルとプロンプトで決まる。ハンズオン [VLM の要約から元の画像をたどる](../hands-on/c2pa-provenance-vlm.md) の §4 では、llava の要約が絵の人物の性別と年齢層を書き、そのカードも `Trusted` になった。
 
@@ -577,7 +577,7 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 | **P5** | RTSP の IP カメラと Raspberry Pi、TPM での署名、§9 の評価 | 市販 IP カメラ・Raspberry Pi | 未着手 |
 | **P6** | ハンズオン (JA + EN) | — | P0〜P3 の分を作った |
 
-→ 実装の補足は次のとおりである。
+→ 実装の補足は次のとおりである。P0〜P3 のコードは、すべて教材リポジトリの main に入っている。
 
 - P0 のプログラム (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) は、既定ではプログラムが描いた絵 (人とペットボトル) に署名する。ウェブカメラは `--webcam` を付けたときだけ使う。検証には SDK の Reader だけを使い、Content Credentials Verify と c2patool は使っていない
 - P2 に挙げた Tier 2 の派生マニフェストと削除 (redaction) は、P0 のプログラムでも作って調べている
@@ -637,13 +637,13 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 
 検証のプログラムは、本体リポジトリの `examples/hands_on/c2pa_provenance/` に置いた。
 
-Content Credentials Verify [11] での確認と、RTSP のカメラ、断片化 MP4、Raspberry Pi での計測はまだ行っていない (P0、P4、P5 で行う)。
+Content Credentials Verify [11] と c2patool での確認はまだ行っていない。P0 の検証は SDK の Reader だけで行った (§10 の注記)。RTSP のカメラ、断片化 MP4、Raspberry Pi での計測もまだで、P4 と P5 で行う。
 
 ## 参考文献
 
 [1] C2PA, "C2PA Technical Specification, Version 2.3," <https://spec.c2pa.org/specifications/specifications/2.3/specs/C2PA_Specification.html>
 
-[2] Content Authenticity Initiative, "c2pa-rs: Rust SDK for C2PA," GitHub, <https://github.com/contentauth/c2pa-rs>
+[2] Content Authenticity Initiative, "c2pa-rs: Rust SDK for the core C2PA (Coalition for Content Provenance and Authenticity) specification," GitHub, <https://github.com/contentauth/c2pa-rs>
 
 [3] Content Authenticity Initiative, "c2pa-python: Python binding for c2pa-rs library," GitHub, <https://github.com/contentauth/c2pa-python>
 

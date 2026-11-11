@@ -199,6 +199,6 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 
 ## 参考文献
 
-[1] MetaMask, "MetaMask," <https://metamask.io/>
+[1] MetaMask, "MetaMask," <https://metamask.com/>
 
 [2] Vite, "Vite," <https://vite.dev/>

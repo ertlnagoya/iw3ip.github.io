@@ -88,7 +88,7 @@ PROVENANCE_TOKEN_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 \
 python examples/hands_on/c2pa_provenance/p3_vlm_summary.py
 ```
 
-成功すると、次のように表示されます (識別子と番号は実行のたびに変わります)。
+成功すると、次のように表示されます (識別子と番号は実行のたびに変わります)。1 行目の版の番号は、環境によって変わります (`c2pa-python 0.38.2 / c2pa-rs 0.91.6` などと表示されることがあります)。
 
 ```
 c2pa-python 0.38.1 / c2pa-rs 0.91.3
@@ -232,7 +232,7 @@ python examples/hands_on/c2pa_provenance/p3_vlm_summary.py
 | モデル | Ollama の `llava` (4.7 GB) |
 | 要約のプロンプト | 人物、組織、場所の名前などを特定せず、`an adult` や `a public location` のような一般的な語で 1〜2 文にまとめるよう指示する文 ([vlm_client.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/publisher/app/vlm_client.py) の `_PROMPTS_DEFAULT`) |
 
-要約の文とカードは、次のとおりでした。要約の文とカードは、次のとおりでした。
+要約の文とカードは、次のとおりでした。
 
 ```
 [PASS] event is published  (217.3s)

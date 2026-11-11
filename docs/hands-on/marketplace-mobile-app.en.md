@@ -4,7 +4,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 
 > **What you'll do**: Use iot-market-ui as a PWA on your phone and go through purchase and VC receipt
 >
-> **Prerequisites**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5), Step E0 of [Stage 6](marketplace-vc-end-to-end.md) (deploy and public key registration)
+> **Prerequisites**: [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md), Step E0 of [Stage 6](marketplace-vc-end-to-end.md) (deploy and public key registration)
 >
 > **What you need**: PC + smartphone (iw3ip-wallet) + MetaMask mobile
 >
@@ -23,7 +23,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
     deploy script of Stage 6 case B and later. If you choose `home/event/possible_littering`
     (Merchandise #2), you can confirm that the same camera events as in Stage 0
     (see the [Hands-on overview](index.md#part-phase-stage) for the list of Stages)
-    ([webcam-event-sharing](webcam-event-sharing.md))
+    ([Share detections, not raw frames](webcam-event-sharing.md))
     can be read through a purchase (PurchaseViewerVC).
     `home/event/flood_risk_high` (Merchandise #4) has no PurchaseViewerVC
     Presentation Definition registered, so you cannot get as far as viewing it.
@@ -56,9 +56,9 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 
 ## Pages to read first
 
-- [VC Architecture Overview](../design/vc-architecture-overview.md) — the overall picture
-- [Stage 5: Marketplace × Wallet bridge](marketplace-vc-bridge.md) — the hands-on the purchase flow comes from
-- [Stage 7: Marketplace Seller VC](marketplace-seller-vc.md) — the seller-side flow
+- [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md) — the overall picture
+- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — the hands-on the purchase flow comes from
+- [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — the seller-side flow
 
 ## Prerequisites
 
@@ -293,7 +293,7 @@ The VC issuance code expires 30 minutes after the purchase claim. Receive the VC
 }
 ```
 
-Merchandise #0 has no seller registration, so `seller_did` is `"unknown"`.
+The Merchandise you bought in Step M3 (one of #0, #1 or #3) has no seller registration, so `seller_did` is `"unknown"`.
 `seller_did` contains the seller's `did:jwk:...` only when you purchase a Merchandise newly
 deployed and registered in Stage 7 Steps S3–S4, without recreating the publisher since then
 (the seller binding lives in the publisher's memory and is lost on recreation; the Merchandise
@@ -380,7 +380,7 @@ and the troubleshooting section of [Stage 7](marketplace-seller-vc.md).
 
 ## Related
 
-- [VC Architecture Overview](../design/vc-architecture-overview.md)
-- [Stage 5: Marketplace × Wallet bridge](marketplace-vc-bridge.md)
-- [Stage 6: ServiceVC × PurchaseViewerVC end-to-end](marketplace-vc-end-to-end.md)
-- [Stage 7: Marketplace Seller VC](marketplace-seller-vc.md)
+- [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md)
+- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md)
+- [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md)
+- [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md)

@@ -4,7 +4,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 
 > **やること**: 1 つの dataset について、ServiceVC での書き込みと PurchaseViewerVC での読み出しをつなぐ
 >
-> **前提**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)
+> **前提**: [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md)
 >
 > **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
@@ -143,6 +143,8 @@ docker logs iw3ip-mv-bridge 2>&1 | tail -5
 
 ```text
 bridge: listening to 5 merchandise(s)
+bridge: starting poll from block <現在のブロック番号>
+bridge: started rpc=http://host.docker.internal:8545 market=0xe7f1725... publisher=http://publisher:8080
 ```
 
 iot-market-ui は別のターミナルで起動します (Stage 5 のターミナル D で動いていれば、そのまま使えるので不要です)。
@@ -346,18 +348,35 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ```json
 {
-  "dataset_id": "home/env/temperature",
-  "count": 5,
-  "read_count": 1,
-  "seller_did": "unknown",
-  "allowed_views": ["event"],
-  "rows": [
-    {"dataset_id": "home/env/temperature", "value": 31},
-    {"dataset_id": "home/env/temperature", "value": 32},
-    {"dataset_id": "home/env/temperature", "value": 33},
-    {"dataset_id": "home/env/temperature", "value": 34},
-    {"dataset_id": "home/env/temperature", "value": 35}
-  ]
+    "dataset_id": "home/env/temperature",
+    "count": 5,
+    "read_count": 1,
+    "seller_did": "unknown",
+    "allowed_views": [
+        "event"
+    ],
+    "rows": [
+        {
+            "dataset_id": "home/env/temperature",
+            "value": 31
+        },
+        {
+            "dataset_id": "home/env/temperature",
+            "value": 32
+        },
+        {
+            "dataset_id": "home/env/temperature",
+            "value": 33
+        },
+        {
+            "dataset_id": "home/env/temperature",
+            "value": 34
+        },
+        {
+            "dataset_id": "home/env/temperature",
+            "value": 35
+        }
+    ]
 }
 ```
 
@@ -482,7 +501,7 @@ SERVICE=
 ## 関連
 
 - [Marketplace VC Bridge 設計仕様](../design/marketplace-vc-bridge-spec.md)
-- [SSI Wallet (Stage 1)](ha-ssi-wallet.md)
-- [SSI Viewer (Stage 3)](ha-ssi-viewer.md)
-- [SSI Service (Stage 4 prep)](ha-ssi-service.md)
-- [Marketplace × Wallet bridge (Stage 5)](marketplace-vc-bridge.md)
+- [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md)
+- [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md)
+- [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md)
+- [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md)

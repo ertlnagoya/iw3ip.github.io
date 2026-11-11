@@ -4,7 +4,7 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 
 > **What you'll do**: For one dataset, connect writes with a ServiceVC to reads with a PurchaseViewerVC
 >
-> **Prerequisites**: [Marketplace VC Bridge](marketplace-vc-bridge.md) (Stage 5)
+> **Prerequisites**: [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md)
 >
 > **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
@@ -142,6 +142,8 @@ Expected output:
 
 ```text
 bridge: listening to 5 merchandise(s)
+bridge: starting poll from block <current block number>
+bridge: started rpc=http://host.docker.internal:8545 market=0xe7f1725... publisher=http://publisher:8080
 ```
 
 Start iot-market-ui in another terminal (skip this if the Stage 5 Terminal D server is still running).
@@ -351,18 +353,35 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ```json
 {
-  "dataset_id": "home/env/temperature",
-  "count": 5,
-  "read_count": 1,
-  "seller_did": "unknown",
-  "allowed_views": ["event"],
-  "rows": [
-    {"dataset_id": "home/env/temperature", "value": 31},
-    {"dataset_id": "home/env/temperature", "value": 32},
-    {"dataset_id": "home/env/temperature", "value": 33},
-    {"dataset_id": "home/env/temperature", "value": 34},
-    {"dataset_id": "home/env/temperature", "value": 35}
-  ]
+    "dataset_id": "home/env/temperature",
+    "count": 5,
+    "read_count": 1,
+    "seller_did": "unknown",
+    "allowed_views": [
+        "event"
+    ],
+    "rows": [
+        {
+            "dataset_id": "home/env/temperature",
+            "value": 31
+        },
+        {
+            "dataset_id": "home/env/temperature",
+            "value": 32
+        },
+        {
+            "dataset_id": "home/env/temperature",
+            "value": 33
+        },
+        {
+            "dataset_id": "home/env/temperature",
+            "value": 34
+        },
+        {
+            "dataset_id": "home/env/temperature",
+            "value": 35
+        }
+    ]
 }
 ```
 
@@ -487,7 +506,7 @@ See also [Troubleshooting in Stage 5](marketplace-vc-bridge.md#troubleshooting).
 ## Related
 
 - [Marketplace VC Bridge design spec](../design/marketplace-vc-bridge-spec.md)
-- [SSI Wallet (Stage 1)](ha-ssi-wallet.md)
-- [SSI Viewer (Stage 3)](ha-ssi-viewer.md)
-- [SSI Service (Stage 4 prep)](ha-ssi-service.md)
-- [Marketplace × Wallet bridge (Stage 5)](marketplace-vc-bridge.md)
+- [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
+- [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md)
+- [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md)
+- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md)

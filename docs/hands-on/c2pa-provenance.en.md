@@ -2,13 +2,13 @@
 
 Attach "provenance" that follows the C2PA standard [1] to an image taken with a camera, and sign it electronically. Next, make a blurred Tier 2 image. The Tier 2 image keeps its link to the original but does not contain the camera ID or the unblurred image. You will see this by running the programs.
 
-> **What you do**: sign a captured image with provenance. See that the provenance of the Tier 2 blurred image no longer carries information that points to a person, and that tampering is detected
+> **What you'll do**: sign a captured image with provenance. See that the provenance of the Tier 2 blurred image no longer carries information that points to a person, and that tampering is detected
 >
 > **Prerequisites**: Python 3.10 or later. The publisher, the blockchain, and the phone wallet are not used
 >
-> **What you use**: a PC (a USB webcam or built-in camera is optional)
+> **What you need**: a PC (a USB webcam or built-in camera is optional)
 >
-> **Time**: about 30–40 minutes
+> **Time required**: approx. 30–40 minutes
 
 !!! note "Where this page belongs"
     This hands-on runs P0 (the first step) of the [C2PA provenance pipeline design spec](../design/c2pa-provenance-spec.md) on your own machine.
@@ -113,7 +113,7 @@ The three files this page uses are:
 | `chain.pem` | Gateway certificate and CA certificate | Embedded in the image with the signature to show who signed |
 | `gw.key` | Gateway private key | Used for signing. Never give it to anyone |
 
-`publisher_chain.pem` and `publisher.key` are the publisher's certificate and private key. This page does not use them; [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md) does.
+`publisher_chain.pem` and `publisher.key` are the publisher's certificate (CN `iw3ip-publisher`) and private key, issued by the same CA. This page does not use them; on [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md), the publisher uses them to sign the Tier 2 image. On this page, the Tier 2 image is also signed with the gateway key.
 
 The following diagram shows how the certificates and the signature relate. If the validator registers `ca.pem` as a trusted CA, a signature made with a certificate that CA issued becomes `Trusted`. If not, a correct signature only reaches `Valid`.
 
@@ -136,7 +136,7 @@ Run everything once with a park scene the program draws (a person and a plastic 
 python examples/hands_on/c2pa_provenance/p0_sign_verify.py
 ```
 
-On success it prints:
+On success it prints the following. The version numbers on the first line depend on your environment (you may see, for example, `c2pa-python 0.38.2 / c2pa-rs 0.91.6`).
 
 ```
 c2pa-python 0.38.1 / c2pa-rs 0.91.3

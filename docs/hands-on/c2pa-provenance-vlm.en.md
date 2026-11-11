@@ -6,18 +6,18 @@ In [Connect provenance to the publisher and the chain](c2pa-provenance-publisher
 
 On the left is the capture signed by the gateway; on the right is the "summary card", on which the publisher drew the VLM's summary and then signed it. The card's provenance says that the left image was the input to the VLM, and holds the sha256 of the summary text.
 
-> **What you do**: have the publisher write a VLM summary, then look at the summary card's signature, its match with the summary text, the link to the capture and the token, and tamper detection
+> **What you'll do**: have the publisher write a VLM summary, then look at the summary card's signature, its match with the summary text, the link to the capture and the token, and tamper detection
 >
 > **Prerequisites**: §1–§3 of [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md)
 >
 > **What you need**: a PC (to try a real VLM, Docker must be able to run the 4.7 GB llava model)
 >
-> **Time**: about 20–30 minutes (another 30 minutes to 1 hour to try a real VLM)
+> **Time required**: approx. 20–30 minutes (another 30 minutes to 1 hour to try a real VLM)
 
-!!! note "Where this page fits"
+!!! note "Where this page belongs"
     This hands-on runs P3 of the [C2PA provenance pipeline design spec](../design/c2pa-provenance-spec.md).
     P3 covers the provenance of the Tier 1 summary text (§5.5 of the spec) and how it is shown (§7.2).
-    VLM summaries were covered in [Add meaning to camera data with a local VLM](local-vlm-distribution.md) and [Tier by semantic level](data-user-vc-tiered-semantic.md).
+    VLM summaries were covered in [Enrich camera data with a local VLM](local-vlm-distribution.md) and [Tier by semantic level](data-user-vc-tiered-semantic.md).
 
 ## Goal
 
@@ -25,7 +25,7 @@ The C2PA [1] SDK can sign images and video but not plain text. Up to P2, therefo
 
 In P3, the publisher draws the summary text into an SVG image (the summary card) and signs the card. By validating the card's provenance, the recipient can trace the summary text back to the capture and the token by themselves.
 
-## What you will learn
+## What this page covers
 
 - Why an SVG summary card is used to give text C2PA provenance
 - What the summary card's provenance holds (the input to the VLM, an action marking the content as AI-generated, the sha256 of the summary text, the model name, the sha256 of the prompt)
@@ -88,7 +88,7 @@ With these settings, the VLM is the `stub`. The stub returns a fixed summary wit
 python examples/hands_on/c2pa_provenance/p3_vlm_summary.py
 ```
 
-On success it prints the following (identifiers and numbers change on every run).
+On success it prints the following (identifiers and numbers change on every run). The version numbers on the first line depend on your environment (you may see, for example, `c2pa-python 0.38.2 / c2pa-rs 0.91.6`).
 
 ```
 c2pa-python 0.38.1 / c2pa-rs 0.91.3
@@ -203,7 +203,7 @@ The differences from P2:
 
 ## 4. Try a real VLM
 
-Use a VLM running on Ollama [3] instead of the stub. The first time, downloading the model takes a while (the same steps as [Add meaning to camera data with a local VLM](local-vlm-distribution.md)).
+Use a VLM running on Ollama [3] instead of the stub. The first time, downloading the model takes a while (the same steps as [Enrich camera data with a local VLM](local-vlm-distribution.md)).
 
 ```bash
 VLM_MODEL=llava docker compose -f infra/docker-compose.yml --profile vlm up -d vlm vlm-pull
@@ -232,7 +232,7 @@ In the environment below, the two inferences took 217 seconds and all 16 checks 
 | Model | `llava` on Ollama (4.7 GB) |
 | Summary prompt | asks for 1–2 sentences that name no person, organization or place and use generic terms such as `an adult` or `a public location` (`_PROMPTS_DEFAULT` in [vlm_client.py](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/publisher/app/vlm_client.py)) |
 
-The summary text and the card were as follows. The summary text and the card were as follows.
+The summary text and the card were as follows.
 
 ```
 [PASS] event is published  (217.3s)

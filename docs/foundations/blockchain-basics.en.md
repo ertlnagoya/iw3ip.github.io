@@ -72,7 +72,9 @@ C --> E[Auditable History]
 The samples in this site prioritize one idea first: what to record and what not to record.
 
 - This sample implements consent decisions and audit logs first
-- It leaves room to later connect contract terms and verification data on-chain
+- On top of that, it deploys the following contracts on the Hardhat local chain and connects to them on-chain
+    - `IoTMarket` and `Merchandise`: register and buy products, and check data hashes ([Open the marketplace and buy on a phone (v1)](../hands-on/mobile-viewer.md))
+    - `ProvenanceToken`: mints one token per detection event and records the C2PA manifest label, the image sha256, and the IPFS CID ([Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](../hands-on/c2pa-provenance-publisher.md))
 
 ### What Is On-Chain vs Off-Chain Here
 

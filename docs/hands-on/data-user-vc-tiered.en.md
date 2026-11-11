@@ -295,7 +295,7 @@ pip install fastapi uvicorn pydantic pydantic-settings httpx paho-mqtt \
 python -m pytest tests/test_data_user_vc_tiered.py -v
 ```
 
-The four pure-function tests
+The file has 42 tests. Four of them, the pure-function tests whose names start with `test_trust_`
 (GovernmentOrganization / Enterprise / low-score / `score>=80` but
 non-gov/police) compare the trustScore and access level returned by
 `trust_score.py` with expected values written by hand to match the weights

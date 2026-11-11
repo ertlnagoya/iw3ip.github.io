@@ -23,8 +23,16 @@
 
 基本的な学習とハンズオンは、サイト内の流れに沿って進められます。
 
-- サイト内で扱う内容: 基本用語、システム全体像、最短起動、Hands-on 実行、結果の読み取り
-- 外部資料が役立つ場面: 仕組みの詳細、レポートや卒論の背景調査、標準仕様の原典確認
+- サイト内で扱う内容:
+  - 基本用語
+  - システム全体像
+  - 最短起動
+  - Hands-on 実行
+  - 結果の読み取り
+- 外部資料が役立つ場面:
+  - 仕組みの詳細を知りたいとき
+  - レポートや卒論の背景調査をするとき
+  - 標準仕様の原典を確認したいとき
 
 授業では、サイト内の説明で前提をそろえてから外部資料に進む方が効率的です。
 
@@ -45,14 +53,14 @@
 
 | 使えるコマ数 | 取り上げるページ | ねらい |
 |---|---|---|
-| 1 コマ | [HA Demo Simulator](../hands-on/ha-demo-simulator.md)（約 20 分）→ [HA × SSI Publisher](../hands-on/ha-ssi-publisher.md)（約 45 分）→ ふりかえり | 同意にもとづく `allow` / `deny` と監査ログを確認する |
-| 3 コマ（上の表の 7〜9 回） | 1 回目: 上の 1 コマ分。2 回目: [最短起動](../setup/quickstart.md)（約 30 分）→ [USB ウェブカメラ](../hands-on/webcam.md)（約 30 分。mock モードで可）→ [スマホ閲覧](../hands-on/mobile-viewer.md)（約 20 分）。3 回目: [USB ウェブカメライベント共有](../hands-on/webcam-event-sharing.md)（約 45 分）→ [環境・防災イベント共有](../hands-on/environment-disaster.md)（約 30 分） | 取り込みから売買、イベント共有までを通す。SSI ウォレットは使わない (スマホでの購入には MetaMask モバイルを使う) |
-| 5 コマ | 3 コマの内容に加えて、4 回目: [Consent VC](../hands-on/ha-ssi-wallet.md)（約 60 分）。5 回目: [Viewer VC](../hands-on/ha-ssi-viewer.md)（約 45 分）→ [Service VC](../hands-on/ha-ssi-service.md)（約 45 分） | VC の発行・提示と、書き込み・読み出し・機器間の認可の違いを確認する |
-| 発展（集中講義、卒業研究） | マーケット連携（[Stage 5](../hands-on/marketplace-vc-bridge.md)〜[Stage 7](../hands-on/marketplace-seller-vc.md)、約 4 時間）、[段階アクセス](../hands-on/data-user-vc-tiered.md)（約 4 時間）、Part 3（約 5 時間）から選ぶ | 支払いと認可の連携、信頼度に応じた出し分け、AI による判断 |
+| 1 コマ | [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)（約 20 分）→ [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md)（約 45 分）→ ふりかえり | 同意にもとづく `allow` / `deny` と監査ログを確認する |
+| 3 コマ（上の表の 7〜9 回） | 1 回目: 上の 1 コマ分。2 回目: [最短起動 (スタックを動かす)](../setup/quickstart.md)（約 30 分）→ [USB カメラでポイ捨てを検知する (OpenCV)](../hands-on/webcam.md)（約 30 分。mock モードで可）→ [スマホでマーケットを開いて購入する (v1)](../hands-on/mobile-viewer.md)（約 20 分）。3 回目: [検知イベントだけを共有する](../hands-on/webcam-event-sharing.md)（約 45 分）→ [防災イベントを共有する](../hands-on/environment-disaster.md)（約 30 分） | 取り込みから売買、イベント共有までを通す。SSI ウォレットは使わない (スマホでの購入には MetaMask モバイルを使う) |
+| 5 コマ | 3 コマの内容に加えて、4 回目: [データ提供者の認証 (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md)（約 60 分）。5 回目: [データ閲覧者の認証 (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md)（約 45 分）→ [機器間での連携認証 (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)（約 45 分） | VC の発行・提示と、書き込み・読み出し・機器間の認可の違いを確認する |
+| 発展（集中講義、卒業研究） | マーケット連携（[購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md)〜[出品者の身元を裏付ける (Seller VC / Stage 7)](../hands-on/marketplace-seller-vc.md)、約 4 時間）、[信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md)（約 4 時間）、Part 3（約 5 時間）から選ぶ | 支払いと認可の連携、信頼度に応じた出し分け、AI による判断 |
 
 ウォレットを使う回（4 回目以降）は、受講者のスマホに `iw3ip-wallet` を入れておく必要があります。ビルドに時間がかかるため、講師がビルドしたものを事前に配布してください。
 
-15 コマの計画では、10〜12 回の「検証・比較」に Part 3 の [地域安全アシスタント](../hands-on/regional-safety-assistant.md)（約 60 分）と [LLM Planner](../hands-on/llm-planner.md)（約 60 分）を充てることもできます。
+15 コマの計画では、10〜12 回の「検証・比較」に Part 3 の [地域安全アシスタントを動かす](../hands-on/regional-safety-assistant.md)（約 60 分）と [AI に手順を考えさせる (LLM Planner)](../hands-on/llm-planner.md)（約 60 分）を充てることもできます。
 
 ## 推奨評価方法
 

@@ -12,6 +12,7 @@
 依存パッケージをインストールし、ローカルサーバを起動します。
 
 ```bash
+cd ~/program/iw3ip.github.io
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r docs/requirements.txt
@@ -25,6 +26,8 @@ mkdocs serve
 ## ビルド
 
 ```bash
+cd ~/program/iw3ip.github.io
+source .venv/bin/activate
 mkdocs build --strict
 ```
 

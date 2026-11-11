@@ -59,7 +59,7 @@ To clone the lesson repo.
 For buying data on the marketplace (used in Part 1).
 
 - Browser: any of Chrome / Edge / Firefox / Brave
-- [MetaMask](https://metamask.io/) — install as a browser extension
+- [MetaMask](https://metamask.com/) — install as a browser extension
 - An Ethereum-style wallet that connects to the local chain
 
 ## Optional (used in some hands-on pages)

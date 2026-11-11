@@ -151,12 +151,12 @@ provider が payload に `image_cid` / `video_cid` を自動的に入れるの�
 
 ### 9.3 受信側：CID でも URL でも取れる
 
-Tier 3 / 2 の `/platform/data` 応答に `image_cid` と `image_url` の両方が出ます。`$VIEWER_TOKEN` は、1 ページ目の [§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) と同じ手順で取り出した Tier 3 の ViewerToken です（有効期間は 60 秒です）。
+Tier 3 / 2 の `/platform/data` 応答に `image_cid` と `image_url` の両方が出ます。`$VIEWER_TOKEN` は、1 ページ目の [§4](data-user-vc-tiered.md#4-purchaseviewervc-を発行--提示--platformdata) と同じ手順で取り出した Tier 3 の ViewerToken です（有効期間は 60 秒です）。`rows` は古い順に並ぶので、`.rows[-1]` で最後の行 (§9.2 で流したイベント) を見ます。
 
 ```bash
 curl -s -H "authorization: Bearer $VIEWER_TOKEN" \
   "http://$HOST_IP:8080/platform/data?dataset_id=home/event/possible_littering" \
-  | jq --arg h "$HOST_IP" '.rows[0] | {image_cid, image_url, ipfs_gateway: ("http://"+$h+":8080/ipfs/"+.image_cid)}'
+  | jq --arg h "$HOST_IP" '.rows[-1] | {image_cid, image_url, ipfs_gateway: ("http://"+$h+":8080/ipfs/"+.image_cid)}'
 ```
 
 iPhone Safari でいずれかを開いてください。

@@ -6,7 +6,7 @@
     既存システムを **v1**、本仕様で実装するシステムを **v2** と呼び、
     共通部分と派生部分を明示する。本書は、§11 のマイルストーン M1 (設計確定) のドラフトである。
     本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像](vc-architecture-overview.md) の §5)。
-    本仕様は Stage 5 のハンズオン [marketplace-vc-bridge](../hands-on/marketplace-vc-bridge.md) に対応する。
+    本仕様はハンズオン [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md) に対応する。
 
 ## 1. v1 と v2 の関係
 
@@ -391,8 +391,8 @@ e2e (end-to-end) テストには、ハンズオンの手順をそのまま用い
 
 ## 13. 関連ドキュメント
 
-- [SSI Wallet ハンズオン (Stage 1)](../hands-on/ha-ssi-wallet.md)
-- [SSI Viewer ハンズオン (Stage 3)](../hands-on/ha-ssi-viewer.md)
-- [SSI Service ハンズオン (Stage 4 prep)](../hands-on/ha-ssi-service.md)
-- [Marketplace × Wallet bridge ハンズオン (Stage 5)](../hands-on/marketplace-vc-bridge.md)
+- [データ提供者の認証 (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md)
+- [データ閲覧者の認証 (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md)
+- [機器間での連携認証 (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
+- [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md)
 - [VC アーキテクチャ全体像](vc-architecture-overview.md) (Stage 番号の一覧は §5)

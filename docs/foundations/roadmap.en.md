@@ -40,7 +40,7 @@ These seven pages complete the basic understanding and the minimum hands-on.
 ## Minimum Checklist
 
 - [ ] can boot stack with `docker compose up`
-- [ ] can observe `denied -> allowed` by registering Consent VC
+- [ ] can observe `denied -> allowed` before and after registering a consent (a JSON record) with `/consents`
 - [ ] can explain why `dataset_id` and `purpose` are policy keys
 - [ ] can explain Hardhat as a local development chain
 - [ ] can explain DID/VC as identity and permission primitives

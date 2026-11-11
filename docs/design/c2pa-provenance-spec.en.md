@@ -3,10 +3,10 @@
 !!! abstract "Where this page belongs"
     This is a design spec in the [Design](index.md) section.
     This is the design spec for **Stage P** (Provenance), which attaches provenance information that follows the C2PA (Coalition for Content Provenance and Authenticity) standard [1] to footage from low-cost commercial IP cameras and USB webcams, and to sensor data.
-    Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It was designed before implementation, and P0–P3 are now implemented (see the note in §10; checks with Content Credentials Verify and c2patool are not done yet).
+    Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It was designed before implementation; P0–P3 are now implemented and on the main branch of the course repository (see the note in §10; checks with Content Credentials Verify and c2patool are not done yet).
     "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview](vc-architecture-overview.md)).
     Stage P builds on the tiered access of Stage T ([Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)) and the SellerVC of Stage 7 ([SellerVC design spec](seller-vc-spec.md)). The P0 part can be run locally in the hands-on [Prove where an image came from](../hands-on/c2pa-provenance.md). P1 and P2 can be run in the hands-on [Connect provenance to the publisher and the chain](../hands-on/c2pa-provenance-publisher.md), and P3 in [Trace a VLM summary back to the image](../hands-on/c2pa-provenance-vlm.md).
-    P0–P6 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation to build first) corresponds to P0–P2. The hands-on pages run P0–P3; P4 and later are not implemented yet.
+    P0–P6 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation to build first) corresponds to P0–P2. P0–P3 are implemented and can be run in the hands-on pages; P4 and later are not implemented yet.
 
 This spec is a design for adding to IW3IP a mechanism that **attaches to each photo or video a record of who took it, when, how, and how it was processed, and signs that record electronically**. Tampering with the record breaks the signature, so whoever receives the file can check for themselves whether it is genuine.
 
@@ -19,7 +19,7 @@ This spec is a design for adding to IW3IP a mechanism that **attaches to each ph
 
 ## Before you read
 
-- It is easier to follow after finishing "Process data before sharing" in Part 2 of the hands-on (such as [Tier the response by trust](../hands-on/data-user-vc-tiered.md)). Tiers 1–3, DataUserVC, the publisher, and `/media/upload` are used without explanation
+- It is easier to follow after finishing "Process data and add provenance" in Part 2 of the hands-on (such as [Tier the response by trust](../hands-on/data-user-vc-tiered.md)). Tiers 1–3, DataUserVC, the publisher, and `/media/upload` are used without explanation
 - Basic knowledge of DIDs and VCs ([SSI/DID/VC basics](../foundations/ssi-did-vc-basics.md)) is assumed. §2 explains C2PA signing by comparing it with VCs
 
 ## Common pitfalls
@@ -134,7 +134,7 @@ flowchart TB
   class IPC,SEN,MP4,TPM todo
 ```
 
-Green boxes are implemented (P0–P3); grey dashed boxes are not implemented yet (P4, P5).
+Green boxes are implemented and on main (P0–P3); grey dashed boxes are not implemented yet (P4, P5).
 
 Terms in the diagram:
 
@@ -376,7 +376,7 @@ flowchart LR
   M -->|"same identifier"| N["manifestLabel of<br>the ProvenanceToken"]
 ```
 
-The publisher stores the card as `/media/<sha256>.svg` and gives its URL in `provenance.summary_card_url`. `/media/upload` still refuses SVG. The card is served with `Content-Security-Policy: default-src 'none'`, which blocks scripts and external loads.
+The publisher stores the card as `/media/<sha256>.svg` and gives its URL in `provenance.summary_card_url`. `/media/upload` still refuses SVG. The card is served with `Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'` and `X-Content-Type-Options: nosniff`, which block scripts and external loads. Inline styles are allowed, but scripts are not.
 
 The signature shows from which capture, with which model and prompt, and by whom the text was made. It does not show that the text is free of information that points to a person; that is decided by the model and the prompt. In §4 of the hands-on [Trace a VLM summary back to the image](../hands-on/c2pa-provenance-vlm.md), llava's summary gave the gender and age group of the figure in the picture, and its card was still `Trusted`.
 
@@ -577,7 +577,7 @@ C2PA also has a mechanism for finding stripped provenance again from the pixels,
 | **P5** | RTSP IP camera and Raspberry Pi, TPM signing, evaluation in §9 | Commercial IP camera, Raspberry Pi | Not started |
 | **P6** | Hands-on (JA + EN) | — | Done for P0–P3 |
 
-→ Notes on the implementation:
+→ Notes on the implementation (all P0–P3 code is on the main branch of the course repository):
 
 - The P0 program (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) signs a picture the program draws (a person and a plastic bottle) by default. It uses a webcam only with `--webcam`. It validates with the SDK Reader only; Content Credentials Verify and c2patool are not used
 - The Tier 2 derivative manifest and redaction listed under P2 are also built and checked by the P0 program
@@ -637,13 +637,13 @@ Before P0, we checked on a Mac whether §5.2, §5.3, §6, and §7.1 of this spec
 
 The check program is in `examples/hands_on/c2pa_provenance/` of the main repository.
 
-Checking with Content Credentials Verify [11], RTSP cameras, fragmented MP4, and measurements on a Raspberry Pi have not been done yet (they are done in P0, P4 and P5).
+Checks with Content Credentials Verify [11] and c2patool have not been done yet; P0 validated only with the SDK's Reader (see the notes in §10). RTSP cameras, fragmented MP4, and measurements on a Raspberry Pi have not been done yet either; they belong to P4 and P5.
 
 ## References
 
 [1] C2PA, "C2PA Technical Specification, Version 2.3," <https://spec.c2pa.org/specifications/specifications/2.3/specs/C2PA_Specification.html>
 
-[2] Content Authenticity Initiative, "c2pa-rs: Rust SDK for C2PA," GitHub, <https://github.com/contentauth/c2pa-rs>
+[2] Content Authenticity Initiative, "c2pa-rs: Rust SDK for the core C2PA (Coalition for Content Provenance and Authenticity) specification," GitHub, <https://github.com/contentauth/c2pa-rs>
 
 [3] Content Authenticity Initiative, "c2pa-python: Python binding for c2pa-rs library," GitHub, <https://github.com/contentauth/c2pa-python>
 

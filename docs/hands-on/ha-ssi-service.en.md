@@ -129,7 +129,7 @@ for i in 1 2 3 4 5; do
   curl -s -X POST http://$HOST_IP:8080/platform/ingest \
     -H "Authorization: Bearer $SERVICE" \
     -H "Content-Type: application/json" \
-    -d "{\"dataset_id\":\"home/env/temperature\",\"value\":$((20 + i))}" \
+    -d "{\"dataset_id\":\"home/env/temperature\",\"value\":$((20 + i))}"
   echo
 done
 ```
