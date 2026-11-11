@@ -3,7 +3,7 @@
 Before the hands-on, install the required software on your PC and confirm it works.
 Each item includes a one-line note on why the tool is needed. Technical terms are explained where they appear.
 
-> If you already have these tools, you can just complete the [verification checklist](#verification-checklist) and proceed to [Quickstart](quickstart.md).
+> If you already have these tools, you can just complete the [verification checklist](#verification-checklist) and proceed to [Quickstart (run the stack)](quickstart.md).
 
 ## Overview — why each tool
 
@@ -30,14 +30,14 @@ Used to start the whole environment together.
 - **Linux**: distro-provided `docker` package, or the official install script.
 - Site: <https://www.docker.com/>
 
-> **Memory**: bump Docker Desktop's Settings → Resources → Memory to **6 GB or more**. The default 2 GB is not enough.
+> **Memory**: check Docker Desktop's Settings → Resources → Memory. If it is **below 6 GB, raise it to 6 GB or more**; with too little memory, some containers stop.
 
 ### 2. Node.js (ships with npm)
 
 The JavaScript runtime, used by the marketplace UI and the local blockchain.
 
 - Site: <https://nodejs.org/>
-- Pick the **LTS** (Long Term Support) version
+- Pick the **20.x LTS** (Long Term Support) version (the sample output in the check below is also v20)
 - Need to switch versions? [nvm](https://github.com/nvm-sh/nvm) or [volta](https://volta.sh/) help
 
 ### 3. Rust (ships with cargo)
@@ -70,8 +70,9 @@ Add these depending on which hands-on pages you plan to do.
 
 The HUSKYLENS2 and USB webcam bridges and the exercise programs (`problem_program.py` etc.) run on Python 3. `curl` and `jq` are used to call the APIs and inspect responses.
 
-- Python: <https://www.python.org/>
-- `curl` ships with macOS / Linux. `jq` is available from <https://jqlang.github.io/jq/>
+- Python **3.11 or later** is required (as set in `pyproject.toml` of the course repository). Check with `python3 --version`
+- The `python3` from the macOS Command Line Tools is 3.9, which is too old. Run `brew install python@3.12` with Homebrew, or install 3.11 or later with the installer from [Python](https://www.python.org/). When you create a venv, name the version, as in `python3.12 -m venv .venv`
+- `curl` ships with macOS / Linux. `jq` is available from <https://jqlang.org/>
 
 ### Smartphone + SSI wallet app
 
@@ -164,7 +165,7 @@ The initial clone takes a few minutes (the repo is large).
 - [ ] (Part 1) MetaMask shows up in your browser's extensions list
 - [ ] (Part 2) iw3ip-wallet is installed on your phone
 
-All checked → head to [Quickstart](quickstart.md).
+All checked → head to [Quickstart (run the stack)](quickstart.md).
 
 ## Per-OS notes
 
@@ -197,4 +198,4 @@ All checked → head to [Quickstart](quickstart.md).
 | **Container** | A "boxed" application that Docker runs |
 | **Extension** | A small add-on inside a browser. MetaMask is one |
 
-For the full vocab list, see the [setup mini-glossary](index.md).
+For the full vocab list, see the mini-glossary in [Environment Setup](index.md#mini-glossary).

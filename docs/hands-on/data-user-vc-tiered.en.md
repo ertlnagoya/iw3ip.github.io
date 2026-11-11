@@ -1,6 +1,6 @@
 # Tier the response by trust (DataUserVC / Stage T)
 
-Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC). Delivering the actual image / video bytes (§8–§11) continues in [Deliver images and video with tiered access](data-user-vc-tiered-media.md), and semantic intermediate representation and trust-aware rendering (§12–§13) in [Tier by semantic level](data-user-vc-tiered-semantic.md) — long but thorough across the three pages.
+Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC). Delivering the actual image / video bytes (§8–§11) continues in [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md), and semantic intermediate representation and trust-aware rendering (§12–§13) in [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — long but thorough across the three pages.
 
 > **What you'll do**: Watch the response narrow from video → image → event only as the trust level drops
 >
@@ -58,7 +58,7 @@ The DataUserVC is issued to the wallet so you can inspect it. The course reposit
 
 The command examples on this page assume that the course repository is cloned to `~/program/Blockchain_IoT_Marketplace`.
 
-- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP='<PC LAN IP>'` (see [Hands-on](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 
 ## 0b. Choosing how to carry the actual image / video bytes
 
@@ -101,9 +101,17 @@ curl -s localhost:8080/.well-known/openid-credential-issuer \
 Expected output:
 
 ```text
-["ConsentVC", "DataUserVC", "PurchaseViewerVC",
-"PurchaseViewerVC.access", "PurchaseViewerVC.event", "PurchaseViewerVC.full",
-"SellerVC", "ServiceVC", "ViewerVC"]
+[
+  "ConsentVC",
+  "DataUserVC",
+  "PurchaseViewerVC",
+  "PurchaseViewerVC.access",
+  "PurchaseViewerVC.event",
+  "PurchaseViewerVC.full",
+  "SellerVC",
+  "ServiceVC",
+  "ViewerVC"
+]
 ```
 
 `DataUserVC` must appear in the list.
@@ -341,8 +349,8 @@ share the same VCT.
 
 ## Where to go next
 
-- [Deliver images and video with tiered access](data-user-vc-tiered-media.md) — continues with §8–§11 (HTTP media gateway, IPFS, PWA viewer, PWA Provider)
-- [Tier by semantic level](data-user-vc-tiered-semantic.md) — continues with §12–§13 (semantic-level tiering with a VLM, semantic intermediate representation)
+- [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — continues with §8–§11 (HTTP media gateway, IPFS, PWA viewer, PWA Provider)
+- [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — continues with §12–§13 (semantic-level tiering with a VLM, semantic intermediate representation)
 - [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) — bring up the Phase 2 wallet
 - [Tiered access design spec](data-user-vc-tiered-spec.md) — design rationale
 - [Share detections, not raw frames](webcam-event-sharing.md) — share events conditionally

@@ -11,9 +11,9 @@
 > **所要時間**: 約 30〜40 分
 
 !!! note "このページの位置付け"
-    [C2PA 来歴パイプラインの設計仕様](../design/c2pa-provenance-spec.md) の P0 (最初の段階) を手元で動かすハンズオンです。
-    C2PA の仕組みと用語は、設計仕様の §2「C2PA の基本」で説明しています。Tier 1〜3 の考え方は [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) で扱いました。
-    publisher に組み込んで動かす段階 (P1・P2) は、[来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) で扱います。
+    [C2PA 来歴パイプライン — カメラ映像とセンサーデータの来歴証明 (Stage P 設計仕様)](../design/c2pa-provenance-spec.md) の P0 (最初の段階) を手元で動かすハンズオンです。
+    C2PA の仕組みと用語は、設計仕様の §2「C2PA の基本」で説明しています。Tier 1〜3 の考え方は [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) で扱いました。
+    publisher に組み込んで動かす段階 (P1・P2) は、[来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) で扱います。
 
 ## 目的
 
@@ -113,7 +113,7 @@ wrote .../examples/hands_on/c2pa_provenance/certs/ca.pem, chain.pem, gw.key (CN=
 | `chain.pem` | ゲートウェイの証明書と CA の証明書 | 署名と一緒に画像に埋め込まれ、誰が署名したかを示す |
 | `gw.key` | ゲートウェイの秘密鍵 | 署名に使う。人に渡してはいけない |
 
-`publisher_chain.pem` と `publisher.key` は、publisher の証明書 (CN は `iw3ip-publisher`) と秘密鍵です。同じ CA が発行します。このページでは使わず、[来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) で、publisher が Tier 2 の画像に署名するのに使います。このページでは、Tier 2 の画像もゲートウェイの鍵で署名します。
+`publisher_chain.pem` と `publisher.key` は、publisher の証明書 (CN は `iw3ip-publisher`) と秘密鍵です。同じ CA が発行します。このページでは使わず、[来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) で、publisher が Tier 2 の画像に署名するのに使います。このページでは、Tier 2 の画像もゲートウェイの鍵で署名します。
 
 証明書と署名の関係は、次の図のとおりです。検証する側が `ca.pem` を「信頼する CA」として登録していれば、その CA が発行した証明書で付けた署名は `Trusted` になります。登録していなければ、署名が正しくても `Valid` 止まりです。
 
@@ -180,7 +180,7 @@ flowchart LR
 ![プログラムが描いた撮影画像 (capture.jpg) と、ぼかした Tier 2 の画像 (tier2.jpg)](../assets/c2pa-capture-vs-tier2.png)
 
 !!! note "ぼかしについて"
-    このハンズオンのプログラムは、顔を検出せずに画像全体をぼかします。顔だけをぼかす処理は、[意味レベルで段階化する](data-user-vc-tiered-semantic.md) の顔ブラーで扱いました。
+    このハンズオンのプログラムは、顔を検出せずに画像全体をぼかします。顔だけをぼかす処理は、[意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) の顔ブラーで扱いました。
 
 ## 4. 来歴の中身を見る
 

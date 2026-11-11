@@ -4,7 +4,7 @@ v1 マーケットプレイス (MetaMask [1] で購入し、データは simple-
 
 > **やること**: スマホのブラウザでマーケットプレイス画面を開き、購入操作まで確かめる
 >
-> **前提**: [最短起動](../setup/quickstart.md) で v1 スタックが立ち上がっていること
+> **前提**: [最短起動 (スタックを動かす)](../setup/quickstart.md) で v1 スタックが立ち上がっていること
 >
 > **使うもの**: PC + スマホ (同じネットワーク)
 >
@@ -67,7 +67,7 @@ homepage `/` をスマホで開く形に読み替えてください。
 その後の分岐:
 
 - **個別の商品を見る場合**: `http://<HOST_IP>:5173/merchandise/<address>` を直接開く
-  (アドレスは `mediator-owner` のターミナルに表示された `Product deployed: 0x…` のアドレス ([ハンズオンの概要](index.md) 1.3 の出品手順で、USB ウェブカメラサンプルを mock モードで動かして作る。最短起動の手順 2 でデプロイした 5 件は、購入してもデータが届きません))
+  (アドレスは `mediator-owner` のターミナルに表示された `Product deployed: 0x…` のアドレス ([ハンズオン](index.md) 1.3 の出品手順で、USB ウェブカメラサンプルを mock モードで動かして作る。最短起動の手順 2 でデプロイした 5 件は、購入してもデータが届きません))
 - **購入まで確認したい場合**: MetaMask モバイルのブラウザで開きます
 - **VC 連携 (v2) を試したい場合**: [スマホアプリで購入から閲覧まで (Stage A)](marketplace-mobile-app.md)
   に進みます
@@ -107,7 +107,7 @@ cp .env.example .env.local
     `8545` を許可してください。
 
     ノードを起動し直すとチェーンが空に戻り、デプロイしたコントラクトは消えます。
-    起動し直したら [最短起動](../setup/quickstart.md) の手順 2 (デプロイ) をやり直し、
+    起動し直したら [最短起動 (スタックを動かす)](../setup/quickstart.md) の手順 2 (デプロイ) をやり直し、
     `mediator-owner` と `mediator-buyer` も再起動してください。以前の商品アドレスは使えません。
     USB ウェブカメラ (または HUSKYLENS2) の mock をもう一度動かし、新しく表示された `Product deployed` のアドレスを使います。
 
@@ -115,7 +115,7 @@ cp .env.example .env.local
 
 ### 1. PC側をLAN公開で起動
 
-先に、[最短起動](../setup/quickstart.md) のターミナル 3 で動いている `npm run dev` を Ctrl+C で止めます (同じポート 5173 を使うため。止めないと新しいサーバーが別のポートで起動します)。そのあと、手順 0 で `iot-market-ui` に移動したターミナルで実行します。
+先に、[最短起動 (スタックを動かす)](../setup/quickstart.md) のターミナル 3 で動いている `npm run dev` を Ctrl+C で止めます (同じポート 5173 を使うため。止めないと新しいサーバーが別のポートで起動します)。そのあと、手順 0 で `iot-market-ui` に移動したターミナルで実行します。
 
 ```bash
 npm run dev -- --host 0.0.0.0 --port 5173
@@ -129,7 +129,7 @@ npm run dev -- --host 0.0.0.0 --port 5173
 ipconfig getifaddr en0
 ```
 
-`ipconfig getifaddr en0` は macOS のコマンドです。Windows では `ipconfig`、Linux では `ip addr` で確認します。以下の手順に出てくる `<HOST_IP>` は、ここで得られた IP アドレスに置き換えてください (OS 別の調べ方は [ハンズオンの概要](index.md#host-ip) にもまとめています)。
+`ipconfig getifaddr en0` は macOS のコマンドです。Windows では `ipconfig`、Linux では `ip addr` で確認します。以下の手順に出てくる `<HOST_IP>` は、ここで得られた IP アドレスに置き換えてください (OS 別の調べ方は [ハンズオン](index.md#host-ip) にもまとめています)。
 
 ## スマホでマーケットを開く
 
@@ -145,7 +145,7 @@ http://<HOST_IP>:5173/
 http://192.168.1.20:5173/
 ```
 
-個別の商品を直接開く場合 (アドレスは `mediator-owner` のターミナルに表示された `Product deployed: 0x…` のアドレス ([ハンズオンの概要](index.md) 1.3 の出品手順で、USB ウェブカメラサンプルを mock モードで動かして作る。最短起動の手順 2 でデプロイした 5 件は、購入してもデータが届きません。1.3 ですでに買った商品は、もう一度は買えません)):
+個別の商品を直接開く場合 (アドレスは `mediator-owner` のターミナルに表示された `Product deployed: 0x…` のアドレス ([ハンズオン](index.md) 1.3 の出品手順で、USB ウェブカメラサンプルを mock モードで動かして作る。最短起動の手順 2 でデプロイした 5 件は、購入してもデータが届きません。1.3 ですでに買った商品は、もう一度は買えません)):
 
 ```txt
 http://<HOST_IP>:5173/merchandise/<merchandise_address>
@@ -157,7 +157,7 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 - MetaMask モバイルにローカルチェーンのネットワークを追加しておく:
     - RPC URL: `http://<HOST_IP>:8545` (例: `http://192.168.1.20:8545`)
     - チェーン ID: `31337` / 通貨記号: `ETH`
-- MetaMask モバイルにも **Account #2 の Private Key** をインポートし、そのアカウントで購入する ([最短起動](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ鍵)。公開鍵が登録されているのは、仲介プロセスが使う Account #1 (`mediator-owner`) と Account #2 (`mediator-buyer`) だけです。購入者側の仲介プロセスは Account #2 として動きます。Account #1 で買うとデータは `mediator-owner` の `downloads` に届き、それ以外のアカウントでは取引が失敗 (revert) します
+- MetaMask モバイルにも **Account #2 の Private Key** をインポートし、そのアカウントで購入する ([最短起動 (スタックを動かす)](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ鍵)。公開鍵が登録されているのは、仲介プロセスが使う Account #1 (`mediator-owner`) と Account #2 (`mediator-buyer`) だけです。購入者側の仲介プロセスは Account #2 として動きます。Account #1 で買うとデータは `mediator-owner` の `downloads` に届き、それ以外のアカウントでは取引が失敗 (revert) します
 - ネットワーク追加が拒否される場合は、ノードを `--hostname 0.0.0.0` で起動しているか、`.env.local` と MetaMask の RPC が **127.0.0.1 ではなく PC の LAN IP** になっているかを確認
 
 ### 5. 確認ポイント
@@ -194,7 +194,7 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 - 症状: 購入の取引が失敗する (revert) / `mediator-buyer` に `You bought a product of` が出ない
   - 確認: MetaMask モバイルで選んでいるアカウントが Account #2 か (Account #1 と #2 以外は公開鍵が登録されていないため購入できない。Account #1 で買ったデータは `mediator-buyer` ではなく `mediator-owner` に届く)
   - 確認: その商品を、同じアカウントですでに購入していないか (1.3 で買った商品は、もう一度は買えない。まだ買っていない `Product deployed` のアドレスを使う)
-  - 対処: [最短起動](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ Account #2 の Private Key をインポートし、そのアカウントで購入し直す
+  - 対処: [最短起動 (スタックを動かす)](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ Account #2 の Private Key をインポートし、そのアカウントで購入し直す
   - 詳しくは [トラブルシュート](../operations/troubleshooting.md) の「購入できない」項目を参照
 
 ## 参考文献

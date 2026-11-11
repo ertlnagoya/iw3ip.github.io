@@ -50,7 +50,7 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 - [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) の内容を理解している
 - [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) を起動できる
 - Docker / Docker Compose が使える
-- [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
+- [最短起動 (スタックを動かす)](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 - `curl` が使える
 
 対応するサンプルファイル:
@@ -318,7 +318,7 @@ PolicyToken は 1 回使うと無効になるため、連続する MQTT イベ�
 wallet 経由で認可する使い方には向きません。ここでは **1 件のイベントだけ
 curl で送る**ことを勧めます。
 
-スマホのウォレットは PC の `localhost` に届かないため、[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) の §4〜§5 の URL は、`<HOST_IP>` を PC の LAN IP に置き換えてから PC ブラウザで開きます (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。
+スマホのウォレットは PC の `localhost` に届かないため、[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) の §4〜§5 の URL は、`<HOST_IP>` を PC の LAN IP に置き換えてから PC ブラウザで開きます (IP の調べ方は [ハンズオン](index.md#host-ip) を参照)。
 
 まず `ssi-wallet` プロファイルを付けて起動し直します。`PLATFORM_INGEST_READ_ENABLED=true` を付け忘れると、本編で書き込んだ行が消えるうえ、`GET /platform/ingest` が 404 になります。
 

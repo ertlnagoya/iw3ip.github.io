@@ -8,7 +8,7 @@ Publisher が公開するカメラ視野を **イベント／画像／動画** �
 動的に絞り込むための設計文書です。
 
 このページでは、既存の実装のうち**どこを固定し、どこを差し替えるか**を定義します。
-ハンズオン手順は [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) を参照してください。
+ハンズオン手順は [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) を参照してください。
 
 ## このページで分かること
 
@@ -274,7 +274,7 @@ score >= 60                               -> "access"
 
 ## tier 拡張: 意味レベルでの段階化（VLM）  {#tier-vlm}
 
-ここまでの設計（[ハンズオン](data-user-vc-tiered.md)の §1〜§7 と、[続きのページ](data-user-vc-tiered-media.md)の §8〜§9 に対応）は、**メディアのキーを応答から省く**方式の
+ここまでの設計（[信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) の §1〜§7 と、続きのページ [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) の §8〜§9 に対応）は、**メディアのキーを応答から省く**方式の
 アクセス制御です（Tier 2 では動画のキー、Tier 1 では画像と動画のキーが含まれません）。
 次の段階として、同じ素材に VLM（Vision Language Model。画像を入力に取れる言語モデル）による推論と
 顔のブラー処理 (MVP では正面の顔) を適用して**派生データを生成し、tier 別に

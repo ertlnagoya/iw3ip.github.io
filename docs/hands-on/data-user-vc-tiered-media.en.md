@@ -1,22 +1,22 @@
 # Deliver images and video with tiered access (DataUserVC / Stage T)
 
-This page continues [Tier the response by trust](data-user-vc-tiered.md) (§0–§7) and carries the actual image / video bytes end-to-end. Section numbers continue from the first page (§8–§11).
+This page continues [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) (§0–§7) and carries the actual image / video bytes end-to-end. Section numbers continue from the first page (§8–§11).
 
 > **What you'll do**: Deliver images and video through the HTTP media gateway (Option B) and IPFS (Option C), receive them in the PWA viewer, and provide them from the PWA Provider
 >
-> **Prerequisites**: §0–§7 of [Tier the response by trust](data-user-vc-tiered.md)
+> **Prerequisites**: §0–§7 of [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)
 >
 > **What you need**: PC + smartphone (iw3ip-wallet)
 >
 > **Time required**: approx. 90 min
 
 As on the first page, the command examples assume that the course repository is cloned to
-`~/program/Blockchain_IoT_Marketplace`. `$HOST_IP` and `<HOST_IP>` are the PC's LAN IP (see the [Hands-on overview](index.md#host-ip) for how to set it). Options A / B / C are compared in
+`~/program/Blockchain_IoT_Marketplace`. `$HOST_IP` and `<HOST_IP>` are the PC's LAN IP (see [Hands-on](index.md#host-ip) for how to set it). Options A / B / C are compared in
 [§0b](data-user-vc-tiered.md#0b-choosing-how-to-carry-the-actual-image--video-bytes).
 
 ## 8. Real-data integration (Option B — HTTP media gateway)
 
-Through §7 on the [first page](data-user-vc-tiered.md) you verified the **keys** `image_cid` / `video_cid` /
+Through §7 on the first page, [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md), you verified the **keys** `image_cid` / `video_cid` /
 `video_duration_sec` appear or disappear per tier. To carry the actual
 image / video bytes end-to-end, the provider side uploads a sample JPEG / MP4
 fixture to the publisher's `/media/upload`, takes back the URL, and
@@ -83,7 +83,7 @@ python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 
 When content-addressing + distributed storage matter, move on to
 **Option C (IPFS)**. The `/media/upload` response
-shape (`{url, sha256, content_type, byte_size, cid, ipfs_gateway_url}`)
+shape (`{url, sha256, content_type, byte_size, cid, ipfs_gateway_url, c2pa}`)
 stays the same so the provider script doesn't change — only the
 backend swaps.
 
@@ -135,7 +135,7 @@ python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
 
-Expected output (`cid` starts with `bafk...`). With the default fixture, `sha256` and `cid` match the values below:
+Expected output (`cid` starts with `bafk...`). With the default fixture, `sha256` and `cid` match the values below. `c2pa` is `null` because the C2PA check (Stage P) is not enabled:
 
 ```json
 [upload] {
@@ -145,7 +145,8 @@ Expected output (`cid` starts with `bafk...`). With the default fixture, `sha256
     "content_type": "image/jpeg",
     "byte_size": 285,
     "cid": "bafkreihg4ng5ujksjbrtnlldudxsi5jmaeuwhi6arkvcgqbvzkwhskhbgq",
-    "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreihg4ng5ujksjbrtnlldudxsi5jmaeuwhi6arkvcgqbvzkwhskhbgq"
+    "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreihg4ng5ujksjbrtnlldudxsi5jmaeuwhi6arkvcgqbvzkwhskhbgq",
+    "c2pa": null
   },
   ...
 }
@@ -197,7 +198,7 @@ CID is enough to fetch the asset from any cooperating peer.
 
 ## 10. PWA viewer (one UX for phone *and* PC)
 
-§3–§9 (§3–§7 are on the [first page](data-user-vc-tiered.md)) walked through the dev-style flow ("call /verifier/request,
+§3–§9 (§3–§7 are on the first page, [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)) walked through the dev-style flow ("call /verifier/request,
 collect the token, curl /platform/data"). The publisher now ships a
 **built-in PWA viewer** (`/buyer/start` + `/viewer`) so a buyer just
 opens **one URL** and the rest is automatic, on iPhone Safari **or**
@@ -211,7 +212,7 @@ PC Chrome / Edge / Firefox.
    │  Safari resumes → /viewer auto-renders image/video        │
 
 [PC Chrome] ─ /buyer/start                                [publisher]
-   │  ↓ shows QR + long-polls                                  │
+   │  ↓ shows QR + polls every 2 s                             │
    │  Scan QR with iPhone → wallet → present ────────────────► │
    │  ↑ /verifier/status returns viewer_url                    │
    │  PC browser auto-navigates to /viewer → image renders     │
@@ -244,7 +245,7 @@ No more URL-copy-paste.
 1. Open the URL on a PC browser.
 2. The page renders a **large QR code** (the OID4VP deeplink).
 3. Scan it with the iPhone camera or directly inside the wallet → wallet → present.
-4. The PC page long-polls `/verifier/status?state=...` every 2 s.
+4. The PC page polls `/verifier/status?state=...` every 2 seconds.
 5. Once the wallet completes, the response includes `viewer_url`.
 6. The PC navigates to `/viewer` and **the same image / video renders**.
 
@@ -303,7 +304,7 @@ through. That's Stage T's whole point.
 | | Manual curl flow (§§3–9) | PWA viewer |
 |---|---|---|
 | Easy on phone | ✗ — copy URLs | ✓ |
-| Works on PC | ✗ — no wallet on PC | ✓ — QR + long-poll |
+| Works on PC | ✗ — no wallet on PC | ✓ — QR + polling every 2 s |
 | App install on PC | iw3ip-wallet (phone) | none beyond a browser |
 | Re-fetch after TTL | redo curl | reload the page |
 | Public demo cost | long handout | hand over one URL |
@@ -323,7 +324,7 @@ through. That's Stage T's whole point.
 When the verifier rejects a presented VC, `/verifier/status` returns a
 `reason` code together with a human-readable `human_message_ja` /
 `human_message_en` pair. The `/buyer/start` page picks that up during
-its long-poll and replaces the QR with a red box headed "データを閲覧する権限がありません" (you are not allowed to view the data),
+its polling and replaces the QR with a red box headed "データを閲覧する権限がありません" (you are not allowed to view the data),
 the message, a `reason code:` line, and a "このページをリロード" (reload this page) link
 (see `publisher/app/viewer_routes.py` and `publisher/app/ssi/verifier_routes.py`).
 
@@ -344,7 +345,7 @@ Main reason codes and their messages (the page shows `human_message_ja` when it 
 1. PC opens `/buyer/start?ds=home/event/possible_littering` → QR appears.
 2. Suppose a wallet sends a PurchaseViewerVC bound to a *different* dataset (e.g. `home/event/another_dataset`). A normal wallet does not offer such a card and shows "No Available Credential" instead.
 3. publisher receives `/verifier/response`; the value does not match `$.dataset_id` in the presentation definition, so it records `{"verified": false, "reason": "field_mismatch:$.dataset_id"}` (on the default path this check rejects it before `dataset_mismatch` is examined).
-4. The PC's `/verifier/status` long-poll returns a `result` holding `verified: false`, the `reason`, and the `human_message_*` strings.
+4. The PC's `/verifier/status` poll returns a `result` holding `verified: false`, the `reason`, and the `human_message_*` strings.
 5. The page replaces the QR with a `<div class="err">` holding "データを閲覧する権限がありません" and the generic message "提示が拒否されました (field_mismatch:$.dataset_id)。", then shows `reason code: field_mismatch:$.dataset_id` and a "このページをリロード" (reload this page) link.
 6. `/audit/logs` gains a row with `raw_topic` `oid4vp/response`, `action` `deny`, and `reason` `field_mismatch:$.dataset_id` (check with `curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'`).
 
@@ -361,7 +362,7 @@ flow.
 
 ```
 [PC browser] ── /provider/start                      [publisher]
-   │  ↓ QR + long-poll                                  │
+   │  ↓ QR + polling every 2 s                           │
    │     scan QR with iPhone wallet → present SellerVC ►│ mint SellerToken
    │  ↑ /verifier/status returns seller_token + licensed_datasets
    │  PC page renders the licensed_datasets list
@@ -473,12 +474,13 @@ Deny cases:
 | Failure | HTTP | reason |
 |---|---|---|
 | missing `Authorization` header | 401 | `missing_authorization_header` |
+| `Authorization` header not in the form `Bearer <token>` | 401 | `invalid_authorization_header` |
 | unknown SellerToken | 401 | `seller_token_unknown` |
 | expired SellerToken | 401 | `seller_token_expired` |
 | derived dataset not in `licensed_datasets[]` | 403 | `seller_token_dataset_not_licensed` |
 | topic not recognised by `normalize()` | 400 | `unsupported_topic:...` |
 
-The `seller_token_*` errors (401 and 403) are recorded in `/audit/logs` with `action=deny`. The 401 for a missing `Authorization` header and the 400 for `unsupported_topic` are returned before any audit write, so they are not recorded.
+The `seller_token_*` errors (401 and 403) are recorded in `/audit/logs` with `action=deny`. The 401s for a missing or malformed `Authorization` header and the 400 for `unsupported_topic` are returned before any audit write, so they are not recorded.
 
 ### 11.5 Confirm from the receiver side
 
@@ -691,5 +693,5 @@ Run the codec list in DevTools console to make the branch visible.
 
 ## Where to go next
 
-- Back: [Tier the response by trust](data-user-vc-tiered.md) — §0–§7 (issuing DataUserVC and tiering the response)
-- Next: [Tier by semantic level](data-user-vc-tiered-semantic.md) — §12–§13 (semantic-level tiering with a VLM, semantic intermediate representation)
+- Back: [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) — §0–§7 (issuing DataUserVC and tiering the response)
+- Next: [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — §12–§13 (semantic-level tiering with a VLM, semantic intermediate representation)

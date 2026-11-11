@@ -57,7 +57,7 @@ Branches:
 - Docker / Docker Compose
 - a browser that can open `http://localhost:8123`
 - `curl`
-- if IPFS started in [Quickstart](../setup/quickstart.md) is still running, stop it first from the source repository with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` (IPFS and the publisher both use port 8080)
+- if IPFS started in [Quickstart (run the stack)](../setup/quickstart.md) is still running, stop it first from the source repository with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` (IPFS and the publisher both use port 8080)
 
 This hands-on assumes the source-code repository `Blockchain_IoT_Marketplace` on the `main` branch.
 
@@ -242,7 +242,7 @@ sed 's/"valid_to": "2030-12-31T23:59:59Z"/"valid_to": "2026-05-01T00:00:00Z"/' e
 
 Confirm the response has `"status":"stored"` and `valid_to` is `2026-05-01T00:00:00Z`.
 
-If you have already done [Share detections, not raw frames](webcam-event-sharing.md), [Enrich camera data with a local VLM](local-vlm-distribution.md), or the tiered-access pages (such as [Tier the response by trust](data-user-vc-tiered.md)), a valid consent for the same `possible_littering` (`consent-littering-001` or `local-vlm-distribution-consent-webcam-001`) remains and no denial happens. Check with `curl http://localhost:8080/consents`, and if it is there, delete it with the command below. If you need them after this exercise, register the deleted consents again (`curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_possible_littering.json`; for the local VLM consent use `-d @examples/hands_on/local_vlm_distribution/fixtures/consent_webcam.json`).
+If you have already done [Share detections, not raw frames](webcam-event-sharing.md), [Enrich camera data with a local VLM](local-vlm-distribution.md), or the tiered-access pages (such as [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)), a valid consent for the same `possible_littering` (`consent-littering-001` or `local-vlm-distribution-consent-webcam-001`) remains and no denial happens. Check with `curl http://localhost:8080/consents`, and if it is there, delete it with the command below. If you need them after this exercise, register the deleted consents again (`curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_possible_littering.json`; for the local VLM consent use `-d @examples/hands_on/local_vlm_distribution/fixtures/consent_webcam.json`).
 
 ```bash
 curl -X DELETE http://localhost:8080/consents/consent-littering-001

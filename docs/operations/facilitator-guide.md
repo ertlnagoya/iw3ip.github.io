@@ -12,7 +12,7 @@
 3. 購入
 4. データの受け取り
 
-手順は [ハンズオンの概要の 1.3](../hands-on/index.md#13-マーケットプレイスで売買-v1-経路) を参照してください。
+手順は [ハンズオン](../hands-on/index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 を参照してください。
 
 ## 進行テンプレート (2 コマ、約 120 分)
 
@@ -25,18 +25,18 @@
 
 ### 2. 起動（約 30 分）
 
-- [最短起動](../setup/quickstart.md) を全員で実施
+- [最短起動 (スタックを動かす)](../setup/quickstart.md) を全員で実施
 - ここで詰まる人を優先サポート
 
 ### 3. 実習（約 50 分）
 
-- HUSKYLENS2班: [hands-on/huskylens2.md](../hands-on/huskylens2.md) (約 45 分)
-- Webcam班: [hands-on/webcam.md](../hands-on/webcam.md) (約 30 分)
-- 終わった班から [ハンズオンの概要の 1.3](../hands-on/index.md#13-マーケットプレイスで売買-v1-経路) の購入と受け取りに進む
+- HUSKYLENS2班: [AI カメラで人物を検知する (HUSKYLENS2)](../hands-on/huskylens2.md) (約 45 分)
+- Webcam班: [USB カメラでポイ捨てを検知する (OpenCV)](../hands-on/webcam.md) (約 30 分)
+- 終わった班から [ハンズオン](../hands-on/index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 の購入と受け取りに進む
 
 ### 4. スマホ確認（約 20 分）
 
-- [hands-on/mobile-viewer.md](../hands-on/mobile-viewer.md)
+- [スマホでマーケットを開いて購入する (v1)](../hands-on/mobile-viewer.md)
 
 ### 5. まとめ（約 10 分）
 

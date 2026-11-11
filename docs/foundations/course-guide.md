@@ -1,7 +1,7 @@
 # 授業ガイド
 
 !!! abstract "このページの位置付け"
-    講師・TA 向けの「ワークショップ」の章のページです。受講者は [学習ロードマップ](roadmap.md) から読み始めてください。
+    講師・TA 向けの「ワークショップ」の章のページです。受講者は [学習ロードマップ（初級者向け）](roadmap.md) から読み始めてください。
 
 この章では、IW3IP の教材を授業や演習でどのように扱うかを整理します。
 
@@ -41,11 +41,11 @@
 | 回 | テーマ | 本サイトの対応章 |
 |---|---|---|
 | 1-2 | 導入・背景 | [プラットフォーム概要](../platform-overview.md) |
-| 3-4 | ブロックチェーン基礎 | [ブロックチェーン基礎](blockchain-basics.md) / [Hardhat基礎](hardhat-basics.md) |
-| 5-6 | SSI/DID/VC基礎 | [SSI/DID/VC基礎](ssi-did-vc-basics.md) |
+| 3-4 | ブロックチェーン基礎 | [ブロックチェーン基礎](blockchain-basics.md) / [Hardhat基礎（このサイトで使うブロックチェーン）](hardhat-basics.md) |
+| 5-6 | SSI/DID/VC基礎 | [SSI / DID / VC 基礎](ssi-did-vc-basics.md) |
 | 7-9 | 実装演習 | [環境構築](../setup/index.md) + [ハンズオン](../hands-on/index.md) |
 | 10-12 | 検証・比較 | [トラブルシュート](../operations/troubleshooting.md) + [FAQ](../operations/faq.md) |
-| 13-15 | 最終発表 | [学習ロードマップ](roadmap.md) + [参考文献](references.md) |
+| 13-15 | 最終発表 | [学習ロードマップ（初級者向け）](roadmap.md) + [参考文献・発展学習資料](references.md) |
 
 ## 演習に使えるコマ数別の構成
 
@@ -56,7 +56,7 @@
 | 1 コマ | [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)（約 20 分）→ [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md)（約 45 分）→ ふりかえり | 同意にもとづく `allow` / `deny` と監査ログを確認する |
 | 3 コマ（上の表の 7〜9 回） | 1 回目: 上の 1 コマ分。2 回目: [最短起動 (スタックを動かす)](../setup/quickstart.md)（約 30 分）→ [USB カメラでポイ捨てを検知する (OpenCV)](../hands-on/webcam.md)（約 30 分。mock モードで可）→ [スマホでマーケットを開いて購入する (v1)](../hands-on/mobile-viewer.md)（約 20 分）。3 回目: [検知イベントだけを共有する](../hands-on/webcam-event-sharing.md)（約 45 分）→ [防災イベントを共有する](../hands-on/environment-disaster.md)（約 30 分） | 取り込みから売買、イベント共有までを通す。SSI ウォレットは使わない (スマホでの購入には MetaMask モバイルを使う) |
 | 5 コマ | 3 コマの内容に加えて、4 回目: [データ提供者の認証 (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md)（約 60 分）。5 回目: [データ閲覧者の認証 (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md)（約 45 分）→ [機器間での連携認証 (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)（約 45 分） | VC の発行・提示と、書き込み・読み出し・機器間の認可の違いを確認する |
-| 発展（集中講義、卒業研究） | マーケット連携（[購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md)〜[出品者の身元を裏付ける (Seller VC / Stage 7)](../hands-on/marketplace-seller-vc.md)、約 4 時間）、[信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md)（約 4 時間）、Part 3（約 5 時間）から選ぶ | 支払いと認可の連携、信頼度に応じた出し分け、AI による判断 |
+| 発展（集中講義、卒業研究） | マーケット連携（[購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md)〜[出品者の身元を裏付ける (Seller VC / Stage 7)](../hands-on/marketplace-seller-vc.md)、約 3 時間 15 分）、[信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md)（約 4 時間）、画像の来歴（Stage P の P0〜P3。[画像の来歴を証明する (C2PA / Stage P)](../hands-on/c2pa-provenance.md)〜[VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](../hands-on/c2pa-provenance-vlm.md)、約 1.5〜2 時間）、Part 3（約 5 時間）から選ぶ | 支払いと認可の連携、信頼度に応じた出し分け、画像の来歴の証明、AI による判断 |
 
 ウォレットを使う回（4 回目以降）は、受講者のスマホに `iw3ip-wallet` を入れておく必要があります。ビルドに時間がかかるため、講師がビルドしたものを事前に配布してください。
 

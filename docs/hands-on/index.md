@@ -39,25 +39,25 @@ v2 は v1 を置き換えるものではなく、v1 に追加する経路です�
 このサイトでは、3 種類の番号を使っています。
 
 - **Part 1〜3**: このサイトでの学習順です。基本、機能拡張、知能統合の順に進みます。
-- **Phase 1〜3**: 基盤の発展段階です。Phase 1 はデータ共有、Phase 2 はイベント共有、Phase 3 は AI による判断と制御を指します（[プラットフォーム概要のフェーズ構成](../platform-overview.md#フェーズ構成)）。
+- **Phase 1〜3**: 基盤の発展段階です。Phase 1 はデータ共有、Phase 2 はイベント共有、Phase 3 は AI による判断と制御を指します（[プラットフォーム概要](../platform-overview.md#フェーズ構成) のフェーズ構成）。
 - **Stage 0〜7、A、T、P**: Part 2 のうち、VC を使うハンズオンと、その準備 (Stage 0)、画像の来歴の署名 (Stage P) に付けた通し番号です。各ページは、前の Stage を済ませていることを前提にしています。ただし、Stage P の最初のページ (P0) は前の Stage と VC を使わず、教材リポジトリと Python だけで単独で動かせます。続きの P1〜P3 のページは publisher とチェーンにつなぎ、Tier ごとの ViewerToken (PurchaseViewerVC で得る) を使います。Stage 2 は欠番です。
 
 | Stage | ハンズオン | 扱う VC |
 |---|---|---|
 | 0 | [検知イベントだけを共有する](webcam-event-sharing.md)、[防災イベントを共有する](environment-disaster.md) | なし (`/consents` に JSON を登録) |
-| 1 | [データ提供者の認証](ha-ssi-wallet.md) | ConsentVC |
-| 3 | [データ閲覧者の認証](ha-ssi-viewer.md) | ViewerVC |
-| 4 prep | [機器間での連携認証](ha-ssi-service.md) | ServiceVC |
-| 5 | [購入後に証明書をウォレットへ渡す](marketplace-vc-bridge.md) | PurchaseViewerVC |
-| 6 | [ServiceVC で書いたデータを PurchaseViewerVC で読み出す](marketplace-vc-end-to-end.md) | ServiceVC + PurchaseViewerVC (Stage 1・3 の ConsentVC・ViewerVC の流れの上に組み立てる) |
-| 7 | [出品者の身元を裏付ける](marketplace-seller-vc.md) | SellerVC |
-| A | [スマホアプリで購入から閲覧まで](marketplace-mobile-app.md) | PurchaseViewerVC (スマホだけで操作) |
-| T | [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) | DataUserVC |
-| P | [画像の来歴を証明する](c2pa-provenance.md) | なし (C2PA の署名に X.509 証明書を使う。publisher とウォレットは不要) |
-| P | [来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) | PurchaseViewerVC (DataUserVC の属性で Tier が決まる。プログラムの中のウォレットが使うため、スマホは不要) |
-| P | [VLM の要約から元の画像をたどる](c2pa-provenance-vlm.md) | PurchaseViewerVC (DataUserVC の属性で Tier が決まる。プログラムの中のウォレットが使うため、スマホは不要) |
+| 1 | [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) | ConsentVC |
+| 3 | [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) | ViewerVC |
+| 4 prep | [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) | ServiceVC |
+| 5 | [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) | PurchaseViewerVC |
+| 6 | [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md) | ServiceVC + PurchaseViewerVC (Stage 1・3 の ConsentVC・ViewerVC の流れの上に組み立てる) |
+| 7 | [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) | SellerVC |
+| A | [スマホアプリで購入から閲覧まで (Stage A)](marketplace-mobile-app.md) | PurchaseViewerVC (スマホだけで操作) |
+| T | [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) | DataUserVC |
+| P | [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) | なし (C2PA の署名に X.509 証明書を使う。publisher とウォレットは不要) |
+| P | [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) | PurchaseViewerVC (DataUserVC の属性で Tier が決まる。プログラムの中のウォレットが使うため、スマホは不要) |
+| P | [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md) | PurchaseViewerVC (DataUserVC の属性で Tier が決まる。プログラムの中のウォレットが使うため、スマホは不要) |
 
-VC とトークンの対応は [VC アーキテクチャ全体像](../design/vc-architecture-overview.md) にまとめています。
+VC とトークンの対応は [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md) にまとめています。
 
 ## コマンド中の `$HOST_IP` について { #host-ip }
 
@@ -123,7 +123,7 @@ export HOST_IP=192.168.1.20
 
 | 目的 | 進む順 |
 |---|---|
-| まず動かしたい | [HA Demo Simulator](ha-demo-simulator.md) のみ (約 20 分) |
+| まず動かしたい | [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md) のみ (約 20 分) |
 | 基本を一通り | Part 1 全部 (約 1.5 時間。1.2 のデバイスは 1 つ選ぶ) |
 | 安全な共有まで | Part 1 → Part 2 の 2.1〜2.3 (+ 約 4 時間) |
 | マーケット連携の v2 まで | Part 1 → Part 2 の 2.4 まで (+ 約 4 時間) |
@@ -148,7 +148,7 @@ export HOST_IP=192.168.1.20
 | **Part 2 / データ処理と来歴を入れる**<sup>※</sup> | ✓ | ✓ <small>(Tier 3 実機時)</small> | ✓ <small>(同)</small> | ✓ | – | ✓ <small>(OpenCV / VLM 任意)</small> |
 | **Part 3 / 知能統合** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
 
-※ このサブグループのうち、[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) は Python だけで動き、publisher、ブロックチェーン、MetaMask、SSI ウォレットと VC を使いません。続きの [来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) と [VLM の要約から元の画像をたどる](c2pa-provenance-vlm.md) は publisher と Hardhat を使い、プログラムの中のウォレットで PurchaseViewerVC を受け取って Tier ごとの ViewerToken を得ます。MetaMask とスマホのウォレットは使いません。
+※ このサブグループのうち、[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) は Python だけで動き、publisher、ブロックチェーン、MetaMask、SSI ウォレットと VC を使いません。続きの [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) と [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md) は publisher と Hardhat を使い、プログラムの中のウォレットで PurchaseViewerVC を受け取って Tier ごとの ViewerToken を得ます。MetaMask とスマホのウォレットは使いません。
 
 ### 主に使う VC (Verifiable Credential) の種類
 
@@ -166,7 +166,7 @@ export HOST_IP=192.168.1.20
 - **MetaMask**: ブロックチェーンに対する署名・送金に使います。ローカルチェーンに接続して使います。
 - **SSI ウォレット**: スマホに入れる iw3ip-wallet (Sphereon Wallet の fork) です。VC の受け取りと提示に使います。
 - **IPFS・保管庫 (v1)**: v1 で使います。購入後のデータは保管庫 (simple-storage) に置き、その場所 (URI) を暗号化してチェーンに書き込みます。IPFS と PostgreSQL は、動画のメタデータの登録と検索画面に使います。v2 では VC を使う経路が加わります。
-- **カメラ経路 / HA 経路**: Part 1 の HUSKYLENS2 と USB ウェブカメラはイベントファイルを `mediator-owner` に渡すので、[最短起動](../setup/quickstart.md) のスタック (Hardhat、保管庫、IPFS など) が必要です。HA SSI Publisher は publisher にデータを送ります。
+- **カメラ経路 / HA 経路**: Part 1 の HUSKYLENS2 と USB ウェブカメラはイベントファイルを `mediator-owner` に渡すので、[最短起動 (スタックを動かす)](../setup/quickstart.md) のスタック (Hardhat、保管庫、IPFS など) が必要です。HA SSI Publisher は publisher にデータを送ります。
 - **画像処理 / LLM**: OpenCV (Tier 2 のぼかし処理)、Ollama で動かす VLM（視覚言語モデル。LLaVA / moondream）、Phase 3 の LLM Planner を指します。
 
 ---
@@ -199,7 +199,7 @@ export HOST_IP=192.168.1.20
 出品 → 購入 → 受け取り、までを一通り行います。受け取りでは、保管庫 (simple-storage) に置いたデータの場所 (URI) を、暗号化してチェーン経由で渡します。
 ここまでが **基本 (v1)** の完了点です。
 
-1. **出品**: 1.2 のサンプル ([HUSKYLENS2](huskylens2.md) または [USB ウェブカメラ](webcam.md)。mock モードで可) を動かすと、イベントファイルが `mediator-owner/raw_data/output` に出力されます。1.2 で HA SSI Publisher を選んだ場合は、[USB ウェブカメラサンプル](webcam.md) を mock モードで動かして出品します。`mediator-owner` がイベントファイルを検知して商品として登録し、ターミナルに商品のアドレスを表示します。
+1. **出品**: 1.2 のサンプル ([AI カメラで人物を検知する (HUSKYLENS2)](huskylens2.md) または [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md)。mock モードで可) を動かすと、イベントファイルが `mediator-owner/raw_data/output` に出力されます。1.2 で HA SSI Publisher を選んだ場合は、[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) のサンプルを mock モードで動かして出品します。`mediator-owner` がイベントファイルを検知して商品として登録し、ターミナルに商品のアドレスを表示します。
 
     ```
     Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskylens_1791551565.txt
@@ -232,7 +232,7 @@ export HOST_IP=192.168.1.20
 
 最短起動の手順 2 (デプロイ) で登録される 5 件は、`mediator-owner` が出品したものではありません。購入はできますが、データは届きません。
 
-各プロセスの起動手順は [最短起動](../setup/quickstart.md) にあります。
+各プロセスの起動手順は [最短起動 (スタックを動かす)](../setup/quickstart.md) にあります。
 
 ### 1.4 スマホでマーケットを開いて購入する
 
@@ -351,5 +351,5 @@ export HOST_IP=192.168.1.20
 
 ## 用語が分からないとき
 
-[環境構築のミニ辞書](../setup/index.md#このハンズオンで使う用語のミニ辞書) を参照してください。
+[環境構築](../setup/index.md#このハンズオンで使う用語のミニ辞書) のミニ辞書を参照してください。
 出てくる用語のほぼ全てを 1 行で説明しています。

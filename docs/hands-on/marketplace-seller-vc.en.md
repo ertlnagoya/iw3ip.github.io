@@ -13,7 +13,7 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
 !!! abstract "The fifth VC type: SellerVC"
     This adds a layer that uses a VC to back **"who"** is selling
     a dataset when it is listed on the marketplace. As in Stages 1–6, you proceed in the order
-    present → obtain a token → call the API. For design details, see the [SellerVC design spec](../design/seller-vc-spec.md).
+    present → obtain a token → call the API. For design details, see the [SellerVC — marketplace listing governance VC (Stage 7 design spec)](../design/seller-vc-spec.md).
 
 !!! tip "Choosing licensed_datasets"
     The example uses `home/env/temperature,home/env/humidity`, but for
@@ -35,7 +35,7 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
 
 - How the `licensed_datasets` of a SellerVC states in the VC
   "which datasets this seller may sell"
-- Calling `/marketplace/register` with the SellerToken (24h, multi-use); the SellerToken also works for `/provider/publish` in §11 of [tiered media](data-user-vc-tiered-media.md)
+- Calling `/marketplace/register` with the SellerToken (24h, multi-use); the SellerToken also works for `/provider/publish` in §11 of [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md)
 - (Optional) When the environment variable `MARKETPLACE_HARDHAT_RPC` is set, the publisher
   verifies on-chain that `Merchandise.getOwner() == seller_eth_addr`
 - A **`marketplace/seller_registered`** row is added to the audit log
@@ -74,7 +74,7 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
 - The deploy script is the version that creates Merchandise contracts with `dataset_id` in `additionalInfo` (Stage 6 or later)
 - The publisher is running with code that supports Stage 7 (the latest `main`)
 - iw3ip-wallet (iPhone) works
-- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP='<your PC LAN IP>'` (see the [Hands-on](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet cloned to `~/program/iw3ip-wallet`
 
 ---
@@ -256,7 +256,7 @@ Note down the four values shown in the console: `seller`, `merchandise`, `deploy
 
 ### Steps
 
-Run this in the terminal where you set `SELLER` in Step S2 (at the repository top). Before running, replace each whole `<…>` in the first three lines, including the angle brackets, with the value you noted in Step S3. If you forget, nothing errors out, because the values are quoted: the placeholder text is sent as is. When `MARKETPLACE_HARDHAT_RPC` is not set, a bogus address gets registered (when it is set, the call fails with HTTP 502 `chain_rpc_failed`).
+Run this in the terminal where you set `SELLER` in Step S2 (at the repository top). Before running, replace each whole `<…>` in the first three lines, including the angle brackets, with the value you noted in Step S3. If you forget, nothing errors out, because the values are quoted: the placeholder text is sent as is. When `MARKETPLACE_HARDHAT_RPC` is not set, the bogus values get registered. When it is set, a forgotten `MERCH` makes the on-chain lookup fail with HTTP 502 `chain_rpc_failed`, and a forgotten `SELLER_ETH` does not match the on-chain owner and fails with HTTP 403 `owner_mismatch`. `TX_HASH` is not checked, so a forgotten `TX_HASH` is registered as is.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -301,16 +301,26 @@ If the RPC cannot be reached, the response has no `owner_verify`; the call fails
 curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 ```
 
-→ Among the most recent rows:
+The result is a list, newest first. The first row is `marketplace/seller_registered` (the other rows are cut as `...`):
 
 ```json
-{
-    "raw_topic": "marketplace/seller_registered",
-    "subject_did": "did:jwk:...",
-    "purpose": "register",
-    "reason": "seller_register:jti=...:merchandise=0x...:eth=0x...:tx=0x...:owner_verify=skipped",
-    "holder_did": "did:jwk:..."
-}
+[
+    {
+        "id": ...,
+        "ts": "...",
+        "action": "allow",
+        "subject_did": "did:jwk:...",
+        "dataset_id": "home/env/temperature",
+        "purpose": "register",
+        "reason": "seller_register:jti=...:merchandise=0x...:eth=0x...:tx=0x...:owner_verify=skipped",
+        "message_hash": "",
+        "raw_topic": "marketplace/seller_registered",
+        "holder_did": "did:jwk:...",
+        "vc_hash": null,
+        "presentation_verified": "allow"
+    },
+    ...
+]
 ```
 
 ---
@@ -331,7 +341,7 @@ cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 ```
 
-Then follow the procedure of the [Stage 5 hands-on](marketplace-vc-bridge.md): purchase with MetaMask → receive in the wallet
+Then follow the procedure of the [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md): purchase with MetaMask → receive in the wallet
 → obtain a ViewerToken → fetch. The ViewerToken expires after 60 seconds, so run the next commands right after presenting; if you get `viewer_token_expired`, present again. Before running, replace the whole `<buyer ViewerToken>`, including the angle brackets, with the token you extracted as in [Stage 5 Step 8](marketplace-vc-bridge.md#step-8-obtain-a-viewertoken). If you forget, the placeholder text is sent as the token and the call fails with 401 (`viewer_token_unknown`).
 
 The next command uses the `$MERCH` you set in Step S4. Run it in the same terminal as Step S4. The first line should print `MERCH=0x...`. If nothing follows `MERCH=`, you are in a different terminal: first run `MERCH='<merchandise address from Step S3>'` with the `<…>` replaced by the value you noted in Step S3.
@@ -561,7 +571,7 @@ See also [Troubleshooting in Stage 5](marketplace-vc-bridge.md#troubleshooting)
 
 ## Related
 
-- [SellerVC design spec](../design/seller-vc-spec.md)
+- [SellerVC — marketplace listing governance VC (Stage 7 design spec)](../design/seller-vc-spec.md)
 - [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md)
 - [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md)
 - [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md)

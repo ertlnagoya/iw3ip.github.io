@@ -1,6 +1,6 @@
 # 来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)
 
-[画像の来歴を証明する](c2pa-provenance.md) では、C2PA [1] の来歴の署名と検証を、手元の PC だけで試しました。このページでは、署名した画像を IW3IP の publisher に送ります。publisher は来歴を検証し、顔をぼかした Tier 2 の画像を作って自分の鍵で署名し、来歴のハッシュをブロックチェーンにトークンとして記録します。最後に、データ利用者の Tier ごとに、来歴のどこまでが見えるかを調べます。
+[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) では、C2PA [1] の来歴の署名と検証を、手元の PC だけで試しました。このページでは、署名した画像を IW3IP の publisher に送ります。publisher は来歴を検証し、顔をぼかした Tier 2 の画像を作って自分の鍵で署名し、来歴のハッシュをブロックチェーンにトークンとして記録します。最後に、データ利用者の Tier ごとに、来歴のどこまでが見えるかを調べます。
 
 ![撮影画像 (p1_capture.jpg) と、publisher が顔をぼかして署名した Tier 2 の画像 (p2_tier2.jpg)](../assets/c2pa-publisher-capture-vs-tier2.png)
 
@@ -8,16 +8,16 @@
 
 > **やること**: 署名した画像を publisher に送り、publisher による検証、Tier 2 の画像の署名、トークンの発行、Tier ごとの来歴の見え方、監査ログを見る
 >
-> **前提**: [画像の来歴を証明する](c2pa-provenance.md) の §1〜§3 を終えていること。Docker と Node.js が使えること。スマホのウォレットは使いません
+> **前提**: [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) の §1〜§3 を終えていること。Docker と Node.js が使えること。スマホのウォレットは使いません
 >
 > **使うもの**: PC (USB ウェブカメラまたは内蔵カメラは任意)
 >
 > **所要時間**: 約 40〜60 分
 
 !!! note "このページの位置付け"
-    [C2PA 来歴パイプラインの設計仕様](../design/c2pa-provenance-spec.md) の P1 と P2 を動かすハンズオンです。
+    [C2PA 来歴パイプライン — カメラ映像とセンサーデータの来歴証明 (Stage P 設計仕様)](../design/c2pa-provenance-spec.md) の P1 と P2 を動かすハンズオンです。
     P1 は publisher での検証と監査ログ (設計仕様の §7.1、§7.3)、P2 は Tier 2 の画像の来歴 (§5.3)、Tier ごとの来歴の見せ方 (§7.2)、トークンの発行 (§8) です。
-    Tier 1〜3 と DataUserVC は [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) と [意味レベルで段階化する](data-user-vc-tiered-semantic.md) で扱いました。
+    Tier 1〜3 と DataUserVC は [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) と [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) で扱いました。
 
 ## 目的
 
@@ -35,13 +35,13 @@
 ## つまずきやすい点
 
 - `make_test_certs.py` は、ゲートウェイの証明書 (CN は `iw3ip-gateway`) と publisher の証明書 (CN は `iw3ip-publisher`) を、同じテスト用の CA (`IW3IP Test CA`) で発行します。publisher は、自分の証明書で Tier 2 の画像と要約カードに署名します。古い版の `make_test_certs.py` で作った証明書には publisher の証明書が無いため、§1 で作り直します
-- publisher は Docker のコンテナで動き、`examples/hands_on/c2pa_provenance/certs/` を読み取り専用でマウントして証明書を読みます。証明書を作り直したら、publisher を起動し直します
+- publisher は Docker のコンテナで動き、`examples/hands_on/c2pa_provenance/certs/` を読み取り専用でマウントして証明書を読みます。証明書を作り直したら、§3 のコマンドに `--force-recreate` を付けて publisher のコンテナを作り直します。publisher は起動したときにしか証明書を読まず、`--build` だけではビルドがキャッシュから済んだときにコンテナが作り直されません
 - ProvenanceToken のアドレスは、Hardhat ノードを起動し直すと変わることがあります。§3 では、§2 で表示されたアドレスを使います
 - この設定では、publisher は Hardhat ノードの、鍵がロックされていないアカウントでトークンを発行します。手元で試すための方法で、本番では使えません
 
 ## 前提
 
-- [画像の来歴を証明する](c2pa-provenance.md) の §1〜§3 (仮想環境と C2PA の SDK、c2pa-python [2]、証明書、署名と検証) を終えている
+- [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) の §1〜§3 (仮想環境と C2PA の SDK、c2pa-python [2]、証明書、署名と検証) を終えている
 - 教材リポジトリ `~/program/Blockchain_IoT_Marketplace` で Docker が使える ([環境構築](../setup/index.md))
 - `iot-market/` で Hardhat が使える (Node.js と `npm install`)
 
@@ -282,7 +282,7 @@ flowchart TB
 | `redacted_manifest_label` | Tier 2 の画像のマニフェストの識別子 |
 | `summary_card_url`、`summary_manifest_label` | 要約の文を描いて署名した要約カードの URL と、そのマニフェストの識別子 (P3)。要約の文を受け取る Tier だけに届く |
 
-summary の Tier の利用者には、画像が届きません。このページのプログラムの 14 番目のチェックは、受け取った要約の文の sha256 が `derived_sha256` と同じかだけを調べています。要約の文が署名された撮影画像から作られたことは、publisher が署名した要約カード (`summary_card_url`) で確かめられます。その手順は、次のページ [VLM の要約から元の画像をたどる](c2pa-provenance-vlm.md) で扱います。
+summary の Tier の利用者には、画像が届きません。このページのプログラムの 14 番目のチェックは、受け取った要約の文の sha256 が `derived_sha256` と同じかだけを調べています。要約の文が署名された撮影画像から作られたことは、publisher が署名した要約カード (`summary_card_url`) で確かめられます。その手順は、次のページ [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md) で扱います。
 
 !!! warning "Tier をまたいで突き合わせられる"
     `manifest_label` と `token_id` は、すべての Tier に同じ値で届きます。そのため、異なる Tier の利用者が手元のデータを持ち寄ると、同じ撮影から作られた行だと分かります。これは設計仕様の §7.2 のとおりの動作で、来歴と段階的な開示を両立させるうえで残っている課題です。
@@ -345,7 +345,7 @@ sellerDid     (none)
 
 - 前のページと同じく、カメラとゲートウェイの間の区間 (設計仕様の §4) と、写っている内容が事実かどうかは確かめられません
 - トークンは、Hardhat ノードの、鍵がロックされていないアカウントで発行しています。本番では、publisher の鍵を安全に保管し、自分で署名したトランザクションを送る必要があります
-- publisher の顔検出は正面の顔だけを見つけます。横顔や小さな顔はぼけないことがあります ([意味レベルで段階化する](data-user-vc-tiered-semantic.md) の顔ブラーと同じ制約)
+- publisher の顔検出は正面の顔だけを見つけます。横顔や小さな顔はぼけないことがあります ([意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) の顔ブラーと同じ制約)
 - 動画 (断片化 MP4) と、センサーの時系列データの来歴は、まだ扱っていません (設計仕様の P4)
 
 ## 元の設定に戻す
@@ -361,14 +361,19 @@ docker compose -f infra/docker-compose.yml up -d publisher
 - 症状: `.../certs/publisher_chain.pem not found; run make_test_certs.py first`
   - 確認: §1 の `make_test_certs.py` を実行したか。古い版の `make_test_certs.py` で作った証明書には、publisher の証明書がありません
 - 症状: `[FAIL] P1 signed capture is Trusted at the publisher  (200 Valid ...)`
-  - 確認: 証明書を作り直したあと、publisher を起動し直したか (§3 のコマンドをもう一度実行する)。publisher は起動したときに `ca.pem` を読みます
+  - 確認: 証明書を作り直したあと、publisher のコンテナを作り直したか。publisher は起動したときにだけ `ca.pem` と署名鍵を読みます。`--build` だけでは、ビルドがキャッシュから済むとコンテナが作り直されません。§3 のコマンドに `--force-recreate` を付けて実行します
+
+    ```bash
+    PROVENANCE_TOKEN_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 \
+      docker compose -f infra/docker-compose.yml -f infra/docker-compose.c2pa.yml up -d --build --force-recreate publisher
+    ```
 - 症状: `[FAIL] P1 unsigned image is accepted without provenance  (200 c2pa=None)`
   - 確認: §3 で `-f infra/docker-compose.c2pa.yml` を付けて起動したか
 - 症状: `[FAIL] P2 ProvenanceToken was minted  (no token_id; ...)`
   - 確認: Hardhat ノードが動いているか。§3 の `PROVENANCE_TOKEN_ADDRESS` が §2 で表示されたアドレスか。Hardhat ノードを起動し直した場合は、§2 と §3 をやり直す
   - 確認: `docker compose -f infra/docker-compose.yml logs publisher | grep provenance` に `provenance mint failed` が出ていないか
 - 症状: `[FAIL] P2 Tier 2 image has its own manifest`
-  - 確認: `docker compose -f infra/docker-compose.yml logs publisher | grep -i redaction` で、ぼかしの処理が失敗していないか。`--build` を付けて publisher を作り直したか
+  - 確認: `docker compose -f infra/docker-compose.yml logs publisher | grep -i -E 'redaction|tier2'` で、ぼかしや署名の処理が失敗していないか。`--build` を付けて publisher を作り直したか
 - 症状: `p2_tier2.jpg` の顔がぼけていない
   - 確認: `--image` で渡した写真の顔が、横向きや小さすぎではないか。オプションなしの既定の絵で、顔がぼけるかを試す
 - 症状: `HH411: The library @openzeppelin/contracts ... is not installed`

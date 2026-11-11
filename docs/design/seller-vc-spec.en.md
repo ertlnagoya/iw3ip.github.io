@@ -6,7 +6,7 @@
     to Merchandise registration on iot-market. It introduces a **fifth VC**
     (Verifiable Credential), following ConsentVC / ViewerVC / ServiceVC /
     PurchaseViewerVC, and uses a VC to show who may sell which dataset. It is a draft written before implementation.
-    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview](vc-architecture-overview.md)).
+    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md)).
     The corresponding hands-on pages are [Back the seller's identity (Seller VC / Stage 7)](../hands-on/marketplace-seller-vc.md), [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](../hands-on/marketplace-vc-end-to-end.md), and [Hand a credential to the buyer's wallet (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md).
     Stage 8 and later have no hands-on yet and refer to items for future consideration.
 
@@ -310,11 +310,11 @@ The total is 2–3 weeks, roughly the same as Stage 5/6.
 
 ## 12. Related
 
-- [Marketplace VC Bridge design spec (v1/v2)](marketplace-vc-bridge-spec.md)
+- [Marketplace VC Bridge — v1 / v2 Design Spec](marketplace-vc-bridge-spec.md)
 - [Authenticate the data provider (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md)
 - [Authenticate the viewer (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md)
 - [Authenticate machines (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
 - [Hand a credential to the buyer's wallet (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md)
 - [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](../hands-on/marketplace-vc-end-to-end.md)
 - [Back the seller's identity (Seller VC / Stage 7)](../hands-on/marketplace-seller-vc.md) (the hands-on created in C6)
-- [VC architecture overview](vc-architecture-overview.md) (the list of Stage numbers is in the "Hands-on stages" section (§5))
+- [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md) (the list of Stage numbers is in the "Hands-on stages" section (§5))

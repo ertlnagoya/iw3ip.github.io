@@ -47,7 +47,7 @@
 
 - [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) を起動できる
 - Docker / Docker Compose が使える
-- [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
+- [最短起動 (スタックを動かす)](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 - `curl` が使える
 
 この Hands-on は、ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使います。
@@ -95,7 +95,7 @@
 
 ### 1. サービス起動
 
-ソースコードリポジトリで次を実行します。`PLATFORM_INGEST_READ_ENABLED=true` は、蓄積されたデータを確認するための `GET /platform/ingest` を有効にする指定です。この API は認証なしで全件を返すデモ用の機能で、指定しない場合は無効 (404) です。Part 2 以降では、読み出しに VC を提示して得るトークンを使います。
+ソースコードリポジトリで次を実行します。`PLATFORM_INGEST_READ_ENABLED=true` は、蓄積されたデータを確認するための `GET /platform/ingest` を有効にする指定です。この API は認証なしで全件を返すデモ用の機能で、指定しない場合は無効 (404) です。Part 2 の Stage 3 (データ閲覧者の認証) 以降では、読み出しに VC を提示して得るトークンを使います。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -321,7 +321,7 @@ PolicyToken は 1 回使うと無効になるため、連続する MQTT イベ�
 wallet 経由で認可する使い方には向きません。ここでは **1 件のイベントだけ
 curl で送る**ことを勧めます。
 
-スマホのウォレットは PC の `localhost` に届かないため、以下の URL では `<HOST_IP>` を PC の LAN IP に置き換えて PC ブラウザで開きます (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。
+スマホのウォレットは PC の `localhost` に届かないため、以下の URL では `<HOST_IP>` を PC の LAN IP に置き換えて PC ブラウザで開きます (IP の調べ方は [ハンズオン](index.md#host-ip) を参照)。
 
 まず `ssi-wallet` プロファイルを付けて起動し直します。
 

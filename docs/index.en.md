@@ -15,7 +15,7 @@ Participants should start from the [Learning Roadmap](foundations/roadmap.md), a
 
 ## What This Site Covers
 
-You can work through the material in order, from foundational understanding to the basic hands-on.
+You can work through the material in order, from the foundations through hands-on Parts 1–3 (the basic IoT data path; consent, conditional sharing and tiered access; AI that interprets requests). Design specs are also included for when you want to know how things work in detail.
 
 - Foundations:
   - blockchain
@@ -81,10 +81,10 @@ flowchart TB
 
 Two groups of processes are started.
 
-- **Marketplace side**: the blockchain (Hardhat), the merchandise UI, data storage, and the mediators. Start them in 7 terminals by following [Quickstart](setup/quickstart.md). Used for listing and purchasing data (the second half of Part 1 and the marketplace integration in Part 2).
+- **Marketplace side**: the blockchain (Hardhat), the merchandise UI, data storage, and the mediators. Start them in 7 terminals by following [Quickstart (run the stack)](setup/quickstart.md). Used for listing and purchasing data (the second half of Part 1 and the marketplace integration in Part 2).
 - **Publisher side**: the MQTT broker and the publisher. Start them with `docker compose -f infra/docker-compose.yml up` in the course repository. Used for ingesting data, deciding whether sharing is allowed by consent or VC, and the audit log (the first half of Part 1, Part 2, and Part 3).
 
-The two groups run independently. Note that the IPFS gateway on the marketplace side and the publisher both use port 8080, so they cannot run at the same time. Before a hands-on that uses the publisher, stop IPFS with `docker compose down` in the `ipfs` directory. In the Part 2 marketplace integration, the bridge reports purchase events to the publisher and connects them. The [tech stack table in the Hands-on overview](hands-on/index.md#tech-stack-at-a-glance) shows which hands-on uses which.
+The two groups run independently. Note that the IPFS gateway on the marketplace side and the publisher both use port 8080, so they cannot run at the same time. Before a hands-on that uses the publisher, stop IPFS with `docker compose down` in the `ipfs` directory. In the Part 2 marketplace integration, the bridge reports purchase events to the publisher and connects them. The "Tech stack at a glance" table in [Hands-on](hands-on/index.md#tech-stack-at-a-glance) shows which hands-on uses which.
 
 Small devices such as a Raspberry Pi with a camera can also serve as data sources.
 
@@ -94,7 +94,7 @@ Small devices such as a Raspberry Pi with a camera can also serve as data source
 
 If you want the simplest Phase 1 / Phase 2 entry without physical devices, `ha-demo-simulator` is the best starting point. Phases 1–3 are the development stages of the platform, described in [Phase structure in the platform overview](platform-overview.md#phase-structure).
 
-- Matching page: [Home Assistant Demo Simulator sample](hands-on/ha-demo-simulator.md)
+- Matching page: [Run the whole pipeline without hardware (HA Demo Simulator)](hands-on/ha-demo-simulator.md)
 - What you can confirm:
   - `Home Assistant demo -> MQTT -> publisher`
   - state sharing for `temperature` and `power`
@@ -121,7 +121,7 @@ As the shortest Phase 3 demo, `assistant-demo` starts the following in one comma
 
 Matching page:
 
-- [LLM Planner Hands-on](hands-on/llm-planner.md)
+- [Let an AI plan the steps (LLM Planner)](hands-on/llm-planner.md)
 
 Start command:
 
@@ -138,14 +138,14 @@ Open:
 
 1. [Learning Roadmap](foundations/roadmap.md)
 2. [Blockchain Basics](foundations/blockchain-basics.md)
-3. [Hardhat Basics](foundations/hardhat-basics.md)
-4. [SSI/DID/VC Basics](foundations/ssi-did-vc-basics.md)
-5. [Prerequisites](setup/prerequisites.md)
-6. [HA Demo Simulator](hands-on/ha-demo-simulator.md) (run the whole flow without hardware)
-7. [Quickstart](setup/quickstart.md)
+3. [Hardhat Basics (Blockchain Used in This Site)](foundations/hardhat-basics.md)
+4. [SSI / DID / VC Basics](foundations/ssi-did-vc-basics.md)
+5. [Prerequisites (install tools)](setup/prerequisites.md)
+6. [Run the whole pipeline without hardware (HA Demo Simulator)](hands-on/ha-demo-simulator.md) (run the whole flow without hardware)
+7. [Quickstart (run the stack)](setup/quickstart.md)
 8. [Hands-on](hands-on/index.md)
 9. [Design](design/index.md) (when you want the mechanisms in detail)
-10. [References](foundations/references.md)
+10. [References and Further Learning Materials](foundations/references.md)
 
 If you get stuck, see [Troubleshooting](operations/troubleshooting.md). Instructors and TAs should first read the [Course Guide](foundations/course-guide.md) to plan the course.
 

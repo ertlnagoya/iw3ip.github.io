@@ -78,26 +78,29 @@ Dependency graph of the Phase 2 hands-on
 
   Stage 1 + Stage 0 ─→ Stage T ── data-user-vc-tiered  DataUserVC (content tiered by trust)
   Stage 6 ─→ Stage A ── marketplace-mobile-app  purchase to viewing in a phone PWA
-  Stage T + Stage 7 ─→ Stage P ── c2pa-provenance  image provenance signed with C2PA
-                       (P0 runs on its own without VCs; P1–P3 connect to the publisher and the chain and use the per-tier tokens)
+  Stage T + Stage 7 ┄→ Stage P ── c2pa-provenance  image provenance signed with C2PA
+                       (┄→ marks a design basis, not a hands-on prerequisite.
+                        P0 has no prerequisite stage and runs on its own without VCs.
+                        P1–P3 send data with /simulate/publish and do not use SellerVC or Stage 7.
+                        They connect to the publisher and the chain and use the per-tier ViewerToken)
 ```
 
 Details of each stage:
 
 | Stage | Hands-on | Main additions |
 | --- | --- | --- |
-| 0 | [webcam-event-sharing](../hands-on/webcam-event-sharing.md), [environment-disaster](../hands-on/environment-disaster.md) | `/consents` JSON registration, MQTT → ingest |
-| 1 | [ha-ssi-wallet](../hands-on/ha-ssi-wallet.md) | OID4VCI/OID4VP + ConsentVC + PolicyToken |
-| 3 | [ha-ssi-viewer](../hands-on/ha-ssi-viewer.md) | ViewerVC + ViewerToken + `GET /platform/data` |
-| 4 prep | [ha-ssi-service](../hands-on/ha-ssi-service.md) | ServiceVC + ServiceToken (M2M) |
-| 5 | [marketplace-vc-bridge](../hands-on/marketplace-vc-bridge.md) | bridge service + PurchaseViewerVC + `merchandise=<addr>` reverse lookup |
-| 6 | [marketplace-vc-end-to-end](../hands-on/marketplace-vc-end-to-end.md) | ServiceVC writes and PurchaseViewerVC reads connected on one dataset (building on the ConsentVC / ViewerVC flows of Stages 1 and 3) + dataset_id obtained dynamically from `additionalInfo` |
-| 7 | [marketplace-seller-vc](../hands-on/marketplace-seller-vc.md) | SellerVC + `/marketplace/register` + on-chain `getOwner()` verification + `seller_did` included in the response |
-| T | [data-user-vc-tiered](../hands-on/data-user-vc-tiered.md) | DataUserVC + trust score + `allowed_views` to tier the `/platform/data` output |
-| A | [marketplace-mobile-app](../hands-on/marketplace-mobile-app.md) | Use `iot-market-ui` as a PWA on the phone, from purchase through VC receipt to viewing |
-| P | [c2pa-provenance](../hands-on/c2pa-provenance.md) | P0. No VC. Prove image provenance with C2PA signing using X.509 certificates. Prerequisite stages: none (runs on its own with only the repository and Python; no publisher or wallet needed) |
-| P | [c2pa-provenance-publisher](../hands-on/c2pa-provenance-publisher.md) | P1 and P2. Validation at the publisher's `/media/upload`, signing of the Tier 2 image, ProvenanceToken issuance, and per-tier `provenance`. The tiers are checked with PurchaseViewerVC and DataUserVC attributes (a wallet inside the program) |
-| P | [c2pa-provenance-vlm](../hands-on/c2pa-provenance-vlm.md) | The publisher signs a summary card that shows the VLM's summary (P3). A Tier 1 user traces the summary text to the capture's manifest and the ProvenanceToken |
+| 0 | [Share detections, not raw frames](../hands-on/webcam-event-sharing.md), [Share disaster events](../hands-on/environment-disaster.md) | `/consents` JSON registration, MQTT → ingest |
+| 1 | [Authenticate the data provider (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md) | OID4VCI/OID4VP + ConsentVC + PolicyToken |
+| 3 | [Authenticate the viewer (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md) | ViewerVC + ViewerToken + `GET /platform/data` |
+| 4 prep | [Authenticate machines (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md) | ServiceVC + ServiceToken (M2M) |
+| 5 | [Hand a credential to the buyer's wallet (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md) | bridge service + PurchaseViewerVC + `merchandise=<addr>` reverse lookup |
+| 6 | [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](../hands-on/marketplace-vc-end-to-end.md) | ServiceVC writes and PurchaseViewerVC reads connected on one dataset (building on the ConsentVC / ViewerVC flows of Stages 1 and 3) + dataset_id obtained dynamically from `additionalInfo` |
+| 7 | [Back the seller's identity (Seller VC / Stage 7)](../hands-on/marketplace-seller-vc.md) | SellerVC + `/marketplace/register` + on-chain `getOwner()` verification + `seller_did` included in the response |
+| T | [Tier the response by trust (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md) | DataUserVC + trust score + `allowed_views` to tier the `/platform/data` output |
+| A | [Marketplace as a phone app (Stage A)](../hands-on/marketplace-mobile-app.md) | Use `iot-market-ui` as a PWA on the phone, from purchase through VC receipt to viewing |
+| P | [Prove where an image came from (C2PA / Stage P)](../hands-on/c2pa-provenance.md) | P0. No VC. Prove image provenance with C2PA signing using X.509 certificates. Prerequisite stages: none (runs on its own with only the repository and Python; no publisher or wallet needed) |
+| P | [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](../hands-on/c2pa-provenance-publisher.md) | P1 and P2. Validation at the publisher's `/media/upload`, signing of the Tier 2 image, ProvenanceToken issuance, and per-tier `provenance`. The tiers are checked with PurchaseViewerVC and DataUserVC attributes (a wallet inside the program) |
+| P | [Trace a VLM summary back to the image (C2PA / Stage P, P3)](../hands-on/c2pa-provenance-vlm.md) | The publisher signs a summary card that shows the VLM's summary (P3). A Tier 1 user traces the summary text to the capture's manifest and the ProvenanceToken |
 
 ## 6. v1 / v2 marketplaces running side by side
 
@@ -111,7 +114,7 @@ From Stage 5 onward, the existing marketplace (v1) and the new scheme (v2) are d
 | Audit | on-chain Upload event | + publisher audit log (eth_did_bound, seller_register, viewer_token_used, etc.) |
 | Listing identity | Merchandise.owner (eth) | + seller_did of the SellerVC |
 
-Details: [Marketplace VC Bridge design spec](marketplace-vc-bridge-spec.md), [SellerVC design spec](seller-vc-spec.md)
+Details: [Marketplace VC Bridge — v1 / v2 Design Spec](marketplace-vc-bridge-spec.md), [SellerVC — marketplace listing governance VC (Stage 7 design spec)](seller-vc-spec.md)
 
 ## 7. Audit log chain
 
@@ -172,8 +175,8 @@ The following are **intentionally out of scope** for Stages 0–7 of Phase 2:
 ## 11. Related pages
 
 - Design specs
-    - [Marketplace VC Bridge (v1/v2 spec)](marketplace-vc-bridge-spec.md) — structure of Stages 5/6
-    - [SellerVC design spec (Stage 7)](seller-vc-spec.md) — design decisions of Stage 7
+    - [Marketplace VC Bridge — v1 / v2 Design Spec](marketplace-vc-bridge-spec.md) — structure of Stages 5/6
+    - [SellerVC — marketplace listing governance VC (Stage 7 design spec)](seller-vc-spec.md) — design decisions of Stage 7
 - Hands-on
-    - [Hands-on overview (Part 2)](../hands-on/index.md)
+    - [Hands-on](../hands-on/index.md) — list of the Part 2 hands-on pages
     - For each stage, see the table in §5

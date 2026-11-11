@@ -172,7 +172,7 @@ The samples on this site first focus on the core flow so that readers can unders
 
 1. Receive data from Home Assistant or sensors.
 2. Normalize the data into a common schema.
-3. Decide `allow` or `deny` based on a Consent VC (a verifiable credential that expresses consent conditions; see [SSI/DID/VC Basics](foundations/ssi-did-vc-basics.md)).
+3. Decide `allow` or `deny` based on a Consent VC (a verifiable credential that expresses consent conditions; see [SSI / DID / VC Basics](foundations/ssi-did-vc-basics.md)).
 4. Record an audit log.
 
 In other words, the site first demonstrates the minimum foundation for:
@@ -298,10 +298,10 @@ This is why they connect naturally to IW3IP features such as **Consent VC-based 
 
 ## What to read next
 
-1. To learn the technical foundations: [Blockchain Basics](foundations/blockchain-basics.md), [Hardhat Basics](foundations/hardhat-basics.md), [SSI/DID/VC Basics](foundations/ssi-did-vc-basics.md)
-2. To boot the environment first: [Quickstart](setup/quickstart.md)
+1. To learn the technical foundations: [Blockchain Basics](foundations/blockchain-basics.md), [Hardhat Basics (Blockchain Used in This Site)](foundations/hardhat-basics.md), [SSI / DID / VC Basics](foundations/ssi-did-vc-basics.md)
+2. To boot the environment first: [Quickstart (run the stack)](setup/quickstart.md)
 3. To observe actual behavior: [Hands-on](hands-on/index.md)
-4. To study the research in more depth: [Publications](publications.md), [References and Further Reading](foundations/references.md)
+4. To study the research in more depth: [Publications](publications.md), [References and Further Learning Materials](foundations/references.md)
 
 ## References
 

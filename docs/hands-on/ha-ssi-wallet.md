@@ -19,7 +19,7 @@
     ([検知イベントだけを共有する](webcam-event-sharing.md)) と同じカメライベント
     `home/event/possible_littering` でも同じ手順で動作するので、その場合は
     dataset と purpose を読み替えてください。Stage の番号は
-    [ハンズオンの概要](index.md#part-phase-stage) で説明しています。
+    [ハンズオン](index.md#part-phase-stage) で説明しています。
 
 ## 目的
 
@@ -66,7 +66,7 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 
 - Docker / Docker Compose が使える
 - PC とスマホが同じ LAN に接続されている
-- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP='<PC の LAN IP>'` を実行してください (IP の調べ方は [ハンズオン](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - スマホに `iw3ip-wallet`（fork 版）のビルドをインストールできる
   （TestFlight / 内部配布 APK / Expo dev build のいずれか）
 - [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) または [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md) で publisher を一度起動できている
@@ -226,7 +226,7 @@ curl 'http://localhost:8080/audit/logs?limit=10'
 
 確認ポイント:
 
-- `presentation_verified` イベントが `allow` / `deny` と共に記録される
+- 各行の `presentation_verified` 列に、提示の検証結果が `allow` / `deny` で記録される
 - `holder_did`、`vc_hash`、`purpose` が残る
 - HA SSI Publisher の監査ログと比べ、ポリシー判定の結果に加えて
   「誰がどの VC を提示したか」が残る

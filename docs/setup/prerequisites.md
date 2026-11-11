@@ -3,7 +3,7 @@
 ハンズオンを始める前に、PC へ必要なソフトをインストールして動作確認します。
 ここでは、各ツールが必要な理由を一行ずつ添えています。専門用語は、登場する箇所で補足します。
 
-> 既にツールが揃っている場合は、最後の [動作確認チェックリスト](#動作確認チェックリスト) だけ済ませて [最短起動](quickstart.md) に進んで構いません。
+> 既にツールが揃っている場合は、最後の [動作確認チェックリスト](#動作確認チェックリスト) だけ済ませて [最短起動 (スタックを動かす)](quickstart.md) に進んで構いません。
 
 ## 全体像 — 何のためにツールを入れるのか
 
@@ -30,14 +30,14 @@
 - **Linux**: ディストリビューション標準の `docker` パッケージか、公式のインストールスクリプトを使います。
 - 公式サイト: <https://www.docker.com/>
 
-> **メモリ設定の注意**: Docker Desktop の Settings → Resources → Memory を **6 GB 以上** にしてください。デフォルトの 2 GB では一部コンテナが落ちます。
+> **メモリ設定の注意**: Docker Desktop の Settings → Resources → Memory を確認し、割り当てが **6 GB 未満なら 6 GB 以上** に増やしてください。足りないと一部のコンテナが落ちます。
 
 ### 2. Node.js (npm 同梱)
 
 JavaScript の実行環境です。マーケットプレイスの UI とブロックチェーンの起動に使います。
 
 - 公式: <https://nodejs.org/>
-- バージョンは **LTS (Long Term Support)** を選んでおけば問題ありません
+- バージョンは **20 系の LTS (Long Term Support)** を選びます (下の動作確認の出力例も v20 です)
 - 複数バージョンを切り替える場合は [nvm](https://github.com/nvm-sh/nvm) や [volta](https://volta.sh/) も利用できます
 
 ### 3. Rust (cargo 同梱)
@@ -70,8 +70,9 @@ JavaScript の実行環境です。マーケットプレイスの UI とブロ�
 
 HUSKYLENS2 や USB ウェブカメラのブリッジ、演習用プログラム (`problem_program.py` など) は Python 3 で動かします。API の呼び出しと応答の確認には `curl` と `jq` を使います。
 
-- Python 公式: <https://www.python.org/>
-- macOS / Linux には `curl` が標準で入っています。`jq` は <https://jqlang.github.io/jq/> から入手できます
+- Python は **3.11 以上** が必要です (教材リポジトリの `pyproject.toml` の指定)。`python3 --version` で確かめます
+- macOS の Command Line Tools に入っている `python3` は 3.9 なので足りません。Homebrew で `brew install python@3.12` を実行するか、[Python 公式](https://www.python.org/) のインストーラで 3.11 以上を入れます。venv を作るときは `python3.12 -m venv .venv` のようにバージョンを指定します
+- macOS / Linux には `curl` が標準で入っています。`jq` は <https://jqlang.org/> から入手できます
 
 ### スマートフォン + SSI ウォレットアプリ
 
@@ -164,7 +165,7 @@ cd Blockchain_IoT_Marketplace
 - [ ] (Part 1 を進める人) MetaMask が拡張機能としてブラウザに表示されている
 - [ ] (Part 2 を進める人) スマホに iw3ip-wallet が入っている
 
-すべてチェックできたら → [最短起動](quickstart.md) に進んでください。
+すべてチェックできたら → [最短起動 (スタックを動かす)](quickstart.md) に進んでください。
 
 ## OS 別の補足
 
@@ -197,4 +198,4 @@ cd Blockchain_IoT_Marketplace
 | **コンテナ** | アプリと実行環境をひとまとめにして動かす単位。Docker が動かす |
 | **拡張機能** | ブラウザに追加できる小さなアプリ。MetaMask はこれ |
 
-そのほかの用語は [環境構築のミニ辞書](index.md) を参照してください。
+そのほかの用語は [環境構築](index.md#このハンズオンで使う用語のミニ辞書) のミニ辞書を参照してください。

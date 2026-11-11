@@ -13,7 +13,7 @@
 !!! abstract "5 種目の VC: SellerVC"
     マーケット出品時に **「誰が」この dataset を売るのか**を VC で
     裏付ける層を追加します。Stage 1〜6 と同じく、提示 → トークン
-    取得 → API 呼び出しの順に進めます。設計の詳細は [SellerVC 設計仕様](../design/seller-vc-spec.md) を参照してください。
+    取得 → API 呼び出しの順に進めます。設計の詳細は [SellerVC — マーケット出品ガバナンス VC (Stage 7 設計仕様)](../design/seller-vc-spec.md) を参照してください。
 
 !!! tip "licensed_datasets の選択"
     例は `home/env/temperature,home/env/humidity` ですが、Stage 0 と
@@ -35,7 +35,7 @@
 
 - SellerVC の `licensed_datasets` で「この seller はどの dataset を売って良いか」
   を VC に記載する仕組み
-- SellerToken (24 時間、何度でも使える) で `/marketplace/register` を呼ぶこと (SellerToken は、[段階アクセスのメディア](data-user-vc-tiered-media.md) §11 の `/provider/publish` にも使える)
+- SellerToken (24 時間、何度でも使える) で `/marketplace/register` を呼ぶこと (SellerToken は、[画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) §11 の `/provider/publish` にも使える)
 - (任意) 環境変数 `MARKETPLACE_HARDHAT_RPC` 設定時、publisher が
   on-chain で `Merchandise.getOwner() == seller_eth_addr` を検証すること
 - 監査ログに **`marketplace/seller_registered`** 行が追加されること
@@ -74,7 +74,7 @@
 - deploy script が、`dataset_id` を `additionalInfo` に持つ Merchandise を作る版 (Stage 6 以降) である
 - publisher が Stage 7 に対応したコード (`main` の最新) で起動している
 - iw3ip-wallet (iPhone) が動く
-- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP='<PC の LAN IP>'` を実行してください (IP の調べ方は [ハンズオン](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 
 ---
@@ -250,7 +250,7 @@ console に表示された `seller`、`merchandise`、`deploy tx`、`register tx
 
 ### 操作
 
-Step S2 で `SELLER` を設定したターミナル (リポジトリのトップ) で実行します。最初の 3 行の `<…>` は、山かっこを含めて全体を Step S3 でメモした値に置き換えてから実行してください。置き換え忘れても、引用符で囲んでいるのでエラーにはならず、その文字列がそのまま送られます。`MARKETPLACE_HARDHAT_RPC` が未設定なら、でたらめなアドレスが登録されてしまいます (設定済みなら HTTP 502 `chain_rpc_failed` で失敗します)。
+Step S2 で `SELLER` を設定したターミナル (リポジトリのトップ) で実行します。最初の 3 行の `<…>` は、山かっこを含めて全体を Step S3 でメモした値に置き換えてから実行してください。置き換え忘れても、引用符で囲んでいるのでエラーにはならず、その文字列がそのまま送られます。`MARKETPLACE_HARDHAT_RPC` が未設定なら、でたらめな値のまま登録されてしまいます。設定済みの場合、`MERCH` を置き換え忘れると on-chain の照会に失敗して HTTP 502 `chain_rpc_failed`、`SELLER_ETH` を置き換え忘れると on-chain の owner と一致せず HTTP 403 `owner_mismatch` で失敗します。`TX_HASH` は照合されないので、置き換え忘れてもそのまま登録されます。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -295,15 +295,26 @@ RPC に到達できない場合は、レスポンスに `owner_verify` は含ま
 curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 ```
 
-→ 直近に:
+結果は新しい順のリストです。先頭の行が `marketplace/seller_registered` になります (残りの行は `...` で省略しています):
+
 ```json
-{
-    "raw_topic": "marketplace/seller_registered",
-    "subject_did": "did:jwk:...",
-    "purpose": "register",
-    "reason": "seller_register:jti=...:merchandise=0x...:eth=0x...:tx=0x...:owner_verify=skipped",
-    "holder_did": "did:jwk:..."
-}
+[
+    {
+        "id": ...,
+        "ts": "...",
+        "action": "allow",
+        "subject_did": "did:jwk:...",
+        "dataset_id": "home/env/temperature",
+        "purpose": "register",
+        "reason": "seller_register:jti=...:merchandise=0x...:eth=0x...:tx=0x...:owner_verify=skipped",
+        "message_hash": "",
+        "raw_topic": "marketplace/seller_registered",
+        "holder_did": "did:jwk:...",
+        "vc_hash": null,
+        "presentation_verified": "allow"
+    },
+    ...
+]
 ```
 
 ---
@@ -323,7 +334,7 @@ cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate bridge
 ```
 
-その後、[Stage 5 ハンズオン](marketplace-vc-bridge.md) の手順で MetaMask 購入 → wallet 受領
+その後、[購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) の手順で MetaMask 購入 → wallet 受領
 → ViewerToken 取得 → 取得の順に進めます。ViewerToken の有効期限は 60 秒なので、提示したらすぐに次のコマンドを実行し、`viewer_token_expired` が出たら提示からやり直してください。`<buyer の ViewerToken>` は、山かっこを含めて全体を [Stage 5 の Step 8](marketplace-vc-bridge.md#step-8-viewertoken-を取り出す) で取り出したトークンに置き換えてから実行します。置き換え忘れると、その文字列がそのままトークンとして送られ、401 (`viewer_token_unknown`) で失敗します。
 
 次のコマンドは、Step S4 で設定した `$MERCH` を使います。Step S4 と同じターミナルで実行してください。最初の行で `MERCH=0x...` と表示されれば大丈夫です。`MERCH=` のあとが空なら別のターミナルなので、先に `MERCH='<Step S3 の merchandise address>'` の `<…>` を Step S3 でメモした値に置き換えて実行します。
@@ -556,7 +567,7 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
 
 ## 関連
 
-- [SellerVC 設計仕様](../design/seller-vc-spec.md)
+- [SellerVC — マーケット出品ガバナンス VC (Stage 7 設計仕様)](../design/seller-vc-spec.md)
 - [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md)
 - [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md)
 - [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md)

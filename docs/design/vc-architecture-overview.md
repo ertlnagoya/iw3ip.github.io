@@ -77,26 +77,29 @@ Phase 2 hands-on の依存グラフ
 
   Stage 1 + Stage 0 ─→ Stage T ── data-user-vc-tiered  DataUserVC (信頼度で見せる中身を変える)
   Stage 6 ─→ Stage A ── marketplace-mobile-app  スマホの PWA で購入から閲覧まで
-  Stage T + Stage 7 ─→ Stage P ── c2pa-provenance  C2PA で画像の来歴を署名
-                       (P0 は VC を使わずに単独で動く。P1〜P3 は publisher とチェーンにつなぎ、Tier ごとのトークンを使う)
+  Stage T + Stage 7 ┄→ Stage P ── c2pa-provenance  C2PA で画像の来歴を署名
+                       (┄→ は設計の土台を表し、ハンズオンの前提ではない。
+                        P0 は前提の Stage が無く、VC を使わずに単独で動く。
+                        P1〜P3 は /simulate/publish でデータを送り、SellerVC と Stage 7 を使わない。
+                        publisher とチェーンにつなぎ、Tier ごとの ViewerToken を使う)
 ```
 
 各ステージの詳細:
 
 | Stage | ハンズオン | 主な追加 |
 | --- | --- | --- |
-| 0 | [webcam-event-sharing](../hands-on/webcam-event-sharing.md), [environment-disaster](../hands-on/environment-disaster.md) | `/consents` JSON 登録、MQTT → ingest |
-| 1 | [ha-ssi-wallet](../hands-on/ha-ssi-wallet.md) | OID4VCI/OID4VP + ConsentVC + PolicyToken |
-| 3 | [ha-ssi-viewer](../hands-on/ha-ssi-viewer.md) | ViewerVC + ViewerToken + `GET /platform/data` |
-| 4 prep | [ha-ssi-service](../hands-on/ha-ssi-service.md) | ServiceVC + ServiceToken (M2M) |
-| 5 | [marketplace-vc-bridge](../hands-on/marketplace-vc-bridge.md) | bridge service + PurchaseViewerVC + `merchandise=<addr>` 逆引き |
-| 6 | [marketplace-vc-end-to-end](../hands-on/marketplace-vc-end-to-end.md) | ServiceVC の書き込みと PurchaseViewerVC の読み出しを同一 dataset でつなぐ (Stage 1・3 の ConsentVC・ViewerVC の流れの上に組み立てる) + dataset_id を `additionalInfo` から動的取得 |
-| 7 | [marketplace-seller-vc](../hands-on/marketplace-seller-vc.md) | SellerVC + `/marketplace/register` + on-chain `getOwner()` 検証 + `seller_did` 同梱 |
-| T | [data-user-vc-tiered](../hands-on/data-user-vc-tiered.md) | DataUserVC + 信頼スコア + `allowed_views` で `/platform/data` の出力を段階化 |
-| A | [marketplace-mobile-app](../hands-on/marketplace-mobile-app.md) | `iot-market-ui` を PWA としてスマホで使い、購入から VC 受領、閲覧まで |
-| P | [c2pa-provenance](../hands-on/c2pa-provenance.md) | P0。VC は使わない。X.509 証明書による C2PA の署名で画像の来歴を証明する。前提となるステージは無い (リポジトリと Python だけで単独で動き、publisher とウォレットは不要) |
-| P | [c2pa-provenance-publisher](../hands-on/c2pa-provenance-publisher.md) | P1・P2。publisher の `/media/upload` での検証、Tier 2 の画像への署名、ProvenanceToken の発行、Tier ごとの `provenance` の見せ方。Tier の確認に PurchaseViewerVC と DataUserVC の属性を使う (プログラムの中のウォレット) |
-| P | [c2pa-provenance-vlm](../hands-on/c2pa-provenance-vlm.md) | VLM の要約を描いた要約カードへの publisher の署名 (P3)。Tier 1 の利用者が、要約の文から撮影画像のマニフェストと ProvenanceToken までたどる |
+| 0 | [検知イベントだけを共有する](../hands-on/webcam-event-sharing.md), [防災イベントを共有する](../hands-on/environment-disaster.md) | `/consents` JSON 登録、MQTT → ingest |
+| 1 | [データ提供者の認証 (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md) | OID4VCI/OID4VP + ConsentVC + PolicyToken |
+| 3 | [データ閲覧者の認証 (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md) | ViewerVC + ViewerToken + `GET /platform/data` |
+| 4 prep | [機器間での連携認証 (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md) | ServiceVC + ServiceToken (M2M) |
+| 5 | [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md) | bridge service + PurchaseViewerVC + `merchandise=<addr>` 逆引き |
+| 6 | [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](../hands-on/marketplace-vc-end-to-end.md) | ServiceVC の書き込みと PurchaseViewerVC の読み出しを同一 dataset でつなぐ (Stage 1・3 の ConsentVC・ViewerVC の流れの上に組み立てる) + dataset_id を `additionalInfo` から動的取得 |
+| 7 | [出品者の身元を裏付ける (Seller VC / Stage 7)](../hands-on/marketplace-seller-vc.md) | SellerVC + `/marketplace/register` + on-chain `getOwner()` 検証 + `seller_did` 同梱 |
+| T | [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md) | DataUserVC + 信頼スコア + `allowed_views` で `/platform/data` の出力を段階化 |
+| A | [スマホアプリで購入から閲覧まで (Stage A)](../hands-on/marketplace-mobile-app.md) | `iot-market-ui` を PWA としてスマホで使い、購入から VC 受領、閲覧まで |
+| P | [画像の来歴を証明する (C2PA / Stage P)](../hands-on/c2pa-provenance.md) | P0。VC は使わない。X.509 証明書による C2PA の署名で画像の来歴を証明する。前提となるステージは無い (リポジトリと Python だけで単独で動き、publisher とウォレットは不要) |
+| P | [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](../hands-on/c2pa-provenance-publisher.md) | P1・P2。publisher の `/media/upload` での検証、Tier 2 の画像への署名、ProvenanceToken の発行、Tier ごとの `provenance` の見せ方。Tier の確認に PurchaseViewerVC と DataUserVC の属性を使う (プログラムの中のウォレット) |
+| P | [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](../hands-on/c2pa-provenance-vlm.md) | VLM の要約を描いた要約カードへの publisher の署名 (P3)。Tier 1 の利用者が、要約の文から撮影画像のマニフェストと ProvenanceToken までたどる |
 
 ## 6. v1 / v2 マーケットプレイスの並走
 
@@ -110,7 +113,7 @@ Stage 5 以降では、既存マーケット (v1) と新方式 (v2) が **同じ
 | 監査 | on-chain Upload event | + publisher audit log (eth_did_bound, seller_register, viewer_token_used 等) |
 | 出品身元 | Merchandise.owner (eth) | + SellerVC の seller_did |
 
-詳細: [Marketplace VC Bridge 設計仕様](marketplace-vc-bridge-spec.md), [SellerVC 設計仕様](seller-vc-spec.md)
+詳細: [Marketplace VC Bridge — v1 / v2 設計仕様](marketplace-vc-bridge-spec.md), [SellerVC — マーケット出品ガバナンス VC (Stage 7 設計仕様)](seller-vc-spec.md)
 
 ## 7. 監査ログのチェーン
 
@@ -171,8 +174,8 @@ Stage 5 の `eth_did_bound` audit row が、**Ethereum 鍵 ↔ did:jwk** のリ�
 ## 11. 関連ページ
 
 - 設計仕様
-    - [Marketplace VC Bridge (v1/v2 spec)](marketplace-vc-bridge-spec.md) — Stage 5/6 の構造
-    - [SellerVC 設計仕様 (Stage 7)](seller-vc-spec.md) — Stage 7 の設計判断
+    - [Marketplace VC Bridge — v1 / v2 設計仕様](marketplace-vc-bridge-spec.md) — Stage 5/6 の構造
+    - [SellerVC — マーケット出品ガバナンス VC (Stage 7 設計仕様)](seller-vc-spec.md) — Stage 7 の設計判断
 - ハンズオン
-    - [ハンズオン概要 (Part 2)](../hands-on/index.md)
+    - [ハンズオン](../hands-on/index.md) — Part 2 のハンズオンの一覧
     - 各 Stage は §5 の表を参照

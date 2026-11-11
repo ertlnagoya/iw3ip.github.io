@@ -1,10 +1,10 @@
 # 意味レベルで段階化する (VLM と意味的中間表現 / Stage T)
 
-[信頼度に応じて見せる中身を変える](data-user-vc-tiered.md)（§0〜§7）と [画像・動画を段階アクセスで配信する](data-user-vc-tiered-media.md)（§8〜§11）の続きです。映像を意味的中間表現に変換し、受信者の信頼度に応じて出力を変えるレンダリング（trust-aware rendering）までを扱います。節番号は 1 ページ目からの通し番号（§12〜§13）です。
+[信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md)（§0〜§7）と [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md)（§8〜§11）の続きです。映像を意味的中間表現に変換し、受信者の信頼度に応じて出力を変えるレンダリング（trust-aware rendering）までを扱います。節番号は 1 ページ目からの通し番号（§12〜§13）です。
 
 > **やること**: VLM による推論と顔のブラー処理で派生データを生成して tier 別に出し分け、意味的中間表現 (SIR) による信頼度別レンダリングを動かす
 >
-> **前提**: [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) の §0〜§7 と、[画像・動画を段階アクセスで配信する](data-user-vc-tiered-media.md) の §8〜§11 を済ませていること
+> **前提**: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) の §0〜§7 と、[画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) の §8〜§11 を済ませていること
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet)、`--profile vlm` で起動する publisher（Ollama）
 >
@@ -12,14 +12,14 @@
 
 ## 12. 意味レベルの段階化（VLM + 顔ブラー）
 
-§1〜§11（[1 ページ目](data-user-vc-tiered.md)と [2 ページ目](data-user-vc-tiered-media.md)）のアクセス制御は、**メディアのキーを応答から省く**方式でした（Tier 2 では
+§1〜§11（1 ページ目の [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) と 2 ページ目の [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md)）のアクセス制御は、**メディアのキーを応答から省く**方式でした（Tier 2 では
 動画のキー、Tier 1 では画像のキーも含まれません）。§12 では、同じ素材に
 VLM（Vision Language Model。画像を入力に取れる言語モデル）による推論と、
 顔のブラー処理 (MVP では正面の顔) を適用して**派生データを生成し、tier 別に
 出し分ける**仕組みを動かします。これにより Tier 1 の受信者にも、
 **プライバシー情報を除いた要約テキスト**を渡せます。
 
-設計の根拠は [段階アクセスの設計仕様 の「tier 拡張: 意味レベルでの段階化」](data-user-vc-tiered-spec.md#tier-vlm)
+設計の根拠は [段階アクセスの設計仕様](data-user-vc-tiered-spec.md#tier-vlm) の「tier 拡張: 意味レベルでの段階化」
 を参照してください。
 
 ### 12.1 新しい tier 定義
@@ -85,7 +85,7 @@ curl -s http://localhost:8080/health | jq .
 
 #### 12.2.1 画像つきのイベントを流す
 
-`description_*` や `image_url_redacted` は、`VLM_BACKEND` を設定したあとに流したイベントの行にだけ付きます。同意を登録し、画像つきのイベントを流します。新しいターミナルでは、先に `cd ~/program/Blockchain_IoT_Marketplace` で教材リポジトリに移動し、`export HOST_IP=<PC の LAN IP>` を実行します ([ハンズオンの概要](index.md#host-ip) を参照)。`--image` を省くと、教材リポジトリにある 16×16 ピクセルの灰色の画像を使います。この画像でも顔ブラーの処理は動き、`image_url_redacted` は作られますが、顔が写っていないので、ぼかされる箇所はありません。顔がぼかされる様子を確かめたい場合は、任意で `--image <顔が写った画像のパス>`（合成画像など）を付けて実行します。以前にこのスクリプトを実行していて、古い fixture（画像データを含まない 155 バイトの JPEG）が残っている場合は、先に `git pull` します。スクリプトが fixture を新しい画像に自動で置き換えます。
+`description_*` や `image_url_redacted` は、`VLM_BACKEND` を設定したあとに流したイベントの行にだけ付きます。同意を登録し、画像つきのイベントを流します。新しいターミナルでは、先に `cd ~/program/Blockchain_IoT_Marketplace` で教材リポジトリに移動し、`export HOST_IP='<PC の LAN IP>'` を実行します ([ハンズオン](index.md#host-ip) を参照)。`--image` を省くと、教材リポジトリにある 16×16 ピクセルの灰色の画像を使います。この画像でも顔ブラーの処理は動き、`image_url_redacted` は作られますが、顔が写っていないので、ぼかされる箇所はありません。顔がぼかされる様子を確かめたい場合は、任意で `--image '<顔が写った画像のパス>'`（合成画像など）を付けて実行します。以前にこのスクリプトを実行していて、古い fixture（画像データを含まない 155 バイトの JPEG）が残っている場合は、先に `git pull` します。スクリプトが fixture を新しい画像に自動で置き換えます。
 
 ```bash
 curl -s -X POST localhost:8080/consents \
@@ -600,5 +600,5 @@ ON にしたときだけ semantic pipeline 経由の表示に切り替えます�
 
 ## 次に進む
 
-- 戻る: [画像・動画を段階アクセスで配信する](data-user-vc-tiered-media.md) — §8〜§11（画像・動画の配信）
-- 最初から: [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) — §0〜§7（DataUserVC の発行と tier による出し分け）
+- 戻る: [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — §8〜§11（画像・動画の配信）
+- 最初から: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) — §0〜§7（DataUserVC の発行と tier による出し分け）

@@ -5,7 +5,7 @@
     This is the design spec for **v2**, which connects the marketplace to an SSI (Self-Sovereign Identity) wallet on a smartphone.
     The existing system is called **v1** and the system implemented by this spec is called **v2**;
     the common parts and the derived parts are stated explicitly. This document is the draft for milestone M1 (design freeze) in §11.
-    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview](vc-architecture-overview.md)).
+    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md)).
     This spec corresponds to the hands-on [Hand a credential to the buyer's wallet (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md).
 
 ## 1. Relationship between v1 and v2
@@ -330,7 +330,7 @@ New recorded items:
 
 These are added to the existing audit_log table with `ALTER TABLE ... ADD COLUMN`.
 
-→ The implementation is as follows, matching §7 of the [VC architecture overview](vc-architecture-overview.md).
+→ The implementation is as follows, matching §7 of the [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md).
 
 - `marketplace/claim`: `reason=claim_received:<claim_id>:tx=<tx_hash>`
 - `marketplace/issued`: `reason=eth_did_bound:claim=<claim_id>:eth=<buyer_eth_addr>:tx=<tx_hash>`
@@ -397,4 +397,4 @@ The e2e (end-to-end) test uses the hands-on procedure as is.
 - [Authenticate the viewer (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md)
 - [Authenticate machines (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
 - [Hand a credential to the buyer's wallet (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md)
-- [VC architecture overview](vc-architecture-overview.md) (the list of Stage numbers is in the "Hands-on stages" section (§5))
+- [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md) (the list of Stage numbers is in the "Hands-on stages" section (§5))

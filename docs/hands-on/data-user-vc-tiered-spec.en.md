@@ -8,7 +8,7 @@ exposes — to **event / image / video** in three tiers — based on the
 trust attributes carried by the data recipient's **DataUserVC**.
 
 This is a design document, not a step-by-step. For the walk-through, see
-[Tier the response by trust](data-user-vc-tiered.md).
+[Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md).
 
 ## What you'll learn
 
@@ -25,8 +25,10 @@ This is a design document, not a step-by-step. For the walk-through, see
 - Evaluating "can this DataUserVC see the camera" **on-chain** breaks
   whenever the local Hardhat node restarts. We evaluate in **Publisher
   Python** instead.
-- trustScore is **not** a simple sum: `full` requires
-  `score >= 80 AND entityType ∈ {GovernmentOrganization, Police}`.
+- The access level is not decided by trustScore (the sum of the
+  per-attribute points) alone. `full` is granted only when entityType is
+  a high-trust class (`GovernmentOrganization` / `Police`) **and**
+  score >= 80.
 - `allowed_views` on a PurchaseViewerVC is **frozen when the VC is
   issued**; we never promote it after the fact. A ViewerVC carries no
   `allowed_views`, so its view is always `event` only.
@@ -284,7 +286,7 @@ At the initial implementation, the suite totalled 88 tests (75 existing + 13 new
 
 ## Tier extension: semantic-level redaction (VLM)  {#tier-vlm}
 
-The design so far (matching §1–§7 of the [hands-on page](data-user-vc-tiered.md) and §8–§9 of its [follow-up page](data-user-vc-tiered-media.md)) gates access by **dropping media keys** (Tier 2 hides video,
+The design so far (matching §1–§7 of [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) and §8–§9 of its follow-up page, [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md)) gates access by **dropping media keys** (Tier 2 hides video,
 Tier 1 hides image and video). The next step is to **derive new content
 from the same source via VLM inference + face blurring (frontal faces in the MVP) and project
 those derivatives per tier**. Tier 1 is no longer "you get nothing

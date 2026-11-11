@@ -277,7 +277,7 @@ However, the **module boundary that converts a natural-language request into a s
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
-docker compose -f infra/docker-compose.yml stop assistant
+docker compose -f infra/docker-compose.yml --profile assistant stop assistant
 ```
 
 ## Next steps

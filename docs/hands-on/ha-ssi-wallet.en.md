@@ -19,7 +19,7 @@ Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to aut
     work with `home/event/possible_littering`, the webcam event from Stage 0
     ([Share detections, not raw frames](webcam-event-sharing.md)); substitute the dataset
     and purpose in that case. Stage numbers are explained in the
-    [Hands-on overview](index.md#part-phase-stage).
+    [Hands-on](index.md#part-phase-stage).
 
 ## Goal
 
@@ -66,7 +66,7 @@ Pipeline:
 
 - Docker / Docker Compose available
 - PC and phone on the same LAN
-- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP='<your PC LAN IP>'` (see the [Hands-on](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - Installable `iw3ip-wallet` (fork) build on the phone
   (TestFlight / internal APK / Expo dev build)
 - You have started the publisher once via [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) or [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
@@ -226,7 +226,7 @@ curl 'http://localhost:8080/audit/logs?limit=10'
 
 Points to verify:
 
-- `presentation_verified` events are recorded with `allow` / `deny`
+- The `presentation_verified` column of each row records the result of verifying the presentation as `allow` / `deny`
 - `holder_did`, `vc_hash`, `purpose` are preserved
 - Compared with HA SSI Publisher, the log additionally records
   "who presented which VC" rather than just the policy outcome

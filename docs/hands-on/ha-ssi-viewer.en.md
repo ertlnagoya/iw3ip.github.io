@@ -51,7 +51,7 @@ Pipeline:
 - Have completed §1–§8 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
 - Publisher running from the `main` branch
 - `iw3ip-wallet` available on phone
-- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP='<your PC LAN IP>'` (see the [Hands-on](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 
 ## Related repositories
 
@@ -77,8 +77,10 @@ curl http://$HOST_IP:8080/health
 Confirm the issuer metadata advertises **both** ConsentVC and ViewerVC:
 
 ```bash
-curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ViewerVC
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -E -A2 'ConsentVC|ViewerVC'
 ```
+
+Both are registered if the output has a `"ConsentVC": {` line and a `"ViewerVC": {` line. Lines from other VCs whose names contain `ViewerVC`, such as `PurchaseViewerVC`, also appear.
 
 ## 2. Write data via ConsentVC (recap)
 
@@ -103,6 +105,8 @@ The wallet should display a separate card with claims:
 - `allowed_actions`: `["read"]`
 
 ## 4. Present the ViewerVC
+
+In the PC browser:
 
 ```txt
 http://<HOST_IP>:8080/verifier/request?dataset_id=home/env/temperature&vc_kind=ViewerVC
@@ -147,14 +151,20 @@ Expected response:
 
 ```json
 {
-  "dataset_id": "home/env/temperature",
-  "count": 1,
-  "read_count": 1,
-  "seller_did": null,
-  "allowed_views": ["event"],
-  "rows": [
-    {"dataset_id": "home/env/temperature", "purpose": "research", "value": 21.4}
-  ]
+    "dataset_id": "home/env/temperature",
+    "count": 1,
+    "read_count": 1,
+    "seller_did": null,
+    "allowed_views": [
+        "event"
+    ],
+    "rows": [
+        {
+            "dataset_id": "home/env/temperature",
+            "purpose": "research",
+            "value": 21.4
+        }
+    ]
 }
 ```
 
@@ -188,18 +198,26 @@ curl -i -H "Authorization: Bearer $TOKEN" \
 curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool
 ```
 
-ViewerVC reads appear as:
+The result is a list, newest first. A ViewerVC read is recorded like this (only the first row is shown; the rest is cut as `...`):
 
 ```json
-{
-  "action": "allow",
-  "raw_topic": "platform/data",
-  "reason": "viewer_token_used:1f2c...:1:views=event",
-  "dataset_id": "home/env/temperature",
-  "purpose": "read",
-  "holder_did": "did:jwk:...",
-  "presentation_verified": "allow"
-}
+[
+    {
+        "id": ...,
+        "ts": "...",
+        "action": "allow",
+        "subject_did": "did:jwk:...",
+        "dataset_id": "home/env/temperature",
+        "purpose": "read",
+        "reason": "viewer_token_used:1f2c...:1:views=event",
+        "message_hash": "",
+        "raw_topic": "platform/data",
+        "holder_did": "did:jwk:...",
+        "vc_hash": null,
+        "presentation_verified": "allow"
+    },
+    ...
+]
 ```
 
 `reason` has the form `viewer_token_used:<jti>:<read_count>:views=<allowed_views>`. Three reads with the same

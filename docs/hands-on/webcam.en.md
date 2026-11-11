@@ -4,7 +4,7 @@ Without a HUSKYLENS2, a generic USB webcam plus OpenCV [1] is enough to emit `pe
 
 > **What you'll do**: Detect a person and littering candidates from a USB webcam, emit events
 >
-> **Prerequisites**: [Environment Setup](../setup/index.md) + [Quickstart](../setup/quickstart.md)
+> **Prerequisites**: [Environment Setup](../setup/index.md) + [Quickstart (run the stack)](../setup/quickstart.md)
 >
 > **What you need**: PC + USB webcam
 >
@@ -103,7 +103,7 @@ Mock mode outputs either `possible_littering` or `person_detected` at random. A 
 
 ### Confirm registration as merchandise
 
-If `mediator-owner` is running as set up in [Quickstart](../setup/quickstart.md), its terminal prints a line like the following each time an event file is written.
+If `mediator-owner` is running as set up in [Quickstart (run the stack)](../setup/quickstart.md), its terminal prints a line like the following each time an event file is written.
 
 ```
 Product deployed: 0xc6ba8c3233ecf65b761049ef63466945c362edd2 for file 401_webcam_event_1791551565.txt
@@ -115,7 +115,7 @@ Product deployed: 0xc6ba8c3233ecf65b761049ef63466945c362edd2 for file 401_webcam
 http://localhost:5173/merchandise/<the address shown>
 ```
 
-For purchasing the item and receiving the data, see §1.3 of the [Hands-on overview](index.md). If nothing is printed, check that the course repository is up to date (`git pull`) and that `mediator-owner` was restarted.
+For purchasing the item and receiving the data, see §1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane). If nothing is printed, check that the course repository is up to date (`git pull`) and that `mediator-owner` was restarted.
 
 Once event files are generated in mock mode, the next step is to switch to the physical webcam and inspect the actual detections.
 

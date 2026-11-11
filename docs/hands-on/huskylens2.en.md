@@ -4,7 +4,7 @@ Turn detections from DFRobot's [1] HUSKYLENS2 AI camera [2] into event files.
 
 > **What you'll do**: Generate event files from HUSKYLENS2 (or mock) detections and confirm they are registered as merchandise
 >
-> **Prerequisites**: [Environment Setup](../setup/index.md) + [Quickstart](../setup/quickstart.md)
+> **Prerequisites**: [Environment Setup](../setup/index.md) + [Quickstart (run the stack)](../setup/quickstart.md)
 >
 > **What you need**: PC + HUSKYLENS2 (no device → use [Detect with a USB webcam (OpenCV)](webcam.md) instead)
 >
@@ -121,7 +121,7 @@ Each file is one event that summarizes 8 seconds of detections. `labels` gives t
 
 ### Confirm registration as merchandise
 
-If `mediator-owner` is running as set up in [Quickstart](../setup/quickstart.md), its terminal prints a line like the following each time an event file is written.
+If `mediator-owner` is running as set up in [Quickstart (run the stack)](../setup/quickstart.md), its terminal prints a line like the following each time an event file is written.
 
 ```
 Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskylens_1791551565.txt
@@ -133,7 +133,7 @@ Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskyl
 http://localhost:5173/merchandise/<the address shown>
 ```
 
-For purchasing the item and receiving the data, see §1.3 of the [Hands-on overview](index.md). If nothing is printed, check that the course repository is up to date (`git pull`) and that `mediator-owner` was restarted.
+For purchasing the item and receiving the data, see §1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane). If nothing is printed, check that the course repository is up to date (`git pull`) and that `mediator-owner` was restarted.
 
 Once event files are generated in mock mode, the next step is to try the physical serial input.
 
@@ -142,6 +142,13 @@ Once event files are generated in mock mode, the next step is to try the physica
 ### 2. Real device (serial)
 
 For `--serial-port`, give the name of the port the HUSKYLENS2 is connected to. On macOS, replace it with the name you find with `ls /dev/tty.usb*` (on Linux it is something like `/dev/ttyUSB0`). Run serial mode in the `sensor-bridge` folder with the venv from the prerequisites (with `pyserial`) active (the first two lines below do this).
+
+The bridge reads the serial port one line at a time and treats a line in either of these formats as a detection:
+
+- NDJSON (one JSON object per line): `{"label":"person","confidence":0.92,"id":"12","x":120,"y":80,"w":48,"h":60}`
+- CSV in the order `label,id,confidence,x,y,w,h`. At least the first three fields are required (example: `person,12,0.92`)
+
+Lines whose `confidence` is below `--min-confidence` (default 0.5) are not counted. If the HUSKYLENS2 does not send lines in this format over USB, you need a relay sketch (for a microcontroller such as an Arduino) that reads the HUSKYLENS2 results and sends them one line at a time in this format.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/sensor-bridge

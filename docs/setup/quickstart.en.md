@@ -1,6 +1,6 @@
 # Quickstart (run the stack)
 
-Using the tools you installed in [Prerequisites](prerequisites.md), start the full hands-on environment together.
+Using the tools you installed in [Prerequisites (install tools)](prerequisites.md), start the full hands-on environment together.
 Estimated time: **approx. 15–30 min** (the first run pulls Docker images and runs `npm install`).
 
 > This starts **6 kinds of processes**. Because the contract deployment and each of the two mediators also take a terminal, you will open 7 terminals in total.
@@ -46,7 +46,7 @@ Estimated time: **approx. 15–30 min** (the first run pulls Docker images and r
 
 ### 0. Move into the lesson repo
 
-The course repository is assumed to be at `~/program/Blockchain_IoT_Marketplace` (where you cloned it in [Prerequisites](prerequisites.md)). A new terminal may open in a different folder, so each terminal moves there with an absolute path.
+The course repository is assumed to be at `~/program/Blockchain_IoT_Marketplace` (where you cloned it in [Prerequisites (install tools)](prerequisites.md)). A new terminal may open in a different folder, so each terminal moves there with an absolute path.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -243,14 +243,14 @@ Reference (network add screen):
 - [ ] MetaMask is on the `Hardhat Local` network
 - [ ] The MetaMask account shows about `10000 ETH` (9999.99… is fine)
 
-All checked → start [hands-on Part 1](../hands-on/index.md).
+All checked → start Part 1 of [Hands-on](../hands-on/index.md).
 
 ## Simpler alternative: a minimal stack with docker compose only
 
 If opening seven terminals is cumbersome, you can use Docker Compose to start just the publisher-related components.
 For the shortest path focused on ingesting and observing data without physical devices, see the following page.
 
-- [Home Assistant Demo Simulator sample](../hands-on/ha-demo-simulator.md)
+- [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)
 
 This alone is enough to try the first section of Part 1. If IPFS from step 5 is still running, stop it first with `docker compose down` in the `ipfs` directory, because IPFS and the publisher both use port 8080.
 
@@ -258,8 +258,8 @@ This alone is enough to try the first section of Part 1. If IPFS from step 5 is 
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `npx: command not found` | Node.js missing | revisit Node.js in [Prerequisites](prerequisites.md) |
-| `cargo: command not found` | Rust missing | revisit Rust in [Prerequisites](prerequisites.md) |
+| `npx: command not found` | Node.js missing | revisit Node.js in [Prerequisites (install tools)](prerequisites.md) |
+| `cargo: command not found` | Rust missing | revisit Rust in [Prerequisites (install tools)](prerequisites.md) |
 | `Port 5173 is in use, trying another one...` is printed and it starts on 5174 or another port | Another app holds 5173 | stop that process and restart, or open the URL that is printed (such as `http://127.0.0.1:5174/`) |
 | The IPFS container or the publisher does not start | The IPFS gateway and the publisher both use port 8080 | They cannot run at the same time. Before a hands-on that uses the publisher, run `docker compose down` in the `ipfs` directory |
 | A mediator stops with `dns error` or a connection error | `host.docker.internal` does not resolve | Do step 0.5 |
@@ -279,4 +279,4 @@ Anything else: [Troubleshooting](../operations/troubleshooting.md), [FAQ](../ope
 | **Chain ID** | Numeric ID of a network (Hardhat's default is 31337) |
 | **Vite** | Fast frontend dev server |
 
-More: [Hardhat Basics](../foundations/hardhat-basics.md), [SSI/DID/VC Basics](../foundations/ssi-did-vc-basics.md).
+More: [Hardhat Basics (Blockchain Used in This Site)](../foundations/hardhat-basics.md), [SSI / DID / VC Basics](../foundations/ssi-did-vc-basics.md).

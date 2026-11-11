@@ -4,7 +4,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 
 > **やること**: 購入 → bridge → PurchaseViewerVC → wallet → ViewerToken → 取得
 >
-> **前提**: [最短起動](../setup/quickstart.md) と [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md)
+> **前提**: [最短起動 (スタックを動かす)](../setup/quickstart.md) と [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md)
 >
 > **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
@@ -14,7 +14,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
     マーケットプレイスでの購入を起点に、買い手のウォレットへ
     PurchaseViewerVC を発行し、提示によってデータを取得する
     一連の流れを試します。
-    設計の詳細は [Marketplace VC Bridge 設計仕様](../design/marketplace-vc-bridge-spec.md)
+    設計の詳細は [Marketplace VC Bridge — v1 / v2 設計仕様](../design/marketplace-vc-bridge-spec.md)
     を参照してください。
 
 !!! tip "dataset の選択"
@@ -84,7 +84,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 - [Stage 1](ha-ssi-wallet.md) と [Stage 3](ha-ssi-viewer.md) の動作確認が済んでいる
 - iot-market-ui (Svelte) と Hardhat ローカルチェーンが起動できる
 - iw3ip-wallet が iPhone 実機で動く (Metro bundler 接続済み)
-- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP='<PC の LAN IP>'` を実行してください (IP の調べ方は [ハンズオン](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 
 ---
@@ -97,7 +97,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 
 ### 操作
 
-[最短起動](../setup/quickstart.md) の Hardhat ノードと mediator (mediator-owner / mediator-buyer) が動いていれば、先にそれぞれ Ctrl+C で止めてください。古いノードが 8545 番を使ったままだと、次のコマンドが起動に失敗します。最短起動の IPFS も、`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` で止めてください。IPFS と後で起動する publisher は、どちらもポート 8080 を使います。
+[最短起動 (スタックを動かす)](../setup/quickstart.md) の Hardhat ノードと mediator (mediator-owner / mediator-buyer) が動いていれば、先にそれぞれ Ctrl+C で止めてください。古いノードが 8545 番を使ったままだと、次のコマンドが起動に失敗します。最短起動の IPFS も、`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` で止めてください。IPFS と後で起動する publisher は、どちらもポート 8080 を使います。
 
 ターミナル A (起動したまま):
 
@@ -233,6 +233,9 @@ docker compose -f infra/docker-compose.yml \
   --profile ssi-wallet --profile mv-bridge \
   up --build -d
 ```
+
+!!! warning "`cat > infra/.env` はファイルを上書きします"
+    この手順は `infra/.env` を 3 行だけの内容に書き直します。Stage 7 を終えたあとにこの手順をやり直すと、あとから追記した行 (たとえば Stage 7 の `MARKETPLACE_HARDHAT_RPC`) が消えます。その場合は、消えた行を追記し直してください。
 
 !!! note "Hardhat を起動し直して、この手順をやり直す場合"
     起動し直したチェーンで同じ購入をすると、取引の ID (tx hash) が前回と同じになります。publisher は購入の申告を取引の ID でメモリに覚えていて、同じ ID には前回の (使用済みの) コードを返すため、ウォレットが `/issuer/token` で 400 になります。やり直すときは publisher も作り直します (`docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge`)。発行用の鍵と監査ログはボリュームに保存されているので消えません。
@@ -389,15 +392,26 @@ bridge: claim ok jti=2b417b32e6566830 deeplink=openid-credential-offer://?creden
 ```bash
 curl -s "http://$HOST_IP:8080/audit/logs?limit=2" | python3 -m json.tool
 ```
-→
+結果は新しい順のリストです。先頭の行が `marketplace/claim` になります (残りの行は `...` で省略しています):
+
 ```json
-{
-    "raw_topic": "marketplace/claim",
-    "subject_did": "eth:0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-    "purpose": "purchase",
-    "reason": "claim_received:2b417b32e6566830:tx=0x4e7c3e0a...",
+[
+    {
+        "id": ...,
+        "ts": "...",
+        "action": "allow",
+        "subject_did": "eth:0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "dataset_id": "home/env/temperature",
+        "purpose": "purchase",
+        "reason": "claim_received:2b417b32e6566830:tx=0x4e7c3e0a...",
+        "message_hash": "",
+        "raw_topic": "marketplace/claim",
+        "holder_did": null,
+        "vc_hash": null,
+        "presentation_verified": "allow"
+    },
     ...
-}
+]
 ```
 
 ここまでで、on-chain の購入が publisher に伝わり、VC を発行する準備ができました。
@@ -463,15 +477,26 @@ iPhone のカメラで QR を読み取ると wallet が起動し、「IW3IP 購�
 ```bash
 curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 ```
-→
+結果は新しい順のリストです。先頭の行が `marketplace/issued` になります (残りの行は `...` で省略しています):
+
 ```json
-{
-    "raw_topic": "marketplace/issued",
-    "subject_did": "did:jwk:eyJhbG...",
-    "purpose": "purchase_link",
-    "reason": "eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c3e0a...",
-    "holder_did": "did:jwk:eyJhbG..."
-}
+[
+    {
+        "id": ...,
+        "ts": "...",
+        "action": "allow",
+        "subject_did": "did:jwk:eyJhbG...",
+        "dataset_id": "home/env/temperature",
+        "purpose": "purchase_link",
+        "reason": "eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c3e0a...",
+        "message_hash": "",
+        "raw_topic": "marketplace/issued",
+        "holder_did": "did:jwk:eyJhbG...",
+        "vc_hash": null,
+        "presentation_verified": "allow"
+    },
+    ...
+]
 ```
 
 **この `eth_did_bound` 行を確認できれば、Stage 5 の主要な確認は完了です**。
@@ -719,7 +744,7 @@ ipconfig getifaddr en0
 ```
 変わっていれば、新しい IP に合わせて次をすべて直す。
 
-- 各ターミナルの `export HOST_IP=<新しい IP>`
+- 各ターミナルの `export HOST_IP='<新しい IP>'`
 - `iot-market-ui/.env.local` の `VITE_RPC_URL` と `VITE_PUBLISHER_URL`。直したら `npm run dev` を起動し直す
 - MetaMask に追加したネットワークの RPC URL (PC のブラウザの MetaMask 拡張。Stage A を行った場合はスマホの MetaMask Mobile も)
 - `infra/.env` の `BRIDGE_PUBLIC_PUBLISHER_URL`。直したら bridge を作り直す (`docker restart` では `.env` を読み直さない)
@@ -752,7 +777,7 @@ INFO:     172.18.0.1:54321 - "POST /issuer/token HTTP/1.1" 400 Bad Request
 
 - **eth_addr ↔ did:jwk のなりすまし対策**: 現在の最小実装は bridge / フロント
   からの POST を信用するだけです。本番では EIP-712 署名で「この tx は
-  私のもの」と holder に証明させる必要がある (詳細は[設計仕様 §7.2](../design/marketplace-vc-bridge-spec.md))
+  私のもの」と holder に証明させる必要がある (詳細は [Marketplace VC Bridge — v1 / v2 設計仕様](../design/marketplace-vc-bridge-spec.md) の [§7.2](../design/marketplace-vc-bridge-spec.md#72-本番想定-将来-eip-712-署名検証))
 - **dataset_id の発見**: iot-market-ui と bridge は、Merchandise の `additionalInfo` から `dataset_id` を読む
   (見つからないときは `home/env/temperature`)。商品ごとにデータセットが違うことは [Stage 6](marketplace-vc-end-to-end.md) で確かめる
 - **ServiceVC との統合**: 連続する MQTT の書き込みを VC で認可する仕組み (Stage 4 prep) と、
@@ -761,7 +786,7 @@ INFO:     172.18.0.1:54321 - "POST /issuer/token HTTP/1.1" 400 Bad Request
 
 ## 関連
 
-- [Marketplace VC Bridge 設計仕様 (v1/v2)](../design/marketplace-vc-bridge-spec.md) — 全体構造
+- [Marketplace VC Bridge — v1 / v2 設計仕様](../design/marketplace-vc-bridge-spec.md) — 全体構造
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) — 書き込み単回認可
 - [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) — 複数回の読み出しを認可 (v1、dataset を直接指定)
 - [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) — M2M 連続書き込み

@@ -21,7 +21,7 @@
 
 ### 対処 A — hosts ファイルに追記する (推奨)
 
-[最短起動の手順 0.5](../setup/quickstart.md) のとおり、hosts ファイルに `127.0.0.1 host.docker.internal` を追加します。`host.docker.internal` は設定ファイルのほか、`mediator-owner/src/main.rs` (IPFS と PostgreSQL の接続先)、`mediator-buyer/src/main.rs`、`iot-market-ui` の検索 API にも書かれているため、この方法がいちばん確実です。
+[最短起動 (スタックを動かす)](../setup/quickstart.md#05-ホスト名-hostdockerinternal-を確認) の手順 0.5 のとおり、hosts ファイルに `127.0.0.1 host.docker.internal` を追加します。`host.docker.internal` は設定ファイルのほか、`mediator-owner/src/main.rs` (IPFS と PostgreSQL の接続先)、`mediator-buyer/src/main.rs`、`iot-market-ui` の検索 API にも書かれているため、この方法がいちばん確実です。
 
 ### 対処 A' — 設定とソースを書き換える
 
@@ -143,7 +143,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
   npx hardhat node --hostname 0.0.0.0
   ```
 
-  起動し直すとチェーンが空になります。[最短起動](../setup/quickstart.md) の手順 2 (デプロイ) をやり直し、`mediator-owner` と `mediator-buyer` も再起動してください。MetaMask で nonce のエラーが出たら、アカウントのリセット (Settings → Advanced → Clear activity tab data) を行います。
+  起動し直すとチェーンが空になります。[最短起動 (スタックを動かす)](../setup/quickstart.md) の手順 2 (デプロイ) をやり直し、`mediator-owner` と `mediator-buyer` も再起動してください。MetaMask で nonce のエラーが出たら、アカウントのリセット (Settings → Advanced → Clear activity tab data) を行います。
 
 - MetaMask に追加する RPC URL を **PC の LAN IP** にします (例: `http://192.168.1.20:8545`)。チェーン ID は `31337`。
 - PC のファイアウォールで `8545` が許可されているか、PC とスマホが同じ Wi-Fi かを確認します。
@@ -176,7 +176,7 @@ hosts ファイルを変更できない場合は、上に挙げたファイル�
     | 8080 | IPFS のゲートウェイ (`ipfs/docker-compose.yaml`) と publisher (`infra/docker-compose.yml`) | 同時には使えない。publisher を使う前に `ipfs` ディレクトリで `docker compose down` を実行する |
     | 8545 | Hardhat ノード (`npx hardhat node`) | 2 つ目のノードを起動しない |
     | 5173 | フロントエンド (`iot-market-ui`、`npm run dev`) | 別の Vite 開発サーバが動いていないか確認する |
-    | 8090 | assistant (`assistant` / `assistant-llm` / `assistant-demo` のプロファイル) | 3 つのプロファイルは同じポートを使うので、1 つずつ起動する |
+    | 8090 | assistant (`assistant` / `ha-demo-phase3` / `assistant-llm` / `assistant-demo` のプロファイル) | 4 つのプロファイルは同じポートを使うので、1 つずつ起動する (`ha-demo-phase3` は `assistant` サービスも起動する) |
     | 18000 | llm-mock (`llm-mock` / `assistant-demo` のプロファイル) | ホストで `uvicorn examples.phase3_llm_mock_server:app --port 18000` を動かす前に、`llm-mock` / `assistant-demo` のコンテナを止める |
     | 11434 | Ollama (PC に直接入れた場合) | Ollama アプリが常駐していると、別の Ollama を起動できない |
 

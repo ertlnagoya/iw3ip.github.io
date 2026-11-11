@@ -7,11 +7,11 @@ IW3IP の全体像、実装例、ハンズオン手順をまとめたドキュ�
 - コンピュータや情報システムを学ぶ学部学生
 - 演習を担当する講師・TA
 
-受講者は [学習ロードマップ](foundations/roadmap.md) から、講師・TA は [授業ガイド](foundations/course-guide.md) から読むことを推奨します。
+受講者は [学習ロードマップ（初級者向け）](foundations/roadmap.md) から、講師・TA は [授業ガイド](foundations/course-guide.md) から読むことを推奨します。
 
 ## 扱う内容
 
-基礎理解から基本ハンズオンまでを順に確認できます。
+基礎理解から、ハンズオンの Part 1〜3 (IoT データの基本経路、同意・条件付き共有・段階アクセス、AI による要求の解釈) までを順に進められます。仕組みを詳しく知りたいときのために、設計仕様もまとめています。
 
 - 基礎学習:
   - ブロックチェーン
@@ -77,10 +77,10 @@ flowchart TB
 
 起動するものは 2 系統あります。
 
-- **マーケット側**: ブロックチェーン (Hardhat)、商品一覧の画面、データ保管、仲介プロセスです。[最短起動](setup/quickstart.md) の手順で、ターミナルを 7 つ使って起動します。データの出品と購入 (Part 1 の後半、Part 2 のマーケット連携) で使います。
+- **マーケット側**: ブロックチェーン (Hardhat)、商品一覧の画面、データ保管、仲介プロセスです。[最短起動 (スタックを動かす)](setup/quickstart.md) の手順で、ターミナルを 7 つ使って起動します。データの出品と購入 (Part 1 の後半、Part 2 のマーケット連携) で使います。
 - **publisher 側**: MQTT ブローカーと publisher です。教材リポジトリで `docker compose -f infra/docker-compose.yml up` を実行して起動します。データの取り込み、同意や VC による共有可否の判定、監査ログ (Part 1 の前半、Part 2、Part 3) で使います。
 
-2 つの系統は独立して動きます。なお、マーケット側の IPFS (ゲートウェイ) と publisher は、どちらもポート 8080 を使うため、同時には起動できません。publisher を使うハンズオンの前に、`ipfs` ディレクトリで `docker compose down` を実行して IPFS を止めてください。 Part 2 のマーケット連携では、bridge が購入のイベントを publisher に伝えて両者をつなぎます。各ハンズオンがどちらを使うかは、[ハンズオンの概要の早見表](hands-on/index.md#使う技術要素の早見表) にまとめています。
+2 つの系統は独立して動きます。なお、マーケット側の IPFS (ゲートウェイ) と publisher は、どちらもポート 8080 を使うため、同時には起動できません。publisher を使うハンズオンの前に、`ipfs` ディレクトリで `docker compose down` を実行して IPFS を止めてください。 Part 2 のマーケット連携では、bridge が購入のイベントを publisher に伝えて両者をつなぎます。各ハンズオンがどちらを使うかは、[ハンズオン](hands-on/index.md#使う技術要素の早見表) の「使う技術要素の早見表」 にまとめています。
 
 データの発生源には、Raspberry Pi とカメラのような小型の機器も使えます。
 
@@ -90,7 +90,7 @@ flowchart TB
 
 実機なしで Phase 1 / Phase 2 の基本経路を確認したい場合は、`ha-demo-simulator` から始めてください。Phase 1〜3 は基盤の発展段階を表す区分で、[プラットフォーム概要のフェーズ構成](platform-overview.md#フェーズ構成) で説明しています。
 
-- 対応ページ: [Home Assistant Demo Simulator サンプル](hands-on/ha-demo-simulator.md)
+- 対応ページ: [実機なしで一連を動かす (HA Demo Simulator)](hands-on/ha-demo-simulator.md)
 - 確認できること:
   - `Home Assistant demo -> MQTT -> publisher`
   - `temperature` / `power` の状態共有
@@ -117,7 +117,7 @@ Phase 3 の最短デモとして `assistant-demo` を使うと、1 コマンド�
 
 対応ページ:
 
-- [LLM Plannerハンズオン](hands-on/llm-planner.md)
+- [AI に手順を考えさせる (LLM Planner)](hands-on/llm-planner.md)
 
 起動コマンド:
 
@@ -132,16 +132,16 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 
 ## 推奨学習順
 
-1. [学習ロードマップ](foundations/roadmap.md)
+1. [学習ロードマップ（初級者向け）](foundations/roadmap.md)
 2. [ブロックチェーン基礎](foundations/blockchain-basics.md)
-3. [Hardhat基礎](foundations/hardhat-basics.md)
-4. [SSI/DID/VC基礎](foundations/ssi-did-vc-basics.md)
-5. [事前準備](setup/prerequisites.md)
-6. [HA Demo Simulator](hands-on/ha-demo-simulator.md)（実機なしで一通り動かす）
-7. [最短起動](setup/quickstart.md)
+3. [Hardhat基礎（このサイトで使うブロックチェーン）](foundations/hardhat-basics.md)
+4. [SSI / DID / VC 基礎](foundations/ssi-did-vc-basics.md)
+5. [事前準備 (ツールのインストール)](setup/prerequisites.md)
+6. [実機なしで一連を動かす (HA Demo Simulator)](hands-on/ha-demo-simulator.md)（実機なしで一通り動かす）
+7. [最短起動 (スタックを動かす)](setup/quickstart.md)
 8. [ハンズオン](hands-on/index.md)
 9. [設計](design/index.md)（仕組みを詳しく知りたいとき）
-10. [参考文献](foundations/references.md)
+10. [参考文献・発展学習資料](foundations/references.md)
 
 途中で詰まったら [トラブルシュート](operations/troubleshooting.md) を参照してください。講師・TA は、先に [授業ガイド](foundations/course-guide.md) を読んで授業の構成を決めます。
 

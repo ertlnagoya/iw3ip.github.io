@@ -22,7 +22,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
     In Stage A, you choose what to purchase from the list of Merchandise registered by the
     deploy script of Stage 6 case B and later. If you choose `home/event/possible_littering`
     (Merchandise #2), you can confirm that the same camera events as in Stage 0
-    (see the [Hands-on overview](index.md#part-phase-stage) for the list of Stages)
+    (see the [Hands-on](index.md#part-phase-stage) for the list of Stages)
     ([Share detections, not raw frames](webcam-event-sharing.md))
     can be read through a purchase (PurchaseViewerVC).
     `home/event/flood_risk_high` (Merchandise #4) has no PurchaseViewerVC
@@ -65,7 +65,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 - You have completed the Stage 5 and Stage 6 hands-ons (the purchase uses the Merchandise deployed and the public key registered in Stage 6 Step E0; Stage 7 is optional and only matters for the `seller_did` explanation in Step M5). If you restarted Hardhat since then, first redo [Stage 6 Step E0](marketplace-vc-end-to-end.md#step-e0-start-the-prerequisite-environment-same-as-stage-5) (start the node, deploy, register the public key, recreate the bridge)
 - You can start publisher + bridge + Hardhat + iot-market-ui
 - iw3ip-wallet (iPhone) works
-- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP='<your PC LAN IP>'` (see the [Hands-on](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet to `~/program/iw3ip-wallet`
 
 ## Overview
@@ -288,7 +288,9 @@ The VC issuance code expires 30 minutes after the purchase claim. Receive the VC
   "count": ...,
   "read_count": 1,
   "seller_did": "unknown",
-  "allowed_views": ["event"],
+  "allowed_views": [
+    "event"
+  ],
   "rows": [...]
 }
 ```

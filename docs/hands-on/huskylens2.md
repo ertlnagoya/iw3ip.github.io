@@ -4,7 +4,7 @@ DFRobot [1] の小型 AI カメラ HUSKYLENS2 [2] からイベントを取り出
 
 > **やること**: HUSKYLENS2 (または mock) の検知結果からイベントファイルを生成し、商品として登録されることを確認する
 >
-> **前提**: [環境構築](../setup/index.md) と [最短起動](../setup/quickstart.md)
+> **前提**: [環境構築](../setup/index.md) と [最短起動 (スタックを動かす)](../setup/quickstart.md)
 >
 > **使うもの**: PC + HUSKYLENS2 (なければ [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) で代替)
 >
@@ -121,7 +121,7 @@ samples:
 
 ### 商品として登録されることを確認する
 
-[最短起動](../setup/quickstart.md) の手順で `mediator-owner` が動いていれば、イベントファイルが出力されるたびに、`mediator-owner` のターミナルに次のように表示されます。
+[最短起動 (スタックを動かす)](../setup/quickstart.md) の手順で `mediator-owner` が動いていれば、イベントファイルが出力されるたびに、`mediator-owner` のターミナルに次のように表示されます。
 
 ```
 Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskylens_1791551565.txt
@@ -133,7 +133,7 @@ Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskyl
 http://localhost:5173/merchandise/<表示されたアドレス>
 ```
 
-この商品を購入して受け取るまでの流れは、[ハンズオンの概要の 1.3](index.md) を参照してください。表示されない場合は、教材リポジトリが最新か (`git pull`)、`mediator-owner` を起動し直したかを確認します。
+この商品を購入して受け取るまでの流れは、[ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 を参照してください。表示されない場合は、教材リポジトリが最新か (`git pull`)、`mediator-owner` を起動し直したかを確認します。
 
 mock でイベントファイルが生成されることを確認できたら、次は実機の serial 入力を試します。
 
@@ -142,6 +142,13 @@ mock でイベントファイルが生成されることを確認できたら、
 ### 2. 実機（serial）
 
 `--serial-port` には、HUSKYLENS2 をつないだポートの名前を指定します。macOS では `ls /dev/tty.usb*` で確かめた名前に置き換えます (Linux では `/dev/ttyUSB0` などです)。serial モードは、前提で作った venv (`pyserial` 入り) を有効にして、`sensor-bridge` フォルダで実行します (下のコマンドの最初の 2 行で行います)。
+
+bridge はシリアルから 1 行ずつ読み、次のどちらかの形式の行を検知結果として扱います。
+
+- NDJSON (1 行に 1 つの JSON): `{"label":"person","confidence":0.92,"id":"12","x":120,"y":80,"w":48,"h":60}`
+- CSV: `label,id,confidence,x,y,w,h` の順。少なくとも先頭の 3 項目が必要です (例: `person,12,0.92`)
+
+`confidence` が `--min-confidence` (既定 0.5) より小さい行は数えません。HUSKYLENS2 が USB からこの形式の行を出さない場合は、HUSKYLENS2 の結果を読み取ってこの形式で 1 行ずつ送る中継用のスケッチ (Arduino などのマイコン向け) が必要です。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/sensor-bridge
@@ -171,7 +178,7 @@ python3 huskylens_bridge.py \
 - 症状: `pyserial` が見つからない
   - 対応: venv を有効にして (`source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate`) `pip install pyserial` を実行し、同じターミナルで実行し直す
 - 症状: シリアルポート名が分からない
-  - 確認: macOS では `ls /dev/tty.usb*` で `/dev/tty.usbserial-…` や `/dev/tty.usbmodem…` のデバイス名を確認
+  - 確認: macOS では `ls /dev/tty.usb*` で `/dev/tty.usbserial-…` や `/dev/tty.usbmodem…` のデバイス名を確認。Linux では `/dev/ttyUSB0` など。OS のデバイスマネージャーでも確認できる
 - 症状: デバイスが読めない
   - 確認: ケーブルが給電専用でなく通信対応か
   - 確認: macOS / Linux の権限やポート名が正しいか

@@ -4,7 +4,7 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
 
 > **What you'll do**: analyze a webcam image with a local VLM and distribute the generated semantic data (descriptions) over the platform
 >
-> **Prerequisites**: [Environment setup](../setup/index.md) completed and Docker available (the Quickstart stack is not used)
+> **Prerequisites**: [Environment Setup](../setup/index.md) completed and Docker available (the Quickstart stack is not used)
 >
 > **What you need**: laptop PC + USB webcam + Docker (including the VLM)
 >
@@ -13,7 +13,7 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
 !!! note "Where this page belongs"
     This is a Part 3 (intelligence integration) hands-on. Camera capture basics
     are covered in [Detect with a USB webcam (OpenCV)](webcam.md), and per-tier projection with a
-    VLM is in §12 of [Tier by semantic level](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur). This
+    VLM is in §12 of [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur). This
     page focuses on experiencing "**camera → local VLM → distribute semantic
     data**" as a single flow.
 
@@ -46,7 +46,7 @@ Instead of distributing raw images, distribute the **semantic derivatives** a lo
 ## Prerequisites
 
 - Docker is available and you can run `docker compose -f infra/docker-compose.yml ...` at the top of the course repository
-- If the IPFS from the [Quickstart](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
+- If the IPFS from the [Quickstart (run the stack)](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - a USB webcam is recognized by the PC (trying [Detect with a USB webcam (OpenCV)](webcam.md) first makes this easier)
 - A Python 3 virtual environment at the top of the course repository with OpenCV installed (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`). In every new terminal, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate`. With Homebrew Python and similar setups, `pip install` outside a venv fails
 - Docker can use the `--profile vlm` profile (the first model pull downloads several GB)
@@ -181,9 +181,9 @@ If you started with `VLM_BACKEND` set as in §1, the publisher also calls the VL
     To read the attached `description_*` on the consumer side you need a
     ViewerToken, obtained by presenting the PurchaseViewerVC issued by `/marketplace/claim`.
     The `data_user_attrs` passed to the claim decide its tier (see §3 of
-    [Tier the response by trust](data-user-vc-tiered.md#3-three-marketplaceclaim-calls)) (`/platform/data` returns 401
+    [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md#3-three-marketplaceclaim-calls)) (`/platform/data` returns 401
     for a plain GET). Projecting `description_full` / `description_summary` per
-    trust tier is covered in §12 of [Tier by semantic level](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur).
+    trust tier is covered in §12 of [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur).
     The core of this page is "camera → local model semantic enrichment →
     distribute over the platform".
 
@@ -266,4 +266,4 @@ Without a template, implement one of these yourself:
 
 - Helpful to try first: [Detect with a USB webcam (OpenCV)](webcam.md)
 - Deep dive: DataUserVC × tiered access ([§8 media integration](data-user-vc-tiered-media.md#8-real-data-integration-option-b--http-media-gateway), [§12 VLM tier](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur)) / [Let an AI plan the steps (LLM Planner)](llm-planner.md)
-- Design: [Tiered access design spec (tier extension: semantic-level redaction)](data-user-vc-tiered-spec.md)
+- Design: [Tiered access design spec](data-user-vc-tiered-spec.md)

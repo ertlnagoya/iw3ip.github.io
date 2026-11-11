@@ -50,7 +50,7 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) の §1〜§8 を一度通している
 - publisher が `main` ブランチのコードで起動している
 - スマホで `iw3ip-wallet` が使える
-- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP='<PC の LAN IP>'` を実行してください (IP の調べ方は [ハンズオン](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 
 ## 関連リポジトリ
 
@@ -76,8 +76,10 @@ curl http://$HOST_IP:8080/health
 `/.well-known/openid-credential-issuer` に **`ConsentVC` と `ViewerVC` の両方** が登録されていることを確認します。
 
 ```bash
-curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -A2 ViewerVC
+curl -s http://$HOST_IP:8080/.well-known/openid-credential-issuer | python3 -m json.tool | grep -E -A2 'ConsentVC|ViewerVC'
 ```
+
+出力に `"ConsentVC": {` と `"ViewerVC": {` の行があれば登録されています。`PurchaseViewerVC` など、名前に `ViewerVC` を含む別の VC の行も一緒に出ます。
 
 ## 2. ConsentVC でデータを書き込む（おさらい）
 
@@ -150,14 +152,20 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ```json
 {
-  "dataset_id": "home/env/temperature",
-  "count": 1,
-  "read_count": 1,
-  "seller_did": null,
-  "allowed_views": ["event"],
-  "rows": [
-    {"dataset_id": "home/env/temperature", "purpose": "research", "value": 21.4}
-  ]
+    "dataset_id": "home/env/temperature",
+    "count": 1,
+    "read_count": 1,
+    "seller_did": null,
+    "allowed_views": [
+        "event"
+    ],
+    "rows": [
+        {
+            "dataset_id": "home/env/temperature",
+            "purpose": "research",
+            "value": 21.4
+        }
+    ]
 }
 ```
 
@@ -191,18 +199,26 @@ curl -i -H "Authorization: Bearer $TOKEN" \
 curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool
 ```
 
-ViewerVC 経由の read は次のように記録されます:
+結果は新しい順のリストです。ViewerVC 経由の read は次のように記録されます (先頭の 1 行だけを示し、残りは `...` で省略しています):
 
 ```json
-{
-  "action": "allow",
-  "raw_topic": "platform/data",
-  "reason": "viewer_token_used:1f2c...:1:views=event",
-  "dataset_id": "home/env/temperature",
-  "purpose": "read",
-  "holder_did": "did:jwk:...",
-  "presentation_verified": "allow"
-}
+[
+    {
+        "id": ...,
+        "ts": "...",
+        "action": "allow",
+        "subject_did": "did:jwk:...",
+        "dataset_id": "home/env/temperature",
+        "purpose": "read",
+        "reason": "viewer_token_used:1f2c...:1:views=event",
+        "message_hash": "",
+        "raw_topic": "platform/data",
+        "holder_did": "did:jwk:...",
+        "vc_hash": null,
+        "presentation_verified": "allow"
+    },
+    ...
+]
 ```
 
 `reason` は `viewer_token_used:<jti>:<read_count>:views=<allowed_views>` の形です。同じ token で 3 回 read すれば、`read_count` が 1, 2, 3 の 3 行が並びます。

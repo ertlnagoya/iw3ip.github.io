@@ -1,6 +1,6 @@
 # 信頼度に応じて見せる中身を変える (DataUserVC / Stage T)
 
-受信者の信頼度 (DataUserVC) に応じて、見せる中身を Tier 3 / Tier 2 / Tier 1 の 3 段階に切り替えます。画像 / 動画の実体の配信（§8〜§11）は [画像・動画を段階アクセスで配信する](data-user-vc-tiered-media.md) で、映像を意味的中間表現に変換し、受信者の信頼度に応じて出力を変えるレンダリング（trust-aware rendering、§12〜§13）は [意味レベルで段階化する](data-user-vc-tiered-semantic.md) で扱います。3 ページ全体で長めのハンズオンです。
+受信者の信頼度 (DataUserVC) に応じて、見せる中身を Tier 3 / Tier 2 / Tier 1 の 3 段階に切り替えます。画像 / 動画の実体の配信（§8〜§11）は [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) で、映像を意味的中間表現に変換し、受信者の信頼度に応じて出力を変えるレンダリング（trust-aware rendering、§12〜§13）は [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) で扱います。3 ページ全体で長めのハンズオンです。
 
 > **やること**: 信頼度ごとに動画 / 画像 / イベントだけを出し分ける動作の確認
 >
@@ -52,7 +52,7 @@ DataUserVC はウォレットに発行して中身を確かめるところまで
 
 本ページのコマンド例は、教材リポジトリを `~/program/Blockchain_IoT_Marketplace` に clone した前提で示します。
 
-- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP='<PC の LAN IP>'` を実行してください (IP の調べ方は [ハンズオン](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 
 ## 0b. 実データ（画像 / 動画）統合の選び方
 
@@ -96,9 +96,17 @@ curl -s localhost:8080/.well-known/openid-credential-issuer \
 期待する出力:
 
 ```text
-["ConsentVC", "DataUserVC", "PurchaseViewerVC",
-"PurchaseViewerVC.access", "PurchaseViewerVC.event", "PurchaseViewerVC.full",
-"SellerVC", "ServiceVC", "ViewerVC"]
+[
+  "ConsentVC",
+  "DataUserVC",
+  "PurchaseViewerVC",
+  "PurchaseViewerVC.access",
+  "PurchaseViewerVC.event",
+  "PurchaseViewerVC.full",
+  "SellerVC",
+  "ServiceVC",
+  "ViewerVC"
+]
 ```
 
 `DataUserVC` がリストに出ていれば、起動は完了です。
@@ -329,8 +337,8 @@ ViewerToken の発行ログ（`viewer_token_issued ... views=...`）と
 
 ## 次に進む
 
-- [画像・動画を段階アクセスで配信する](data-user-vc-tiered-media.md) — 続きの §8〜§11（HTTP メディア・ゲートウェイ、IPFS、PWA Viewer、PWA Provider）
-- [意味レベルで段階化する](data-user-vc-tiered-semantic.md) — 続きの §12〜§13（VLM による意味レベルの段階化、意味的中間表現）
+- [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — 続きの §8〜§11（HTTP メディア・ゲートウェイ、IPFS、PWA Viewer、PWA Provider）
+- [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) — 続きの §12〜§13（VLM による意味レベルの段階化、意味的中間表現）
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) — Phase 2 wallet を立ち上げる
 - [段階アクセスの設計仕様](data-user-vc-tiered-spec.md) — 設計根拠
 - [検知イベントだけを共有する](webcam-event-sharing.md) — イベントを条件付きで共有する

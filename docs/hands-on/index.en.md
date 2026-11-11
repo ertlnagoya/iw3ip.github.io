@@ -32,32 +32,32 @@ Purchase (shared by v1 and v2)
                   → ViewerToken → /platform/data
 ```
 
-Design detail: [Marketplace VC Bridge — v1 / v2 design spec](../design/marketplace-vc-bridge-spec.md).
+Design detail: [Marketplace VC Bridge — v1 / v2 Design Spec](../design/marketplace-vc-bridge-spec.md).
 
 ## How Part, Phase, and Stage relate { #part-phase-stage }
 
 This site uses three kinds of numbering.
 
 - **Part 1–3**: the learning order on this site (Basic, Feature Extensions, Intelligence Integration).
-- **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see [Phase structure in the platform overview](../platform-overview.md#phase-structure)).
+- **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see the Phase structure in [Platform Overview](../platform-overview.md#phase-structure)).
 - **Stage 0–7, A, T, P**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0) and image provenance signing (Stage P). Each page assumes the earlier Stages are done. The exception is the first Stage P page (P0), which uses neither the earlier Stages nor any VC and runs on its own with only the course repository and Python. The following P1–P3 pages connect to the publisher and the chain and use per-tier ViewerTokens (obtained with a PurchaseViewerVC). There is no Stage 2.
 
 | Stage | Hands-on | VC |
 |---|---|---|
 | 0 | [Share detections, not raw frames](webcam-event-sharing.md), [Share disaster events](environment-disaster.md) | none (JSON registered at `/consents`) |
-| 1 | [Authenticate the data provider](ha-ssi-wallet.md) | ConsentVC |
-| 3 | [Authenticate the viewer](ha-ssi-viewer.md) | ViewerVC |
-| 4 prep | [Authenticate machines](ha-ssi-service.md) | ServiceVC |
-| 5 | [Hand a credential to the buyer's wallet](marketplace-vc-bridge.md) | PurchaseViewerVC |
-| 6 | [Read ServiceVC-written data with a PurchaseViewerVC](marketplace-vc-end-to-end.md) | ServiceVC + PurchaseViewerVC (builds on the ConsentVC / ViewerVC flows of Stages 1 and 3) |
-| 7 | [Back the seller's identity](marketplace-seller-vc.md) | SellerVC |
-| A | [Marketplace as a phone app](marketplace-mobile-app.md) | PurchaseViewerVC (phone only) |
-| T | [Tier the response by trust](data-user-vc-tiered.md) | DataUserVC |
-| P | [Prove where an image came from](c2pa-provenance.md) | none (C2PA signing with X.509 certificates; no publisher or wallet needed) |
-| P | [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
-| P | [Trace a VLM summary back to the image](c2pa-provenance-vlm.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
+| 1 | [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) | ConsentVC |
+| 3 | [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) | ViewerVC |
+| 4 prep | [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) | ServiceVC |
+| 5 | [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) | PurchaseViewerVC |
+| 6 | [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md) | ServiceVC + PurchaseViewerVC (builds on the ConsentVC / ViewerVC flows of Stages 1 and 3) |
+| 7 | [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) | SellerVC |
+| A | [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md) | PurchaseViewerVC (phone only) |
+| T | [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) | DataUserVC |
+| P | [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) | none (C2PA signing with X.509 certificates; no publisher or wallet needed) |
+| P | [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
+| P | [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
 
-The mapping between VCs and tokens is summarized in [VC Architecture Overview](../design/vc-architecture-overview.md).
+The mapping between VCs and tokens is summarized in [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md).
 
 ## About `$HOST_IP` in commands { #host-ip }
 
@@ -123,7 +123,7 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
 
 | Goal | Path |
 |---|---|
-| See it run first | [HA Demo Simulator](ha-demo-simulator.md) only (approx. 20 min) |
+| See it run first | [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md) only (approx. 20 min) |
 | Cover all of Basic | All of Part 1 (approx. 1.5 hours; pick one device in §1.2) |
 | Reach safe / conditional sharing | Part 1 → Part 2 §2.1–§2.3 (+ approx. 4 hours) |
 | Reach v2 marketplace integration | Part 1 → Part 2 §2.4 (+ approx. 4 hours) |
@@ -148,7 +148,7 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 | **Part 2 / Process data and add provenance**<sup>*</sup> | ✓ | ✓ <small>(for Tier 3 e2e)</small> | ✓ <small>(same)</small> | ✓ | – | ✓ <small>(OpenCV / VLM optional)</small> |
 | **Part 3 / Intelligence integration** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
 
-\* In this sub-group, [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) runs with Python only and uses no publisher, blockchain, MetaMask, SSI wallet, or VC. The follow-ups, [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md) and [Trace a VLM summary back to the image](c2pa-provenance-vlm.md), use the publisher and Hardhat, and a wallet inside the program receives a PurchaseViewerVC to get a per-tier ViewerToken. They use no MetaMask or phone wallet.
+\* In this sub-group, [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) runs with Python only and uses no publisher, blockchain, MetaMask, SSI wallet, or VC. The follow-ups, [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md) and [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md), use the publisher and Hardhat, and a wallet inside the program receives a PurchaseViewerVC to get a per-tier ViewerToken. They use no MetaMask or phone wallet.
 
 ### VCs used
 
@@ -166,7 +166,7 @@ What runs behind each sub-group. Part 2 is mixed — some sub-groups need the bl
 - **MetaMask**: signs / sends transactions on the local chain.
 - **SSI wallet**: iw3ip-wallet (a fork of Sphereon Wallet) on a phone — receives and presents VCs.
 - **IPFS / storage (v1)**: used in v1. After a purchase, the data is placed in the storage server (simple-storage), and its location (URI) is encrypted and written to the chain. IPFS and PostgreSQL hold video metadata and back the search screen. v2 adds a lane that uses VCs.
-- **Camera path / HA path**: in Part 1, HUSKYLENS2 and the USB webcam hand event files to `mediator-owner`, so they need the [Quickstart](../setup/quickstart.md) stack (Hardhat, storage server, IPFS, and so on). HA SSI Publisher sends data to the publisher.
+- **Camera path / HA path**: in Part 1, HUSKYLENS2 and the USB webcam hand event files to `mediator-owner`, so they need the [Quickstart (run the stack)](../setup/quickstart.md) stack (Hardhat, storage server, IPFS, and so on). HA SSI Publisher sends data to the publisher.
 - **Image proc. / LLM**: OpenCV (Tier 2 blur), Ollama (LLaVA / moondream for VLM), and the LLM planner in Part 3.
 
 ---
@@ -196,7 +196,7 @@ Build a path that pulls data off a camera or sensor. HUSKYLENS2 and the USB webc
 
 The list → buy → receive flow. On delivery, the location (URI) of the data placed in the storage server (simple-storage) is encrypted and passed through the chain. This is the completion point of **Basic (v1)**.
 
-1. **List**: run a sample from §1.2 ([HUSKYLENS2](huskylens2.md) or [USB webcam](webcam.md); mock mode is enough). Event files are written to `mediator-owner/raw_data/output`. If you chose HA SSI Publisher in §1.2, run the [USB webcam sample](webcam.md) in mock mode to list an item. `mediator-owner` detects each event file, registers it as merchandise, and prints the item's address.
+1. **List**: run a sample from §1.2 ([Detect a person on an AI camera (HUSKYLENS2)](huskylens2.md) or [Detect with a USB webcam (OpenCV)](webcam.md); mock mode is enough). Event files are written to `mediator-owner/raw_data/output`. If you chose HA SSI Publisher in §1.2, run the sample from [Detect with a USB webcam (OpenCV)](webcam.md) in mock mode to list an item. `mediator-owner` detects each event file, registers it as merchandise, and prints the item's address.
 
     ```
     Product deployed: 0x948b3c65b89df0b4894abe91e6d02fe579834f8f for file 301_huskylens_1791551565.txt
@@ -229,7 +229,7 @@ The list → buy → receive flow. On delivery, the location (URI) of the data p
 
 The 5 items registered by step 2 of Quickstart (deployment) were not listed by `mediator-owner`. They can be purchased, but no data is delivered.
 
-Detailed bring-up: [Quickstart](../setup/quickstart.md).
+Detailed bring-up: [Quickstart (run the stack)](../setup/quickstart.md).
 
 ### 1.4 Open the marketplace and buy on a phone
 
@@ -347,4 +347,4 @@ The "request → plan → execute → UI" decomposition pattern.
 
 ## When a term is unfamiliar
 
-See the [setup mini-glossary](../setup/index.md#mini-glossary). It explains almost every term you'll encounter in one line.
+See the mini-glossary in [Environment Setup](../setup/index.md#mini-glossary). It explains almost every term you'll encounter in one line.

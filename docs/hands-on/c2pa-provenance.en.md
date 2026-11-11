@@ -11,9 +11,9 @@ Attach "provenance" that follows the C2PA standard [1] to an image taken with a 
 > **Time required**: approx. 30–40 minutes
 
 !!! note "Where this page belongs"
-    This hands-on runs P0 (the first step) of the [C2PA provenance pipeline design spec](../design/c2pa-provenance-spec.md) on your own machine.
-    The C2PA mechanism and terms are explained in §2 "C2PA basics" of the design spec. The idea of Tiers 1–3 was covered in [Tier the response by trust](data-user-vc-tiered.md).
-    Building this into the publisher (P1 and P2) is covered in [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md).
+    This hands-on runs P0 (the first step) of the [C2PA provenance pipeline — provenance for camera footage and sensor data (Stage P design spec)](../design/c2pa-provenance-spec.md) on your own machine.
+    The C2PA mechanism and terms are explained in §2 "C2PA basics" of the design spec. The idea of Tiers 1–3 was covered in [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md).
+    Building this into the publisher (P1 and P2) is covered in [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md).
 
 ## Goal
 
@@ -113,7 +113,7 @@ The three files this page uses are:
 | `chain.pem` | Gateway certificate and CA certificate | Embedded in the image with the signature to show who signed |
 | `gw.key` | Gateway private key | Used for signing. Never give it to anyone |
 
-`publisher_chain.pem` and `publisher.key` are the publisher's certificate (CN `iw3ip-publisher`) and private key, issued by the same CA. This page does not use them; on [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md), the publisher uses them to sign the Tier 2 image. On this page, the Tier 2 image is also signed with the gateway key.
+`publisher_chain.pem` and `publisher.key` are the publisher's certificate (CN `iw3ip-publisher`) and private key, issued by the same CA. This page does not use them; on [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md), the publisher uses them to sign the Tier 2 image. On this page, the Tier 2 image is also signed with the gateway key.
 
 The following diagram shows how the certificates and the signature relate. If the validator registers `ca.pem` as a trusted CA, a signature made with a certificate that CA issued becomes `Trusted`. If not, a correct signature only reaches `Valid`.
 
@@ -180,7 +180,7 @@ The two saved images look like this (left: the captured image; right: the blurre
 ![The captured image drawn by the program (capture.jpg) and the blurred Tier 2 image (tier2.jpg)](../assets/c2pa-capture-vs-tier2.png)
 
 !!! note "About the blur"
-    The program in this hands-on blurs the whole image without detecting faces. Blurring only faces was covered by the face blur in [Tier by semantic level](data-user-vc-tiered-semantic.md).
+    The program in this hands-on blurs the whole image without detecting faces. Blurring only faces was covered by the face blur in [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md).
 
 ## 4. Look inside the provenance
 

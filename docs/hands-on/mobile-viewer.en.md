@@ -4,7 +4,7 @@ Open the v1 marketplace (purchase with MetaMask [1]; data is handed over through
 
 > **What you'll do**: Open the marketplace screen in a phone browser and walk through a purchase
 >
-> **Prerequisites**: v1 stack running ([Quickstart](../setup/quickstart.md))
+> **Prerequisites**: v1 stack running ([Quickstart (run the stack)](../setup/quickstart.md))
 >
 > **What you need**: PC + smartphone on the same network
 >
@@ -66,7 +66,7 @@ For a first pass, these five steps are enough.
 Branches after that:
 
 - **Specific item**: open `http://<HOST_IP>:5173/merchandise/<address>` directly
-  (use the `Product deployed: 0x…` address shown in the `mediator-owner` terminal (created by running the USB webcam sample in mock mode as in §1.3 of the [Hands-on overview](index.md); the 5 items deployed in step 2 of the Quickstart deliver no data when bought))
+  (use the `Product deployed: 0x…` address shown in the `mediator-owner` terminal (created by running the USB webcam sample in mock mode as in §1.3 of the [Hands-on](index.md); the 5 items deployed in step 2 of the Quickstart deliver no data when bought))
 - **Purchase path**: open the same URL in MetaMask Mobile
 - **VC-mediated path (v2)**: go to [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md)
 - If the connection fails early: check [Troubleshooting](#troubleshooting) first
@@ -104,7 +104,7 @@ Edit `.env.local` and set the host for your scenario.
     `npx hardhat node --hostname 0.0.0.0` and allow `8545` through the PC firewall.
 
     Restarting the node resets the chain and the deployed contracts are gone.
-    After restarting, redo step 2 (deploy) of the [Quickstart](../setup/quickstart.md)
+    After restarting, redo step 2 (deploy) of the [Quickstart (run the stack)](../setup/quickstart.md)
     and restart `mediator-owner` and `mediator-buyer` as well. Earlier item addresses no longer work.
     Run the USB webcam (or HUSKYLENS2) mock again and use the newly shown `Product deployed` address.
 
@@ -112,7 +112,7 @@ Restart the frontend (the Vite dev server [2] started by `npm run dev`) after ed
 
 ### 1. Start the PC side on the LAN
 
-First stop the `npm run dev` running in Terminal 3 of the [Quickstart](../setup/quickstart.md) with Ctrl+C (it uses the same port 5173; otherwise the new server starts on another port). Then run this in the terminal you moved into `iot-market-ui` in step 0.
+First stop the `npm run dev` running in Terminal 3 of the [Quickstart (run the stack)](../setup/quickstart.md) with Ctrl+C (it uses the same port 5173; otherwise the new server starts on another port). Then run this in the terminal you moved into `iot-market-ui` in step 0.
 
 ```bash
 npm run dev -- --host 0.0.0.0 --port 5173
@@ -126,7 +126,7 @@ Run this in another terminal; the step 1 terminal is still running `npm run dev`
 ipconfig getifaddr en0
 ```
 
-`ipconfig getifaddr en0` is a macOS command. On Windows use `ipconfig`; on Linux use `ip addr`. Replace `<HOST_IP>` in the following steps with the IP address you found here (the [Hands-on overview](index.md#host-ip) also lists how to check it on each OS).
+`ipconfig getifaddr en0` is a macOS command. On Windows use `ipconfig`; on Linux use `ip addr`. Replace `<HOST_IP>` in the following steps with the IP address you found here (the [Hands-on](index.md#host-ip) also lists how to check it on each OS).
 
 ## Open the marketplace from the smartphone
 
@@ -142,7 +142,7 @@ Example (homepage):
 http://192.168.1.20:5173/
 ```
 
-To open an individual item directly (use the `Product deployed: 0x…` address shown in the `mediator-owner` terminal (created by running the USB webcam sample in mock mode as in §1.3 of the [Hands-on overview](index.md); the 5 items deployed in step 2 of the Quickstart deliver no data when bought; an item already bought in §1.3 cannot be bought again)):
+To open an individual item directly (use the `Product deployed: 0x…` address shown in the `mediator-owner` terminal (created by running the USB webcam sample in mock mode as in §1.3 of the [Hands-on](index.md); the 5 items deployed in step 2 of the Quickstart deliver no data when bought; an item already bought in §1.3 cannot be bought again)):
 
 ```txt
 http://<HOST_IP>:5173/merchandise/<merchandise_address>
@@ -154,7 +154,7 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 - Add the local chain network to MetaMask Mobile beforehand:
     - RPC URL: `http://<HOST_IP>:8545` (e.g. `http://192.168.1.20:8545`)
     - Chain ID: `31337` / Currency symbol: `ETH`
-- Also import the **Account #2 Private Key** into MetaMask Mobile and buy with that account (the same key as in [Quickstart](../setup/quickstart.md#metamask-local-chain-setup)). Only Account #1 (`mediator-owner`) and Account #2 (`mediator-buyer`) have a registered public key. The buyer-side mediator runs as Account #2. Buying with Account #1 delivers the data to `downloads` of `mediator-owner`, and any other account reverts
+- Also import the **Account #2 Private Key** into MetaMask Mobile and buy with that account (the same key as in [Quickstart (run the stack)](../setup/quickstart.md#metamask-local-chain-setup)). Only Account #1 (`mediator-owner`) and Account #2 (`mediator-buyer`) have a registered public key. The buyer-side mediator runs as Account #2. Buying with Account #1 delivers the data to `downloads` of `mediator-owner`, and any other account reverts
 - If MetaMask rejects the network, confirm the node was started with `--hostname 0.0.0.0` and that both `.env.local` and the MetaMask RPC use the **PC's LAN IP, not 127.0.0.1**
 
 ### 5. What to check
@@ -191,7 +191,7 @@ If you cannot connect or the purchase does not proceed, check the troubleshootin
 - Symptom: the purchase transaction fails (revert) / `mediator-buyer` never prints `You bought a product of`
   - Check: the account selected in MetaMask Mobile is Account #2 (accounts other than #1 and #2 have no registered public key and cannot buy; data bought with Account #1 goes to `mediator-owner`, not `mediator-buyer`)
   - Check: whether you already bought that item with the same account (an item bought in §1.3 cannot be bought again; use a `Product deployed` address you have not bought yet)
-  - Fix: import the same Account #2 Private Key as in [Quickstart](../setup/quickstart.md#metamask-local-chain-setup) and buy again with that account
+  - Fix: import the same Account #2 Private Key as in [Quickstart (run the stack)](../setup/quickstart.md#metamask-local-chain-setup) and buy again with that account
   - See the "Purchase does not succeed" item in [Troubleshooting](../operations/troubleshooting.md)
 
 ## References

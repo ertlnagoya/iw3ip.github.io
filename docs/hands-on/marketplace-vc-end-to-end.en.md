@@ -80,7 +80,7 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 - You have gone through [Stage 1](ha-ssi-wallet.md) / [Stage 3](ha-ssi-viewer.md) /
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)
 - The Stage 5 Hardhat node is restarted in Step E0 (publisher and iot-market-ui are started in E0, and the bridge and the publisher are recreated there)
-- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP='<your PC LAN IP>'` (see the [Hands-on](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet cloned to `~/program/iw3ip-wallet`
 - In this hands-on, **one iPhone wallet plays two roles (seller + buyer)**
   for a single person (separating seller and buyer as in real operation is future work)
@@ -505,7 +505,7 @@ See also [Troubleshooting in Stage 5](marketplace-vc-bridge.md#troubleshooting).
 
 ## Related
 
-- [Marketplace VC Bridge design spec](../design/marketplace-vc-bridge-spec.md)
+- [Marketplace VC Bridge — v1 / v2 Design Spec](../design/marketplace-vc-bridge-spec.md)
 - [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
 - [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md)
 - [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md)

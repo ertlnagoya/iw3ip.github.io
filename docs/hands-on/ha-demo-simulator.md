@@ -57,7 +57,7 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 - Docker / Docker Compose が使える
 - ブラウザで `http://localhost:8123` を開ける
 - `curl` が使える
-- [最短起動](../setup/quickstart.md) で起動した IPFS が動いたままの場合は、教材リポジトリで先に `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` を実行して止めておく (IPFS と publisher がどちらもポート 8080 を使うため)
+- [最短起動 (スタックを動かす)](../setup/quickstart.md) で起動した IPFS が動いたままの場合は、教材リポジトリで先に `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` を実行して止めておく (IPFS と publisher がどちらもポート 8080 を使うため)
 
 この Hands-on は、ソースコードリポジトリ `Blockchain_IoT_Marketplace` の `main` ブランチを使います。
 
@@ -242,7 +242,7 @@ sed 's/"valid_to": "2030-12-31T23:59:59Z"/"valid_to": "2026-05-01T00:00:00Z"/' e
 
 レスポンスが `"status":"stored"` で、`valid_to` が `2026-05-01T00:00:00Z` になっていることを確認します。
 
-[検知イベントだけを共有する](webcam-event-sharing.md) や [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md)、段階アクセスのページ ([信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) など) を先に済ませている場合は、同じ `possible_littering` に有効な consent (`consent-littering-001` ないしは `local-vlm-distribution-consent-webcam-001`) が残っていて、拒否が起きません。`curl http://localhost:8080/consents` で確かめ、残っていれば次のコマンドで削除します。このワークのあとで使う場合は、削除した consent を登録し直します (`curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_possible_littering.json`、ローカル VLM の consent は `-d @examples/hands_on/local_vlm_distribution/fixtures/consent_webcam.json`)。
+[検知イベントだけを共有する](webcam-event-sharing.md) や [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md)、段階アクセスのページ ([信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) など) を先に済ませている場合は、同じ `possible_littering` に有効な consent (`consent-littering-001` ないしは `local-vlm-distribution-consent-webcam-001`) が残っていて、拒否が起きません。`curl http://localhost:8080/consents` で確かめ、残っていれば次のコマンドで削除します。このワークのあとで使う場合は、削除した consent を登録し直します (`curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_possible_littering.json`、ローカル VLM の consent は `-d @examples/hands_on/local_vlm_distribution/fixtures/consent_webcam.json`)。
 
 ```bash
 curl -X DELETE http://localhost:8080/consents/consent-littering-001

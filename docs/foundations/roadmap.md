@@ -19,12 +19,12 @@ P0 が最優先で、P1、P2 の順に進めます。
 ## 最短学習パス
 
 1. [ブロックチェーン基礎](blockchain-basics.md)
-2. [Hardhat基礎](hardhat-basics.md)
-3. [SSI/DID/VC基礎](ssi-did-vc-basics.md)
-4. [事前準備](../setup/prerequisites.md)
-5. [HA Demo Simulator](../hands-on/ha-demo-simulator.md)（実機なしで一通り動かす）
-6. [最短起動](../setup/quickstart.md)
-7. [HA x SSI Publisherサンプル](../hands-on/ha-ssi-publisher.md)
+2. [Hardhat基礎（このサイトで使うブロックチェーン）](hardhat-basics.md)
+3. [SSI / DID / VC 基礎](ssi-did-vc-basics.md)
+4. [事前準備 (ツールのインストール)](../setup/prerequisites.md)
+5. [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)（実機なしで一通り動かす）
+6. [最短起動 (スタックを動かす)](../setup/quickstart.md)
+7. [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md)
 
 この7ページで、基本理解と最小ハンズオンは完結します。
 
@@ -32,7 +32,7 @@ P0 が最優先で、P1、P2 の順に進めます。
 
 | 週 | 学習内容 | 具体タスク | 成果物 |
 |---|---|---|---|
-| Week 1 | 実行と観察 | HA x SSIサンプルを実行し、`allowed/denied/send_error` を意図的に発生 | 実行ログ + 気づきメモ |
+| Week 1 | 実行と観察 | [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) のサンプルを実行し、`allowed/denied/send_error` を意図的に発生 | 実行ログ + 気づきメモ |
 | Week 2 | 基礎理解 | Blockchain/Hardhat、SSI/DID/VC基礎ページを学習し、用語を整理 | 用語集（自分用） |
 | Week 3 | 説明と改善 | なぜこの設計かを説明し、1つ改善PRを作成 | PR 1本 |
 
@@ -47,9 +47,9 @@ P0 が最優先で、P1、P2 の順に進めます。
 ## 次に読むページ
 
 1. [ブロックチェーン基礎](blockchain-basics.md)
-2. [Hardhat基礎](hardhat-basics.md)
-3. [SSI/DID/VC基礎](ssi-did-vc-basics.md)
-4. [参考文献](references.md)
+2. [Hardhat基礎（このサイトで使うブロックチェーン）](hardhat-basics.md)
+3. [SSI / DID / VC 基礎](ssi-did-vc-basics.md)
+4. [参考文献・発展学習資料](references.md)
 5. ハンズオンのあとで仕組みを詳しく知りたいときは [設計](../design/index.md)
 
 ## 外部資料の使い方

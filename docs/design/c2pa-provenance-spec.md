@@ -4,8 +4,8 @@
     [設計](index.md) の章の設計仕様です。
     市販の安価な IP カメラや USB ウェブカメラの映像と、センサーデータに、C2PA (Coalition for Content Provenance and Authenticity) [1] の規格に沿った来歴情報を付ける **Stage P** (Provenance) の設計仕様である。
     署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた設計であり、そのうち P0〜P3 は実装して、教材リポジトリの main に入っている (§10 の注記。Content Credentials Verify と c2patool での確認はまだ)。
-    本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像](vc-architecture-overview.md) の §5)。
-    Stage P は、Stage T の段階アクセス ([段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)) と Stage 7 の SellerVC ([SellerVC 設計仕様](seller-vc-spec.md)) の上に載せる。P0 の部分は、ハンズオン [画像の来歴を証明する](../hands-on/c2pa-provenance.md) で手元で動かせる。P1 と P2 は、ハンズオン [来歴を publisher とチェーンにつなぐ](../hands-on/c2pa-provenance-publisher.md) で、P3 は [VLM の要約から元の画像をたどる](../hands-on/c2pa-provenance-vlm.md) で動かせる。
+    本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の §5)。
+    Stage P は、Stage T の段階アクセス ([段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)) と Stage 7 の SellerVC ([SellerVC — マーケット出品ガバナンス VC (Stage 7 設計仕様)](seller-vc-spec.md)) の上に載せる。P0 の部分は、ハンズオン [画像の来歴を証明する (C2PA / Stage P)](../hands-on/c2pa-provenance.md) で手元で動かせる。P1 と P2 は、ハンズオン [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](../hands-on/c2pa-provenance-publisher.md) で、P3 は [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](../hands-on/c2pa-provenance-vlm.md) で動かせる。
     本文中の P0〜P6 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、最初に作る最小限の実装) は P0〜P2 に当たる。P0〜P3 は実装済みでハンズオンで動かせる。P4 以降はまだ実装していない。
 
 本仕様は、写真や映像に**「誰が、いつ、どう撮って、どう加工したか」の記録を付け、その記録に電子署名をする**仕組みを IW3IP に組み込むための設計である。記録を改ざんすると署名が合わなくなるため、受け取った人が自分で本物かどうかを確かめられる。
@@ -19,8 +19,8 @@
 
 ## 読む前に
 
-- ハンズオンの Part 2 の「データ処理と来歴を入れてみよう」([信頼度に応じて見せる中身を変える](../hands-on/data-user-vc-tiered.md) など) を終えていると読みやすい。Tier 1〜3、DataUserVC、publisher、`/media/upload` は説明なしで使う
-- DID と VC の基本 ([SSI/DID/VC 基礎](../foundations/ssi-did-vc-basics.md)) を前提にする。C2PA の署名の仕組みは、§2 で VC と対応させて説明する
+- ハンズオンの Part 2 の「データ処理と来歴を入れてみよう」([信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md) など) を終えていると読みやすい。Tier 1〜3、DataUserVC、publisher、`/media/upload` は説明なしで使う
+- DID と VC の基本 ([SSI / DID / VC 基礎](../foundations/ssi-did-vc-basics.md)) を前提にする。C2PA の署名の仕組みは、§2 で VC と対応させて説明する
 
 ## つまずきやすい点
 
@@ -33,7 +33,7 @@
 
 ### 現状 (Stage T まで)
 
-publisher のメディアゲートウェイは、アップロードされた画像と動画の sha256 を計算し、IPFS が有効な場合は CID も返す ([画像・動画を段階アクセスで配信する](../hands-on/data-user-vc-tiered-media.md) の §8〜§9)。
+publisher のメディアゲートウェイは、アップロードされた画像と動画の sha256 を計算し、IPFS が有効な場合は CID も返す ([画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered-media.md) の §8〜§9)。
 これにより、**アップロードした後に**中身が書き換えられていないことは確かめられる。
 
 しかし、次のことは誰も確かめられない。
@@ -141,7 +141,7 @@ flowchart TB
 - RTSP (Real Time Streaming Protocol): IP カメラが映像をネットワークに流すときの標準的な方式
 - 断片化 MP4: 映像を数秒ずつの断片に分けて保存する MP4 の形式。録画を続けながら、断片ごとに署名できる
 - TPM (Trusted Platform Module): 秘密鍵を機器の中に閉じ込めたまま署名できる部品 (§6.2)
-- kubo: IPFS の標準的な実装。[画像・動画を段階アクセスで配信する](../hands-on/data-user-vc-tiered-media.md) の §9 で使った
+- kubo: IPFS の標準的な実装。[画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered-media.md) の §9 で使った
 
 市販の安価な IP カメラやウェブカメラは、署名用の鍵も署名の機能も持っていない (C2PA に対応したカメラは一部の高価な機種に限られる)。そのため、本仕様で最初に署名する機器は、カメラの隣に置く**エッジゲートウェイ**である。撮影の時点の真正性は、エッジゲートウェイまでしか保証できない。この制約は §4 で扱う。
 
@@ -378,7 +378,7 @@ flowchart LR
 
 カードは `/media/<sha256>.svg` として publisher が保存し、URL を `provenance.summary_card_url` で配る。`/media/upload` は引き続き SVG を受け付けない。カードを配るときは、`Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'` と `X-Content-Type-Options: nosniff` を付けて、スクリプトや外部の読み込みを止める。インラインのスタイルだけは許すが、スクリプトは許さない。
 
-署名で示せるのは、どの撮影画像から、どのモデルとプロンプトで、誰がテキストを作ったかである。テキストに個人につながる情報が含まれていないことは示せない。それは、モデルとプロンプトで決まる。ハンズオン [VLM の要約から元の画像をたどる](../hands-on/c2pa-provenance-vlm.md) の §4 では、llava の要約が絵の人物の性別と年齢層を書き、そのカードも `Trusted` になった。
+署名で示せるのは、どの撮影画像から、どのモデルとプロンプトで、誰がテキストを作ったかである。テキストに個人につながる情報が含まれていないことは示せない。それは、モデルとプロンプトで決まる。ハンズオン [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](../hands-on/c2pa-provenance-vlm.md) の §4 では、llava の要約が絵の人物の性別と年齢層を書き、そのカードも `Trusted` になった。
 
 ## 6. 署名と鍵
 
@@ -412,7 +412,7 @@ c2pa-python は、署名の処理を呼び出し側の関数 (コールバック
 
 ### 6.3 DID との関係
 
-ServiceVC は、機器やサービスが継続して書き込んでよいことを表す VC である ([機器間での連携認証](../hands-on/ha-ssi-service.md))。ゲートウェイを ServiceVC の holder にすれば、ゲートウェイは `did:jwk` を持つ。C2PA の署名者は X.509 証明書で表すため、この 2 つは別の識別子になる。
+ServiceVC は、機器やサービスが継続して書き込んでよいことを表す VC である ([機器間での連携認証 (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md))。ゲートウェイを ServiceVC の holder にすれば、ゲートウェイは `did:jwk` を持つ。C2PA の署名者は X.509 証明書で表すため、この 2 つは別の識別子になる。
 
 2 つを結び付ける方法として、CAWG (Creator Assertions Working Group、C2PA の来歴に作成者の身元を加える方法を定める作業部会) の identity assertion [10] がある。
 CAWG の identity assertion には、X.509 証明書で署名する方式と、VC を集約する方式 (identity claims aggregation) がある。
@@ -570,7 +570,7 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 | ID | 内容 | 機材 | 状態 |
 | --- | --- | --- | --- |
 | **P0** | ウェブカメラで静止画を撮り、c2pa-python で署名する。Content Credentials Verify [11] (ファイルの来歴を表示する CAI の Web サイト) と c2patool (CAI のコマンドラインの検証ツール) で検証する | Mac だけ | 実装した (検証は SDK だけ) |
-| **P1** | 検知イベントのときだけ署名付きの JPEG を作り、`/media/upload` で検証して監査ログに記録する (§7) | USB ウェブカメラ | 実装した |
+| **P1** | 検知イベントのときだけ署名付きの JPEG を作り、`/media/upload` で検証して監査ログに記録する (§7) | USB ウェブカメラ | 実装した (検知での切り出しは未実装) |
 | **P2** | Tier 2 の派生マニフェスト (§5.3) と、ProvenanceToken の発行 (§8) | ＋Hardhat | 実装した (Merchandise との結び付けは未) |
 | **P3** | Tier 1 の要約テキストの来歴 (§5.5 の要約カード) | ＋VLM (stub か Ollama) | 実装した |
 | **P4** | 断片化 MP4、センサーデータの案 B と案 C、CAWG と SellerVC の統合、update manifest | ＋センサー | 未着手 |
@@ -580,6 +580,7 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 → 実装の補足は次のとおりである。P0〜P3 のコードは、すべて教材リポジトリの main に入っている。
 
 - P0 のプログラム (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) は、既定ではプログラムが描いた絵 (人とペットボトル) に署名する。ウェブカメラは `--webcam` を付けたときだけ使う。検証には SDK の Reader だけを使い、Content Credentials Verify と c2patool は使っていない
+- P1 のプログラム (`p1p2_publisher_flow.py`) は、1 回の実行で 1 枚の画像に署名して送る。検知イベントをきっかけに署名する仕組みはまだ無い。画像は既定ではプログラムが描いた絵で、`--image` でファイルを、`--webcam` でウェブカメラの 1 枚を使える
 - P2 に挙げた Tier 2 の派生マニフェストと削除 (redaction) は、P0 のプログラムでも作って調べている
 - P1 と P2 は `publisher/app/c2pa_provenance.py`、`iot-market/contracts/ProvenanceToken.sol` などとして実装し、`examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py` で一通り動くことを調べた (§7、§8 の注記)
 - P3 は `C2paProvenance.sign_summary` などとして実装し、`examples/hands_on/c2pa_provenance/p3_vlm_summary.py` で一通り動くことを調べた。VLM は stub と Ollama の llava の両方で試した (§5.5)
@@ -612,10 +613,10 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 
 ## 12. 関連
 
-- [VC アーキテクチャ全体像](vc-architecture-overview.md) (Stage 番号の一覧は §5)
-- [SellerVC 設計仕様 (Stage 7)](seller-vc-spec.md)
-- [段階アクセスの設計仕様 (Stage T)](../hands-on/data-user-vc-tiered-spec.md)
-- [画像・動画を段階アクセスで配信する (Stage T)](../hands-on/data-user-vc-tiered-media.md)
+- [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) (Stage 番号の一覧は §5)
+- [SellerVC — マーケット出品ガバナンス VC (Stage 7 設計仕様)](seller-vc-spec.md)
+- [段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)
+- [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered-media.md)
 - [USB カメラでポイ捨てを検知する (OpenCV)](../hands-on/webcam.md)
 - [機器間での連携認証 (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
 

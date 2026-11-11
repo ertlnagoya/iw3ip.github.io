@@ -1,6 +1,6 @@
 # Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)
 
-In [Prove where an image came from](c2pa-provenance.md) you tried C2PA [1] signing and validation on your own PC only. On this page you send a signed image to the IW3IP publisher. The publisher validates the provenance, makes a Tier 2 image with the face blurred and signs it with its own key, and records the provenance hash on the blockchain as a token. Finally, you look at how much of the provenance each data user's tier can see.
+In [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) you tried C2PA [1] signing and validation on your own PC only. On this page you send a signed image to the IW3IP publisher. The publisher validates the provenance, makes a Tier 2 image with the face blurred and signs it with its own key, and records the provenance hash on the blockchain as a token. Finally, you look at how much of the provenance each data user's tier can see.
 
 ![The captured image (p1_capture.jpg) and the Tier 2 image the publisher blurred and signed (p2_tier2.jpg)](../assets/c2pa-publisher-capture-vs-tier2.png)
 
@@ -8,16 +8,16 @@ These are the two images you make on this page. On the left is the captured imag
 
 > **What you'll do**: send a signed image to the publisher and look at the publisher's validation, the signing of the Tier 2 image, the token, what provenance each tier sees, and the audit log
 >
-> **Prerequisites**: §1–§3 of [Prove where an image came from](c2pa-provenance.md) are done. Docker and Node.js are available. The phone wallet is not used
+> **Prerequisites**: §1–§3 of [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) are done. Docker and Node.js are available. The phone wallet is not used
 >
 > **What you need**: a PC (a USB webcam or built-in camera is optional)
 >
 > **Time required**: approx. 40–60 minutes
 
 !!! note "Where this page belongs"
-    This hands-on runs P1 and P2 of the [C2PA provenance pipeline design spec](../design/c2pa-provenance-spec.md).
+    This hands-on runs P1 and P2 of the [C2PA provenance pipeline — provenance for camera footage and sensor data (Stage P design spec)](../design/c2pa-provenance-spec.md).
     P1 is validation and the audit log at the publisher (§7.1 and §7.3 of the design spec); P2 is the provenance of the Tier 2 image (§5.3), what each tier is shown (§7.2), and token issuance (§8).
-    Tiers 1–3 and DataUserVC were covered in [Tier the response by trust](data-user-vc-tiered.md) and [Tier by semantic level](data-user-vc-tiered-semantic.md).
+    Tiers 1–3 and DataUserVC were covered in [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) and [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md).
 
 ## Goal
 
@@ -35,13 +35,13 @@ On this page you try three things from the publisher's side: checking that a rec
 ## Common pitfalls
 
 - `make_test_certs.py` issues the gateway certificate (CN `iw3ip-gateway`) and the publisher certificate (CN `iw3ip-publisher`) from the same test CA (`IW3IP Test CA`). The publisher signs the Tier 2 image and the summary card with its own certificate. Certificates made with an older `make_test_certs.py` do not include the publisher's, so make them again in §1
-- The publisher runs in a Docker container and reads the certificates from `examples/hands_on/c2pa_provenance/certs/`, mounted read-only. After remaking the certificates, restart the publisher
+- The publisher runs in a Docker container and reads the certificates from `examples/hands_on/c2pa_provenance/certs/`, mounted read-only. After remaking the certificates, recreate the publisher container by adding `--force-recreate` to the §3 command. The publisher reads the certificates only when it starts, and `--build` alone does not recreate the container when the build comes from the cache
 - The ProvenanceToken address can change when you restart the Hardhat node. In §3, use the address printed in §2
 - With these settings, the publisher issues tokens from an unlocked account of the Hardhat node. This is for local trials only and cannot be used in production
 
 ## Prerequisites
 
-- §1–§3 of [Prove where an image came from](c2pa-provenance.md) are done (virtual environment and the C2PA SDK, c2pa-python [2]; certificates; signing and validation)
+- §1–§3 of [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) are done (virtual environment and the C2PA SDK, c2pa-python [2]; certificates; signing and validation)
 - Docker works in the course repository `~/program/Blockchain_IoT_Marketplace` ([Environment Setup](../setup/index.md))
 - Hardhat works in `iot-market/` (Node.js and `npm install`)
 
@@ -282,7 +282,7 @@ The fields of `provenance` hold the following.
 | `redacted_manifest_label` | Manifest identifier of the Tier 2 image |
 | `summary_card_url`, `summary_manifest_label` | URL of the summary card (the summary sentence drawn and signed) and its manifest identifier (P3); reach only tiers that receive the summary |
 
-No image reaches users of the summary tier. Check 14 of this page's program only checks that the sha256 of the received summary sentence equals `derived_sha256`. That the summary sentence was made from a signed capture can be checked with the summary card signed by the publisher (`summary_card_url`). The next page, [Trace a VLM summary back to the image](c2pa-provenance-vlm.md), covers how.
+No image reaches users of the summary tier. Check 14 of this page's program only checks that the sha256 of the received summary sentence equals `derived_sha256`. That the summary sentence was made from a signed capture can be checked with the summary card signed by the publisher (`summary_card_url`). The next page, [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md), covers how.
 
 !!! warning "Rows can be matched across tiers"
     `manifest_label` and `token_id` reach every tier with the same values. So when users of different tiers bring their data together, they can tell that the rows were made from the same capture. This is the behaviour §7.2 of the design spec specifies, and an open problem in combining provenance with tiered disclosure.
@@ -345,7 +345,7 @@ sellerDid     (none)
 
 - As on the previous page, it cannot confirm the section between the camera and the gateway (§4 of the design spec), nor whether what the image shows is true
 - Tokens are issued from an unlocked account of the Hardhat node. In production the publisher has to keep its key safe and send transactions it signs itself
-- The publisher's face detector only finds frontal faces. Profile and small faces may not be blurred (the same limit as the face blur in [Tier by semantic level](data-user-vc-tiered-semantic.md))
+- The publisher's face detector only finds frontal faces. Profile and small faces may not be blurred (the same limit as the face blur in [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md))
 - Video (fragmented MP4) and the provenance of sensor time series are not covered yet (P4 of the design spec)
 
 ## Return to the normal settings
@@ -361,14 +361,19 @@ docker compose -f infra/docker-compose.yml up -d publisher
 - Symptom: `.../certs/publisher_chain.pem not found; run make_test_certs.py first`
   - Check: did you run `make_test_certs.py` in §1? Certificates made with an older `make_test_certs.py` do not include the publisher's
 - Symptom: `[FAIL] P1 signed capture is Trusted at the publisher  (200 Valid ...)`
-  - Check: did you restart the publisher after remaking the certificates (run the §3 command again)? The publisher reads `ca.pem` when it starts
+  - Check: did you recreate the publisher container after remaking the certificates? The publisher reads `ca.pem` and the signer key only when it starts. `--build` alone does not recreate the container when the build comes from the cache. Run the §3 command with `--force-recreate`:
+
+    ```bash
+    PROVENANCE_TOKEN_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 \
+      docker compose -f infra/docker-compose.yml -f infra/docker-compose.c2pa.yml up -d --build --force-recreate publisher
+    ```
 - Symptom: `[FAIL] P1 unsigned image is accepted without provenance  (200 c2pa=None)`
   - Check: did you start it with `-f infra/docker-compose.c2pa.yml` in §3?
 - Symptom: `[FAIL] P2 ProvenanceToken was minted  (no token_id; ...)`
   - Check: is the Hardhat node running? Is the `PROVENANCE_TOKEN_ADDRESS` in §3 the address printed in §2? If you restarted the Hardhat node, redo §2 and §3
   - Check: does `docker compose -f infra/docker-compose.yml logs publisher | grep provenance` show `provenance mint failed`?
 - Symptom: `[FAIL] P2 Tier 2 image has its own manifest`
-  - Check: does `docker compose -f infra/docker-compose.yml logs publisher | grep -i redaction` show a failed blur? Did you rebuild the publisher with `--build`?
+  - Check: does `docker compose -f infra/docker-compose.yml logs publisher | grep -i -E 'redaction|tier2'` show a failed blur or signing step? Did you rebuild the publisher with `--build`?
 - Symptom: the face in `p2_tier2.jpg` is not blurred
   - Check: is the face in the photo you passed with `--image` turned sideways or too small? Try the default drawing (no option) and see whether its face is blurred
 - Symptom: `HH411: The library @openzeppelin/contracts ... is not installed`

@@ -1,6 +1,6 @@
 # VLM の要約から元の画像をたどる (C2PA / Stage P の P3)
 
-[来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) では、画像に来歴を付け、publisher が Tier 2 の画像にも署名しました。ただし、Tier 1 (summary) の利用者には画像が届かず、VLM (画像を読んで文章を書く AI) が書いた要約の文だけが届きます。このページでは、その要約の文にも来歴を付けます。要約の文だけを受け取った人が、どの撮影画像から、どのモデルで作られた文かを、自分で確かめられるようにします。
+[来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) では、画像に来歴を付け、publisher が Tier 2 の画像にも署名しました。ただし、Tier 1 (summary) の利用者には画像が届かず、VLM (画像を読んで文章を書く AI) が書いた要約の文だけが届きます。このページでは、その要約の文にも来歴を付けます。要約の文だけを受け取った人が、どの撮影画像から、どのモデルで作られた文かを、自分で確かめられるようにします。
 
 ![撮影画像 (p3_capture.jpg) と、publisher が署名した要約カード (p3_summary_card.svg)](../assets/c2pa-vlm-capture-vs-card.png)
 
@@ -8,16 +8,16 @@
 
 > **やること**: publisher に VLM の要約を作らせ、要約カードの署名、要約の文との一致、撮影画像とトークンへのつながり、改ざんの検出を見る
 >
-> **前提**: [来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) の §1〜§3 を終えていること
+> **前提**: [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) の §1〜§3 を終えていること
 >
 > **使うもの**: PC (本物の VLM を試す場合は、4.7 GB の llava のモデルを Docker で動かせること)
 >
 > **所要時間**: 約 20〜30 分 (本物の VLM を試す場合は、さらに 30 分〜1 時間)
 
 !!! note "このページの位置付け"
-    [C2PA 来歴パイプラインの設計仕様](../design/c2pa-provenance-spec.md) の P3 を動かすハンズオンです。
+    [C2PA 来歴パイプライン — カメラ映像とセンサーデータの来歴証明 (Stage P 設計仕様)](../design/c2pa-provenance-spec.md) の P3 を動かすハンズオンです。
     P3 は、Tier 1 の要約テキストの来歴 (設計仕様の §5.5) と、その見せ方 (§7.2) です。
-    VLM による要約は [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) と [意味レベルで段階化する](data-user-vc-tiered-semantic.md) で扱いました。
+    VLM による要約は [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) と [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) で扱いました。
 
 ## 目的
 
@@ -41,7 +41,7 @@ P3 では、publisher が要約の文を SVG の画像 (要約カード) に描�
 
 ## 前提
 
-- [来歴を publisher とチェーンにつなぐ](c2pa-provenance-publisher.md) の §1〜§3 (証明書、Hardhat ノードと ProvenanceToken、C2PA の設定での publisher の起動) を終えている
+- [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) の §1〜§3 (証明書、Hardhat ノードと ProvenanceToken、C2PA の設定での publisher の起動) を終えている
 - Hardhat ノードが動いている
 
 ## 演習用プログラム

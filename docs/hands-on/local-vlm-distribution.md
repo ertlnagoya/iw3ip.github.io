@@ -13,7 +13,7 @@
 !!! note "このページの位置付け"
     Part 3（知能統合）のハンズオンです。カメラ取り込みの基礎は
     [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md)、VLM による tier 別の出し分けは
-    [意味レベルで段階化する](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。
+    [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。
     本ページは「**カメラ → ローカル VLM → 意味データ流通**」を 1 つの流れとして
     扱います。
 
@@ -46,7 +46,7 @@
 ## 前提
 
 - Docker が使え、教材リポジトリのトップで `docker compose -f infra/docker-compose.yml ...` を実行できる
-- [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
+- [最短起動 (スタックを動かす)](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 - USB ウェブカメラが PC から認識されている（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を一度試していると理解が早い）
 - 教材リポジトリのトップで Python 3 の仮想環境を作り、OpenCV を入れておく (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`)。新しく開いたターミナルでも `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を実行します。Homebrew の Python などでは、venv の外で `pip install` するとエラーになります
 - Docker で `--profile vlm` が使える（初回はモデル pull で数 GB のダウンロード）
@@ -177,9 +177,9 @@ python3 examples/hands_on/local_vlm_distribution/answer_program.py \
 
 !!! info "受信側での取得には ViewerToken が必要"
     付与された `description_*` を受信側で取り出すには、ViewerToken が必要です。ViewerToken は、
-    `/marketplace/claim` で発行された PurchaseViewerVC を提示して得ます。どの tier の PurchaseViewerVC になるかは、claim に渡す `data_user_attrs` で決まります ([信頼度に応じて見せる中身を変える](data-user-vc-tiered.md#3-marketplaceclaim-を-3-通り呼び出す) の §3)（`/platform/data` は素の GET では 401 になります）。信頼度
+    `/marketplace/claim` で発行された PurchaseViewerVC を提示して得ます。どの tier の PurchaseViewerVC になるかは、claim に渡す `data_user_attrs` で決まります ([信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md#3-marketplaceclaim-を-3-通り呼び出す) の §3)（`/platform/data` は素の GET では 401 になります）。信頼度
     ごとに `description_full` / `description_summary` を出し分ける流れは
-    [意味レベルで段階化する](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。本ページで扱うのは
+    [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。本ページで扱うのは
     「カメラ → ローカルモデルで意味づけ → 基盤へ流通」までです。
 
 ## 5. 確認ポイント
@@ -261,4 +261,4 @@ python3 examples/hands_on/local_vlm_distribution/problem_program.py \
 
 - 先に試しておくと理解が早いページ: [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md)
 - 詳細: DataUserVC × 段階アクセス（[§8 メディア統合](data-user-vc-tiered-media.md#8-実データ統合案-bhttp-メディアゲートウェイ)・[§12 VLM tier](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー)） / [AI に手順を考えさせる (LLM Planner)](llm-planner.md)
-- 設計: [段階アクセスの設計仕様（tier 拡張: 意味レベルの段階化）](data-user-vc-tiered-spec.md)
+- 設計: [段階アクセスの設計仕様](data-user-vc-tiered-spec.md)

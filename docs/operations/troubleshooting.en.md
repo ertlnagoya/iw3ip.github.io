@@ -22,7 +22,7 @@ Even when several causes are possible, it is usually easiest to start from the c
 
 ### Fix A — add a hosts entry (recommended)
 
-As in [step 0.5 of Quickstart](../setup/quickstart.md), add `127.0.0.1 host.docker.internal` to your hosts file. Besides the settings files, `host.docker.internal` also appears in `mediator-owner/src/main.rs` (IPFS and PostgreSQL endpoints), `mediator-buyer/src/main.rs`, and the search API of `iot-market-ui`, so this is the most reliable fix.
+As in step 0.5 of [Quickstart (run the stack)](../setup/quickstart.md#05-check-the-host-name-hostdockerinternal), add `127.0.0.1 host.docker.internal` to your hosts file. Besides the settings files, `host.docker.internal` also appears in `mediator-owner/src/main.rs` (IPFS and PostgreSQL endpoints), `mediator-buyer/src/main.rs`, and the search API of `iot-market-ui`, so this is the most reliable fix.
 
 ### Fix A' — edit the settings and sources
 
@@ -145,7 +145,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
   npx hardhat node --hostname 0.0.0.0
   ```
 
-  Restarting empties the chain. Redo step 2 (deploy) of the [Quickstart](../setup/quickstart.md) and restart `mediator-owner` and `mediator-buyer`. If MetaMask shows a nonce error, reset the account (Settings → Advanced → Clear activity tab data).
+  Restarting empties the chain. Redo step 2 (deploy) of the [Quickstart (run the stack)](../setup/quickstart.md) and restart `mediator-owner` and `mediator-buyer`. If MetaMask shows a nonce error, reset the account (Settings → Advanced → Clear activity tab data).
 
 - Use the **PC's LAN IP** for the RPC URL in MetaMask (e.g. `http://192.168.1.20:8545`), with chain ID `31337`.
 - Confirm the PC firewall allows `8545` and that the PC and phone are on the same Wi-Fi.
@@ -178,7 +178,7 @@ Run the mediators and frontend on the DevContainer / Docker side, where `host.do
     | 8080 | IPFS gateway (`ipfs/docker-compose.yaml`) and the publisher (`infra/docker-compose.yml`) | Cannot run together. Before using the publisher, run `docker compose down` in the `ipfs` directory |
     | 8545 | Hardhat node (`npx hardhat node`) | Do not start a second node |
     | 5173 | Frontend (`iot-market-ui`, `npm run dev`) | Check that no other Vite dev server is running |
-    | 8090 | assistant (`assistant` / `assistant-llm` / `assistant-demo` profiles) | The three profiles share the port, so start one at a time |
+    | 8090 | assistant (`assistant` / `ha-demo-phase3` / `assistant-llm` / `assistant-demo` profiles) | The four profiles share the port, so start one at a time (`ha-demo-phase3` also starts the `assistant` service) |
     | 18000 | llm-mock (`llm-mock` / `assistant-demo` profiles) | Stop the `llm-mock` / `assistant-demo` container before running the host `uvicorn examples.phase3_llm_mock_server:app --port 18000` |
     | 11434 | Ollama (installed directly on the PC) | If the Ollama app is running in the background, another Ollama cannot start |
 

@@ -50,7 +50,7 @@ Branches after that:
 - you understand [Detect with a USB webcam (OpenCV)](webcam.md)
 - you can run [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
 - Docker / Docker Compose is available
-- If the IPFS from the [Quickstart](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
+- If the IPFS from the [Quickstart (run the stack)](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - `curl` is available
 
 Matching sample files:
@@ -319,7 +319,7 @@ Gating every MQTT event through the wallet doesn't fit PolicyToken's
 single-use semantics. Instead, send **one event** by hand to feel the
 flow:
 
-A phone wallet cannot reach the PC's `localhost`, so open the URLs from §4–§5 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) in a PC browser with `<HOST_IP>` replaced by the PC's LAN IP (see the [Hands-on overview](index.md#host-ip) for how to find it).
+A phone wallet cannot reach the PC's `localhost`, so open the URLs from §4–§5 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) in a PC browser with `<HOST_IP>` replaced by the PC's LAN IP (see [Hands-on](index.md#host-ip) for how to find it).
 
 First, restart with the `ssi-wallet` profile. If you forget `PLATFORM_INGEST_READ_ENABLED=true`, the rows you wrote in the main flow are lost and `GET /platform/ingest` returns 404.
 

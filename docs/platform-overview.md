@@ -125,7 +125,7 @@ IW3IP では、データを送る前に「そのデータは送ってよいか�
 
 1. Home Assistant やセンサからデータを受け取る
 2. データを共通スキーマに正規化する
-3. Consent VC（同意条件を表す検証可能な資格情報。[SSI/DID/VC基礎](foundations/ssi-did-vc-basics.md) を参照）に基づいて `allow` / `deny` を判定する
+3. Consent VC（同意条件を表す検証可能な資格情報。[SSI / DID / VC 基礎](foundations/ssi-did-vc-basics.md) を参照）に基づいて `allow` / `deny` を判定する
 4. 監査ログを残す
 
 **「データを送る前に利用条件を確認し、その結果を記録する」** という基盤の最小構成です。
@@ -232,10 +232,10 @@ IW3IP はカメラ映像専用の基盤ではありません。温度・振動�
 
 ## 次に読むページ
 
-1. 技術の基礎: [ブロックチェーン基礎](foundations/blockchain-basics.md), [Hardhat基礎](foundations/hardhat-basics.md), [SSI/DID/VC基礎](foundations/ssi-did-vc-basics.md)
-2. まず動かす: [最短起動](setup/quickstart.md)
-3. 挙動を確認: [Hands-on](hands-on/index.md)
-4. 研究の背景: [論文](publications.md), [参考文献](foundations/references.md)
+1. 技術の基礎: [ブロックチェーン基礎](foundations/blockchain-basics.md), [Hardhat基礎（このサイトで使うブロックチェーン）](foundations/hardhat-basics.md), [SSI / DID / VC 基礎](foundations/ssi-did-vc-basics.md)
+2. まず動かす: [最短起動 (スタックを動かす)](setup/quickstart.md)
+3. 挙動を確認: [ハンズオン](hands-on/index.md)
+4. 研究の背景: [論文](publications.md), [参考文献・発展学習資料](foundations/references.md)
 
 ## 参考文献
 

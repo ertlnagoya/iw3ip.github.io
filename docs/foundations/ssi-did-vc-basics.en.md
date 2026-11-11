@@ -62,7 +62,7 @@ The wallet-based hands-on pages (Part 2) use the following standards.
 
 ### VCs and tokens
 
-A VC is a long-lived credential and is not presented on every API call. On this site, once a VC presentation is verified, the publisher issues a short-lived **token**, and APIs are called with that token. The mapping between VC kinds and tokens is summarized in the [VC architecture overview](../design/vc-architecture-overview.md).
+A VC is a long-lived credential and is not presented on every API call. On this site, once a VC presentation is verified, the publisher issues a short-lived **token**, and APIs are called with that token. The mapping between VC kinds and tokens is summarized in the [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md).
 
 ## Position in This System
 

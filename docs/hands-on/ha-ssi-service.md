@@ -64,7 +64,7 @@ Bearer ヘッダで添えて `/platform/ingest` を呼び出す想定です。
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) を通している
 - publisher が `main` ブランチのコードで起動している
 - スマホで iw3ip-wallet が使える (§2・§3 で ServiceVC の受け取りと提示に使います)
-- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP='<PC の LAN IP>'` を実行してください (IP の調べ方は [ハンズオン](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 
 ## 1. 起動とメタデータ確認
 
@@ -143,18 +143,26 @@ PolicyToken のように 2 回目で `403 policy_token_already_consumed` には�
 curl -s "http://$HOST_IP:8080/audit/logs?limit=5" | python3 -m json.tool
 ```
 
-各 ingest が次の形で記録されます:
+結果は新しい順のリストで、各 ingest が 1 行ずつ記録されます。次は先頭の 1 行 (5 回目の ingest) だけを示した抜粋です。残りの行は `...` で省略しています:
 
 ```json
-{
-  "action": "allow",
-  "raw_topic": "platform/ingest",
-  "reason": "service_token_used:<jti>:1",
-  "dataset_id": "home/env/temperature",
-  "purpose": "write_continuous",
-  "holder_did": "did:jwk:...",
-  "presentation_verified": "allow"
-}
+[
+    {
+        "id": ...,
+        "ts": "...",
+        "action": "allow",
+        "subject_did": "did:jwk:...",
+        "dataset_id": "home/env/temperature",
+        "purpose": "write_continuous",
+        "reason": "service_token_used:<jti>:5",
+        "message_hash": "",
+        "raw_topic": "platform/ingest",
+        "holder_did": "did:jwk:...",
+        "vc_hash": null,
+        "presentation_verified": "allow"
+    },
+    ...
+]
 ```
 
 `reason` 末尾の数字は `write_count` です。5 回 ingest すれば、新しい順に 5〜1 が並びます。

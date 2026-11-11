@@ -1,6 +1,6 @@
 # Trace a VLM summary back to the image (C2PA / Stage P, P3)
 
-In [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md), the image got provenance and the publisher signed the Tier 2 image too. Tier 1 (summary) users, however, receive no image, only the summary text written by a VLM (an AI that reads an image and writes text). This page gives that summary text provenance as well, so that someone who receives only the text can check for themselves which capture and which model it came from.
+In [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md), the image got provenance and the publisher signed the Tier 2 image too. Tier 1 (summary) users, however, receive no image, only the summary text written by a VLM (an AI that reads an image and writes text). This page gives that summary text provenance as well, so that someone who receives only the text can check for themselves which capture and which model it came from.
 
 ![The capture (p3_capture.jpg) and the summary card signed by the publisher (p3_summary_card.svg)](../assets/c2pa-vlm-capture-vs-card.png)
 
@@ -8,16 +8,16 @@ On the left is the capture signed by the gateway; on the right is the "summary c
 
 > **What you'll do**: have the publisher write a VLM summary, then look at the summary card's signature, its match with the summary text, the link to the capture and the token, and tamper detection
 >
-> **Prerequisites**: §1–§3 of [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md)
+> **Prerequisites**: §1–§3 of [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md)
 >
 > **What you need**: a PC (to try a real VLM, Docker must be able to run the 4.7 GB llava model)
 >
 > **Time required**: approx. 20–30 minutes (another 30 minutes to 1 hour to try a real VLM)
 
 !!! note "Where this page belongs"
-    This hands-on runs P3 of the [C2PA provenance pipeline design spec](../design/c2pa-provenance-spec.md).
+    This hands-on runs P3 of the [C2PA provenance pipeline — provenance for camera footage and sensor data (Stage P design spec)](../design/c2pa-provenance-spec.md).
     P3 covers the provenance of the Tier 1 summary text (§5.5 of the spec) and how it is shown (§7.2).
-    VLM summaries were covered in [Enrich camera data with a local VLM](local-vlm-distribution.md) and [Tier by semantic level](data-user-vc-tiered-semantic.md).
+    VLM summaries were covered in [Enrich camera data with a local VLM](local-vlm-distribution.md) and [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md).
 
 ## Goal
 
@@ -41,7 +41,7 @@ In P3, the publisher draws the summary text into an SVG image (the summary card)
 
 ## Prerequisites
 
-- You have done §1–§3 of [Connect provenance to the publisher and the chain](c2pa-provenance-publisher.md) (certificates, the Hardhat node and ProvenanceToken, starting the publisher with the C2PA settings)
+- You have done §1–§3 of [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md) (certificates, the Hardhat node and ProvenanceToken, starting the publisher with the C2PA settings)
 - The Hardhat node is running
 
 ## Exercise programs

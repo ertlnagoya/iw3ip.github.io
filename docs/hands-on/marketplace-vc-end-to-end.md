@@ -81,7 +81,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)
   を一通り通している
 - Stage 5 の Hardhat ノードは Step E0 で起動し直す (publisher と iot-market-ui は E0 で起動し、bridge と publisher は E0 で作り直す)
-- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP='<PC の LAN IP>'` を実行してください (IP の調べ方は [ハンズオン](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 - このハンズオンでは **同一 iPhone wallet が 1 人で 2 役 (seller + buyer)**
   を兼ねます (実運用の seller / buyer 分離は将来課題)
@@ -500,7 +500,7 @@ SERVICE=
 
 ## 関連
 
-- [Marketplace VC Bridge 設計仕様](../design/marketplace-vc-bridge-spec.md)
+- [Marketplace VC Bridge — v1 / v2 設計仕様](../design/marketplace-vc-bridge-spec.md)
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md)
 - [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md)
 - [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md)

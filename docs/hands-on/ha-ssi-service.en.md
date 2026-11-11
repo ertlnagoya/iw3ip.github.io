@@ -65,7 +65,7 @@ every `/platform/ingest` call.
 - Completed [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
 - Publisher running from the `main` branch
 - iw3ip-wallet available on the phone (used in §2 and §3 to receive and present the ServiceVC)
-- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP='<your PC LAN IP>'` (see the [Hands-on](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 
 ## 1. Start and inspect metadata
 
@@ -144,18 +144,26 @@ Unlike PolicyToken, the second call doesn't trigger `403 policy_token_already_co
 curl -s "http://$HOST_IP:8080/audit/logs?limit=5" | python3 -m json.tool
 ```
 
-Each ingest produces:
+The result is a list, newest first, with one row per ingest. Below is an excerpt showing only the first row (the fifth ingest); the other rows are cut as `...`:
 
 ```json
-{
-  "action": "allow",
-  "raw_topic": "platform/ingest",
-  "reason": "service_token_used:<jti>:1",
-  "dataset_id": "home/env/temperature",
-  "purpose": "write_continuous",
-  "holder_did": "did:jwk:...",
-  "presentation_verified": "allow"
-}
+[
+    {
+        "id": ...,
+        "ts": "...",
+        "action": "allow",
+        "subject_did": "did:jwk:...",
+        "dataset_id": "home/env/temperature",
+        "purpose": "write_continuous",
+        "reason": "service_token_used:<jti>:5",
+        "message_hash": "",
+        "raw_topic": "platform/ingest",
+        "holder_did": "did:jwk:...",
+        "vc_hash": null,
+        "presentation_verified": "allow"
+    },
+    ...
+]
 ```
 
 The trailing number in `reason` is `write_count`. Five calls list 5 down to 1, newest first.

@@ -4,8 +4,8 @@
     This is a design spec in the [Design](index.md) section.
     This is the design spec for **Stage P** (Provenance), which attaches provenance information that follows the C2PA (Coalition for Content Provenance and Authenticity) standard [1] to footage from low-cost commercial IP cameras and USB webcams, and to sensor data.
     Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It was designed before implementation; P0–P3 are now implemented and on the main branch of the course repository (see the note in §10; checks with Content Credentials Verify and c2patool are not done yet).
-    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview](vc-architecture-overview.md)).
-    Stage P builds on the tiered access of Stage T ([Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)) and the SellerVC of Stage 7 ([SellerVC design spec](seller-vc-spec.md)). The P0 part can be run locally in the hands-on [Prove where an image came from](../hands-on/c2pa-provenance.md). P1 and P2 can be run in the hands-on [Connect provenance to the publisher and the chain](../hands-on/c2pa-provenance-publisher.md), and P3 in [Trace a VLM summary back to the image](../hands-on/c2pa-provenance-vlm.md).
+    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md)).
+    Stage P builds on the tiered access of Stage T ([Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)) and the SellerVC of Stage 7 ([SellerVC — marketplace listing governance VC (Stage 7 design spec)](seller-vc-spec.md)). The P0 part can be run locally in the hands-on [Prove where an image came from (C2PA / Stage P)](../hands-on/c2pa-provenance.md). P1 and P2 can be run in the hands-on [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](../hands-on/c2pa-provenance-publisher.md), and P3 in [Trace a VLM summary back to the image (C2PA / Stage P, P3)](../hands-on/c2pa-provenance-vlm.md).
     P0–P6 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation to build first) corresponds to P0–P2. P0–P3 are implemented and can be run in the hands-on pages; P4 and later are not implemented yet.
 
 This spec is a design for adding to IW3IP a mechanism that **attaches to each photo or video a record of who took it, when, how, and how it was processed, and signs that record electronically**. Tampering with the record breaks the signature, so whoever receives the file can check for themselves whether it is genuine.
@@ -19,8 +19,8 @@ This spec is a design for adding to IW3IP a mechanism that **attaches to each ph
 
 ## Before you read
 
-- It is easier to follow after finishing "Process data and add provenance" in Part 2 of the hands-on (such as [Tier the response by trust](../hands-on/data-user-vc-tiered.md)). Tiers 1–3, DataUserVC, the publisher, and `/media/upload` are used without explanation
-- Basic knowledge of DIDs and VCs ([SSI/DID/VC basics](../foundations/ssi-did-vc-basics.md)) is assumed. §2 explains C2PA signing by comparing it with VCs
+- It is easier to follow after finishing "Process data and add provenance" in Part 2 of the hands-on (such as [Tier the response by trust (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md)). Tiers 1–3, DataUserVC, the publisher, and `/media/upload` are used without explanation
+- Basic knowledge of DIDs and VCs ([SSI / DID / VC Basics](../foundations/ssi-did-vc-basics.md)) is assumed. §2 explains C2PA signing by comparing it with VCs
 
 ## Common pitfalls
 
@@ -33,7 +33,7 @@ This spec is a design for adding to IW3IP a mechanism that **attaches to each ph
 
 ### Current state (up to Stage T)
 
-The publisher's media gateway computes the sha256 of each uploaded image and video, and also returns a CID when IPFS is enabled (§8–§9 of [Deliver images and video with tiered access](../hands-on/data-user-vc-tiered-media.md)).
+The publisher's media gateway computes the sha256 of each uploaded image and video, and also returns a CID when IPFS is enabled (§8–§9 of [Deliver images and video with tiered access (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered-media.md)).
 This lets anyone check that the content has not been changed **after it was uploaded**.
 
 Nobody can check the following, however:
@@ -141,7 +141,7 @@ Terms in the diagram:
 - RTSP (Real Time Streaming Protocol): the standard way an IP camera streams video over the network
 - Fragmented MP4: an MP4 format that stores video in fragments of a few seconds each, so each fragment can be signed while recording continues
 - TPM (Trusted Platform Module): a component that signs while keeping the private key locked inside the device (§6.2)
-- kubo: the standard IPFS implementation, used in §9 of [Deliver images and video with tiered access](../hands-on/data-user-vc-tiered-media.md)
+- kubo: the standard IPFS implementation, used in §9 of [Deliver images and video with tiered access (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered-media.md)
 
 Low-cost commercial IP cameras and webcams have neither a signing key nor a signing function (cameras that support C2PA are limited to some expensive models). In this spec, therefore, the first device that signs is the **edge gateway** placed next to the camera. Authenticity at capture time can be guaranteed only up to the edge gateway. §4 deals with this limitation.
 
@@ -378,7 +378,7 @@ flowchart LR
 
 The publisher stores the card as `/media/<sha256>.svg` and gives its URL in `provenance.summary_card_url`. `/media/upload` still refuses SVG. The card is served with `Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'` and `X-Content-Type-Options: nosniff`, which block scripts and external loads. Inline styles are allowed, but scripts are not.
 
-The signature shows from which capture, with which model and prompt, and by whom the text was made. It does not show that the text is free of information that points to a person; that is decided by the model and the prompt. In §4 of the hands-on [Trace a VLM summary back to the image](../hands-on/c2pa-provenance-vlm.md), llava's summary gave the gender and age group of the figure in the picture, and its card was still `Trusted`.
+The signature shows from which capture, with which model and prompt, and by whom the text was made. It does not show that the text is free of information that points to a person; that is decided by the model and the prompt. In §4 of the hands-on [Trace a VLM summary back to the image (C2PA / Stage P, P3)](../hands-on/c2pa-provenance-vlm.md), llava's summary gave the gender and age group of the figure in the picture, and its card was still `Trusted`.
 
 ## 6. Signing and keys
 
@@ -412,7 +412,7 @@ c2pa-python lets the caller perform signing in its own function (a callback) [3]
 
 ### 6.3 Relation to DIDs
 
-ServiceVC is a VC stating that a device or service may write continuously ([Authenticate machines](../hands-on/ha-ssi-service.md)). Making the gateway a ServiceVC holder gives it a `did:jwk`. A C2PA signer is represented by an X.509 certificate, so these are two separate identifiers.
+ServiceVC is a VC stating that a device or service may write continuously ([Authenticate machines (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)). Making the gateway a ServiceVC holder gives it a `did:jwk`. A C2PA signer is represented by an X.509 certificate, so these are two separate identifiers.
 
 The identity assertion of CAWG (Creator Assertions Working Group, the working group defining how to add the creator's identity to C2PA provenance) [10] is one way to bind the two.
 The CAWG identity assertion has a mode signed with an X.509 certificate and a mode that aggregates VCs (identity claims aggregation).
@@ -570,7 +570,7 @@ C2PA also has a mechanism for finding stripped provenance again from the pixels,
 | ID | Content | Equipment | Status |
 | --- | --- | --- | --- |
 | **P0** | Take a still with a webcam, sign it with c2pa-python, and validate it with Content Credentials Verify [11] (CAI's website that shows a file's provenance) and c2patool (CAI's command-line validator) | Mac only | Done (validated with the SDK only) |
-| **P1** | Produce a signed JPEG only on detection events, validate it at `/media/upload`, and record it in the audit log (§7) | USB webcam | Done |
+| **P1** | Produce a signed JPEG only on detection events, validate it at `/media/upload`, and record it in the audit log (§7) | USB webcam | Done (capture on detection not yet) |
 | **P2** | Tier 2 derivative manifests (§5.3) and ProvenanceToken issuance (§8) | + Hardhat | Done (link to Merchandise not yet) |
 | **P3** | Provenance of the Tier 1 summary text (the summary card in §5.5) | + VLM (stub or Ollama) | Done |
 | **P4** | Fragmented MP4, sensor options B and C, CAWG and SellerVC integration, update manifests | + sensors | Not started |
@@ -580,6 +580,7 @@ C2PA also has a mechanism for finding stripped provenance again from the pixels,
 → Notes on the implementation (all P0–P3 code is on the main branch of the course repository):
 
 - The P0 program (`examples/hands_on/c2pa_provenance/p0_sign_verify.py`) signs a picture the program draws (a person and a plastic bottle) by default. It uses a webcam only with `--webcam`. It validates with the SDK Reader only; Content Credentials Verify and c2patool are not used
+- The P1 program (`p1p2_publisher_flow.py`) signs and sends one image per run. Signing triggered by a detection event does not exist yet. By default the image is a picture the program draws; `--image` uses a file and `--webcam` uses one webcam frame
 - The Tier 2 derivative manifest and redaction listed under P2 are also built and checked by the P0 program
 - P1 and P2 are implemented as `publisher/app/c2pa_provenance.py`, `iot-market/contracts/ProvenanceToken.sol` and so on, and checked end to end with `examples/hands_on/c2pa_provenance/p1p2_publisher_flow.py` (notes in §7 and §8)
 - P3 is implemented as `C2paProvenance.sign_summary` and so on, and checked end to end with `examples/hands_on/c2pa_provenance/p3_vlm_summary.py`. The VLM was tried both as the stub and as Ollama's llava (§5.5)
@@ -612,10 +613,10 @@ C2PA also has a mechanism for finding stripped provenance again from the pixels,
 
 ## 12. Related
 
-- [VC architecture overview](vc-architecture-overview.md) (§5 lists the Stage numbers)
-- [SellerVC design spec (Stage 7)](seller-vc-spec.md)
-- [Tiered access design spec (Stage T)](../hands-on/data-user-vc-tiered-spec.md)
-- [Deliver images and video with tiered access (Stage T)](../hands-on/data-user-vc-tiered-media.md)
+- [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md) (§5 lists the Stage numbers)
+- [SellerVC — marketplace listing governance VC (Stage 7 design spec)](seller-vc-spec.md)
+- [Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)
+- [Deliver images and video with tiered access (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered-media.md)
 - [Detect with a USB webcam (OpenCV)](../hands-on/webcam.md)
 - [Authenticate machines (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
 

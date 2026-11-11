@@ -4,7 +4,7 @@ HUSKYLENS2 がなくても、USB ウェブカメラと OpenCV [1] だけで `per
 
 > **やること**: USB カメラ画像から人物・ポイ捨て検知をしてイベントファイルを生成
 >
-> **前提**: [環境構築](../setup/index.md) と [最短起動](../setup/quickstart.md)
+> **前提**: [環境構築](../setup/index.md) と [最短起動 (スタックを動かす)](../setup/quickstart.md)
 >
 > **使うもの**: PC + USB ウェブカメラ
 >
@@ -104,7 +104,7 @@ mock モードは、`possible_littering` と `person_detected` のどちらか�
 
 ### 商品として登録されることを確認する
 
-[最短起動](../setup/quickstart.md) の手順で `mediator-owner` が動いていれば、イベントファイルが出力されるたびに、`mediator-owner` のターミナルに次のように表示されます。
+[最短起動 (スタックを動かす)](../setup/quickstart.md) の手順で `mediator-owner` が動いていれば、イベントファイルが出力されるたびに、`mediator-owner` のターミナルに次のように表示されます。
 
 ```
 Product deployed: 0xc6ba8c3233ecf65b761049ef63466945c362edd2 for file 401_webcam_event_1791551565.txt
@@ -116,7 +116,7 @@ Product deployed: 0xc6ba8c3233ecf65b761049ef63466945c362edd2 for file 401_webcam
 http://localhost:5173/merchandise/<表示されたアドレス>
 ```
 
-この商品を購入して受け取るまでの流れは、[ハンズオンの概要の 1.3](index.md) を参照してください。表示されない場合は、教材リポジトリが最新か (`git pull`)、`mediator-owner` を起動し直したかを確認します。
+この商品を購入して受け取るまでの流れは、[ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 を参照してください。表示されない場合は、教材リポジトリが最新か (`git pull`)、`mediator-owner` を起動し直したかを確認します。
 
 mock でイベントファイルが生成されることを確認できたら、次は USB ウェブカメラ実機で検知を試します。
 

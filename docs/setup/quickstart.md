@@ -1,6 +1,6 @@
 # 最短起動 (スタックを動かす)
 
-[事前準備](prerequisites.md) でインストールしたツールを使って、ハンズオン環境一式をまとめて起動します。
+[事前準備 (ツールのインストール)](prerequisites.md) でインストールしたツールを使って、ハンズオン環境一式をまとめて起動します。
 所要時間の目安は **約 15〜30 分** です (初回は docker pull / npm install に時間がかかります)。
 
 > ここでは 6 種類のプロセスを起動します。コントラクトのデプロイと、2 つある仲介プロセスにもそれぞれターミナルを使うため、ターミナルは全部で 7 つ開きます。
@@ -46,7 +46,7 @@
 
 ### 0. 教材リポジトリに移動
 
-教材リポジトリは `~/program/Blockchain_IoT_Marketplace` にある前提です ([事前準備](prerequisites.md) で clone した場所)。新しいターミナルは別のフォルダで開くことがあるので、各ターミナルでは絶対パスで移動します。
+教材リポジトリは `~/program/Blockchain_IoT_Marketplace` にある前提です ([事前準備 (ツールのインストール)](prerequisites.md) で clone した場所)。新しいターミナルは別のフォルダで開くことがあるので、各ターミナルでは絶対パスで移動します。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -244,14 +244,14 @@ MetaMask をローカル Hardhat に接続します。
 - [ ] MetaMask が `Hardhat Local` ネットワークに接続できている
 - [ ] MetaMask のアカウント残高が約 `10000 ETH` (9999.99… でよい) と表示される
 
-すべてチェック → [ハンズオン Part 1](../hands-on/index.md) に進めます。
+すべてチェック → [ハンズオン](../hands-on/index.md) の Part 1 に進めます。
 
 ## 簡易な代替: docker compose だけで動く最小スタック
 
 ターミナルを 7 つ開くのが煩雑な場合は、Docker Compose で publisher 周りだけを起動する方法もあります。
 データの取り込みと観察に特化した、実機を使わない最短経路は次のページを参照してください。
 
-- [Home Assistant Demo Simulator サンプル](../hands-on/ha-demo-simulator.md)
+- [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)
 
 これだけでも Part 1 の最初の節は試せます。手順 5 の IPFS を起動したままの場合は、先に `ipfs` ディレクトリで `docker compose down` を実行して止めてください。IPFS と publisher がどちらもポート 8080 を使うためです。
 
@@ -259,8 +259,8 @@ MetaMask をローカル Hardhat に接続します。
 
 | 症状 | 原因 | 対処 |
 |---|---|---|
-| `npx: command not found` | Node.js が入っていない | [事前準備](prerequisites.md) の Node.js を再確認 |
-| `cargo: command not found` | Rust が入っていない | [事前準備](prerequisites.md) の Rust を再確認 |
+| `npx: command not found` | Node.js が入っていない | [事前準備 (ツールのインストール)](prerequisites.md) の Node.js を再確認 |
+| `cargo: command not found` | Rust が入っていない | [事前準備 (ツールのインストール)](prerequisites.md) の Rust を再確認 |
 | `Port 5173 is in use, trying another one...` と出て、5174 などで起動する | 別アプリが 5173 番を使っている | 占有しているプロセスを止めて起動し直す。そのまま使う場合は、表示された URL (`http://127.0.0.1:5174/` など) を開く |
 | IPFS のコンテナが起動しない / publisher が起動しない | IPFS のゲートウェイと publisher が、どちらもポート 8080 を使う | 同時には起動できない。publisher を使うハンズオンの前に、`ipfs` ディレクトリで `docker compose down` を実行する |
 | 仲介プロセスが `dns error` や接続エラーで止まる | `host.docker.internal` を引けない | 手順 0.5 を実施 |
@@ -280,4 +280,4 @@ MetaMask をローカル Hardhat に接続します。
 | **チェーン ID** | ネットワークを識別する番号 (Hardhat の既定は 31337) |
 | **Vite** | フロントエンド用の高速な開発サーバ |
 
-詳しくは [Hardhat 基礎](../foundations/hardhat-basics.md) と [SSI/DID/VC 基礎](../foundations/ssi-did-vc-basics.md) を参照してください。
+詳しくは [Hardhat基礎（このサイトで使うブロックチェーン）](../foundations/hardhat-basics.md) と [SSI / DID / VC 基礎](../foundations/ssi-did-vc-basics.md) を参照してください。

@@ -44,7 +44,7 @@ flowchart LR
 ## 前提
 
 - Docker が使える
-- [最短起動](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
+- [最短起動 (スタックを動かす)](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 - Python 3 と OpenCV が使える。教材リポジトリのトップで venv を作って入れます (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`。OpenCV 5 では、この演習で使う顔検出の機能が外れています)。`answer_program.py` / `problem_program.py` を動かすターミナルでは、`source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` を先に実行します
 - 教材リポジトリが最新 (`git pull`)
 - USB ウェブカメラ (無い場合は、手元の JPEG 画像を `--image` で渡します)
@@ -168,7 +168,7 @@ python3 problem_program.py --out-dir results_mine
 1. 防犯や見守りの用途で、地域の人にデータを共有するなら、どの構成を選びますか。理由も書いてください。
 2. 構成 C で顔をぼかしても残る手がかりを、どうすれば減らせますか (例: 服装の色を落とす、文字の領域も隠す、解像度を下げる)。
 3. 構成 D で AI が誤った判断をしないよう、送る意味データに何を足せばよいですか。足すほど、何が外に出やすくなりますか。
-4. IW3IP の [Consent VC](ha-ssi-wallet.md) の目的 (`purpose`) や [段階アクセスの Tier](data-user-vc-tiered.md) と組み合わせるなら、どの構成をどの相手に許しますか。
+4. IW3IP の Consent VC ([データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md)) の目的 (`purpose`) や段階アクセスの Tier ([信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md)) と組み合わせるなら、どの構成をどの相手に許しますか。
 
 ## 6. よくある問題
 
@@ -195,5 +195,5 @@ docker compose -f infra/docker-compose.yml --profile vlm down
 ## 関連ページ
 
 - [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) — ローカルの VLM と意味データを基盤で流通させる
-- [意味レベルで段階化する](data-user-vc-tiered-semantic.md) — 受け取る人の信頼度に応じて、顔のぼかしや説明文を出し分ける
+- [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) — 受け取る人の信頼度に応じて、顔のぼかしや説明文を出し分ける
 - [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) — カメラの取り込みの基礎

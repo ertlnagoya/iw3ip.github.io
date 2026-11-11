@@ -455,7 +455,7 @@ docker compose -f infra/docker-compose.yml stop assistant assistant-demo llm-moc
 cp .env.local.example .env.local
 ```
 
-Edit `ASSISTANT_LLM_API_KEY` and the rest (and `ASSISTANT_LLM_MODEL` and `ASSISTANT_LLM_API_BASE_URL` if needed) in `.env.local`, save it, and then start the server. For a local LLM running on the PC, `localhost` does not reach it from inside the container, so set `ASSISTANT_LLM_API_BASE_URL` to `http://host.docker.internal:<port>/v1`.
+Edit `ASSISTANT_LLM_API_KEY` and the rest (and `ASSISTANT_LLM_MODEL` and `ASSISTANT_LLM_API_BASE_URL` if needed) in `.env.local`, save it, and then start the server. For a local LLM running on the PC, `localhost` does not reach it from inside the container, so set `ASSISTANT_LLM_API_BASE_URL` to `http://host.docker.internal:<port>/v1`. `host.docker.internal` works on Docker Desktop (macOS / Windows). On Linux with Docker Engine, the `assistant-llm` service has no `host.docker.internal` entry (no `extra_hosts` with `host-gateway`), so the name does not resolve. On Linux, use the PC's LAN IP instead (`http://<PC LAN IP>:<port>/v1`) and start the local LLM so that it accepts connections from the LAN, not only from `localhost`.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -570,9 +570,10 @@ The LLM output is not adopted as-is; the following are always validated:
 - whether the events are allowed
 - whether the actions are allowed
 - whether the area is allowed
-- whether the response can be parsed as JSON
 
-If invalid, it falls back to the rule-based planner.
+If any check fails, it falls back to the rule-based planner. The `planner_diagnostics.code` is then `llm_output_invalid` (category `validation`).
+
+If the LLM response cannot be parsed as JSON, it also falls back, but this is treated as a provider failure: the `planner_diagnostics.code` is `llm_provider_error` (category `provider`), the same category as a wrong API key or a connection failure.
 
 Points to check:
 
@@ -645,7 +646,7 @@ When the LLM API cannot be used, `/assistant/plan` does not fail; it returns the
 ## Next steps
 
 - For the design rationale: [LLM Planner replacement spec](llm-planner-spec.md)
-- To go back to the original Phase 3 sample: [Run the regional safety assistant (Phase 3)](regional-safety-assistant.md)
+- To go back to the original Phase 3 sample: [Run the regional safety assistant](regional-safety-assistant.md)
 
 ## References
 

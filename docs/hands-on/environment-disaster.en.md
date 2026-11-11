@@ -48,7 +48,7 @@ Branches after that:
 
 - you can run [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
 - Docker / Docker Compose is available
-- If the IPFS from the [Quickstart](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
+- If the IPFS from the [Quickstart (run the stack)](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - `curl` is available
 
 This hands-on assumes the source-code repository `Blockchain_IoT_Marketplace` on the `main` branch.
@@ -96,7 +96,7 @@ The same event content is also available in `examples/payload_flood_risk_high.js
 
 ### 1. Start the services
 
-Run the following in the source-code repository. `PLATFORM_INGEST_READ_ENABLED=true` enables `GET /platform/ingest`, which this page uses to inspect ingested data. It is a demo-only API that returns every row without authentication and is disabled (404) unless set. From Part 2 onward, reads use a token obtained by presenting a VC.
+Run the following in the source-code repository. `PLATFORM_INGEST_READ_ENABLED=true` enables `GET /platform/ingest`, which this page uses to inspect ingested data. It is a demo-only API that returns every row without authentication and is disabled (404) unless set. From Stage 3 of Part 2 (authenticating the data viewer) onward, reads use a token obtained by presenting a VC.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -324,7 +324,7 @@ Gating every MQTT event through the wallet doesn't fit PolicyToken's
 single-use semantics. Instead, send **one event** by hand to feel the
 flow:
 
-A phone wallet cannot reach the PC's `localhost`, so open the URLs below in a PC browser with `<HOST_IP>` replaced by the PC's LAN IP (see the [Hands-on overview](index.md#host-ip) for how to find it).
+A phone wallet cannot reach the PC's `localhost`, so open the URLs below in a PC browser with `<HOST_IP>` replaced by the PC's LAN IP (see [Hands-on](index.md#host-ip) for how to find it).
 
 First, restart with the `ssi-wallet` profile.
 

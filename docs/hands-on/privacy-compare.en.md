@@ -44,7 +44,7 @@ flowchart LR
 ## Prerequisites
 
 - Docker
-- If the IPFS from the [Quickstart](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
+- If the IPFS from the [Quickstart (run the stack)](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
 - Python 3 with OpenCV, installed in a venv at the top of the course repository (`cd ~/program/Blockchain_IoT_Marketplace && python3 -m venv .venv && source .venv/bin/activate && pip install "opencv-python<5"`; OpenCV 5 removed the face detector used here). In the terminal that runs `answer_program.py` / `problem_program.py`, run `source ~/program/Blockchain_IoT_Marketplace/.venv/bin/activate` first
 - An up-to-date course repository (`git pull`)
 - A USB webcam (without one, pass a JPEG image with `--image`)
@@ -168,7 +168,7 @@ Things to think about:
 1. If you share data with people in the neighborhood for crime prevention or monitoring, which configuration would you choose, and why?
 2. How could you reduce the clues that remain in C even after faces are blurred (e.g. drop clothing colors, also hide text regions, lower the resolution)?
 3. What could you add to the semantic data in D so that the AI does not misjudge? The more you add, what becomes more likely to leave the PC?
-4. Combined with the purpose (`purpose`) of an IW3IP [Consent VC](ha-ssi-wallet.md) or the [tiered-access Tiers](data-user-vc-tiered.md), which configuration would you allow for which party?
+4. Combined with the purpose (`purpose`) of an IW3IP Consent VC ([Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)) or the tiered-access Tiers ([Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)), which configuration would you allow for which party?
 
 ## 6. Common issues
 
@@ -195,5 +195,5 @@ If you no longer need the downloaded VLM model (the `iw3ip_ollama` volume, about
 ## Related pages
 
 - [Enrich camera data with a local VLM](local-vlm-distribution.md) — distribute semantic data from a local VLM on the platform
-- [Tier by semantic level](data-user-vc-tiered-semantic.md) — vary face blurring and descriptions by the receiver's trust
+- [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — vary face blurring and descriptions by the receiver's trust
 - [Detect with a USB webcam (OpenCV)](webcam.md) — basics of camera capture

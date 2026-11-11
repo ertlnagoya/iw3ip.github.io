@@ -4,7 +4,7 @@ This is the core v2 hands-on. A marketplace purchase triggers the issuance of a 
 
 > **What you'll do**: Purchase → bridge → PurchaseViewerVC → wallet → ViewerToken → fetch
 >
-> **Prerequisites**: [Quickstart](../setup/quickstart.md) and [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
+> **Prerequisites**: [Quickstart (run the stack)](../setup/quickstart.md) and [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
 >
 > **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
@@ -14,7 +14,7 @@ This is the core v2 hands-on. A marketplace purchase triggers the issuance of a 
     Starting from a marketplace purchase, you issue a
     PurchaseViewerVC to the buyer's wallet and fetch data by
     presenting it, covering the whole flow.
-    For design details, see the [Marketplace VC Bridge design spec](../design/marketplace-vc-bridge-spec.md).
+    For design details, see the [Marketplace VC Bridge — v1 / v2 Design Spec](../design/marketplace-vc-bridge-spec.md).
 
 !!! tip "Choosing a dataset"
     The example uses `home/env/temperature`, but the deploy script from
@@ -84,7 +84,7 @@ is added to **v1 (the current marketplace + MetaMask + delivery via an encrypted
 - You have verified [Stage 1](ha-ssi-wallet.md) and [Stage 3](ha-ssi-viewer.md)
 - You can start iot-market-ui (Svelte) and the Hardhat local chain
 - iw3ip-wallet runs on a physical iPhone (connected to the Metro bundler)
-- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
+- `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP='<your PC LAN IP>'` (see the [Hands-on](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet cloned to `~/program/iw3ip-wallet`
 
 ---
@@ -98,7 +98,7 @@ is added to **v1 (the current marketplace + MetaMask + delivery via an encrypted
 
 ### Steps
 
-If the Hardhat node and the mediators (mediator-owner / mediator-buyer) from the [Quickstart](../setup/quickstart.md) are still running, first stop each of them with Ctrl+C. If the old node keeps port 8545, the next command fails to start. Also stop the Quickstart IPFS with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`. IPFS and the publisher you start later both use port 8080.
+If the Hardhat node and the mediators (mediator-owner / mediator-buyer) from the [Quickstart (run the stack)](../setup/quickstart.md) are still running, first stop each of them with Ctrl+C. If the old node keeps port 8545, the next command fails to start. Also stop the Quickstart IPFS with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`. IPFS and the publisher you start later both use port 8080.
 
 Terminal A (leave it running):
 
@@ -237,6 +237,9 @@ docker compose -f infra/docker-compose.yml \
   --profile ssi-wallet --profile mv-bridge \
   up --build -d
 ```
+
+!!! warning "`cat > infra/.env` overwrites the file"
+    This step rewrites `infra/.env` with only these 3 lines. If you redo it after Stage 7, lines you appended later (for example `MARKETPLACE_HARDHAT_RPC` from Stage 7) are removed. In that case, append those lines again.
 
 !!! note "Repeating this step after restarting Hardhat"
     On the restarted chain the same purchase produces the same transaction ID (tx hash). The publisher remembers claims by transaction ID in memory and returns the previous (already used) code for the same ID, so the wallet gets 400 at `/issuer/token`. When you repeat, recreate the publisher as well (`docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-recreate publisher bridge`). The issuer key and the audit log are on a volume and are kept.
@@ -403,16 +406,26 @@ Note down this `jti=...` value because you use it later.
 curl -s "http://$HOST_IP:8080/audit/logs?limit=2" | python3 -m json.tool
 ```
 
-→
+The result is a list, newest first. The first row is `marketplace/claim` (the other rows are cut as `...`):
 
 ```json
-{
-    "raw_topic": "marketplace/claim",
-    "subject_did": "eth:0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-    "purpose": "purchase",
-    "reason": "claim_received:2b417b32e6566830:tx=0x4e7c3e0a...",
+[
+    {
+        "id": ...,
+        "ts": "...",
+        "action": "allow",
+        "subject_did": "eth:0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "dataset_id": "home/env/temperature",
+        "purpose": "purchase",
+        "reason": "claim_received:2b417b32e6566830:tx=0x4e7c3e0a...",
+        "message_hash": "",
+        "raw_topic": "marketplace/claim",
+        "holder_did": null,
+        "vc_hash": null,
+        "presentation_verified": "allow"
+    },
     ...
-}
+]
 ```
 
 At this point the on-chain purchase has reached the publisher, and it is ready to issue the VC.
@@ -479,16 +492,26 @@ Scan the QR code with the iPhone camera. The wallet starts and shows the approva
 curl -s "http://$HOST_IP:8080/audit/logs?limit=3" | python3 -m json.tool
 ```
 
-→
+The result is a list, newest first. The first row is `marketplace/issued` (the other rows are cut as `...`):
 
 ```json
-{
-    "raw_topic": "marketplace/issued",
-    "subject_did": "did:jwk:eyJhbG...",
-    "purpose": "purchase_link",
-    "reason": "eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c3e0a...",
-    "holder_did": "did:jwk:eyJhbG..."
-}
+[
+    {
+        "id": ...,
+        "ts": "...",
+        "action": "allow",
+        "subject_did": "did:jwk:eyJhbG...",
+        "dataset_id": "home/env/temperature",
+        "purpose": "purchase_link",
+        "reason": "eth_did_bound:claim=2b417b32...:eth=0x3C44...:tx=0x4e7c3e0a...",
+        "message_hash": "",
+        "raw_topic": "marketplace/issued",
+        "holder_did": "did:jwk:eyJhbG...",
+        "vc_hash": null,
+        "presentation_verified": "allow"
+    },
+    ...
+]
 ```
 
 **Once you see this `eth_did_bound` row, the main check of Stage 5 is complete.**
@@ -745,7 +768,7 @@ ipconfig getifaddr en0
 
 If it changed, update all of the following to the new IP.
 
-- `export HOST_IP=<new IP>` in each terminal
+- `export HOST_IP='<new IP>'` in each terminal
 - `VITE_RPC_URL` and `VITE_PUBLISHER_URL` in `iot-market-ui/.env.local`; then restart `npm run dev`
 - the RPC URL of the network added to MetaMask (the PC browser extension, and MetaMask Mobile if you did Stage A)
 - `BRIDGE_PUBLIC_PUBLISHER_URL` in `infra/.env`; then recreate the bridge (`docker restart` does not re-read `.env`)
@@ -778,7 +801,7 @@ The first line is the publisher's error log, a one-line JSON (`logger` is `ssi.e
 
 - **Protection against impersonation of eth_addr ↔ did:jwk**: the current minimal implementation simply
   trusts the POST from the bridge / front end. In production, the holder must prove
-  "this tx is mine" with an EIP-712 signature (for details, see [design spec §7.2](../design/marketplace-vc-bridge-spec.md))
+  "this tx is mine" with an EIP-712 signature (for details, see [§7.2](../design/marketplace-vc-bridge-spec.md#72-production-assumption-future-eip-712-signature-verification) of the [Marketplace VC Bridge — v1 / v2 Design Spec](../design/marketplace-vc-bridge-spec.md))
 - **Discovering the dataset_id**: iot-market-ui and the bridge read `dataset_id` from the Merchandise `additionalInfo`
   (falling back to `home/env/temperature`). [Stage 6](marketplace-vc-end-to-end.md) checks that each item carries its own dataset
 - **Integration with ServiceVC**: the mechanism that authorizes continuous MQTT writes with a VC (Stage 4 prep) and
@@ -787,7 +810,7 @@ The first line is the publisher's error log, a one-line JSON (`logger` is `ssi.e
 
 ## Related
 
-- [Marketplace VC Bridge design spec (v1/v2)](../design/marketplace-vc-bridge-spec.md) — overall structure
+- [Marketplace VC Bridge — v1 / v2 Design Spec](../design/marketplace-vc-bridge-spec.md) — overall structure
 - [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) — single-use write authorization
 - [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) — multi-use read authorization (v1, dataset specified directly)
 - [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) — M2M continuous writes

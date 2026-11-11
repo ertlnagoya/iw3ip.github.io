@@ -455,7 +455,7 @@ docker compose -f infra/docker-compose.yml stop assistant assistant-demo llm-moc
 cp .env.local.example .env.local
 ```
 
-エディタで `.env.local` の `ASSISTANT_LLM_API_KEY` など (必要なら `ASSISTANT_LLM_MODEL` と `ASSISTANT_LLM_API_BASE_URL` も) を書き換えて保存してから、起動します。PC で動かしているローカル LLM を使う場合、コンテナの中からは `localhost` で届かないので、`ASSISTANT_LLM_API_BASE_URL` は `http://host.docker.internal:<ポート>/v1` にします。
+エディタで `.env.local` の `ASSISTANT_LLM_API_KEY` など (必要なら `ASSISTANT_LLM_MODEL` と `ASSISTANT_LLM_API_BASE_URL` も) を書き換えて保存してから、起動します。PC で動かしているローカル LLM を使う場合、コンテナの中からは `localhost` で届かないので、`ASSISTANT_LLM_API_BASE_URL` は `http://host.docker.internal:<ポート>/v1` にします。`host.docker.internal` は Docker Desktop (macOS / Windows) で使える名前です。Linux の Docker Engine では、`assistant-llm` サービスに `host.docker.internal` の設定 (`extra_hosts` の `host-gateway`) が無いため、この名前を引けません。Linux では、代わりに PC の LAN IP を使って `http://<PC の LAN IP>:<ポート>/v1` とし、ローカル LLM を `localhost` だけでなく LAN からも受け付けるように起動します。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace
@@ -570,9 +570,10 @@ LLM の出力はそのまま採用せず、次を必ず検証します。
 - 許可イベントか
 - 許可アクションか
 - 許可エリアか
-- JSON として parse できるか
 
-いずれかを満たさない場合は rule-based planner にフォールバックします。
+いずれかを満たさない場合は rule-based planner にフォールバックします。このときの `planner_diagnostics.code` は `llm_output_invalid` (区分は `validation`) です。
+
+LLM の応答が JSON として parse できない場合もフォールバックしますが、これは provider 側の失敗として扱われ、`planner_diagnostics.code` は `llm_provider_error` (区分は `provider`) になります。API キーの誤りや接続できない場合と同じ区分です。
 
 確認の観点:
 
@@ -645,7 +646,7 @@ LLM API を使えないとき、`/assistant/plan` はエラーにならず、rul
 ## 次の学習
 
 - 実装方針を整理したい場合: [LLM Planner 置き換え仕様](llm-planner-spec.md)
-- Phase 3 の元サンプルに戻る場合: [地域安全アシスタントを動かす（Phase 3）](regional-safety-assistant.md)
+- Phase 3 の元サンプルに戻る場合: [地域安全アシスタントを動かす](regional-safety-assistant.md)
 
 ## 参考文献
 

@@ -1,21 +1,21 @@
 # 画像・動画を段階アクセスで配信する (DataUserVC / Stage T)
 
-[信頼度に応じて見せる中身を変える](data-user-vc-tiered.md)（§0〜§7）の続きです。画像 / 動画の実体も含めて、提供から受信までを通して実行します。節番号は 1 ページ目からの通し番号（§8〜§11）です。
+[信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md)（§0〜§7）の続きです。画像 / 動画の実体も含めて、提供から受信までを通して実行します。節番号は 1 ページ目からの通し番号（§8〜§11）です。
 
 > **やること**: HTTP メディア・ゲートウェイ（案 B）と IPFS（案 C）による画像 / 動画の配信、PWA Viewer での受信、PWA Provider での提供
 >
-> **前提**: [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) の §0〜§7 を済ませていること
+> **前提**: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) の §0〜§7 を済ませていること
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 約 90 分
 
-コマンド例は 1 ページ目と同じく、教材リポジトリを `~/program/Blockchain_IoT_Marketplace` に clone した前提で示します。`$HOST_IP` と `<HOST_IP>` は PC の LAN IP です (設定のしかたは [ハンズオンの概要](index.md#host-ip) を参照)。案 A / 案 B / 案 C の違いは
+コマンド例は 1 ページ目と同じく、教材リポジトリを `~/program/Blockchain_IoT_Marketplace` に clone した前提で示します。`$HOST_IP` と `<HOST_IP>` は PC の LAN IP です (設定のしかたは [ハンズオン](index.md#host-ip) を参照)。案 A / 案 B / 案 C の違いは
 [§0b](data-user-vc-tiered.md#0b-実データ画像--動画統合の選び方) を参照してください。
 
 ## 8. 実データ統合（案 B：HTTP メディア・ゲートウェイ）
 
-[1 ページ目](data-user-vc-tiered.md)の §7 までで、ティアごとに `image_cid` / `video_cid` のキーが応答に含まれるかどうかが
+1 ページ目の [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) の §7 までで、ティアごとに `image_cid` / `video_cid` のキーが応答に含まれるかどうかが
 変わることを確認しました。ここでは**画像 / 動画の実体**も含めて、提供から受信までを
 通して実行します。提供側でサンプルの JPEG / MP4 を用意し、publisher の `/media/upload` に
 POST して、返ってきた URL を payload の `image_url` / `video_url` に入れます。
@@ -80,7 +80,7 @@ python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 - publisher は単一インスタンスで、レプリカや pinning（IPFS 上でデータを保持し続ける設定）はありません
 
 コンテンツアドレシングと分散保存が必要な場合は **案 C（IPFS）** に
-進みます。`/media/upload` のレスポンスの形式は同じ（`{url, sha256, content_type, byte_size, cid, ipfs_gateway_url}`）
+進みます。`/media/upload` のレスポンスの形式は同じ（`{url, sha256, content_type, byte_size, cid, ipfs_gateway_url, c2pa}`）
 なので、提供側スクリプトは変更せず、保存先の backend だけが切り替わります。
 
 ## 9. 案 C：ローカル kubo IPFS daemon で分散配信
@@ -130,7 +130,7 @@ python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
   --base-url http://$HOST_IP:8080
 ```
 
-期待する出力は次のとおりです（`cid` フィールドが `bafk...` で始まります）。既定の fixture を使った場合、`sha256` と `cid` は下の値と同じになります。
+期待する出力は次のとおりです（`cid` フィールドが `bafk...` で始まります）。既定の fixture を使った場合、`sha256` と `cid` は下の値と同じになります。`c2pa` は C2PA の検証（Stage P）を有効にしていないので `null` です。
 
 ```json
 [upload] {
@@ -140,7 +140,8 @@ python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
     "content_type": "image/jpeg",
     "byte_size": 285,
     "cid": "bafkreihg4ng5ujksjbrtnlldudxsi5jmaeuwhi6arkvcgqbvzkwhskhbgq",
-    "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreihg4ng5ujksjbrtnlldudxsi5jmaeuwhi6arkvcgqbvzkwhskhbgq"
+    "ipfs_gateway_url": "http://<HOST_IP>:8080/ipfs/bafkreihg4ng5ujksjbrtnlldudxsi5jmaeuwhi6arkvcgqbvzkwhskhbgq",
+    "c2pa": null
   },
   ...
 }
@@ -195,7 +196,7 @@ iPhone Safari でいずれかを開いてください。
 
 ## 10. PWA Viewer（スマホ + PC 共通 UX）
 
-§3〜§9（§3〜§7 は [1 ページ目](data-user-vc-tiered.md)）では、ターミナルから `/verifier/request` を呼び出して token を取得し、
+§3〜§9（§3〜§7 は 1 ページ目の [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md)）では、ターミナルから `/verifier/request` を呼び出して token を取得し、
 `/platform/data` に curl でアクセスするという、開発者向けの手順を使いました。
 publisher 内蔵の **PWA Viewer**（`/buyer/start` + `/viewer`。PWA は Progressive Web App の略）を使うと、
 スマホでも PC でも、ブラウザでページを開くだけで提示から表示までが自動で進みます。
@@ -208,7 +209,7 @@ publisher 内蔵の **PWA Viewer**（`/buyer/start` + `/viewer`。PWA は Progre
    │  Safari 戻る → /viewer が image/video 自動表示             │
 
 [PC Chrome] ─ /buyer/start                                [publisher]
-   │  ↓ QR 表示 + ロングポーリング                              │
+   │  ↓ QR 表示 + 2 秒ごとにポーリング                         │
    │      QR を iPhone で読む → ウォレット → Tier 3 提示 ──────► │
    │  ↑ /verifier/status から viewer_url を取得                 │
    │  PC ブラウザが /viewer に自動遷移 → 画像表示                │
@@ -240,7 +241,7 @@ curl で URL をコピーして貼り付ける手順は不要です。
 1. PC ブラウザで上記 URL を開く
 2. ページに **大きな QR コード**が表示される（中身は OID4VP deeplink）
 3. iPhone のカメラかウォレットで QR を読むと、ウォレットが起動するので VC を提示する
-4. PC のページは裏で `/verifier/status?state=...` を 2 秒ごとにロングポーリング
+4. PC のページは裏で `/verifier/status?state=...` を 2 秒ごとにポーリング
 5. ウォレットでの提示が完了するとレスポンスに `viewer_url` が含まれ、PC のページが自動で遷移する
 6. **PC ブラウザに同じ画像/動画が描画される**
 
@@ -295,7 +296,7 @@ iPhone（iw3ip-wallet）で一連の流れを実行したときの `/viewer` 画
 | 観点 | 案 A〜C（手動 curl） | PWA Viewer |
 |---|---|---|
 | スマホで簡単に確認 | ✗（URL をコピーして貼り付け）| ✓ |
-| PC で確認 | ✗（PC にウォレットなし）| ✓（QR + ロングポーリング） |
+| PC で確認 | ✗（PC にウォレットなし）| ✓（QR + ポーリング） |
 | アプリ追加インストール | iw3ip-wallet（スマホのみ） | iw3ip-wallet のみ（PC は不要） |
 | 失効後の再取得 | curl やり直し | ページリロード |
 | 公開デモ | 手順説明が長い | URL を 1 つ渡すだけ |
@@ -306,7 +307,7 @@ iPhone（iw3ip-wallet）で一連の流れを実行したときの `/viewer` 画
 |---|---|
 | iPhone で deeplink が起動しない | Safari に表示された「ウォレットで開く」リンクをタップし、Safari の「アプリ起動許可」を確認します |
 | PC で QR が表示されない | ブラウザが CDN（`cdn.jsdelivr.net`）に到達できるか確認。オフライン環境ではエラーになる |
-| PC のロングポーリングが終わらない | ウォレット側で正しい VC を提示できているか `docker compose -f infra/docker-compose.yml logs publisher` で `/verifier/response` の 200 を確認 |
+| PC のポーリングが終わらない | ウォレット側で正しい VC を提示できているか `docker compose -f infra/docker-compose.yml logs publisher` で `/verifier/response` の 200 を確認 |
 | `/viewer` が 401 | ViewerToken TTL 60 秒切れ。`/buyer/start` から再開 |
 | `/buyer/start` に赤枠の「データを閲覧する権限がありません」が出る | §10.8 の deny UX を参照 |
 
@@ -314,7 +315,7 @@ iPhone（iw3ip-wallet）で一連の流れを実行したときの `/viewer` 画
 
 verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに `reason` コードと
 `human_message_ja` / `human_message_en`（人が読むためのメッセージ）が含まれます。
-`/buyer/start` ページはロングポーリング中にこれを検出して、QR の代わりに赤枠の「データを閲覧する権限がありません」と
+`/buyer/start` ページはポーリング中にこれを検出して、QR の代わりに赤枠の「データを閲覧する権限がありません」と
 メッセージ、`reason code:` の行、「このページをリロード」のリンクを表示します（実装: `publisher/app/viewer_routes.py`、`publisher/app/ssi/verifier_routes.py`）。
 
 主要な reason コードと表示文（JA / EN）:
@@ -334,7 +335,7 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 1. PC で `/buyer/start?ds=home/event/possible_littering` を開く → QR が出る
 2. ウォレットが、**異なる dataset にバインドされた** PurchaseViewerVC（例: `home/event/another_dataset`）を送ってきたとする (通常のウォレットはこのカードを候補に出さず、「No Available Credential」と表示します)
 3. publisher は `/verifier/response` を受け取り、提示の条件 (presentation definition) の `$.dataset_id` の値と合わないので、`{"verified": false, "reason": "field_mismatch:$.dataset_id"}` を記録 (既定の流れでは、`dataset_mismatch` を調べる前にこの照合で拒否されます)
-4. PC の `/verifier/status` ロングポーリングが、`result` に `verified: false`、`reason`、`human_message_ja` を入れて返す
+4. PC の `/verifier/status` ポーリングが、`result` に `verified: false`、`reason`、`human_message_ja` を入れて返す
 5. PC ページは QR を、「データを閲覧する権限がありません」と「提示が拒否されました (field_mismatch:$.dataset_id)。」を入れた `<div class="err">` に置き換え、`reason code: field_mismatch:$.dataset_id` と「このページをリロード」のリンクを表示
 6. 同時に `/audit/logs` に、`raw_topic` が `oid4vp/response`、`action` が `deny`、`reason` が `field_mismatch:$.dataset_id` の行が記録される（`curl -s localhost:8080/audit/logs | jq '[.[] | select(.raw_topic == "oid4vp/response")][0]'` で確認できる）
 
@@ -350,7 +351,7 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 
 ```
 [PC ブラウザ] ─ /provider/start                       [publisher]
-   │  ↓ QR 表示 + ロングポーリング                         │
+   │  ↓ QR 表示 + 2 秒ごとにポーリング                     │
    │      QR を iPhone で読む → ウォレット → SellerVC 提示 ─►│ mint SellerToken
    │  ↑ /verifier/status で seller_token + licensed_datasets
    │  PC ページが「許可データセット」一覧を出す
@@ -461,12 +462,13 @@ POST します。
 | 失敗パターン | HTTP | reason |
 |---|---|---|
 | `Authorization` ヘッダなし | 401 | `missing_authorization_header` |
+| `Authorization` ヘッダが `Bearer <token>` の形でない | 401 | `invalid_authorization_header` |
 | 不明な SellerToken | 401 | `seller_token_unknown` |
 | TTL 切れ SellerToken | 401 | `seller_token_expired` |
 | 導出した dataset が `licensed_datasets[]` に無い | 403 | `seller_token_dataset_not_licensed` |
 | `topic` が `normalize()` で受け付けられない | 400 | `unsupported_topic:...` |
 
-`seller_token_*` のエラー (401 と 403) は、`/audit/logs` に `action=deny` で記録されます。`Authorization` ヘッダーが無いときの 401 と、`unsupported_topic` の 400 は、監査ログに書き込む前に返るので記録されません。
+`seller_token_*` のエラー (401 と 403) は、`/audit/logs` に `action=deny` で記録されます。`Authorization` ヘッダーが無いときや形が正しくないときの 401 と、`unsupported_topic` の 400 は、監査ログに書き込む前に返るので記録されません。
 
 ### 11.5 受信側で確認
 
@@ -676,5 +678,5 @@ DevTools コンソールで実際の codec 一覧を出力すると、どちら�
 
 ## 次に進む
 
-- 戻る: [信頼度に応じて見せる中身を変える](data-user-vc-tiered.md) — §0〜§7（DataUserVC の発行と tier による出し分け）
-- 続き: [意味レベルで段階化する](data-user-vc-tiered-semantic.md) — §12〜§13（VLM による意味レベルの段階化、意味的中間表現）
+- 戻る: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) — §0〜§7（DataUserVC の発行と tier による出し分け）
+- 続き: [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) — §12〜§13（VLM による意味レベルの段階化、意味的中間表現）

@@ -20,12 +20,12 @@ P0 comes first, then P1 and P2.
 ## Short Learning Path
 
 1. [Blockchain Basics](blockchain-basics.md)
-2. [Hardhat Basics](hardhat-basics.md)
-3. [SSI/DID/VC Basics](ssi-did-vc-basics.md)
-4. [Prerequisites](../setup/prerequisites.md)
-5. [HA Demo Simulator](../hands-on/ha-demo-simulator.md) (run the whole flow without hardware)
-6. [Quickstart](../setup/quickstart.md)
-7. [HA x SSI Publisher Sample](../hands-on/ha-ssi-publisher.md)
+2. [Hardhat Basics (Blockchain Used in This Site)](hardhat-basics.md)
+3. [SSI / DID / VC Basics](ssi-did-vc-basics.md)
+4. [Prerequisites (install tools)](../setup/prerequisites.md)
+5. [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) (run the whole flow without hardware)
+6. [Quickstart (run the stack)](../setup/quickstart.md)
+7. [Pull from Home Assistant (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md)
 
 These seven pages complete the basic understanding and the minimum hands-on.
 
@@ -33,7 +33,7 @@ These seven pages complete the basic understanding and the minimum hands-on.
 
 | Week | Learning Focus | Tasks | Deliverable |
 |---|---|---|---|
-| Week 1 | Run and observe | run HA x SSI sample, intentionally trigger `allowed/denied/send_error` | execution notes |
+| Week 1 | Run and observe | run the sample in [Pull from Home Assistant (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md), intentionally trigger `allowed/denied/send_error` | execution notes |
 | Week 2 | Fundamentals | study Blockchain/Hardhat and SSI/DID/VC pages, summarize terms | personal glossary |
 | Week 3 | Explain and improve | explain architecture and submit one improvement PR | 1 PR |
 
@@ -48,9 +48,9 @@ These seven pages complete the basic understanding and the minimum hands-on.
 ## Read Next
 
 1. [Blockchain Basics](blockchain-basics.md)
-2. [Hardhat Basics](hardhat-basics.md)
-3. [SSI/DID/VC Basics](ssi-did-vc-basics.md)
-4. [References](references.md)
+2. [Hardhat Basics (Blockchain Used in This Site)](hardhat-basics.md)
+3. [SSI / DID / VC Basics](ssi-did-vc-basics.md)
+4. [References and Further Learning Materials](references.md)
 5. After the hands-on, if you want the mechanisms in detail: [Design](../design/index.md)
 
 ## How to Use External Materials

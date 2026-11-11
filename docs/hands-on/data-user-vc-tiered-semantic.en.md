@@ -1,10 +1,10 @@
 # Tier by semantic level (VLM and semantic representation / Stage T)
 
-This page continues [Tier the response by trust](data-user-vc-tiered.md) (§0–§7) and [Deliver images and video with tiered access](data-user-vc-tiered-media.md) (§8–§11). It goes all the way to semantic intermediate representation and trust-aware rendering. Section numbers continue from the first page (§12–§13).
+This page continues [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) (§0–§7) and [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) (§8–§11). It goes all the way to semantic intermediate representation and trust-aware rendering. Section numbers continue from the first page (§12–§13).
 
 > **What you'll do**: Derive new content with VLM inference and face blurring and project it per tier, then run trust-aware rendering on the semantic intermediate representation (SIR)
 >
-> **Prerequisites**: §0–§7 of [Tier the response by trust](data-user-vc-tiered.md) and §8–§11 of [Deliver images and video with tiered access](data-user-vc-tiered-media.md)
+> **Prerequisites**: §0–§7 of [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) and §8–§11 of [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md)
 >
 > **What you need**: PC + smartphone (iw3ip-wallet), and a publisher started with `--profile vlm` (Ollama)
 >
@@ -12,13 +12,13 @@ This page continues [Tier the response by trust](data-user-vc-tiered.md) (§0–
 
 ## 12. Semantic-level redaction (VLM + face blur)
 
-§1–§11 (the [first page](data-user-vc-tiered.md) and the [second page](data-user-vc-tiered-media.md)) gate access by **dropping media keys** — Tier 2 hides video,
+§1–§11 (the first page, [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md), and the second page, [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md)) gate access by **dropping media keys** — Tier 2 hides video,
 Tier 1 hides image and video. §12 derives **new content from the same
 source via VLM inference + face blurring (frontal faces in the MVP)** and projects those
 derivatives per tier. Tier 1 stops being "you get nothing useful" and
 ships a **PII-redacted summary** instead.
 
-Design rationale: see [Tiered access design spec, "Tier extension"](data-user-vc-tiered-spec.md#tier-vlm).
+Design rationale: see [Tiered access design spec](data-user-vc-tiered-spec.md#tier-vlm), "Tier extension".
 
 ### 12.1 Updated tier definitions
 
@@ -96,7 +96,7 @@ Expected output:
 
 `description_*` and `image_url_redacted` are attached only to rows published
 after `VLM_BACKEND` is set. Register the consent and publish an event with an
-image. In a new terminal, first run `cd ~/program/Blockchain_IoT_Marketplace` and `export HOST_IP=<your PC's LAN IP>` (see the [Hands-on overview](index.md#host-ip)). Without `--image`, the script uses the 16×16 grey image in the course repository. Face blur still runs on this image and `image_url_redacted` is produced, but the image has no face, so nothing is blurred. To see a face being blurred, optionally add `--image <path to an image with a face>` (a synthetic one, for example). If you ran this script before and the old fixture (a 155-byte JPEG with no image data) is still there, run `git pull` first; the script then replaces the fixture with the new image automatically.
+image. In a new terminal, first run `cd ~/program/Blockchain_IoT_Marketplace` and `export HOST_IP='<PC LAN IP>'` (see [Hands-on](index.md#host-ip)). Without `--image`, the script uses the 16×16 grey image in the course repository. Face blur still runs on this image and `image_url_redacted` is produced, but the image has no face, so nothing is blurred. To see a face being blurred, optionally add `--image '<path to an image with a face>'` (a synthetic one, for example). If you ran this script before and the old fixture (a 155-byte JPEG with no image data) is still there, run `git pull` first; the script then replaces the fixture with the new image automatically.
 
 ```bash
 curl -s -X POST localhost:8080/consents \
@@ -410,7 +410,7 @@ output kinds, and the renderer is the only place that ever combines
 the source bytes with the policy decision. Low-trust receivers
 cannot reach raw bytes by construction (fail-closed by design).
 
-For the detailed design rationale, see the [tiered access design spec](data-user-vc-tiered-spec.md) (the spec has no chapter for §13 yet; one is planned).
+For the detailed design rationale, see [Tiered access design spec](data-user-vc-tiered-spec.md) (the spec has no chapter for §13 yet; one is planned).
 
 ### 13.1 Architecture
 
@@ -625,5 +625,5 @@ Implementation:
 
 ## Where to go next
 
-- Back: [Deliver images and video with tiered access](data-user-vc-tiered-media.md) — §8–§11 (delivering images and video)
-- Start: [Tier the response by trust](data-user-vc-tiered.md) — §0–§7 (issuing DataUserVC and tiering the response)
+- Back: [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — §8–§11 (delivering images and video)
+- Start: [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) — §0–§7 (issuing DataUserVC and tiering the response)

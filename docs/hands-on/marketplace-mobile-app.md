@@ -22,7 +22,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
     Stage A の購入対象は Stage 6 case B 以降の deploy script で登録された
     Merchandise リストから選びます。`home/event/possible_littering` (Merchandise #2)
     を選べば、Stage 0 (Stage の一覧は
-    [ハンズオンの概要](index.md#part-phase-stage) を参照)
+    [ハンズオン](index.md#part-phase-stage) を参照)
     [検知イベントだけを共有する](webcam-event-sharing.md) と同じカメライベントが、
     購入経由 (PurchaseViewerVC) で読めるところまで確認できます。
     `home/event/flood_risk_high` (Merchandise #4) は PurchaseViewerVC の
@@ -65,7 +65,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 - Stage 5 と Stage 6 のハンズオンを済ませている (購入には、Stage 6 の Step E0 でデプロイした Merchandise と、登録した公開鍵を使います。Stage 7 は任意で、Step M5 の `seller_did` の説明にだけ関わります)。その後に Hardhat を起動し直した場合は、先に [Stage 6 の Step E0](marketplace-vc-end-to-end.md#step-e0-前提環境の起動-stage-5-と共通) (ノードの起動、デプロイ、公開鍵の登録、bridge の作り直し) をやり直す
 - publisher + bridge + Hardhat + iot-market-ui が起動できる
 - iw3ip-wallet (iPhone) が動く
-- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP=<PC の LAN IP>` を実行してください (IP の調べ方は [ハンズオンの概要](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
+- コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP='<PC の LAN IP>'` を実行してください (IP の調べ方は [ハンズオン](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 
 ## 全体像
@@ -280,7 +280,9 @@ VC 発行用のコードの有効期限は、購入の申告から 30 分です�
   "count": ...,
   "read_count": 1,
   "seller_did": "unknown",
-  "allowed_views": ["event"],
+  "allowed_views": [
+    "event"
+  ],
   "rows": [...]
 }
 ```

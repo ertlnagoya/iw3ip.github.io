@@ -4,7 +4,7 @@ Home Assistant の状態を MQTT で受け、Consent VC で共有可否を判定
 
 > **やること**: MQTT → publisher → Consent VC 判定 → 監査ログ までを一通り動かす
 >
-> **前提**: [最短起動](../setup/quickstart.md)、できれば [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)
+> **前提**: [最短起動 (スタックを動かす)](../setup/quickstart.md)、できれば [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)
 >
 > **使うもの**: PC (Docker)
 >
@@ -50,7 +50,7 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 
 - Docker / Docker Compose が使える
 - `curl` が使える
-- [最短起動](../setup/quickstart.md) で起動した IPFS が動いたままの場合は、教材リポジトリで先に `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` を実行して止めておく (IPFS と publisher がどちらもポート 8080 を使うため)
+- [最短起動 (スタックを動かす)](../setup/quickstart.md) で起動した IPFS が動いたままの場合は、教材リポジトリで先に `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` を実行して止めておく (IPFS と publisher がどちらもポート 8080 を使うため)
 
 対応するサンプルファイル:
 
