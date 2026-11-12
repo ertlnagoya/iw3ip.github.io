@@ -4,7 +4,7 @@ Share edge-generated disaster events instead of raw camera frames.
 
 > **What you'll do**: Emit disaster events from mock data, share, observe
 >
-> **Prerequisites**: one of the pages in section 1.2 of Part 1 is done (this page uses mock data, so you can do it without a camera)
+> **Prerequisites**: Part 1 (§1.1–§1.3) is done (this page uses mock data, so you can do it without a camera)
 >
 > **Keep running**: nothing needs to be running. This page starts the publisher. Keep the Quickstart IPFS stopped (it shares port 8080)
 >

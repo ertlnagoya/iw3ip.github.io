@@ -14,6 +14,7 @@ Home Assistant の状態を MQTT で受け、同意 (consent) の JSON (Consent 
 
 !!! note "このページの位置付け"
     - Part 1 の 1.2 です ([ハンズオン](index.md#12-デバイスからデータを取る))。1.2 の 3 ページのうち、どれか 1 つを選べば十分です。
+    - 画面下の「次へ」は、1.4 (任意) のスマホのページを指します。進む先は、このページの「次に進む」に従ってください。
     - このページの「Phase 1〜3」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
     - 前のページ: [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)
     - 次のページ: [最短起動 (スタックを動かす)](../setup/quickstart.md)。そのあと [ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 (マーケットプレイスで売買) に進みます。
@@ -41,7 +42,7 @@ Home Assistant のデータを MQTT 経由で受け取り、同意 (consent) の
 
 - HTTP 疑似投入だけ確認したい場合: `allowed` と `denied` を 1 回ずつ見る
 - MQTT 経路まで見たい場合: `mosquitto_pub` で `person_detected` を送る
-- Phase 2 へ進みたい場合: `flood_risk_high` や `possible_littering` の Hands-on へ移る
+- Phase 2 (イベント共有) を試したい場合: `flood_risk_high` や `possible_littering` の Hands-on (Part 2 の 2.1) へ移る
 
 ## このページで分かること
 
@@ -217,7 +218,7 @@ docker compose -f infra/docker-compose.yml down
 - Phase 2: `homeassistant/event/...` 系を中心にイベント共有へ拡張
 - Phase 3: 前段に SSI Gateway（PEP: Policy Enforcement Point）を追加し、VC 提示による制御を実装
 
-Phase 2 をすぐ試したい場合は、次の Hands-on を参照してください。
+Phase 2 のイベント共有は、Part 2 の 2.1 の次のページで扱います。
 
 - [防災イベントを共有する](environment-disaster.md) (Phase 2)
 - [検知イベントだけを共有する](webcam-event-sharing.md) (Phase 2)

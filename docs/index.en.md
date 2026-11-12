@@ -35,7 +35,7 @@ Each section has a different purpose and readership. Participants go through Lea
 | Section | Purpose | What it contains | Main readers |
 |---|---|---|---|
 | Learning Foundations | Understand the basics of the technology | concepts of blockchain, Hardhat, SSI / DID / VC, and the study order | participants |
-| Environment Setup | Prepare the exercise environment | installing the tools and the quickstart | participants |
+| Environment Setup | Prepare the exercise environment | installing the tools (Quickstart is done within Part 1 of the hands-on) | participants |
 | Hands-on | Understand by running it | commands, expected output, checkpoints | participants |
 | [Design](design/index.md) | Explain the mechanisms and the reasons behind the design | VCs, tokens, APIs, data flows, chosen approaches and reasons, open issues | people extending or implementing features, participants doing advanced study, instructors |
 | [Support](operations/index.md) | Get unstuck during the exercises | troubleshooting, FAQ | participants and TAs |

@@ -15,7 +15,7 @@ Open the v1 marketplace (purchase with MetaMask [1]; data is handed over through
 !!! note "Where this page belongs"
     - This is section 1.4 of Part 1 ([Hands-on](index.md#14-open-the-marketplace-and-buy-on-a-phone)). This page is optional. It is not part of the Part 1 "Done when…" checks.
     - Do the listing and buying on the PC first (section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane)). This page opens the same screens on a phone.
-    - If the Quickstart IPFS is still stopped from 1.1 or 1.2, start it again with Quickstart step 5 before you continue.
+    - If you stopped IPFS after §1.3, start it again with step 5 of [Quickstart (run the stack)](../setup/quickstart.md).
     - Previous page: section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane)
     - Next page: section 2.1 of Part 2 ([Share detections, not raw frames](webcam-event-sharing.md) or [Share disaster events](environment-disaster.md))
 

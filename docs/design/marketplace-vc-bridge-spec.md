@@ -5,7 +5,7 @@
     マーケットプレイスと、スマホの SSI (Self-Sovereign Identity、自己主権型アイデンティティ) ウォレットを接続する **v2** の設計仕様である。
     既存システムを **v1**、本仕様で実装するシステムを **v2** と呼び、
     共通部分と派生部分を明示する。本書は、§11 のマイルストーン M1 (設計確定) のドラフトである。
-    本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の「ハンズオンの段階」(§5))。
+    本文中の Stage は Part 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の「ハンズオンの段階」(§5))。
     本仕様はハンズオン [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md) に対応する。
 
 ## 1. v1 と v2 の関係
@@ -124,7 +124,7 @@ Identifier、分散型識別子) の方式で、ここではウォレットの�
 | コンポーネント | 役割 |
 |---|---|
 | **bridge service** (`bridge/`, Node) | Purchase イベント購読 → publisher API 呼び出し |
-| **publisher** (既存) | (既に Phase 2 SSI 用に存在) |
+| **publisher** (既存) | (既に Part 2 の SSI 用に存在) |
 | **PurchaseViewerVC** | 購入連動の閲覧用 VC (claim に `merchandise_address`, `tx_hash`, `buyer_eth_addr`) |
 | `POST /marketplace/claim` | bridge → publisher の連携 endpoint |
 | `GET /platform/data?merchandise=<addr>` | 既存 `?dataset_id=` と並列の購入連動取得 endpoint |

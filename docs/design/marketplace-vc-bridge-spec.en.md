@@ -5,7 +5,7 @@
     This is the design spec for **v2**, which connects the marketplace to an SSI (Self-Sovereign Identity) wallet on a smartphone.
     The existing system is called **v1** and the system implemented by this spec is called **v2**;
     the common parts and the derived parts are stated explicitly. This document is the draft for milestone M1 (design freeze) in §11.
-    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md)).
+    "Stage" in this document refers to the step numbers of the Part 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md)).
     This spec corresponds to the hands-on [Hand a credential to the buyer's wallet (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md).
 
 ## 1. Relationship between v1 and v2
@@ -124,7 +124,7 @@ Identifier) method that derives the identifier from a public key (JWK); here it 
 | Component | Role |
 |---|---|
 | **bridge service** (`bridge/`, Node) | Subscribes to Purchase events → calls the publisher API |
-| **publisher** (existing) | (already exists for Phase 2 SSI) |
+| **publisher** (existing) | (already exists for the Part 2 SSI pages) |
 | **PurchaseViewerVC** | Viewing VC tied to a purchase (claims include `merchandise_address`, `tx_hash`, `buyer_eth_addr`) |
 | `POST /marketplace/claim` | Integration endpoint from bridge → publisher |
 | `GET /platform/data?merchandise=<addr>` | Purchase-linked retrieval endpoint, alongside the existing `?dataset_id=` |

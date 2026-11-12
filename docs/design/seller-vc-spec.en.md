@@ -6,7 +6,7 @@
     to Merchandise registration on iot-market. It introduces a **fifth VC**
     (Verifiable Credential), following ConsentVC / ViewerVC / ServiceVC /
     PurchaseViewerVC, and uses a VC to show who may sell which dataset. It is a draft written before implementation.
-    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md)).
+    "Stage" in this document refers to the step numbers of the Part 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md)).
     The corresponding hands-on pages are [Back the seller's identity (Seller VC / Stage 7)](../hands-on/marketplace-seller-vc.md), [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](../hands-on/marketplace-vc-end-to-end.md), and [Hand a credential to the buyer's wallet (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md).
     Stage 8 and later have no hands-on yet and refer to items for future consideration.
 

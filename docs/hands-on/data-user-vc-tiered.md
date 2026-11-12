@@ -358,6 +358,6 @@ ViewerToken の発行ログ（`viewer_token_issued ... views=...`）と
 このほかの関連ページ:
 
 - [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) — 続きの §12〜§13（VLM による意味レベルの段階化、意味的中間表現）
-- [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) — Phase 2 wallet を立ち上げる
+- [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) — Part 2 で使う wallet (`iw3ip-wallet`) を立ち上げる
 - [段階アクセスの設計仕様](data-user-vc-tiered-spec.md) — 設計根拠
 - [検知イベントだけを共有する](webcam-event-sharing.md) — イベントを条件付きで共有する

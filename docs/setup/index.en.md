@@ -65,7 +65,6 @@ The hands-on is split into three Parts: **Basic**, **Feature Extensions**, and *
  ┌──────────────────────────────────────────────────────────┐
  │  Environment Setup (these pages)                         │
  │   - install tools                                        │
- │   - start the stack                                      │
  │   - sanity-check                                         │
  └──────────────────────────────────────────────────────────┘
           ↓ if this works, you're ready
@@ -90,9 +89,9 @@ The hands-on is split into three Parts: **Basic**, **Feature Extensions**, and *
 | Goal | Path |
 |---|---|
 | Just see something running | [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) only (approx. 20 min) |
-| Walk through the basic flow | Setup → all of Part 1 |
-| Reach safe / conditional sharing | Setup → Part 1 → Part 2 |
-| Full intelligence-integrated demo | Setup → Part 1 → Part 2 → Part 3 |
+| Walk through the basic flow | Prerequisites → hands-on Part 1 §1.1–§1.3 (one page in §1.2; §1.4 is optional) |
+| Reach safe / conditional sharing | Prerequisites → Part 1 → Part 2 |
+| Full intelligence-integrated demo | Prerequisites → Part 1 → Part 2 → Part 3 |
 
 It is fine to stop partway. Each Part builds on the knowledge of the previous one step by step.
 

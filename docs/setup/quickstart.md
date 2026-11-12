@@ -1,10 +1,16 @@
 # 最短起動 (スタックを動かす)
 
-[事前準備 (ツールのインストール)](prerequisites.md) でインストールしたツールを使って、ハンズオン環境一式をまとめて起動します。
+[事前準備 (ツールのインストール)](prerequisites.md) でインストールしたツールを使って、ハンズオン環境一式をまとめて起動します。このページは、ハンズオンの Part 1 の 1.1 を終えてから進めます。
 所要時間の目安は **約 15〜30 分** です (初回は docker pull / npm install に時間がかかります)。
 
 > ここでは 6 種類のプロセスを起動します。コントラクトのデプロイと、2 つある仲介プロセスにもそれぞれターミナルを使うため、ターミナルは全部で 7 つ開きます。
 > 手順どおりに進めてください。
+
+!!! note "このページの位置付け"
+    - Part 1 の 1.1 と 1.2 の間に行います ([ハンズオン](../hands-on/index.md#12-デバイスからデータを取る))。
+    - 始める前に、1.1 (HA SSI Publisher を選んだ場合は 1.2) で起動した publisher を止めます。publisher と、このページで起動する IPFS は、どちらもポート 8080 を使うためです。止めるコマンドは、[手順 5](#5-ipfs-と-postgresql-を起動-docker) の注意にあります。
+    - 前のページ: [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) (1.1)。1.2 で [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) を選んだ場合は、そのページ (1.2) のあとに行います
+    - 次のページ: [ハンズオン](../hands-on/index.md#12-デバイスからデータを取る) の 1.2 (デバイスからデータを取る)。1.2 で HA SSI Publisher を済ませた場合は、[ハンズオン](../hands-on/index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 (マーケットプレイスで売買)
 
 ## ここで動かすもの — 全体像
 
@@ -261,9 +267,14 @@ MetaMask をローカル Hardhat に接続します。
 - Part 1 の 1.1: [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)
 - Part 1 の 1.2: [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md)
 - Part 2 の 2.1〜2.3: [検知イベントだけを共有する](../hands-on/webcam-event-sharing.md)、[防災イベントを共有する](../hands-on/environment-disaster.md)、[データ提供者の認証 (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md)、[データ閲覧者の認証 (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md)、[機器間での連携認証 (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
+- Part 2 の 2.5: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md)、[画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered-media.md)、[意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](../hands-on/data-user-vc-tiered-semantic.md)、[画像の来歴を証明する (C2PA / Stage P)](../hands-on/c2pa-provenance.md)、[来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](../hands-on/c2pa-provenance-publisher.md)、[VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](../hands-on/c2pa-provenance-vlm.md)
 - Part 3 のすべてのページ
 
-これらのページで起動する publisher は、最短起動の IPFS (手順 5) と同じポート 8080 を使います。IPFS を起動したままの場合は、先に `ipfs` ディレクトリで `docker compose down` を実行して止めてください。
+publisher を起動するページでは、先に最短起動の IPFS (手順 5) を止めます。IPFS と publisher は、どちらもポート 8080 を使うためです。IPFS は、`ipfs` ディレクトリで `docker compose down` を実行して止めます。
+
+上のページのうち、publisher を起動しないのは、[画像の来歴を証明する (C2PA / Stage P)](../hands-on/c2pa-provenance.md) (Python のプログラムだけで動きます) と、Part 3 の [地域安全アシスタントを動かす](../hands-on/regional-safety-assistant.md) と [AI に手順を考えさせる (LLM Planner)](../hands-on/llm-planner.md) (publisher の代わりに、assistant (ポート 8090) などを起動します) です。
+
+[来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](../hands-on/c2pa-provenance-publisher.md) は、自分で Hardhat ノードを起動します。最短起動の Hardhat ノード (ターミナル 1) が動いていれば、先に止めます。
 
 ## よくあるつまずき
 

@@ -370,6 +370,6 @@ Next is the follow-up page [Deliver images and video with tiered access (DataUse
 Other related pages:
 
 - [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — continues with §12–§13 (semantic-level tiering with a VLM, semantic intermediate representation)
-- [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) — bring up the Phase 2 wallet
+- [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) — bring up the wallet (`iw3ip-wallet`) used in Part 2
 - [Tiered access design spec](data-user-vc-tiered-spec.md) — design rationale
 - [Share detections, not raw frames](webcam-event-sharing.md) — share events conditionally

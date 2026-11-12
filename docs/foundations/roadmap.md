@@ -28,7 +28,7 @@ IW3IP を「動かせる」だけでなく「説明できる」状態を目指�
 8. Part 1 の 1.3 で出品と購入を行う ([ハンズオン](../hands-on/index.md#13-マーケットプレイスで売買-v1-経路) の 1.3)
 9. Part 1 の 1.4 (任意)
 
-7 で [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) を選ぶ場合は、6 の最短起動を 7 のあと (8 の前) に行います。このページの publisher は、最短起動の IPFS と同じポート 8080 を使うためです。
+7 で [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) を選ぶ場合は、6 の最短起動を 7 のあと (8 の前) に行います。HA SSI Publisher のページで起動する publisher は、最短起動の IPFS と同じポート 8080 を使うためです。
 
 ここまでで、基本理解と最小ハンズオンは完結します。この先は、[ハンズオン](../hands-on/index.md) の Part 2、Part 3 に必要な分だけ進みます。
 

@@ -4,7 +4,7 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
 
 > **What you'll do**: analyze a webcam image with a local VLM and distribute the generated semantic data (descriptions) over the platform
 >
-> **Prerequisites**: [Environment Setup](../setup/index.md) completed, Docker and Python 3 available, and a USB webcam connected to the PC (the Quickstart stack is not used)
+> **Prerequisites**: [Prerequisites (install tools)](../setup/prerequisites.md) completed, Docker and Python 3 available, and a USB webcam connected to the PC (the Quickstart stack is not used)
 >
 > **Keep running**: nothing needs to be running. §1 starts the publisher, mosquitto and the VLM (Ollama)
 >
@@ -16,7 +16,7 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
     - This is 3.1 in Part 3 (intelligence integration) ([Hands-on](index.md#31-enrich-camera-data-with-a-local-vlm)).
     - Camera capture basics are covered in [Detect with a USB webcam (OpenCV)](webcam.md).
     - This page covers "**camera → local VLM → distribute semantic data**" as a single flow.
-    - You can do this page on its own, once the environment setup is done and you have Docker, Python (a venv with OpenCV) and a USB webcam. You do not need to have finished the Part 2 pages.
+    - You can do this page on its own, once the prerequisites are done and you have Docker, Python (a venv with OpenCV) and a USB webcam. You do not need to have finished the Part 2 pages.
     - Per-tier projection with a VLM is covered in §12 of [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur) in Part 2. It uses the same `--profile vlm` VLM and the same `description_full` / `description_summary` as §12. You can do §12 and this page in either order.
     - Previous page: [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md)
     - Next page: [Protect camera images before handing them to AI (local vs cloud)](privacy-compare.md)

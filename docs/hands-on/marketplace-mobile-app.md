@@ -1,6 +1,6 @@
 # スマホアプリで購入から閲覧まで (Stage A)
 
-Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホーム画面アプリ (PWA: Progressive Web App) として使います。コマンドラインなしで購入から VC 受領、閲覧までタップで進められます。
+Stage 5〜6 で作った backend をそのまま使い、`iot-market-ui` をスマホのホーム画面アプリ (PWA: Progressive Web App) として使います。コマンドラインなしで購入から VC 受領、閲覧までタップで進められます。
 
 > **やること**: PWA として iot-market-ui をスマホで使い、購入と VC 取得を進める
 >
@@ -14,12 +14,11 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 !!! note "このページの位置付け"
     - Part 2 の 2.4 の 4 ページ目です ([ハンズオン](index.md#24-マーケットプレイス--ウォレット-v2-経路))。
-    - このページの「Phase 2」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
     - 前のページ: [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md)
     - 次のページ: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md)
 
 !!! abstract "コマンドラインを使わない PWA 版"
-    Phase 2 で構築した backend をそのまま使い、`iot-market-ui` を
+    Stage 5〜6 で作った backend をそのまま使い、`iot-market-ui` を
     iPhone/Android のホーム画面アプリとして使うハンズオンです。
     コマンドライン操作なしで、購入から VC 受領、データ閲覧までを
     スマホ画面のタップで進めます。Stage A は、このスマホアプリ (PWA) 版を指します。

@@ -1,6 +1,6 @@
 # Marketplace as a phone app (Stage A)
 
-Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (PWA: Progressive Web App) on your phone. You go from purchase through VC receipt to viewing by tapping, with no command line.
+Using the backend you built in Stages 5–6 as is, you use `iot-market-ui` as a home screen app (PWA: Progressive Web App) on your phone. You go from purchase through VC receipt to viewing by tapping, with no command line.
 
 > **What you'll do**: Use iot-market-ui as a PWA on your phone and go through purchase and VC receipt
 >
@@ -14,12 +14,11 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 
 !!! note "Where this page belongs"
     - This is the fourth page of 2.4 in Part 2 ([Hands-on](index.md#24-marketplace--wallet-v2-lane)).
-    - "Phase 2" on this page is a development stage of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
     - Previous page: [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md)
     - Next page: [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)
 
 !!! abstract "A PWA version that needs no command line"
-    In this hands-on you use the backend built in Phase 2 as is, and use `iot-market-ui`
+    In this hands-on you use the backend built in Stages 5–6 as is, and use `iot-market-ui`
     as a home screen app on iPhone/Android.
     Without any command-line operation, you go from purchase through VC receipt to
     viewing the data by tapping on the phone screen. Stage A refers to this smartphone app (PWA) version. There are two ways to use the phone: the PWA version on this page is called "method 1", and a native

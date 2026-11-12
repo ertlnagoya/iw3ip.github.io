@@ -19,6 +19,8 @@ The pages in this section are step-by-step procedures with commands, expected ou
 
     Exception: if you pick [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) in §1.2, do §1.2 right after §1.1 without running Quickstart. The publisher on that page uses port 8080, the same port as the Quickstart IPFS. After §1.2, stop the publisher, run Quickstart, and go on to §1.3.
 
+    In groups where you pick one page, such as §1.2 and §2.1, the "Next" link at the bottom of the page can point to another option in the same group or to a page that is not the next step. Follow each page's Next steps section instead.
+
     Go on to Part 2 and later only when you need them.
 
 ## Basic vs Feature Extensions
@@ -115,7 +117,7 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
 | See it run first | §1.1 [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md) only | approx. 20 min |
 | Cover all of Basic | Part 1 §1.1–§1.3 (pick one device in §1.2) | approx. 50–65 min (§1.1 and §1.2; §1.3 not included) |
 | Also buy on a phone (optional) | Part 1 §1.4 | approx. 20 min |
-| Reach safe / conditional sharing | Part 2 §2.1–§2.3 (pick one page in §2.1) | approx. 3–3.5 hours |
+| Reach safe / conditional sharing | Part 2 §2.1–§2.3 (pick one page in §2.1) | approx. 3–3.25 hours |
 | Reach v2 marketplace integration | Part 2 §2.4 (Stages 5, 6, 7, A) | approx. 3 hours 45 min |
 | Tiered access | Part 2 §2.5: the first Stage T page | approx. 60 min |
 | Image/video delivery and semantic-level tiering | Part 2 §2.5: the next two Stage T pages | approx. 2.5–3 hours |
@@ -253,7 +255,7 @@ The 5 items registered by step 2 of Quickstart (deployment) were not listed by `
 
 Detailed bring-up: [Quickstart (run the stack)](../setup/quickstart.md).
 
-If you go on to §1.4 (optional) after §1.3, keep the Quickstart stack running. Before you go on to Part 2, stop the Quickstart IPFS (`docker compose down` in the `ipfs` directory), because the publisher that Part 2 pages start uses the same port 8080.
+If you go on to §1.4 (optional) after §1.3, keep the Quickstart stack running. Before you go on to Part 2, stop the Quickstart IPFS (`docker compose down` in the `ipfs` directory), because the publisher that Part 2 pages start uses the same port 8080. Also stop the Quickstart frontend (terminal 3, port 5173) with Ctrl+C. Step 6 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) in §2.4 starts iot-market-ui again on port 5173.
 
 ### 1.4 Open the marketplace and buy on a phone
 
@@ -307,7 +309,7 @@ Deliver the data after purchase with **PurchaseViewerVC + ViewerToken** instead 
 - [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — seller-side VC
 - [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md) — dedicated mobile app
 
-### 2.5 Tiered access by trust (Stage T / P)
+### 2.5 Tiered access and provenance (Stage T / P) { #25-tiered-access-by-trust-stage-t--p }
 
 Change what the user sees in steps, based on the user's **DataUserVC**. The first two pages use three tiers: Tier 3 (event, image, video), Tier 2 (event, image), and Tier 1 (event only; the decision is `denied`). The third page turns on the VLM extension and uses four tiers: Tier 3, Tier 2 (event, blurred image, description), Tier 1 (event, summary text), and Tier 0 (event only; the decision is `denied`).
 On the first page you receive and present a PurchaseViewerVC the same way as Steps 7–8 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) in §2.4.

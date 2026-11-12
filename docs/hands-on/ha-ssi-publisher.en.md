@@ -14,6 +14,7 @@ Build a minimal setup that receives Home Assistant state over MQTT and decides w
 
 !!! note "Where this page belongs"
     - This is section 1.2 of Part 1 ([Hands-on](index.md#12-capture-data-from-a-device)). Pick just one of the three pages in 1.2.
+    - The "Next" link at the bottom of the page points to the optional §1.4 phone page. Follow this page's Next steps section instead.
     - "Phase 1–3" on this page are development stages of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
     - Previous page: [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
     - Next page: [Quickstart (run the stack)](../setup/quickstart.md), then section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane) (trade on the marketplace)
@@ -41,7 +42,7 @@ Branches after that:
 
 - If you only want HTTP simulation: compare one `allowed` and one `denied` case
 - If you want to inspect MQTT ingestion as well: publish `person_detected` with `mosquitto_pub`
-- If you want to move into Phase 2: continue with the `flood_risk_high` or `possible_littering` hands-on pages
+- If you want to try Phase 2 (event sharing): continue with the `flood_risk_high` or `possible_littering` hands-on pages (§2.1 of Part 2)
 
 ## What this page covers
 
@@ -217,7 +218,7 @@ docker compose -f infra/docker-compose.yml down
 - Phase 2: prioritize `homeassistant/event/...` for event-driven sharing
 - Phase 3: add SSI Gateway (PEP) before publisher for VC presentation control
 
-If you want to move directly into Phase 2, continue with:
+Phase 2 event sharing is covered in these §2.1 pages of Part 2:
 
 - [Share disaster events](environment-disaster.md) (Phase 2)
 - [Share detections, not raw frames](webcam-event-sharing.md) (Phase 2)

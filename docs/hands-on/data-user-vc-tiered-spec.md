@@ -15,7 +15,7 @@ Publisher が公開するカメラ視野を **イベント／画像／動画** �
 - 既存 5 種類の VC（ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC）と、
   6 種類目として追加する **DataUserVC** の関係
 - 論文 [1] の著者 Li らによるスマートコントラクト `ssi/contracts/DataUserVerifier.sol` に書かれた trustScore（信頼度スコア）算出ロジックを
-  Phase 2 の Publisher にどのように取り込むか
+  Part 2 で使っている Publisher にどのように取り込むか
 - 「購入の申告の属性 (`data_user_attrs`) → trustScore → allowed_views」という単方向データフロー
 - データ供給側（HA / RaspberryPi / USB Webcam）と Publisher の責務分離
 
@@ -30,7 +30,7 @@ Publisher が公開するカメラ視野を **イベント／画像／動画** �
 
 ## 目的
 
-Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/data でイベント取得」
+Part 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/data でイベント取得」
 というフローに対し、**「何を取得できるか」を VC 属性で段階化**します。
 
 - entityType（GovernmentOrganization / Police / Enterprise / Research Organization）
@@ -52,7 +52,7 @@ Phase 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/d
 - bridge ↔ Hardhat の Purchase event 経路
 - Webcam / HA / Demo simulator のデバイス側コード（変更なし）
 
-**Li らの `DataUserVerifier.sol` は、Phase 2 の Publisher が評価ロジックの基準として参照するもの**
+**Li らの `DataUserVerifier.sol` は、Part 2 の Publisher が評価ロジックの基準として参照するもの**
 で、オンチェーン呼び出しはしません（理由は[なぜオンチェーン呼び出しをしないか](#なぜオンチェーン呼び出しをしないか)を参照）。
 
 ## アーキテクチャ
@@ -231,8 +231,8 @@ score >= 60                               -> "access"
 
 `DataUserVerifier.sol` は研究プロトタイプで、以下の事情があります。
 
-- VC フォーマットが W3C VC v1 JSON-LD（Phase 2 は SD-JWT VC）
-- DID 方式が `did:key`（Phase 2 は `did:jwk`）
+- VC フォーマットが W3C VC v1 JSON-LD（Part 2 の実装は SD-JWT VC）
+- DID 方式が `did:key`（Part 2 の実装は `did:jwk`）
 - gas / 確認待ちが OID4VP のフローに合わない
 - ハンズオン環境（Hardhat ローカル）では永続性が壊れやすい
 
@@ -245,7 +245,7 @@ score >= 60                               -> "access"
 ## ssi-ui の扱い
 
 `ssi/ssi-ui/` 配下（git のサブモジュール）の Next.js 試験 UI は **非推奨（deprecated）** とし、
-今後の機能追加は Phase 2 wallet（`iw3ip-wallet`）+ Publisher 側に集約します。
+今後の機能追加は Part 2 で使う wallet（`iw3ip-wallet`）+ Publisher 側に集約します。
 
 ## テスト方針
 

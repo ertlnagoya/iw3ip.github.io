@@ -6,7 +6,7 @@
     の設計仕様である。ConsentVC / ViewerVC / ServiceVC /
     PurchaseViewerVC に続く **5 種類目の VC** (Verifiable Credential) を導入し、
     誰がどの dataset を売ってよいかを VC で示す。実装前に書いた草稿である。
-    本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の「ハンズオンの段階」(§5))。
+    本文中の Stage は Part 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の「ハンズオンの段階」(§5))。
     対応するハンズオンは、[出品者の身元を裏付ける (Seller VC / Stage 7)](../hands-on/marketplace-seller-vc.md)、[ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](../hands-on/marketplace-vc-end-to-end.md)、[購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md) である。
     Stage 8 以降はまだハンズオンが無く、将来の検討事項を指す。
 

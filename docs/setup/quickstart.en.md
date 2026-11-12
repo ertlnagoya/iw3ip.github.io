@@ -1,10 +1,16 @@
 # Quickstart (run the stack)
 
-Using the tools you installed in [Prerequisites (install tools)](prerequisites.md), start the full hands-on environment together.
+Using the tools you installed in [Prerequisites (install tools)](prerequisites.md), start the full hands-on environment together. Do this page after §1.1 of Part 1 of the hands-on.
 Estimated time: **approx. 15–30 min** (the first run pulls Docker images and runs `npm install`).
 
 > This starts **6 kinds of processes**. Because the contract deployment and each of the two mediators also take a terminal, you will open 7 terminals in total.
 > Follow the steps in order.
+
+!!! note "Where this page belongs"
+    - Do this page between §1.1 and §1.2 of Part 1 ([Hands-on](../hands-on/index.md#12-capture-data-from-a-device)).
+    - Before you start, stop the publisher you started in §1.1 (or in §1.2 if you chose HA SSI Publisher). The publisher and the IPFS that this page starts both use port 8080. The command to stop it is in the warning in [step 5](#5-start-ipfs--postgresql-docker).
+    - Previous page: [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) (§1.1). If you pick [Pull from Home Assistant (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) in §1.2, do this page after that page (§1.2)
+    - Next page: §1.2 of [Hands-on](../hands-on/index.md#12-capture-data-from-a-device) (capture data from a device). If you already did HA SSI Publisher in §1.2, go to §1.3 of [Hands-on](../hands-on/index.md#13-trade-on-the-marketplace-v1-lane) (trade on the marketplace)
 
 ## What you are starting — overview
 
@@ -260,9 +266,14 @@ The following pages do not use the Quickstart stack. Each page starts what it ne
 - Part 1 §1.1: [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)
 - Part 1 §1.2: [Pull from Home Assistant (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md)
 - Part 2 §2.1–§2.3: [Share detections, not raw frames](../hands-on/webcam-event-sharing.md), [Share disaster events](../hands-on/environment-disaster.md), [Authenticate the data provider (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md), [Authenticate the viewer (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md), [Authenticate machines (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
+- Part 2 §2.5: [Tier the response by trust (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md), [Deliver images and video with tiered access (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered-media.md), [Tier by semantic level (VLM and semantic representation / Stage T)](../hands-on/data-user-vc-tiered-semantic.md), [Prove where an image came from (C2PA / Stage P)](../hands-on/c2pa-provenance.md), [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](../hands-on/c2pa-provenance-publisher.md), [Trace a VLM summary back to the image (C2PA / Stage P, P3)](../hands-on/c2pa-provenance-vlm.md)
 - Every page in Part 3
 
-The publisher that these pages start uses port 8080, the same port as the Quickstart IPFS (step 5). If IPFS is still running, stop it first with `docker compose down` in the `ipfs` directory.
+On pages that start the publisher, stop the Quickstart IPFS (step 5) first. IPFS and the publisher both use port 8080. To stop IPFS, run `docker compose down` in the `ipfs` directory.
+
+Of the pages above, the ones that do not start the publisher are [Prove where an image came from (C2PA / Stage P)](../hands-on/c2pa-provenance.md) (it runs only Python programs) and the Part 3 pages [Run the regional safety assistant](../hands-on/regional-safety-assistant.md) and [Let an AI plan the steps (LLM Planner)](../hands-on/llm-planner.md) (instead of the publisher, they start the assistant on port 8090 and related services).
+
+[Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](../hands-on/c2pa-provenance-publisher.md) starts its own Hardhat node. If the Quickstart Hardhat node (terminal 1) is running, stop it first.
 
 ## Common stumbles
 

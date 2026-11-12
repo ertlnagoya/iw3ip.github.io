@@ -4,7 +4,7 @@ Take the events you built in [Detect with a USB webcam (OpenCV)](webcam.md) and 
 
 > **What you'll do**: Send detection events to the platform and observe allow/deny by purpose
 >
-> **Prerequisites**: one of the pages in section 1.2 of Part 1 is done (this page uses mock data, so you can do it without a camera)
+> **Prerequisites**: Part 1 (§1.1–§1.3) is done (this page uses mock data, so you can do it without a camera)
 >
 > **Keep running**: nothing needs to be running. This page starts the publisher. Keep the Quickstart IPFS stopped (it shares port 8080)
 >
@@ -14,6 +14,7 @@ Take the events you built in [Detect with a USB webcam (OpenCV)](webcam.md) and 
 
 !!! note "Where this page belongs"
     - This is section 2.1 of Part 2 (Stage 0) ([Hands-on](index.md#21-event-sharing--share-inferences-not-raw-frames-stage-0)). Pick just one of the two pages in 2.1. The other one is [Share disaster events](environment-disaster.md).
+    - The "Next" link at the bottom of the page points to another option in the same group. Follow this page's Next steps section instead.
     - "Phase 1" and "Phase 2" on this page are development stages of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
     - Previous page: section 1.3 of Part 1 ([Hands-on](index.md#13-trade-on-the-marketplace-v1-lane)). 1.4 is optional
     - Next page: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) (2.2)

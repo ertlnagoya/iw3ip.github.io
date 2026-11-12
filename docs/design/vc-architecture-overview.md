@@ -2,7 +2,7 @@
 
 !!! abstract "このページの位置付け"
     [設計](index.md) の章の資料です。
-    Phase 2 で構築した **6 種類の VC × 4 種類のトークン × Stage 0〜7 と
+    Part 2 で構築した **6 種類の VC × 4 種類のトークン × Stage 0〜7 と
     Stage T / A / P のハンズオン**を一覧にまとめた俯瞰資料。各仕様の詳細は個別ページを
     参照。e2e 動作は publisher のテストと iPhone 実機で確認している。
 
@@ -56,7 +56,7 @@ JSON 登録      │ /consents POST  │ —              │ —          │ �
 ## 5. ハンズオンの段階 (Stage 0〜7, T, A, P)
 
 ```
-Phase 2 hands-on の依存グラフ
+Part 2 のハンズオンの依存グラフ
 
   Stage 0 (baseline: /consents JSON 登録)
    ├── webcam-event-sharing
@@ -162,7 +162,7 @@ Stage 5 の `eth_did_bound` audit row が、**Ethereum 鍵 ↔ did:jwk** のリ�
 
 ## 10. 既知の限界 (Stage 8+ の検討事項)
 
-以下は Phase 2 の Stage 0〜7 では **意図的にスコープ外**:
+以下は Part 2 の Stage 0〜7 では **意図的にスコープ外**:
 
 - **EIP-712 署名による身元バインド** (eth ↔ did:jwk のなりすまし対策)
 - **on-chain ガード** (Merchandise 登録時に SellerToken proof を Solidity 側で要求)

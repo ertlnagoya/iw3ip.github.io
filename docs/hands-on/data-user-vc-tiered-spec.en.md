@@ -15,7 +15,7 @@ This is a design document, not a step-by-step. For the walk-through, see
 - How the new **DataUserVC** relates to the existing five VCs
   (ConsentVC / ViewerVC / ServiceVC / PurchaseViewerVC / SellerVC)
 - How the trustScore logic from `DataUserVerifier.sol`, implemented by Li et al., the authors of [1], is folded
-  into the Phase 2 Publisher
+  into the Publisher used in Part 2
 - The unidirectional flow: purchase claim attributes (`data_user_attrs`) → trustScore → allowed_views
 - Separation of concerns between data sources (HA / RaspberryPi / USB
   Webcam) and the Publisher
@@ -35,7 +35,7 @@ This is a design document, not a step-by-step. For the walk-through, see
 
 ## Goal
 
-On top of the existing Phase 2 flow (VC presentation → verification →
+On top of the existing Part 2 flow (VC presentation → verification →
 token mint → `/platform/data`), we tier **what** the holder can fetch by
 their DataUserVC attributes:
 
@@ -242,8 +242,8 @@ Keys not allowed are **omitted** (not nulled).
 
 `DataUserVerifier.sol` is a research prototype with mismatches:
 
-- VC format is W3C VC v1 JSON-LD (Phase 2 uses SD-JWT VC)
-- DID method is `did:key` (Phase 2 uses `did:jwk`)
+- VC format is W3C VC v1 JSON-LD (the Part 2 implementation uses SD-JWT VC)
+- DID method is `did:key` (the Part 2 implementation uses `did:jwk`)
 - gas + confirmation does not fit the OID4VP latency budget
 - the local Hardhat node loses state on restart
 
@@ -257,7 +257,7 @@ and the tests' expected values by hand.
 ## ssi-ui
 
 The `ssi/ssi-ui/` Next.js prototype (a git submodule) is **deprecated**. Future work goes to
-the Phase 2 wallet (`iw3ip-wallet`) + Publisher.
+the wallet used in Part 2 (`iw3ip-wallet`) + Publisher.
 
 ## Test plan
 

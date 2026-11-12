@@ -4,7 +4,7 @@ Turn detections from DFRobot's [1] HUSKYLENS2 AI camera [2] into event files.
 
 > **What you'll do**: Generate event files from HUSKYLENS2 (or mock) detections and confirm they are registered as merchandise
 >
-> **Prerequisites**: [Environment Setup](../setup/index.md) + [Quickstart (run the stack)](../setup/quickstart.md)
+> **Prerequisites**: [Prerequisites (install tools)](../setup/prerequisites.md) + [Quickstart (run the stack)](../setup/quickstart.md)
 >
 > **Keep running**: the [Quickstart (run the stack)](../setup/quickstart.md) stack (especially `mediator-owner`). Keep the publisher from 1.1 stopped (it shares port 8080 with the Quickstart IPFS)
 >
@@ -14,6 +14,7 @@ Turn detections from DFRobot's [1] HUSKYLENS2 AI camera [2] into event files.
 
 !!! note "Where this page belongs"
     - This is section 1.2 of Part 1 ([Hands-on](index.md#12-capture-data-from-a-device)). Pick just one of the three pages in 1.2.
+    - The "Next" link at the bottom of the page points to another option in the same group. Follow this page's Next steps section instead.
     - "Phase 1" on this page is a development stage of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
     - Previous page: [Quickstart (run the stack)](../setup/quickstart.md)
     - Next page: section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane) (trade on the marketplace)

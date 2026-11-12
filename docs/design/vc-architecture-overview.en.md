@@ -2,7 +2,7 @@
 
 !!! abstract "Where this page belongs"
     This is a document in the [Design](index.md) section.
-    A bird's-eye summary of what Phase 2 built: **6 VC kinds × 4 token
+    A bird's-eye summary of what Part 2 built: **6 VC kinds × 4 token
     kinds × hands-on Stages 0–7 plus Stages T / A / P**. See the individual pages
     for the details of each spec. End-to-end behavior is checked with the
     publisher tests and on a real iPhone.
@@ -57,7 +57,7 @@ Listing governance│ —               │ —              │ —          �
 ## 5. Hands-on stages (Stages 0–7, T, A, P)
 
 ```
-Dependency graph of the Phase 2 hands-on
+Dependency graph of the Part 2 hands-on
 
   Stage 0 (baseline: /consents JSON registration)
    ├── webcam-event-sharing
@@ -163,7 +163,7 @@ The `eth_did_bound` audit row of Stage 5 records the link between the **Ethereum
 
 ## 10. Known limitations (to be considered for Stage 8+)
 
-The following are **intentionally out of scope** for Stages 0–7 of Phase 2:
+The following are **intentionally out of scope** for Stages 0–7 of Part 2:
 
 - **Identity binding with EIP-712 signatures** (protection against eth ↔ did:jwk impersonation)
 - **On-chain guard** (requiring a SellerToken proof on the Solidity side when registering Merchandise)

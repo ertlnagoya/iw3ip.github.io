@@ -4,7 +4,7 @@
 
 > **やること**: ウェブカメラ画像をローカル VLM で解析し、生成した意味データ（説明文）を基盤上で流通させる
 >
-> **前提**: [環境構築](../setup/index.md) が済み、Docker と Python 3 が使えること。USB ウェブカメラを PC につないでおくこと (最短起動のスタックは使いません)
+> **前提**: [事前準備 (ツールのインストール)](../setup/prerequisites.md) が済み、Docker と Python 3 が使えること。USB ウェブカメラを PC につないでおくこと (最短起動のスタックは使いません)
 >
 > **起動しておくもの**: なし。§1 で publisher、mosquitto、VLM (Ollama) を起動します
 >
@@ -16,7 +16,7 @@
     - Part 3（知能統合）の 3.1 です ([ハンズオン](index.md#31-ローカル-vlm-でカメラデータを意味づけ))。
     - カメラ取り込みの基礎は [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) で扱います。
     - 本ページは「**カメラ → ローカル VLM → 意味データ流通**」を 1 つの流れとして扱います。
-    - このページは、環境構築が済んでいて、Docker、Python (OpenCV を入れた venv)、USB ウェブカメラがあれば、単独で進められます。Part 2 のページを済ませていなくても構いません。
+    - このページは、事前準備が済んでいて、Docker、Python (OpenCV を入れた venv)、USB ウェブカメラがあれば、単独で進められます。Part 2 のページを済ませていなくても構いません。
     - VLM による tier 別の出し分けは、Part 2 の [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。§12 と同じ `--profile vlm` の VLM と `description_full` / `description_summary` を使います。§12 との順番は、どちらが先でも構いません。
     - 前のページ: [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md)
     - 次のページ: [AI に渡す前にカメラ画像を守る (ローカルとクラウドの比較)](privacy-compare.md)

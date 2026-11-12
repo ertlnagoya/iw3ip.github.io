@@ -31,7 +31,7 @@ IW3IP の全体像、実装例、ハンズオン手順をまとめたドキュ�
 | 章 | 目的 | 書いてあること | 主な読者 |
 |---|---|---|---|
 | 学習基礎 | 技術の基本を理解する | ブロックチェーン、Hardhat、SSI / DID / VC の考え方と学習の順序 | 受講者 |
-| 環境構築 | 演習の環境を用意する | ツールのインストールと最短起動 | 受講者 |
+| 環境構築 | 演習の環境を用意する | ツールのインストール (最短起動はハンズオンの Part 1 の中で行います) | 受講者 |
 | ハンズオン | 動かして理解する | コマンド、期待する出力、確認ポイント | 受講者 |
 | [設計](design/index.md) | 仕組みと設計判断の理由を説明する | VC・トークン・API・データの流れ、選んだ方式と理由、未解決の課題 | 機能を拡張・実装する人、発展学習をする受講者、講師 |
 | [困ったとき](operations/index.md) | 演習中に詰まったときに解決する | トラブルシュート、FAQ | 受講者・TA |
@@ -138,7 +138,7 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
 5. [ハンズオン](hands-on/index.md#13-マーケットプレイスで売買-v1-経路) の Part 1 の 1.3 (出品と購入)
 6. 1.4 (任意)
 
-1.2 で [Home Assistant のデータを取り込む (HA SSI Publisher)](hands-on/ha-ssi-publisher.md) を選ぶ場合は、最短起動をせずに 1.1 のあと 1.2 を行い、1.2 を終えてから最短起動を行って 1.3 に進みます。このページの publisher は、最短起動の IPFS と同じポート 8080 を使うためです。
+1.2 で [Home Assistant のデータを取り込む (HA SSI Publisher)](hands-on/ha-ssi-publisher.md) を選ぶ場合は、最短起動をせずに 1.1 のあと 1.2 を行い、1.2 を終えてから最短起動を行って 1.3 に進みます。HA SSI Publisher のページで起動する publisher は、最短起動の IPFS と同じポート 8080 を使うためです。
 
 途中で詰まったら [トラブルシュート](operations/troubleshooting.md) を参照してください。講師・TA は、先に [授業ガイド](foundations/course-guide.md) を読んで授業の構成を決めます。
 
