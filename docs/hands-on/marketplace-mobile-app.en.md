@@ -4,11 +4,19 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 
 > **What you'll do**: Use iot-market-ui as a PWA on your phone and go through purchase and VC receipt
 >
-> **Prerequisites**: [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md), Step E0 of [Stage 6](marketplace-vc-end-to-end.md) (deploy and public key registration)
+> **Prerequisites**: [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md), Step E0 of [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md) (deploy and public key registration)
+>
+> **Keep running**: the Hardhat node on which you did Step E0 of Stage 6. Step M0 restarts the publisher, the bridge and iot-market-ui
 >
 > **What you need**: PC + smartphone (iw3ip-wallet) + MetaMask mobile
 >
 > **Time required**: approx. 30 min
+
+!!! note "Where this page belongs"
+    - This is the fourth page of 2.4 in Part 2 ([Hands-on](index.md#24-marketplace--wallet-v2-lane)).
+    - "Phase 2" on this page is a development stage of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
+    - Previous page: [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md)
+    - Next page: [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)
 
 !!! abstract "A PWA version that needs no command line"
     In this hands-on you use the backend built in Phase 2 as is, and use `iot-market-ui`
@@ -16,7 +24,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
     Without any command-line operation, you go from purchase through VC receipt to
     viewing the data by tapping on the phone screen. The PWA version on this page is called "option A", and a native
     app (React Native) with the wallet function built in is called "option B". Option B is planned
-    as Stage 9.
+    as Stage 9. Stage 9 is only a plan; there is no hands-on page for it yet.
 
 !!! tip "Same data as Stage 0"
     In Stage A, you choose what to purchase from the list of Merchandise registered by the
@@ -379,6 +387,14 @@ and the troubleshooting section of [Stage 7](marketplace-seller-vc.md).
 - **Offline support**: It is a PWA, but the service worker is pass-through. Chain
   reads are always online
 - **iOS notifications / background processing**: Limited by the iOS PWA restrictions
+
+## Next steps
+
+Next is [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) in 2.5. You change what is shown according to the recipient's trust level.
+
+- Stage T calls `/marketplace/claim` directly with curl, so it does not use the Hardhat node, the bridge or iot-market-ui. You can stop them.
+- The publisher is restarted in §1 of Stage T.
+- Stage T also uses the phone wallet (iw3ip-wallet).
 
 ## Related
 

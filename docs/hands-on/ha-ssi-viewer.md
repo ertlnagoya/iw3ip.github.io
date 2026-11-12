@@ -6,13 +6,18 @@
 >
 > **前提**: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) を済ませていること
 >
+> **起動しておくもの**: 2.2 で起動した publisher (`ssi-wallet` プロファイル)。止めた場合は手順 1 で起動します。最短起動の IPFS は止めておきます (ポート 8080 が重なるため)
+>
 > **使うもの**: PC + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 約 45 分
 
-!!! note "Stage 1 の続きです"
-    [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) (PolicyToken による書き込み認可) を済ませた前提で進めます。
-    本ページでは **読み出し** を VC で保護する Stage 3 を扱います。
+!!! note "このページの位置付け"
+    - Part 2 の 2.3 (Stage 3) です ([ハンズオン](index.md#23-役割の分離--閲覧と書き込みを分ける))。2.3 には、このページと [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) の 2 ページがあります。
+    - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) (PolicyToken による書き込み認可) を済ませた前提で進めます。本ページでは **読み出し** を VC で保護する Stage 3 を扱います。
+    - このページに出てくる「Phase 3」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
+    - 前のページ: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) (2.2)
+    - 次のページ: [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) (2.3)
 
 !!! tip "dataset の選択"
     本ハンズオンの例は `home/env/temperature` で書かれていますが、Stage 0
@@ -236,14 +241,14 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=10" | python3 -m json.tool
 | audit `raw_topic` | `platform/ingest` | `platform/data` |
 | VC claim | `allowed_purposes` | `allowed_actions` |
 
-## 次のステップ
+## 停止
 
-ViewerVC は **dataset を直接指定して読む** 形でした。ほかの認可の形は、次のページで扱います。
+次のページ [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) に進む場合は、止めずにそのまま進めます。ここで終える場合は、次のコマンドで止めます。
 
-- [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) — 機器からの連続書き込み (ServiceVC)
-- [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) — 購入と結びついた読み出し (PurchaseViewerVC)
-- [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md) — Stage 1〜5 の総合演習
-- [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) — 出品者の身元の管理
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile ssi-wallet down
+```
 
 ## 拡張ヒント
 
@@ -265,6 +270,20 @@ ViewerVC は **dataset を直接指定して読む** 形でした。ほかの認
   - 確認: 提示のあとで publisher を作り直していないか (ViewerToken と書き込んだデータは publisher のメモリにあり、作り直すと消える。§2 の書き込みからやり直し、§4 で提示し直す)
 - 症状: `/platform/data` が 401 viewer_token_expired
   - 対応: TTL (60 秒) が切れている。§4 の提示からやり直す
+
+## 次に進む { #次のステップ }
+
+次は、2.3 のもう 1 つのページ [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) です ([ハンズオン](index.md#23-役割の分離--閲覧と書き込みを分ける))。
+
+- publisher は `ssi-wallet` プロファイルのまま動かしておきます。次のページの手順 1 でも同じコマンドで起動します。止めた場合も、その手順 1 で起動し直せます。
+- 最短起動の IPFS は止めたままにします。IPFS と publisher は、どちらもポート 8080 を使うためです。
+
+ViewerVC は **dataset を直接指定して読む** 形でした。ほかの認可の形は、次のページで扱います。
+
+- [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) — 機器からの連続書き込み (ServiceVC)
+- [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) — 購入と結びついた読み出し (PurchaseViewerVC)
+- [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md) — Stage 1〜5 の総合演習
+- [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) — 出品者の身元の管理
 
 ## 参考文献
 

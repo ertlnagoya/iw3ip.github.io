@@ -68,6 +68,10 @@ sequenceDiagram
 - Hardhat はあくまで開発・学習用
 - 本番では、ネットワーク運用、ガスコスト、障害対応、秘密鍵管理を別途考える必要がある
 
+## 次に読むページ
+
+[学習ロードマップ（初級者向け）](roadmap.md) の最短学習パスでは、次は [SSI / DID / VC 基礎](ssi-did-vc-basics.md) です。
+
 ## 参考文献
 
 [1] Nomic Foundation, "Hardhat 2 Documentation," <https://v2.hardhat.org/docs>

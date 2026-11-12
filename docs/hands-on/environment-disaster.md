@@ -4,11 +4,19 @@
 
 > **やること**: 疑似データで防災イベントを生成 → 共有 → 観察
 >
-> **前提**: [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md)
+> **前提**: Part 1 の 1.2 のどれか 1 つを済ませていること (疑似データで進めるので、カメラが無くても進められます)
+>
+> **起動しておくもの**: なし。このページで publisher を起動します。最短起動の IPFS は止めておきます (ポート 8080 が重なるため)
 >
 > **使うもの**: PC のみ
 >
 > **所要時間**: 約 30 分
+
+!!! note "このページの位置付け"
+    - Part 2 の 2.1 (Stage 0) です ([ハンズオン](index.md#21-イベント共有--生データではなく結果だけ-stage-0))。2.1 の 2 ページのうち、どちらか 1 つを選べば十分です。もう 1 つは [検知イベントだけを共有する](webcam-event-sharing.md) です。
+    - このページの「Phase 1」「Phase 2」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
+    - 前のページ: Part 1 の 1.3 ([ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路))。1.4 は任意です
+    - 次のページ: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) (2.2)
 
 この Hands-on では、**Phase 2: Event / Intelligence Sharing** を最小構成で試します。
 
@@ -288,9 +296,19 @@ Phase 1 では、温度や電力のようなデータ共有を中心に見まし
 3. 地図表示や通知アプリと連携する
 4. 複数の共有先ごとに Consent VC を分ける
 
+## 次に進む
+
+2.1 は 1 つ選べば十分です。次は 2.2 の [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) です ([ハンズオン](index.md#22-同意-consent-vc-を入れる-stage-1))。
+
+- publisher は動かしたままで構いません。次のページの手順 1 で、`ssi-wallet` プロファイルを付けて起動し直します。
+- 最短起動の IPFS は止めたままにします。IPFS と publisher は、どちらもポート 8080 を使うためです。
+- Stage 1 を済ませたら、このページの下の補論も試せます。
+
+ここで終える場合は、`cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml down` で publisher を止めます。
+
 ## 補論: ウォレットモードによる認可
 
-この補論は [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) を済ませてから試します。
+この補論は任意です。[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) (Stage 1) を使うので、Stage 1 を済ませてから試します。Stage 1 のあとで、このページに戻って試しても構いません。
 
 本編では `consent_flood_risk_high.json` を `/consents` に POST して
 ポリシー登録しました。これは「同意の記録を平文 JSON でサーバに置く」

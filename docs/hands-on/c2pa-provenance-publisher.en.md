@@ -10,14 +10,19 @@ These are the two images you make on this page. On the left is the captured imag
 >
 > **Prerequisites**: §1–§3 of [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) are done. Docker and Node.js are available. The phone wallet is not used
 >
+> **Keep running**: nothing. §2 starts the Hardhat node and §3 starts the publisher. If another Hardhat node is running, stop it first
+>
 > **What you need**: a PC (a USB webcam or built-in camera is optional)
 >
 > **Time required**: approx. 40–60 minutes
 
 !!! note "Where this page belongs"
-    This hands-on runs P1 and P2 of the [C2PA provenance pipeline — provenance for camera footage and sensor data (Stage P design spec)](../design/c2pa-provenance-spec.md).
-    P1 is validation and the audit log at the publisher (§7.1 and §7.3 of the design spec); P2 is the provenance of the Tier 2 image (§5.3), what each tier is shown (§7.2), and token issuance (§8).
-    Tiers 1–3 and DataUserVC were covered in [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) and [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md).
+    - This is the fifth page of 2.5 in Part 2 ([Hands-on](index.md#25-tiered-access-by-trust-stage-t--p)).
+    - This hands-on runs P1 and P2 of the [C2PA provenance pipeline — provenance for camera footage and sensor data (Stage P design spec)](../design/c2pa-provenance-spec.md).
+    - P1 is validation and the audit log at the publisher (§7.1 and §7.3 of the design spec); P2 is the provenance of the Tier 2 image (§5.3), what each tier is shown (§7.2), and token issuance (§8).
+    - Previous page: [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md)
+    - Next page: [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md)
+    - Tiers 1–3 and DataUserVC were covered in [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) and [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md).
 
 ## Goal
 
@@ -378,6 +383,13 @@ docker compose -f infra/docker-compose.yml up -d publisher
   - Check: is the face in the photo you passed with `--image` turned sideways or too small? Try the default drawing (no option) and see whether its face is blurred
 - Symptom: `HH411: The library @openzeppelin/contracts ... is not installed`
   - Check: did you run `npm install` in `iot-market/` in §1?
+
+## Next steps
+
+Next is [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md). You attach provenance to the VLM summary text as well.
+
+- Keep the Hardhat node running. The next page uses the ProvenanceToken deployed in §2.
+- Keep the publisher running with the C2PA settings. Do not do [Return to the normal settings](#return-to-the-normal-settings) yet. §1 of the next page recreates the publisher with the same settings.
 
 ## References
 

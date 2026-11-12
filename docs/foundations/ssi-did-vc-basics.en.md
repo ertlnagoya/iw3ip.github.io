@@ -98,6 +98,12 @@ The Phase 1 sample (registering JSON equivalent to a Consent VC with `/consents`
 - DID resolution against DID Documents
 - PEP in front of publisher
 
+## Read Next
+
+In the short learning path of the [Learning Roadmap](roadmap.md), the next page is [Prerequisites (install tools)](../setup/prerequisites.md). This is the last of the foundations pages.
+
+You first receive and present a VC with a wallet in [Authenticate the data provider (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md) in hands-on Part 2. Hands-on pages before it that handle consent register a JSON record equivalent to a Consent VC at `/consents`.
+
 ## References
 
 [1] Decentralized Identity Foundation, "Decentralized Identity Foundation (DIF)," <https://identity.foundation/>

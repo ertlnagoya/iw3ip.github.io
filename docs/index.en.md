@@ -136,16 +136,12 @@ Open:
 
 ## Recommended Learning Order
 
-1. [Learning Roadmap](foundations/roadmap.md)
-2. [Blockchain Basics](foundations/blockchain-basics.md)
-3. [Hardhat Basics (Blockchain Used in This Site)](foundations/hardhat-basics.md)
-4. [SSI / DID / VC Basics](foundations/ssi-did-vc-basics.md)
-5. [Prerequisites (install tools)](setup/prerequisites.md)
-6. [Run the whole pipeline without hardware (HA Demo Simulator)](hands-on/ha-demo-simulator.md) (run the whole flow without hardware)
-7. [Quickstart (run the stack)](setup/quickstart.md)
-8. [Hands-on](hands-on/index.md)
-9. [Design](design/index.md) (when you want the mechanisms in detail)
-10. [References and Further Learning Materials](foundations/references.md)
+The reading order is in the [Learning Roadmap](foundations/roadmap.md). After the foundations pages, do the hands-on part in this order.
+
+1. [Prerequisites (install tools)](setup/prerequisites.md)
+2. [Run the whole pipeline without hardware (HA Demo Simulator)](hands-on/ha-demo-simulator.md)
+3. [Quickstart (run the stack)](setup/quickstart.md)
+4. §1.2 of Part 1 in [Hands-on](hands-on/index.md)
 
 If you get stuck, see [Troubleshooting](operations/troubleshooting.md). Instructors and TAs should first read the [Course Guide](foundations/course-guide.md) to plan the course.
 

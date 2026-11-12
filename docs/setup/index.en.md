@@ -98,11 +98,14 @@ It is fine to stop partway. Each Part builds on the knowledge of the previous on
 
 ## Setup steps
 
-Follow these in order. Each page ends with a "you can move on if…" checklist.
+Follow these in order. The Prerequisites and Quickstart pages end with a "you can move on if…" checklist.
 
 1. [Prerequisites (install tools)](prerequisites.md)
-2. [Quickstart (run the stack)](quickstart.md)
-3. If something breaks → [Troubleshooting](../operations/troubleshooting.md)
+2. [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) (§1.1 of hands-on Part 1; it does not use the Quickstart stack and runs with Docker Compose only)
+3. [Quickstart (run the stack)](quickstart.md)
+4. Go on to §1.2 of Part 1 in [Hands-on](../hands-on/index.md)
+
+If something breaks, see [Troubleshooting](../operations/troubleshooting.md).
 
 ## Mini-glossary
 
@@ -154,6 +157,10 @@ Bare minimum:
 Extra for feature-extension part:
 
 - **A smartphone** (Android / iPhone) — to install the SSI wallet
+
+Needed for §1.4 of Part 1 (optional):
+
+- **A smartphone** — to install MetaMask Mobile and buy on the marketplace from the phone's browser
 
 Optional hardware (everything works without it):
 

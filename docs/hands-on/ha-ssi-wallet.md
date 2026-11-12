@@ -6,9 +6,17 @@
 >
 > **前提**: [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) または [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md) を済ませてあること。できれば Stage 0 ([検知イベントだけを共有する](webcam-event-sharing.md) または [防災イベントを共有する](environment-disaster.md)) も済ませておく
 >
+> **起動しておくもの**: なし。このページの手順 1 で publisher を `ssi-wallet` プロファイルで起動します。2.1 の publisher は動いたままで構いません。最短起動の IPFS は止めておきます (ポート 8080 が重なるため)
+>
 > **使うもの**: PC + スマホ (iw3ip-wallet 入り)
 >
 > **所要時間**: 約 60 分
+
+!!! note "このページの位置付け"
+    - Part 2 の 2.2 (Stage 1) です ([ハンズオン](index.md#22-同意-consent-vc-を入れる-stage-1))。
+    - このページに出てくる「Phase 1」「Phase 3」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
+    - 前のページ: 2.1 の [検知イベントだけを共有する](webcam-event-sharing.md) または [防災イベントを共有する](environment-disaster.md)
+    - 次のページ: [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) (2.3)
 
 !!! note "使用するウォレット"
     本ページでは、Sphereon mobile-wallet [1] を fork した
@@ -53,15 +61,6 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 - `did:jwk` と SD-JWT VC を用いた軽量構成
 - `allowed` / `denied` が VC の内容と `purpose` によって決まる様子
 
-## よくある問題
-
-- Presentation Definition の `input_descriptors` と VC の claim が食い違うと、
-  ウォレットが「提示可能な VC がない」と判定する
-- DID メソッドが issuer / wallet / verifier でずれると署名検証に失敗する
-- SD-JWT VC・W3C VC-JWT・mdoc には互換性がないため、1 つの形式に固定する
-- スマホと PC が別ネットワークだと QR 経由の redirect が届かない
-  （[スマホでマーケットを開いて購入する (v1)](mobile-viewer.md) と同じ前提）
-
 ## 前提
 
 - Docker / Docker Compose が使える
@@ -70,13 +69,7 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 - スマホに `iw3ip-wallet`（fork 版）のビルドをインストールできる
   （TestFlight / 内部配布 APK / Expo dev build のいずれか）
 - [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) または [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md) で publisher を一度起動できている
-
-## 関連リポジトリ
-
-- `iw3ip-wallet`: <https://github.com/ertlnagoya/iw3ip-wallet>
-  - upstream: Sphereon-Opensource/mobile-wallet [1]
-  - ブランチ方針: `main` は upstream 追従、`iw3ip/*` で IW3IP 固有改変
-- [Blockchain_IoT_Marketplace](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace): publisher (OID4VCI / OID4VP のエンドポイントを含む。`ssi-wallet` プロファイルで起動)
+- [最短起動 (スタックを動かす)](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
 
 ## 最短ルート
 
@@ -307,16 +300,16 @@ docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_tok
 
 §5 から 5 分を過ぎた場合や、`policy_token_expired` が返る場合は、トークンの期限が切れています。§5 の提示をやり直し、上のコマンドで出た最新の行 (最後の行) の `token=` の値を使います。
 
-## 次のステップ
+## 停止
 
-このハンズオン (Stage 1) で扱ったのは **書き込み単回認可** (ConsentVC + PolicyToken)
-だけです。ほかの認可の形は、次のページで扱います。
+次のページ [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) に進む場合は、止めずにそのまま進めます。ここで終える場合は、次のコマンドで止めます。
 
-- [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) — 読み出し。TTL 内は何度でも使える (ViewerVC)
-- [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) — 機器からの連続書き込み (ServiceVC)
-- [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) — 購入と結びついた読み出し (PurchaseViewerVC)
-- [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md) — Stage 1〜5 の総合演習
-- [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) — 出品者の身元の管理
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile ssi-wallet down
+```
+
+ウォレットに保存した VC は、publisher を止めてもスマホに残ります。
 
 ## 拡張ヒント
 
@@ -325,6 +318,15 @@ docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_tok
 - **SIOPv2 による holder 認証**: 提示と同時に holder の DID を検証する
 - **Phase 3 連携**: [AI に手順を考えさせる (LLM Planner)](llm-planner.md) の plan 実行前に
   VC 提示を要求し、知能統合層での権限チェックに拡張する
+
+## よくある問題
+
+- Presentation Definition の `input_descriptors` と VC の claim が食い違うと、
+  ウォレットが「提示可能な VC がない」と判定する
+- DID メソッドが issuer / wallet / verifier でずれると署名検証に失敗する
+- SD-JWT VC・W3C VC-JWT・mdoc には互換性がないため、1 つの形式に固定する
+- スマホと PC が別ネットワークだと QR 経由の redirect が届かない
+  （[スマホでマーケットを開いて購入する (v1)](mobile-viewer.md) と同じ前提）
 
 ## トラブル時
 
@@ -335,6 +337,30 @@ docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_tok
   - 確認: 時刻ずれ（`iat` / `exp`）が大きすぎないか
 - 症状: QR が開けない
   - 確認: スマホと PC が同じ LAN か（[スマホでマーケットを開いて購入する (v1)](mobile-viewer.md) 参照）
+
+## 関連リポジトリ
+
+- `iw3ip-wallet`: <https://github.com/ertlnagoya/iw3ip-wallet>
+  - upstream: Sphereon-Opensource/mobile-wallet [1]
+  - ブランチ方針: `main` は upstream 追従、`iw3ip/*` で IW3IP 固有改変
+- [Blockchain_IoT_Marketplace](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace): publisher (OID4VCI / OID4VP のエンドポイントを含む。`ssi-wallet` プロファイルで起動)
+
+## 次に進む { #次のステップ }
+
+次は 2.3 の [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) です ([ハンズオン](index.md#23-役割の分離--閲覧と書き込みを分ける))。
+
+- publisher は `ssi-wallet` プロファイルのまま動かしておきます。次のページの手順 1 でも同じコマンドで起動します。止めた場合も、その手順 1 で起動し直せます。
+- 最短起動の IPFS は止めたままにします。IPFS と publisher は、どちらもポート 8080 を使うためです。
+- 2.1 のページの補論は、Stage 1 を済ませた今なら試せます。
+
+このハンズオン (Stage 1) で扱ったのは **書き込み単回認可** (ConsentVC + PolicyToken)
+だけです。ほかの認可の形は、次のページで扱います。
+
+- [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) — 読み出し。TTL 内は何度でも使える (ViewerVC)
+- [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) — 機器からの連続書き込み (ServiceVC)
+- [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) — 購入と結びついた読み出し (PurchaseViewerVC)
+- [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md) — Stage 1〜5 の総合演習
+- [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) — 出品者の身元の管理
 
 ## 参考文献
 

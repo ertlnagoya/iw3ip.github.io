@@ -10,14 +10,19 @@
 >
 > **前提**: [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) の §1〜§3 を終えていること
 >
+> **起動しておくもの**: 前のページの Hardhat ノード (ProvenanceToken をデプロイしたもの)。publisher は §1 で作り直します
+>
 > **使うもの**: PC (本物の VLM を試す場合は、4.7 GB の llava のモデルを Docker で動かせること)
 >
 > **所要時間**: 約 20〜30 分 (本物の VLM を試す場合は、さらに 30 分〜1 時間)
 
 !!! note "このページの位置付け"
-    [C2PA 来歴パイプライン — カメラ映像とセンサーデータの来歴証明 (Stage P 設計仕様)](../design/c2pa-provenance-spec.md) の P3 を動かすハンズオンです。
-    P3 は、Tier 1 の要約テキストの来歴 (設計仕様の §5.5) と、その見せ方 (§7.2) です。
-    VLM による要約は [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) と [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) で扱いました。
+    - Part 2 の 2.5 の最後のページです ([ハンズオン](index.md#25-信頼度に応じた段階アクセス-stage-t--p))。
+    - [C2PA 来歴パイプライン — カメラ映像とセンサーデータの来歴証明 (Stage P 設計仕様)](../design/c2pa-provenance-spec.md) の P3 を動かすハンズオンです。
+    - P3 は、Tier 1 の要約テキストの来歴 (設計仕様の §5.5) と、その見せ方 (§7.2) です。
+    - VLM による要約は [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) で扱いました。ローカルの VLM の使い方は、Part 3 の [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) で扱います。順番はどちらが先でも構いません。このページは、決まった文を返す stub の VLM で最後まで進められます。
+    - 前のページ: [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md)
+    - 次のページ: Part 3 の [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md)
 
 ## 目的
 
@@ -203,7 +208,9 @@ P2 までとの違いをまとめます。
 
 ## 4. 本物の VLM で試す
 
-stub の代わりに、Ollama [3] で動く VLM を使います。初めて使う場合は、モデルのダウンロードに時間がかかります ([ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) と同じ手順です)。
+この節は任意です。§2 までは stub の VLM で進められます。
+
+stub の代わりに、Ollama [3] で動く VLM を使います。初めて使う場合は、モデルのダウンロードに時間がかかります (Part 3 の [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) でも、同じ `--profile vlm` で VLM を起動します)。
 
 ```bash
 VLM_MODEL=llava docker compose -f infra/docker-compose.yml --profile vlm up -d vlm vlm-pull
@@ -286,6 +293,16 @@ docker compose -f infra/docker-compose.yml --profile vlm stop vlm
   - 確認: Hardhat ノードが動いているか。前のページの §2 と §3 をやり直す
 - 症状: `TimeoutError` でプログラムが止まる
   - 確認: `--timeout` を延ばして、もう一度実行する。プログラムは新しい撮影画像に署名するため、VLM の推論も最初からやり直しになります
+
+## 次に進む
+
+Part 2 はここで終わりです。[ハンズオン](index.md#part-2-の成功判定) の「Part 2 の成功判定」で、確かめたことを振り返れます。
+
+次は Part 3 の [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) です。ローカルの VLM でカメラ画像を意味づけし、その結果を基盤で流通させます。
+
+- Hardhat ノードは、Part 3 では使いません。Ctrl+C で止めて構いません。
+- publisher は、[元の設定に戻す](#元の設定に戻す) のとおり C2PA の設定を外して起動し直します。次のページの §1 でも、VLM の設定で起動し直します。
+- §4 で起動した `vlm` のコンテナは、次のページでも使うので、動かしたままで構いません。
 
 ## 参考文献
 

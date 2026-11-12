@@ -69,6 +69,10 @@ Keep this difference in mind so you do not confuse a learning-oriented local cha
 - Hardhat is mainly for development and education
 - production use requires separate consideration for network operations, gas costs, incident handling, and key management
 
+## Read Next
+
+In the short learning path of the [Learning Roadmap](roadmap.md), the next page is [SSI / DID / VC Basics](ssi-did-vc-basics.md).
+
 ## References
 
 [1] Nomic Foundation, "Hardhat 2 Documentation," <https://v2.hardhat.org/docs>

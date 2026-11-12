@@ -4,11 +4,20 @@ v1 マーケットプレイス (MetaMask [1] で購入し、データは simple-
 
 > **やること**: スマホのブラウザでマーケットプレイス画面を開き、購入操作まで確かめる
 >
-> **前提**: [最短起動 (スタックを動かす)](../setup/quickstart.md) で v1 スタックが立ち上がっていること
+> **前提**: [ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 (PC での出品と購入) を済ませていること。[最短起動 (スタックを動かす)](../setup/quickstart.md) で v1 スタックが立ち上がっていること
+>
+> **起動しておくもの**: 1.3 で使った最短起動のスタック (ターミナル 1〜7。IPFS と PostgreSQL を含む)。publisher は使いません
 >
 > **使うもの**: PC + スマホ (同じネットワーク)
 >
 > **所要時間**: 約 20 分
+
+!!! note "このページの位置付け"
+    - Part 1 の 1.4 です ([ハンズオン](index.md#14-スマホでマーケットを開いて購入する))。このページは任意です。Part 1 の成功判定には含みません。
+    - 先に、PC での出品と購入 ([ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3) を済ませます。このページは、その画面をスマホで開きます。
+    - 1.1 や 1.2 で最短起動の IPFS を止めたままの場合は、最短起動の手順 5 で起動し直してから進みます。
+    - 前のページ: [ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3
+    - 次のページ: Part 2 の 2.1 ([検知イベントだけを共有する](webcam-event-sharing.md) または [防災イベントを共有する](environment-disaster.md))
 
 !!! note "v1 で開いて購入する手順"
     このページは **v1 (現行マーケットプレイス + MetaMask)** で、
@@ -45,6 +54,8 @@ v1 マーケットプレイス (MetaMask [1] で購入し、データは simple-
 - スマホで MetaMask モバイルアプリ、または同等のウォレットブラウザが使える
 
 ## 演習用プログラム
+
+この節は任意です。演習用プログラムは `/mobile` ルートを前提にしていますが、今の `iot-market-ui` にこのルートはありません。この節を飛ばしても、下の「最短ルート」以降の手順だけで 1.4 は完了します。
 
 - [問題用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/mobile_viewer/problem_program.py)
 - [解答用プログラム](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/mobile_viewer/answer_program.py)
@@ -196,6 +207,16 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
   - 確認: その商品を、同じアカウントですでに購入していないか (1.3 で買った商品は、もう一度は買えない。まだ買っていない `Product deployed` のアドレスを使う)
   - 対処: [最短起動 (スタックを動かす)](../setup/quickstart.md#metamask-のローカルチェーン設定) と同じ Account #2 の Private Key をインポートし、そのアカウントで購入し直す
   - 詳しくは [トラブルシュート](../operations/troubleshooting.md) の「購入できない」項目を参照
+
+## 次に進む
+
+次は Part 2 の 2.1 です。[検知イベントだけを共有する](webcam-event-sharing.md) と [防災イベントを共有する](environment-disaster.md) のどちらか 1 つを選びます ([ハンズオン](index.md#21-イベント共有--生データではなく結果だけ-stage-0))。
+
+- 2.1 は publisher を使い、最短起動のスタックは使いません。
+- 先に、最短起動の IPFS を止めます (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher は、どちらもポート 8080 を使うためです。
+- 最短起動のほかのプロセスも、止めて構いません。
+
+ここで Part 1 を終える場合は、[ハンズオン](index.md#part-1-の成功判定) の Part 1 の成功判定を確かめます。
 
 ## 参考文献
 

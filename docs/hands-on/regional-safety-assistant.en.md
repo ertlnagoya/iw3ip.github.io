@@ -6,9 +6,17 @@ The basic Phase 3 sample: using a sample file of events like those shared in Pha
 >
 > **Prerequisites**: [Share detections, not raw frames](webcam-event-sharing.md)
 >
+> **Keep running**: nothing. §1 starts the assistant
+>
 > **What you need**: PC only
 >
 > **Time required**: approx. 60 min
+
+!!! note "Where this page belongs"
+    - This is 3.3 in Part 3 ([Hands-on](index.md#33-regional-safety-assistant)).
+    - "Phase 2" and "Phase 3" on this page are development stages of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
+    - Previous page: [Protect camera images before handing them to AI (local vs cloud)](privacy-compare.md)
+    - Next page: [Let an AI plan the steps (LLM Planner)](llm-planner.md)
 
 As an extension of [Share detections, not raw frames](webcam-event-sharing.md), this covers the flow where **an AI interprets a human request and breaks it down into event collection, condition evaluation, and device control**.
 
@@ -281,6 +289,12 @@ docker compose -f infra/docker-compose.yml --profile assistant stop assistant
 ```
 
 ## Next steps
+
+Next is [Let an AI plan the steps (LLM Planner)](llm-planner.md). You replace the rule-based planner of this page with a planner that uses an LLM.
+
+- First stop the assistant with the command in [8. Stop services](#8-stop-services). Stage 1 of the next page starts the assistant on the same port 8090 with `uvicorn` on the host.
+
+Related pages:
 
 - To connect this back to Phase 2: [Share detections, not raw frames](webcam-event-sharing.md)
 - To review the Phase 1 foundation: [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)

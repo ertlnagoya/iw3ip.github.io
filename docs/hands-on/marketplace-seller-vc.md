@@ -6,9 +6,16 @@
 >
 > **前提**: [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md)
 >
+> **起動しておくもの**: Stage 6 の Hardhat ノード (Step E0 でデプロイしたチェーン)、publisher、bridge。Step S6 では iot-market-ui も使います
+>
 > **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 約 45 分
+
+!!! note "このページの位置付け"
+    - Part 2 の 2.4 の 3 ページ目です ([ハンズオン](index.md#24-マーケットプレイス--ウォレット-v2-経路))。
+    - 前のページ: [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md)
+    - 次のページ: [スマホアプリで購入から閲覧まで (Stage A)](marketplace-mobile-app.md)
 
 !!! abstract "5 種目の VC: SellerVC"
     マーケット出品時に **「誰が」この dataset を売るのか**を VC で
@@ -368,6 +375,8 @@ Merchandise (`/marketplace/register` を呼んでいない) は `"unknown"` が�
 
 ## Step S6. iot-market-ui の `/seller` ページから登録
 
+この節は任意です。Step S1〜S4 の発行、提示、登録を、Web UI から行う別の方法です。Stage 7 の完了条件 (`seller_did`) は、Step S5 までで確かめられます。
+
 ### 何を確認するか
 - Web UI からも `/marketplace/register` を呼び出せること
 - フォームの 3 ステップ構造 (発行 → 提示 → 登録) が seller 視点で完結すること
@@ -564,6 +573,15 @@ docker compose -f infra/docker-compose.yml --profile mv-bridge up -d --force-rec
   `dataset_id` 値を取れるようにしたが、`/marketplace/register` 側はクライアント
   POST に依存。将来は publisher 自身が `getAllAdditionalInfo()` を呼んで
   突合する案がある
+
+## 次に進む
+
+次は [スマホアプリで購入から閲覧まで (Stage A)](marketplace-mobile-app.md) です。購入から閲覧までを、スマホの画面だけで進めます。
+
+- Hardhat ノード (ターミナル A) は、止めずに動かしたままにします。Stage A は、Stage 6 の Step E0 でデプロイしたコントラクトと、登録した公開鍵を使います。
+- publisher と bridge は動かしたままで構いません。Stage A の Step M0 で作り直します。
+- iot-market-ui は、Stage A の Step M0 で Ctrl+C で止めてから起動し直します。
+- Metro は動かしたままにします。
 
 ## 関連
 

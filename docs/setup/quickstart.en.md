@@ -147,6 +147,14 @@ When `listening on 0.0.0.0:3000` appears, it has started.
 
 ### 5. Start IPFS + PostgreSQL (Docker)
 
+!!! warning "If the publisher is running"
+    If a publisher you started in [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) or another page is still running, stop it first. IPFS and the publisher both use port 8080. The command below also stops Home Assistant and Node-RED started by the HA Demo Simulator.
+
+    ```bash
+    cd ~/program/Blockchain_IoT_Marketplace
+    docker compose -f infra/docker-compose.yml --profile ha-demo --profile ha-demo-phase3 --profile nodered down
+    ```
+
 Terminal 5:
 
 ```bash
@@ -243,7 +251,7 @@ Reference (network add screen):
 - [ ] MetaMask is on the `Hardhat Local` network
 - [ ] The MetaMask account shows about `10000 ETH` (9999.99… is fine)
 
-All checked → start Part 1 of [Hands-on](../hands-on/index.md).
+All checked → go on to §1.2 of Part 1 in [Hands-on](../hands-on/index.md).
 
 ## Simpler alternative: a minimal stack with docker compose only
 

@@ -4,11 +4,19 @@ Home Assistant の状態を MQTT で受け、Consent VC で共有可否を判定
 
 > **やること**: MQTT → publisher → Consent VC 判定 → 監査ログ までを一通り動かす
 >
-> **前提**: [最短起動 (スタックを動かす)](../setup/quickstart.md)、できれば [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)
+> **前提**: [事前準備 (ツールのインストール)](../setup/prerequisites.md)、できれば [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)。[最短起動 (スタックを動かす)](../setup/quickstart.md) のスタックは使いません
+>
+> **起動しておくもの**: なし。このページで publisher を起動します。最短起動の IPFS が動いている場合は止めておきます (下の [前提](#前提) を参照)
 >
 > **使うもの**: PC (Docker)
 >
 > **所要時間**: 約 45 分
+
+!!! note "このページの位置付け"
+    - Part 1 の 1.2 です ([ハンズオン](index.md#12-デバイスからデータを取る))。1.2 の 3 ページのうち、どれか 1 つを選べば十分です。
+    - このページの「Phase 1〜3」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
+    - 前のページ: [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)
+    - 次のページ: [ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 (マーケットプレイスで売買)
 
 ## 目的
 
@@ -212,3 +220,11 @@ Phase 2 をすぐ試したい場合は、次の Hands-on を参照してくだ�
 
 - [防災イベントを共有する](environment-disaster.md) (Phase 2)
 - [検知イベントだけを共有する](webcam-event-sharing.md) (Phase 2)
+
+## 次に進む
+
+1.2 は 1 つ選べば十分です。次は [ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 で、商品を出品し、購入して受け取ります。
+
+- 1.3 は publisher を使いません。先に [7. 停止](#7-停止) のコマンドで publisher を止めます。
+- 1.3 は、[最短起動 (スタックを動かす)](../setup/quickstart.md) のスタック (ターミナル 1〜7) を使います。publisher を止めてから起動します。最短起動の IPFS と publisher は、どちらもポート 8080 を使うためです。
+- 1.2 でこのページを選んだ場合、1.3 の出品には [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) のサンプルを mock モードで使います。

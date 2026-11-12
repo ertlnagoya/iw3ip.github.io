@@ -6,9 +6,17 @@ Phase 2 で共有するようなイベント (`possible_littering` など) を�
 >
 > **前提**: [検知イベントだけを共有する](webcam-event-sharing.md)
 >
+> **起動しておくもの**: なし。§1 で assistant を起動します
+>
 > **使うもの**: PC のみ
 >
 > **所要時間**: 約 60 分
+
+!!! note "このページの位置付け"
+    - Part 3 の 3.3 です ([ハンズオン](index.md#33-地域安全アシスタント))。
+    - このページの「Phase 2」「Phase 3」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
+    - 前のページ: [AI に渡す前にカメラ画像を守る (ローカルとクラウドの比較)](privacy-compare.md)
+    - 次のページ: [AI に手順を考えさせる (LLM Planner)](llm-planner.md)
 
 [検知イベントだけを共有する](webcam-event-sharing.md) の発展として、**人間の要求を AI が解釈し、イベント収集・条件判定・機器操作へ分解する** 流れを確認します。
 
@@ -280,7 +288,13 @@ cd ~/program/Blockchain_IoT_Marketplace
 docker compose -f infra/docker-compose.yml --profile assistant stop assistant
 ```
 
-## 次の学習
+## 次に進む
+
+次は [AI に手順を考えさせる (LLM Planner)](llm-planner.md) です。このページの rule-based planner を、LLM を使う planner に差し替えます。
+
+- 先に [8. 停止](#8-停止) のコマンドで assistant を止めます。次のページの段階 1 は、同じポート 8090 で assistant をホストの `uvicorn` で起動します。
+
+関連するページ:
 
 - Phase 2 からつなげて理解したい場合: [検知イベントだけを共有する](webcam-event-sharing.md)
 - Phase 1 の基礎から見直したい場合: [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md)

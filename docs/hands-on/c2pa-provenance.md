@@ -6,14 +6,18 @@
 >
 > **前提**: Python 3.10 以上が使えること。publisher、ブロックチェーン、スマホのウォレットは使いません
 >
+> **起動しておくもの**: なし。Python のプログラムだけで動きます
+>
 > **使うもの**: PC (USB ウェブカメラまたは内蔵カメラは任意)
 >
 > **所要時間**: 約 30〜40 分
 
 !!! note "このページの位置付け"
-    [C2PA 来歴パイプライン — カメラ映像とセンサーデータの来歴証明 (Stage P 設計仕様)](../design/c2pa-provenance-spec.md) の P0 (最初の段階) を手元で動かすハンズオンです。
-    C2PA の仕組みと用語は、設計仕様の §2「C2PA の基本」で説明しています。Tier 1〜3 の考え方は [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) で扱いました。
-    publisher に組み込んで動かす段階 (P1・P2) は、[来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) で扱います。
+    - Part 2 の 2.5 の 4 ページ目です ([ハンズオン](index.md#25-信頼度に応じた段階アクセス-stage-t--p))。
+    - [C2PA 来歴パイプライン — カメラ映像とセンサーデータの来歴証明 (Stage P 設計仕様)](../design/c2pa-provenance-spec.md) の P0 (最初の段階) を手元で動かすハンズオンです。
+    - C2PA の仕組みと用語は、設計仕様の §2「C2PA の基本」で説明しています。Tier 1〜3 の考え方は [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) で扱いました。
+    - 前のページ: [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md)
+    - 次のページ: [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md)。publisher に組み込んで動かす段階 (P1・P2) を扱います。
 
 ## 目的
 
@@ -311,6 +315,14 @@ C2PA が保証するのは「この署名者がこの中身に署名した」こ
   - 確認: `--camera-index 1` などで、別のカメラを試したか
 - 症状: `ModuleNotFoundError: No module named 'cv2'`
   - 確認: §6 の `python -m pip install "opencv-python<5"` を実行したか
+
+## 次に進む
+
+次は [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) です。署名した画像を publisher に送り、来歴をチェーンに記録します。
+
+- 次のページは、このページの §1 で作った仮想環境 (`.venv`) を使います。証明書は、次のページの §1 で作り直します。
+- 次のページの §2 で、Hardhat ノードをポート 8545 で起動します。2.4 などで起動した Hardhat ノードが動いていれば、先に Ctrl+C で止めます。
+- publisher は、次のページの §3 で C2PA の設定で起動し直します。
 
 ## 参考文献
 

@@ -4,11 +4,19 @@
 
 > **やること**: Home Assistant の demo データを publisher へ流し、ブラウザから観察する
 >
-> **前提**: [環境構築](../setup/index.md) が済んでいること
+> **前提**: [事前準備 (ツールのインストール)](../setup/prerequisites.md) が済んでいること。[最短起動 (スタックを動かす)](../setup/quickstart.md) は不要です
+>
+> **起動しておくもの**: なし。このページで publisher と Home Assistant を起動します。最短起動の IPFS が動いている場合は止めておきます (下の [前提](#前提) を参照)
 >
 > **使うもの**: PC のみ (Docker が動けば可)
 >
 > **所要時間**: 約 20 分
+
+!!! note "このページの位置付け"
+    - Part 1 の 1.1 です ([ハンズオン](index.md#11-まず動かす--実機なしで全体像を確認する))。ハンズオンの最初のページです。
+    - このページの「Phase 1〜3」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
+    - 前のページ: [事前準備 (ツールのインストール)](../setup/prerequisites.md)
+    - 次のページ: 1.2 の 3 ページから 1 つを選びます ([ハンズオン](index.md#12-デバイスからデータを取る))。
 
 ## 目的
 
@@ -306,6 +314,8 @@ Home Assistant → publisher の基本共有経路が動いていることを確
 
 ## Phase 2: イベント共有と拒否を確認する
 
+この節は任意です。最短ルートでは Phase 1 までで十分です。
+
 ### 6. 拒否ケースを確認
 
 Home Assistant script では主に許可されるケースを流すので、拒否ケースは HTTP 疑似投入で確認します。
@@ -364,6 +374,8 @@ docker exec -i iw3ip-mosquitto mosquitto_pub \
 同じ MQTT 経路でも常に共有されるわけではないことが確認できます。Phase 3 では、共有されたイベントを assistant へ渡し、要求理解と実行を確認します。
 
 ## Phase 3: assistant の plan と execute を確認する
+
+この節は任意です。Phase 3 は [地域安全アシスタントを動かす](regional-safety-assistant.md) (Part 3) でも扱います。この節では Python 3 を使います。
 
 ### 8. Phase 3 を試す
 
@@ -467,7 +479,7 @@ Node-RED は必須ではありません。まず Home Assistant demo だけで�
   - publisher にたまったイベントを assistant に渡して `execute` する
   - `triggered` と `actions_executed` を確認する
 
-このページの後は、次の Hands-on に進めます。
+Phase ごとの関連ページは次のとおりです。学習順の次のページは [次に進む](#次に進む) を参照してください。
 
 - [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) (Phase 1)
 - [防災イベントを共有する](environment-disaster.md) (Phase 2)
@@ -480,6 +492,8 @@ Node-RED や Phase 3 を起動したかどうかに関係なく、次の 1 行�
 ```bash
 docker compose -f infra/docker-compose.yml --profile ha-demo --profile ha-demo-phase3 --profile nodered down
 ```
+
+続けて [最短起動 (スタックを動かす)](../setup/quickstart.md) に進む場合は、ここで publisher を止めてください。最短起動で起動する IPFS と publisher は、どちらもポート 8080 を使います。
 
 ## 将来の発展
 
@@ -496,6 +510,15 @@ docker compose -f infra/docker-compose.yml --profile ha-demo --profile ha-demo-p
 ### CARLA
 
 都市空間・車両・歩行者・仮想センサを含むシミュレータです [5]。導入の手間はかかりますが、地域安全・防災・交通系のイベント生成に使え、Phase 2 / 3 の評価環境として利用できます。使い方はドキュメント [6] にまとめられています。
+
+## 次に進む
+
+次は Part 1 の 1.2 です。[ハンズオン](index.md#12-デバイスからデータを取る) の 1.2 にある 3 ページから、手元の機材に合わせて 1 つを選びます。
+
+- [AI カメラで人物を検知する (HUSKYLENS2)](huskylens2.md) と [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) は、[最短起動 (スタックを動かす)](../setup/quickstart.md) のスタックを使います。先に [11. 停止](#11-停止) のコマンドで publisher を止めてから、最短起動に進みます。
+- [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) は、このページと同じ publisher を使います。[11. 停止](#11-停止) で止めてから、そのページの手順 1 で起動し直します。
+
+ここで終える場合は、[11. 停止](#11-停止) のコマンドで止めておきます。
 
 ## 参考文献
 

@@ -91,6 +91,10 @@ C --> E[Auditable History]
   - 動画や画像などの大きなファイル
   - 高頻度なセンサストリーム
 
+## 次に読むページ
+
+[学習ロードマップ（初級者向け）](roadmap.md) の最短学習パスでは、次は [Hardhat基礎（このサイトで使うブロックチェーン）](hardhat-basics.md) です。
+
 ## 参考文献
 
 [1] Ethereum Foundation, "Ethereum development documentation," <https://ethereum.org/developers/docs/>

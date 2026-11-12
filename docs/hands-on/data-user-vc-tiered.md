@@ -4,11 +4,18 @@
 
 > **やること**: 信頼度ごとに動画 / 画像 / イベントだけを出し分ける動作の確認
 >
-> **前提**: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) と [検知イベントだけを共有する](webcam-event-sharing.md)
+> **前提**: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md)、[検知イベントだけを共有する](webcam-event-sharing.md)、[購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) の Step 7〜8 (PurchaseViewerVC の受け取りと提示)
+>
+> **起動しておくもの**: なし。§1 で publisher と mosquitto を起動します
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 約 60 分（続編の 2 ページは別に約 90 分と約 60〜90 分）
+
+!!! note "このページの位置付け"
+    - Part 2 の 2.5 の 1 ページ目です ([ハンズオン](index.md#25-信頼度に応じた段階アクセス-stage-t--p))。
+    - 前のページ: [スマホアプリで購入から閲覧まで (Stage A)](marketplace-mobile-app.md)
+    - 次のページ: [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md)
 
 このハンズオンは、[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) と
 [検知イベントだけを共有する](webcam-event-sharing.md) を踏まえ、
@@ -47,6 +54,7 @@ DataUserVC はウォレットに発行して中身を確かめるところまで
 
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) を一度動かしている
 - [検知イベントだけを共有する](webcam-event-sharing.md) を理解している
+- [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) の Step 7〜8 で、PurchaseViewerVC をウォレットに受け取り、提示したことがある。このページの §3 と §4 は、Stage 5 で使った `/marketplace/claim` と PurchaseViewerVC を使います
 - Docker / Docker Compose が使える
 - `curl`, `jq` が使える
 
@@ -134,6 +142,11 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 ```
 
 このプロファイルの trustScore は 25 で、判定は `denied` です。`denied` は trustScore による判定の名前です。現在の実装では、判定が `denied` でも購入の申告 (`/marketplace/claim`) は拒否されません。イベントだけを閲覧できる PurchaseViewerVC (`PurchaseViewerVC.event`) が発行され、画像・動画・説明文は応答に含まれません。
+
+!!! note "§12 で VLM を有効にすると、Tier の番号の意味が変わります"
+    このページの Tier 1 は、イベントだけを閲覧できる段階です (判定が `denied` のとき、または `data_user_attrs` を省いたとき)。
+    [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) の §12 で VLM を有効にすると、trustScore 50〜59 に新しい Tier 1 (`summary`、要約文だけ) が加わります。
+    そのとき、このページの Tier 1 (`denied`、イベントだけ) は Tier 0 と呼びます。
 
 ## 3. /marketplace/claim を 3 通り呼び出す
 
@@ -337,7 +350,13 @@ ViewerToken の発行ログ（`viewer_token_issued ... views=...`）と
 
 ## 次に進む
 
-- [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — 続きの §8〜§11（HTTP メディア・ゲートウェイ、IPFS、PWA Viewer、PWA Provider）
+次は、続きの [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) です。§8〜§11 で、画像と動画の実体を配ります。
+
+- publisher と mosquitto は、動かしたままにします。次のページは、このページの publisher をそのまま使います。
+- §4a で登録した同意は publisher のボリュームに残るので、登録し直す必要はありません。
+
+このほかの関連ページ:
+
 - [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) — 続きの §12〜§13（VLM による意味レベルの段階化、意味的中間表現）
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) — Phase 2 wallet を立ち上げる
 - [段階アクセスの設計仕様](data-user-vc-tiered-spec.md) — 設計根拠

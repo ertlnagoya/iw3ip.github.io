@@ -6,9 +6,17 @@
 >
 > **前提**: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) の §0〜§7 を済ませていること
 >
+> **起動しておくもの**: 1 ページ目の §1 で起動した publisher と mosquitto
+>
 > **使うもの**: PC + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 約 90 分
+
+!!! note "このページの位置付け"
+    - Part 2 の 2.5 の 2 ページ目です ([ハンズオン](index.md#25-信頼度に応じた段階アクセス-stage-t--p))。
+    - 前のページ: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md)
+    - 次のページ: [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md)
+    - 初めての場合は、§8 (案 B)、§10、§11 の順に進みます。§9 (案 C、IPFS) は任意で、飛ばしても次のページに進めます。次のページの §13 は、§10 の `/viewer` と §11 の `/provider` を使います。
 
 コマンド例は 1 ページ目と同じく、教材リポジトリを `~/program/Blockchain_IoT_Marketplace` に clone した前提で示します。`$HOST_IP` と `<HOST_IP>` は PC の LAN IP です (設定のしかたは [ハンズオン](index.md#host-ip) を参照)。案 A / 案 B / 案 C の違いは
 [§0b](data-user-vc-tiered.md#0b-実データ画像--動画統合の選び方) を参照してください。
@@ -84,6 +92,8 @@ python3 examples/hands_on/data_user_vc_tiered/provider_with_media.py \
 なので、提供側スクリプトは変更せず、保存先の backend だけが切り替わります。
 
 ## 9. 案 C：ローカル kubo IPFS daemon で分散配信
+
+この節は任意です。§8 の案 B の代わりに、IPFS で配る別の方法です。初めての場合は飛ばして §10 に進めます。
 
 案 B では、単一の publisher インスタンスが blob（画像 / 動画のバイト列）を配信しました。
 案 C では、同じ blob を**コンテンツアドレシング（CID）**で IPFS ネットワーク上に置きます。
@@ -678,5 +688,9 @@ DevTools コンソールで実際の codec 一覧を出力すると、どちら�
 
 ## 次に進む
 
-- 戻る: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) — §0〜§7（DataUserVC の発行と tier による出し分け）
-- 続き: [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) — §12〜§13（VLM による意味レベルの段階化、意味的中間表現）
+次は、続きの [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) です。§12〜§13 で、VLM による意味レベルの段階化と、意味的中間表現を扱います。
+
+- publisher は動かしたままで構いません。次のページの §12.2 で、VLM の設定で作り直します。
+- 次のページの §12.4 で、claim と提示をやり直します。
+
+前のページに戻る場合: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) — §0〜§7（DataUserVC の発行と tier による出し分け）

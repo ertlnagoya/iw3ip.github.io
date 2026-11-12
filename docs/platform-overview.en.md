@@ -297,10 +297,13 @@ IW3IP's **Consent VC-based conditions**, **audit logging**, **event sharing** (P
 
 ## What to read next
 
-1. To learn the technical foundations: [Blockchain Basics](foundations/blockchain-basics.md), [Hardhat Basics (Blockchain Used in This Site)](foundations/hardhat-basics.md), [SSI / DID / VC Basics](foundations/ssi-did-vc-basics.md)
-2. To boot the environment first: [Quickstart (run the stack)](setup/quickstart.md)
-3. To observe actual behavior: [Hands-on](hands-on/index.md)
-4. To study the research in more depth: [Publications](publications.md), [References and Further Learning Materials](foundations/references.md)
+The reading order is in the [Learning Roadmap](foundations/roadmap.md). To get started, go in this order.
+
+1. Technical foundations: start with [Blockchain Basics](foundations/blockchain-basics.md)
+2. Install the tools: [Prerequisites (install tools)](setup/prerequisites.md)
+3. Run it first: [Run the whole pipeline without hardware (HA Demo Simulator)](hands-on/ha-demo-simulator.md)
+
+For the research background, read [Publications](publications.md) and [References and Further Learning Materials](foundations/references.md).
 
 ## References
 

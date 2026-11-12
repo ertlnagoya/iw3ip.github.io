@@ -4,11 +4,19 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 > **やること**: PWA として iot-market-ui をスマホで使い、購入と VC 取得を進める
 >
-> **前提**: [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md)、[Stage 6](marketplace-vc-end-to-end.md) の Step E0 (デプロイと公開鍵の登録)
+> **前提**: [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md)、[ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md) の Step E0 (デプロイと公開鍵の登録)
+>
+> **起動しておくもの**: Stage 6 の Step E0 を済ませた Hardhat ノード。publisher、bridge、iot-market-ui は Step M0 で起動し直します
 >
 > **使うもの**: PC + スマホ (iw3ip-wallet) + MetaMask モバイル
 >
 > **所要時間**: 約 30 分
+
+!!! note "このページの位置付け"
+    - Part 2 の 2.4 の 4 ページ目です ([ハンズオン](index.md#24-マーケットプレイス--ウォレット-v2-経路))。
+    - このページの「Phase 2」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
+    - 前のページ: [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md)
+    - 次のページ: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md)
 
 !!! abstract "コマンドラインを使わない PWA 版"
     Phase 2 で構築した backend をそのまま使い、`iot-market-ui` を
@@ -16,7 +24,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
     コマンドライン操作なしで、購入から VC 受領、データ閲覧までを
     スマホ画面のタップで進めます。本ページの PWA 版を「案 A」、ウォレット機能を
     組み込んだネイティブアプリ (React Native) を「案 B」と呼びます。案 B は Stage 9
-    として計画しています。
+    として計画しています。Stage 9 は計画の段階で、ハンズオンのページはまだありません。
 
 !!! tip "Stage 0 と同じデータ"
     Stage A の購入対象は Stage 6 case B 以降の deploy script で登録された
@@ -372,6 +380,14 @@ Safari のキャッシュ。
 - **オフライン対応**: PWA だが service worker は pass-through。チェーン
   read は常にオンライン
 - **iOS の通知 / バックグラウンド処理**: iOS PWA の制約で限定的
+
+## 次に進む
+
+次は 2.5 の [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) です。受け取る人の信頼度に応じて、見せる中身を変えます。
+
+- Stage T は `/marketplace/claim` を curl で直接呼び出すので、Hardhat ノード、bridge、iot-market-ui を使いません。止めて構いません。
+- publisher は、Stage T の §1 で起動し直します。
+- スマホのウォレット (iw3ip-wallet) は Stage T でも使います。
 
 ## 関連
 

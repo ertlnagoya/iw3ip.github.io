@@ -4,11 +4,18 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 
 > **やること**: 購入 → bridge → PurchaseViewerVC → wallet → ViewerToken → 取得
 >
-> **前提**: [最短起動 (スタックを動かす)](../setup/quickstart.md) と [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md)
+> **前提**: [最短起動 (スタックを動かす)](../setup/quickstart.md) を一度通していること (`iot-market` と `iot-market-ui` の `npm install` を済ませるためです。最短起動で動かしたものは Step 1 で止めます)。[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) と [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) を通していること
+>
+> **起動しておくもの**: なし。このページで Hardhat ノード、publisher、bridge、iot-market-ui、Metro を順に起動します
 >
 > **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 約 60 分
+
+!!! note "このページの位置付け"
+    - Part 2 の 2.4 の 1 ページ目です ([ハンズオン](index.md#24-マーケットプレイス--ウォレット-v2-経路))。
+    - 前のページ: [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md)
+    - 次のページ: [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md)
 
 !!! abstract "v2 を試すハンズオン"
     マーケットプレイスでの購入を起点に、買い手のウォレットへ
@@ -18,9 +25,10 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
     を参照してください。
 
 !!! tip "dataset の選択"
-    例は `home/env/temperature` で書かれていますが、Stage 6 case B 以降の
-    deploy script では Merchandise #2 (`home/event/possible_littering`) と
-    Merchandise #4 (`home/event/flood_risk_high`) も登録されています。
+    この補足は任意です。初めてのときは読み飛ばして構いません。
+    例は `home/env/temperature` で書かれていますが、Step 2 で実行する
+    deploy script は Merchandise #2 (`home/event/possible_littering`) と
+    Merchandise #4 (`home/event/flood_risk_high`) も登録します。
     PurchaseViewerVC の Presentation Definition
     ([purchase-viewer-possible-littering.json](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/ssi_wallet/purchase-viewer-possible-littering.json))
     があるのは、Stage 0 の 2 つのイベントのうち `possible_littering` だけなので、Stage 0 と同じイベントで
@@ -349,6 +357,8 @@ http://<HOST_IP>:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 `/purchased/<txHash>?merchandise=...&dataset=...&buyer=...` に遷移し、QR と deeplink が表示されます。
 
 ### 操作 B: MetaMask が動かない場合の代替手順
+
+この手順は、操作 A で購入できなかった場合だけ行います。操作 A で購入できた場合は飛ばして、期待出力の確認に進みます。
 
 ターミナル B (Hardhat console):
 
@@ -783,6 +793,14 @@ INFO:     172.18.0.1:54321 - "POST /issuer/token HTTP/1.1" 400 Bad Request
 - **ServiceVC との統合**: 連続する MQTT の書き込みを VC で認可する仕組み (Stage 4 prep) と、
   購入に連動して読み出す仕組み (Stage 5) は独立している。両方を組み合わせるシナリオは
   [Stage 6](marketplace-vc-end-to-end.md) で扱う
+
+## 次に進む
+
+次は [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md) です。同じ環境で、ServiceVC での書き込みから PurchaseViewerVC での読み出しまでを通します。
+
+- Hardhat ノード (ターミナル A) は、次のページの Step E0 で止めて起動し直します。
+- publisher と bridge は動かしたままで構いません。Step E0 で作り直します。
+- iot-market-ui (ターミナル D) と Metro (ターミナル E) は、動かしたままにします。
 
 ## 関連
 

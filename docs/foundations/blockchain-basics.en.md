@@ -90,6 +90,10 @@ IW3IP separates information suited to verification and audit trails from informa
   - large media files
   - high-frequency sensor streams
 
+## Read Next
+
+In the short learning path of the [Learning Roadmap](roadmap.md), the next page is [Hardhat Basics (Blockchain Used in This Site)](hardhat-basics.md).
+
 ## References
 
 [1] Ethereum Foundation, "Ethereum development documentation," <https://ethereum.org/developers/docs/>

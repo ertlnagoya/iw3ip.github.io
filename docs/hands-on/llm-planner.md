@@ -6,9 +6,17 @@ Phase 3 の [地域安全アシスタントを動かす](regional-safety-assista
 >
 > **前提**: [地域安全アシスタントを動かす](regional-safety-assistant.md)
 >
+> **起動しておくもの**: なし。段階 1 で assistant をホストの `uvicorn` で起動します。前のページの assistant が動いていれば、先に止めます (ポート 8090 が重なるため)
+>
 > **使うもの**: PC (実 LLM を使う場合は API キーまたはローカル LLM)
 >
 > **所要時間**: 約 60 分
+
+!!! note "このページの位置付け"
+    - Part 3 の 3.4 で、ハンズオンの最後のページです ([ハンズオン](index.md#34-llm-planner))。
+    - このページの「Phase 3」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。このページの「段階 1〜3」は、このページの中の手順の区切りです。
+    - 前のページ: [地域安全アシスタントを動かす](regional-safety-assistant.md)
+    - 次のページ: なし。この後は [設計](../design/index.md) の章で、仕組みと設計判断の理由を読めます。
 
 このページでは次の 3 段階で進めます。
 
@@ -445,6 +453,8 @@ defineProps<{
 
 ### 5. OpenAI 互換 API に切り替える
 
+この手順は任意です。API キーか、PC で動くローカル LLM が必要です。どちらも無い場合は、この手順を飛ばして §5.2 のモックサーバで同じ HTTP の経路を試せます。
+
 `.env.local.example` をコピーし、`.env.local` の `ASSISTANT_LLM_API_KEY` (必要なら `ASSISTANT_LLM_MODEL` と `ASSISTANT_LLM_API_BASE_URL` も) を自分の値に書き換えてから起動します。8090 番ポートを使うほかの assistant は先に止めておきます。ホストで `uvicorn` を動かしている場合は、そのターミナルで Ctrl+C を押します。
 
 ```bash
@@ -643,7 +653,14 @@ LLM API を使えないとき、`/assistant/plan` はエラーにならず、rul
 
 - `main` ブランチを最新にしているか確認してください (`git pull`)
 
-## 次の学習
+## 次に進む
+
+ハンズオンはここで終わりです。[ハンズオン](index.md#part-3-の成功判定) の「Part 3 の成功判定」で、確かめたことを振り返れます。
+
+- この後は [設計](../design/index.md) の章で、各機能の仕組みと設計判断の理由を読めます。
+- ここで終える場合は、[5.2 local mock server で HTTP 経路を試す](#52-local-mock-server-で-http-経路を試す) の最初の `docker compose ... stop` のコマンドで、Docker の assistant を止めます。ホストで `uvicorn` や mock server を動かしているターミナルでは、Ctrl+C を押します。
+
+関連するページ:
 
 - 実装方針を整理したい場合: [LLM Planner 置き換え仕様](llm-planner-spec.md)
 - Phase 3 の元サンプルに戻る場合: [地域安全アシスタントを動かす](regional-safety-assistant.md)

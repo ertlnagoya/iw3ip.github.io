@@ -6,13 +6,18 @@
 >
 > **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) finished
 >
+> **Keep running**: the publisher started in 2.2 (`ssi-wallet` profile). If you stopped it, step 1 starts it. Keep the Quickstart IPFS stopped (it shares port 8080)
+>
 > **What you need**: PC + smartphone (iw3ip-wallet)
 >
 > **Time required**: approx. 45 min
 
-!!! note "Continues from Stage 1"
-    Assumes you've completed [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) (PolicyToken-gated write).
-    This page covers Stage 3: gating **read** with VC presentation.
+!!! note "Where this page belongs"
+    - This is section 2.3 of Part 2 (Stage 3) ([Hands-on](index.md#23-split-read-vs-write-roles)). Section 2.3 has two pages: this one and [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md).
+    - Assumes you've completed [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) (PolicyToken-gated write). This page covers Stage 3: gating **read** with VC presentation.
+    - "Phase 3" on this page is a development stage of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
+    - Previous page: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) (2.2)
+    - Next page: [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) (2.3)
 
 !!! tip "Choosing a dataset"
     The example here is written for `home/env/temperature`, but it also
@@ -236,14 +241,14 @@ token produce three rows with `read_count` 1, 2, 3.
 | Audit `raw_topic` | `platform/ingest` | `platform/data` |
 | VC claim | `allowed_purposes` | `allowed_actions` |
 
-## Next steps
+## Stop
 
-ViewerVC reads use a **directly specified dataset_id**. Other forms of authorization are covered on the following pages.
+If you go on to the next page, [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md), keep everything running. If you stop here, run the following command.
 
-- [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) — continuous writes from a device (ServiceVC)
-- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
-- [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
-- [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — seller identity
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile ssi-wallet down
+```
 
 ## Extension ideas
 
@@ -265,6 +270,20 @@ ViewerVC reads use a **directly specified dataset_id**. Other forms of authoriza
   - Check: the publisher was not recreated after presenting (ViewerTokens and the written data live in the publisher's memory and are lost on recreate; redo the write in §2, then present again in §4)
 - Symptom: `/platform/data` returns 401 viewer_token_expired
   - Action: the TTL (60 s) has expired. Present again from §4
+
+## Next steps
+
+Next is the other page in 2.3, [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) ([Hands-on](index.md#23-split-read-vs-write-roles)).
+
+- Keep the publisher running with the `ssi-wallet` profile. Step 1 of the next page starts it with the same command. If you stopped it, step 1 starts it again.
+- Keep the Quickstart IPFS stopped. IPFS and the publisher both use port 8080.
+
+ViewerVC reads use a **directly specified dataset_id**. Other forms of authorization are covered on the following pages.
+
+- [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) — continuous writes from a device (ServiceVC)
+- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
+- [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
+- [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — seller identity
 
 ## References
 

@@ -6,9 +6,16 @@
 >
 > **前提**: [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) を一度動かしていると理解が早い
 >
+> **起動しておくもの**: なし。§1 で publisher、ローカルの VLM (Ollama)、模擬のクラウド AI を起動します
+>
 > **使うもの**: PC + USB ウェブカメラ (無ければ手元の JPEG 画像) + Docker + Python 3
 >
 > **所要時間**: 約 90〜120 分（初回は VLM のモデル取得に時間がかかります）
+
+!!! note "このページの位置付け"
+    - Part 3 の 3.2 です ([ハンズオン](index.md#32-ai-に渡す前にカメラ画像を守る))。
+    - 前のページ: [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md)
+    - 次のページ: [地域安全アシスタントを動かす](regional-safety-assistant.md)
 
 ## 目的
 
@@ -191,6 +198,13 @@ docker compose -f infra/docker-compose.yml --profile vlm down
 ```
 
 取得した VLM のモデル (`iw3ip_ollama` ボリューム、約 1.7 GB) も不要なら、`docker volume rm iw3ip_ollama` で削除します。
+
+## 次に進む
+
+次は [地域安全アシスタントを動かす](regional-safety-assistant.md) です。自由文の要求を AI が plan に分解して応答する流れを見ます。
+
+- 先に [7. 後片付け](#7-後片付け) のとおり、模擬のクラウド AI とコンテナを止めます。
+- 次のページは assistant (ポート 8090) だけを使い、publisher と VLM を使いません。
 
 ## 関連ページ
 

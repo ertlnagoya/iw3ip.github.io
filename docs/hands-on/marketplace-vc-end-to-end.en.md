@@ -4,11 +4,18 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 
 > **What you'll do**: For one dataset, connect writes with a ServiceVC to reads with a PurchaseViewerVC
 >
-> **Prerequisites**: [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md)
+> **Prerequisites**: you have done [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) and [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md)
+>
+> **Keep running**: nothing. Step E0 starts the Hardhat node, the publisher, the bridge and iot-market-ui. If iot-market-ui and Metro from Stage 5 are running, keep using them
 >
 > **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
 > **Time required**: approx. 90 min
+
+!!! note "Where this page belongs"
+    - This is the second page of 2.4 in Part 2 ([Hands-on](index.md#24-marketplace--wallet-v2-lane)).
+    - Previous page: [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md)
+    - Next page: [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md)
 
 !!! abstract "Capstone exercise for Stages 1–5"
     In one session, you run a scenario in which the Seller writes data
@@ -17,7 +24,8 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
     obtains the dataset_id dynamically from the Merchandise `additionalInfo` (this site calls it Stage 6 case B).
 
 !!! tip "Choosing a dataset"
-    The example uses `home/env/temperature`, but the deploy script (Stage 6 case B)
+    This note is optional. You can skip it the first time.
+    The example uses `home/env/temperature`, but the deploy script that you run in Step E0
     also creates Merchandise contracts for `home/event/possible_littering` and
     `home/event/flood_risk_high` at the same time. Of the two Stage 0 event datasets,
     only `possible_littering` has ServiceVC / PurchaseViewerVC PDs, so use `possible_littering`
@@ -502,6 +510,13 @@ See also [Troubleshooting in Stage 5](marketplace-vc-bridge.md#troubleshooting).
 - **Observing continuity**: load testing of the case where multiple buyers read within the
   1-hour TTL of the ServiceVC (multi-tenant read) has not been done
 - **EIP-712 signatures**: protection against impersonation of eth_addr ↔ did:jwk is still at the minimal-implementation stage
+
+## Next steps
+
+Next is [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md). You back the seller's identity with a SellerVC.
+
+- Keep the Hardhat node (Terminal A) running. Stage 7 uses the contracts deployed in Step E0. If you restart the node, redo Step E0 first.
+- You can also leave the publisher, the bridge, iot-market-ui and Metro running. Step S0 of Stage 7 recreates the publisher.
 
 ## Related
 

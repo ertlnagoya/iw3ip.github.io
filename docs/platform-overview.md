@@ -232,10 +232,13 @@ IW3IP はカメラ映像専用の基盤ではありません。温度・振動�
 
 ## 次に読むページ
 
-1. 技術の基礎: [ブロックチェーン基礎](foundations/blockchain-basics.md), [Hardhat基礎（このサイトで使うブロックチェーン）](foundations/hardhat-basics.md), [SSI / DID / VC 基礎](foundations/ssi-did-vc-basics.md)
-2. まず動かす: [最短起動 (スタックを動かす)](setup/quickstart.md)
-3. 挙動を確認: [ハンズオン](hands-on/index.md)
-4. 研究の背景: [論文](publications.md), [参考文献・発展学習資料](foundations/references.md)
+読む順は [学習ロードマップ（初級者向け）](foundations/roadmap.md) にまとめています。始めるときは、次の順に進みます。
+
+1. 技術の基礎: [ブロックチェーン基礎](foundations/blockchain-basics.md) から読み始める
+2. ツールを入れる: [事前準備 (ツールのインストール)](setup/prerequisites.md)
+3. まず動かす: [実機なしで一連を動かす (HA Demo Simulator)](hands-on/ha-demo-simulator.md)
+
+研究の背景を知りたいときは、[論文](publications.md) と [参考文献・発展学習資料](foundations/references.md) を読みます。
 
 ## 参考文献
 

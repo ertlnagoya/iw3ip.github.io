@@ -6,9 +6,16 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
 >
 > **Prerequisites**: [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md)
 >
+> **Keep running**: the Stage 6 Hardhat node (the chain deployed in Step E0), the publisher and the bridge. Step S6 also uses iot-market-ui
+>
 > **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
 > **Time required**: approx. 45 min
+
+!!! note "Where this page belongs"
+    - This is the third page of 2.4 in Part 2 ([Hands-on](index.md#24-marketplace--wallet-v2-lane)).
+    - Previous page: [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md)
+    - Next page: [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md)
 
 !!! abstract "The fifth VC type: SellerVC"
     This adds a layer that uses a VC to back **"who"** is selling
@@ -375,6 +382,8 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ## Step S6. Register from the `/seller` page of iot-market-ui
 
+This section is optional. It is another way to do the issuance, presentation and registration of Steps S1–S4 from a web UI. You can check the Stage 7 completion condition (`seller_did`) by the end of Step S5.
+
 ### What to check
 
 - `/marketplace/register` can also be called from the Web UI
@@ -568,6 +577,15 @@ See also [Troubleshooting in Stage 5](marketplace-vc-bridge.md#troubleshooting)
   `dataset_id` value from `additionalInfo`, but `/marketplace/register` depends on the client
   POST. One future option is for the publisher itself to call `getAllAdditionalInfo()` and
   cross-check the value
+
+## Next steps
+
+Next is [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md). You go from purchase to viewing using only the phone screen.
+
+- Keep the Hardhat node (Terminal A) running. Stage A uses the contracts deployed and the public key registered in Step E0 of Stage 6.
+- You can leave the publisher and the bridge running. Step M0 of Stage A recreates them.
+- iot-market-ui is stopped with Ctrl+C and restarted in Step M0 of Stage A.
+- Keep Metro running.
 
 ## Related
 

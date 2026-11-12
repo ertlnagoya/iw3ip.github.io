@@ -4,11 +4,19 @@ Take the events you built in [Detect with a USB webcam (OpenCV)](webcam.md) and 
 
 > **What you'll do**: Send detection events to the platform and observe allow/deny by purpose
 >
-> **Prerequisites**: [Detect with a USB webcam (OpenCV)](webcam.md) finished
+> **Prerequisites**: one of the pages in section 1.2 of Part 1 is done (this page uses mock data, so you can do it without a camera)
+>
+> **Keep running**: nothing. This page starts the publisher. Keep the Quickstart IPFS stopped (it shares port 8080)
 >
 > **What you need**: PC, ideally a USB webcam (mock data also works)
 >
 > **Time required**: approx. 45 min
+
+!!! note "Where this page belongs"
+    - This is section 2.1 of Part 2 (Stage 0) ([Hands-on](index.md#21-event-sharing--share-inferences-not-raw-frames-stage-0)). Pick just one of the two pages in 2.1. The other one is [Share disaster events](environment-disaster.md).
+    - "Phase 1" and "Phase 2" on this page are development stages of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
+    - Previous page: section 1.3 of Part 1 ([Hands-on](index.md#13-trade-on-the-marketplace-v1-lane)). 1.4 is optional
+    - Next page: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) (2.2)
 
 This hands-on is a **Phase 2: Event / Intelligence Sharing** extension of the existing [Detect with a USB webcam (OpenCV)](webcam.md).  
 In Phase 1, the USB webcam sample detected `person_detected` and `possible_littering`, generated event files, and confirmed that they were registered as merchandise.  
@@ -47,7 +55,7 @@ Branches after that:
 
 ## Prerequisites
 
-- you understand [Detect with a USB webcam (OpenCV)](webcam.md)
+- you have done one of the pages in section 1.2 of Part 1. This page uses events from [Detect with a USB webcam (OpenCV)](webcam.md) as the example, but it uses mock data, so you can do it without a camera
 - you can run [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
 - Docker / Docker Compose is available
 - If the IPFS from the [Quickstart (run the stack)](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
@@ -289,9 +297,19 @@ The key change is that the theme moves from **detection** to **condition-based s
 3. make the policy explicit that raw video is not shared and only events are shared
 4. connect the results to the mobile viewer app for event lists and notifications
 
+## Next steps
+
+One page from 2.1 is enough. Next is [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) in 2.2 ([Hands-on](index.md#22-add-consent-consent-vc-stage-1)).
+
+- You can keep the publisher running. Step 1 of the next page starts it again with the `ssi-wallet` profile.
+- Keep the Quickstart IPFS stopped. IPFS and the publisher both use port 8080.
+- After you finish Stage 1, you can also try the appendix at the bottom of this page.
+
+If you stop here, stop the publisher with `cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml down`.
+
 ## Appendix: wallet-mode authorization
 
-Try this appendix after finishing [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md).
+This appendix is optional. It uses [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) (Stage 1), so try it after you finish Stage 1. You can come back to this page after Stage 1.
 
 The main flow registers `consent_possible_littering.json` via POST to
 `/consents` — i.e. consent is stored as plaintext JSON on the publisher.

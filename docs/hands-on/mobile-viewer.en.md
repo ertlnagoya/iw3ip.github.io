@@ -4,11 +4,20 @@ Open the v1 marketplace (purchase with MetaMask [1]; data is handed over through
 
 > **What you'll do**: Open the marketplace screen in a phone browser and walk through a purchase
 >
-> **Prerequisites**: v1 stack running ([Quickstart (run the stack)](../setup/quickstart.md))
+> **Prerequisites**: section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane) (listing and buying on the PC) is done, and the v1 stack is running ([Quickstart (run the stack)](../setup/quickstart.md))
+>
+> **Keep running**: the Quickstart stack used in 1.3 (terminals 1–7, including IPFS and PostgreSQL). The publisher is not used
 >
 > **What you need**: PC + smartphone on the same network
 >
 > **Time required**: approx. 20 min
+
+!!! note "Where this page belongs"
+    - This is section 1.4 of Part 1 ([Hands-on](index.md#14-open-the-marketplace-and-buy-on-a-phone)). This page is optional. It is not part of the Part 1 "Done when…" checks.
+    - Do the listing and buying on the PC first (section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane)). This page opens the same screens on a phone.
+    - If the Quickstart IPFS is still stopped from 1.1 or 1.2, start it again with Quickstart step 5 before you continue.
+    - Previous page: section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane)
+    - Next page: section 2.1 of Part 2 ([Share detections, not raw frames](webcam-event-sharing.md) or [Share disaster events](environment-disaster.md))
 
 !!! note "Open and buy on v1"
     This page covers opening the marketplace and buying from a phone on
@@ -44,6 +53,8 @@ Confirm that you can open the marketplace from a smartphone and buy an item.
 - MetaMask Mobile or an equivalent wallet browser is available on the phone
 
 ## Exercise Programs
+
+This section is optional. The exercise programs assume a `/mobile` route, but the current `iot-market-ui` has no such route. You can skip this section. The steps from "Shortest path" onward are enough to complete 1.4.
 
 - [Problem program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/mobile_viewer/problem_program.py)
 - [Answer program](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/blob/main/examples/hands_on/mobile_viewer/answer_program.py)
@@ -193,6 +204,16 @@ If you cannot connect or the purchase does not proceed, check the troubleshootin
   - Check: whether you already bought that item with the same account (an item bought in §1.3 cannot be bought again; use a `Product deployed` address you have not bought yet)
   - Fix: import the same Account #2 Private Key as in [Quickstart (run the stack)](../setup/quickstart.md#metamask-local-chain-setup) and buy again with that account
   - See the "Purchase does not succeed" item in [Troubleshooting](../operations/troubleshooting.md)
+
+## Next steps
+
+Next is section 2.1 of Part 2. Pick one of [Share detections, not raw frames](webcam-event-sharing.md) and [Share disaster events](environment-disaster.md) ([Hands-on](index.md#21-event-sharing--share-inferences-not-raw-frames-stage-0)).
+
+- 2.1 uses the publisher and does not use the Quickstart stack.
+- First stop the Quickstart IPFS (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`). IPFS and the publisher both use port 8080.
+- You may also stop the other Quickstart processes.
+
+If you end Part 1 here, check the Part 1 "Done when…" list in [Hands-on](index.md#part-1-done-when).
 
 ## References
 

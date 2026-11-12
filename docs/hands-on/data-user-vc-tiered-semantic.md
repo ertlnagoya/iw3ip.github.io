@@ -6,9 +6,17 @@
 >
 > **前提**: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) の §0〜§7 と、[画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) の §8〜§11 を済ませていること
 >
+> **起動しておくもの**: なし。§12.2 で publisher、mosquitto、VLM (Ollama) を起動します
+>
 > **使うもの**: PC + スマホ (iw3ip-wallet)、`--profile vlm` で起動する publisher（Ollama）
 >
 > **所要時間**: 約 60〜90 分（初回は VLM のモデル取得に時間がかかります）
+
+!!! note "このページの位置付け"
+    - Part 2 の 2.5 の 3 ページ目です ([ハンズオン](index.md#25-信頼度に応じた段階アクセス-stage-t--p))。
+    - 前のページ: [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md)
+    - 次のページ: [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md)
+    - ローカルの VLM は、Part 3 の [ローカル VLM でカメラデータを意味づけ](local-vlm-distribution.md) でも扱います。順番はどちらが先でも構いません。このページは §12.2 で VLM を自分で起動するので、このページだけで進められます。
 
 ## 12. 意味レベルの段階化（VLM + 顔ブラー）
 
@@ -599,6 +607,13 @@ ON にしたときだけ semantic pipeline 経由の表示に切り替えます�
 （audit hook）で行い、ユニットテスト（190 件すべて pass）で確認済みです。
 
 ## 次に進む
+
+次は、2.5 の後半の [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) です。画像に C2PA の来歴を付けて署名します。
+
+- 次のページは Python だけで動き、publisher と VLM を使いません。止めて構いません。
+- その次の [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) で、publisher を C2PA の設定で起動し直します。
+
+前のページに戻る場合:
 
 - 戻る: [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — §8〜§11（画像・動画の配信）
 - 最初から: [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) — §0〜§7（DataUserVC の発行と tier による出し分け）

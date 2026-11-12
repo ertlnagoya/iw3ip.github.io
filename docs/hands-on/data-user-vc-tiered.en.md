@@ -4,11 +4,18 @@ Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC).
 
 > **What you'll do**: Watch the response narrow from video → image → event only as the trust level drops
 >
-> **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) and [Share detections, not raw frames](webcam-event-sharing.md)
+> **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md), [Share detections, not raw frames](webcam-event-sharing.md), and Steps 7–8 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) (receiving and presenting a PurchaseViewerVC)
+>
+> **Keep running**: nothing. §1 starts the publisher and mosquitto
 >
 > **What you need**: PC + smartphone (iw3ip-wallet)
 >
 > **Time required**: approx. 60 min (the two follow-up pages take about 90 min and 60–90 min more)
+
+!!! note "Where this page belongs"
+    - This is the first page of 2.5 in Part 2 ([Hands-on](index.md#25-tiered-access-by-trust-stage-t--p)).
+    - Previous page: [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md)
+    - Next page: [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md)
 
 This walk-through builds on
 [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) and
@@ -53,6 +60,7 @@ The DataUserVC is issued to the wallet so you can inspect it. The course reposit
 
 - You have run [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) once
 - You understand [Share detections, not raw frames](webcam-event-sharing.md)
+- You have received and presented a PurchaseViewerVC with the wallet in Steps 7–8 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md). §3 and §4 of this page use `/marketplace/claim` and the PurchaseViewerVC that Stage 5 used
 - Docker / Docker Compose
 - `curl`, `jq`
 
@@ -139,6 +147,11 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 ```
 
 This profile scores 25 and the verdict is `denied`. `denied` is the name of the trustScore verdict. In the current implementation a `denied` verdict does not reject the purchase report (`/marketplace/claim`). A PurchaseViewerVC that can view events only (`PurchaseViewerVC.event`) is issued, and images, video, and descriptions are left out of the response.
+
+!!! note "When you enable the VLM in §12, the Tier numbers change meaning"
+    Tier 1 on this page is the level that can view events only (when the verdict is `denied`, or when `data_user_attrs` is omitted).
+    When you enable the VLM in §12 of [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md), a new Tier 1 (`summary`, summary text only) is added for trustScore 50–59.
+    Then the Tier 1 of this page (`denied`, events only) is called Tier 0.
 
 ## 3. Three `/marketplace/claim` calls
 
@@ -347,9 +360,15 @@ share the same VCT.
       response uses, with the default setting (`SSI_ISSUER_BASE_URL` set to the publisher's internal name), the host the claim was sent to. A claim sent to `localhost`, as on this page,
       yields a `deeplink` the phone cannot reach, so use `offer_url`. When the bridge is started with `BRIDGE_PUBLIC_PUBLISHER_URL=http://<HOST_IP>:8080`, it passes that URL to the publisher, so the `deeplink` works too.
 
-## Where to go next
+## Next steps
 
-- [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — continues with §8–§11 (HTTP media gateway, IPFS, PWA viewer, PWA Provider)
+Next is the follow-up page [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md). In §8–§11 you deliver the actual image and video bytes.
+
+- Keep the publisher and mosquitto running. The next page uses the publisher from this page as is.
+- The consent registered in §4a stays in the publisher's volume, so you do not need to register it again.
+
+Other related pages:
+
 - [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — continues with §12–§13 (semantic-level tiering with a VLM, semantic intermediate representation)
 - [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) — bring up the Phase 2 wallet
 - [Tiered access design spec](data-user-vc-tiered-spec.md) — design rationale

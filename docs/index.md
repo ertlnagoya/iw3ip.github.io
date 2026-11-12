@@ -132,16 +132,12 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 
 ## 推奨学習順
 
-1. [学習ロードマップ（初級者向け）](foundations/roadmap.md)
-2. [ブロックチェーン基礎](foundations/blockchain-basics.md)
-3. [Hardhat基礎（このサイトで使うブロックチェーン）](foundations/hardhat-basics.md)
-4. [SSI / DID / VC 基礎](foundations/ssi-did-vc-basics.md)
-5. [事前準備 (ツールのインストール)](setup/prerequisites.md)
-6. [実機なしで一連を動かす (HA Demo Simulator)](hands-on/ha-demo-simulator.md)（実機なしで一通り動かす）
-7. [最短起動 (スタックを動かす)](setup/quickstart.md)
-8. [ハンズオン](hands-on/index.md)
-9. [設計](design/index.md)（仕組みを詳しく知りたいとき）
-10. [参考文献・発展学習資料](foundations/references.md)
+読む順は [学習ロードマップ（初級者向け）](foundations/roadmap.md) にまとめています。学習基礎のページを読んだあと、手を動かす部分は次の順に進みます。
+
+1. [事前準備 (ツールのインストール)](setup/prerequisites.md)
+2. [実機なしで一連を動かす (HA Demo Simulator)](hands-on/ha-demo-simulator.md)
+3. [最短起動 (スタックを動かす)](setup/quickstart.md)
+4. [ハンズオン](hands-on/index.md) の Part 1 の 1.2
 
 途中で詰まったら [トラブルシュート](operations/troubleshooting.md) を参照してください。講師・TA は、先に [授業ガイド](foundations/course-guide.md) を読んで授業の構成を決めます。
 

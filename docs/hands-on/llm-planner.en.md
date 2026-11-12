@@ -6,9 +6,17 @@ Replace the rule-based planner in [Run the regional safety assistant](regional-s
 >
 > **Prerequisites**: [Run the regional safety assistant](regional-safety-assistant.md)
 >
+> **Keep running**: nothing. Stage 1 starts the assistant with `uvicorn` on the host. If the assistant from the previous page is running, stop it first (both use port 8090)
+>
 > **What you need**: PC (real LLM step needs an API key or a local LLM)
 >
 > **Time required**: approx. 60 min
+
+!!! note "Where this page belongs"
+    - This is 3.4 in Part 3 and the last hands-on page ([Hands-on](index.md#34-llm-planner)).
+    - "Phase 3" on this page is a development stage of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)). "Stage 1–3" on this page are the steps within this page.
+    - Previous page: [Run the regional safety assistant](regional-safety-assistant.md)
+    - Next page: none. After this, the [Design](../design/index.md) section explains the mechanisms and the reasons behind the design decisions.
 
 This page is organized in three stages:
 
@@ -445,6 +453,8 @@ At this point, `planner_diagnostics` can be read from both the API and the UI. T
 
 ### 5. Switch to an OpenAI-compatible API
 
+This step is optional. It needs an API key or a local LLM running on your PC. If you have neither, skip this step and try the same HTTP path with the mock server in §5.2.
+
 Copy `.env.local.example`, set `ASSISTANT_LLM_API_KEY` (and, if needed, `ASSISTANT_LLM_MODEL` and `ASSISTANT_LLM_API_BASE_URL`) in `.env.local` to your own values, then start the server. Stop any other assistant on port 8090 first. If you run `uvicorn` on the host, press Ctrl+C in that terminal.
 
 ```bash
@@ -644,6 +654,13 @@ When the LLM API cannot be used, `/assistant/plan` does not fail; it returns the
 - make sure your `main` branch is up to date (`git pull`)
 
 ## Next steps
+
+The hands-on ends here. You can look back on what you checked in "Done when…" for Part 3 on [Hands-on](index.md#part-3-done-when).
+
+- After this, the [Design](../design/index.md) section explains how each feature works and why it was designed that way.
+- If you stop here, stop the Docker assistants with the first `docker compose ... stop` command in [5.2 Try the HTTP path with the local mock server](#52-try-the-http-path-with-the-local-mock-server). In terminals running `uvicorn` or the mock server on the host, press Ctrl+C.
+
+Related pages:
 
 - For the design rationale: [LLM Planner replacement spec](llm-planner-spec.md)
 - To go back to the original Phase 3 sample: [Run the regional safety assistant](regional-safety-assistant.md)

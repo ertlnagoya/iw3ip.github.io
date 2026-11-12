@@ -6,14 +6,18 @@ Attach "provenance" that follows the C2PA standard [1] to an image taken with a 
 >
 > **Prerequisites**: Python 3.10 or later. The publisher, the blockchain, and the phone wallet are not used
 >
+> **Keep running**: nothing. Only Python programs are used
+>
 > **What you need**: a PC (a USB webcam or built-in camera is optional)
 >
 > **Time required**: approx. 30–40 minutes
 
 !!! note "Where this page belongs"
-    This hands-on runs P0 (the first step) of the [C2PA provenance pipeline — provenance for camera footage and sensor data (Stage P design spec)](../design/c2pa-provenance-spec.md) on your own machine.
-    The C2PA mechanism and terms are explained in §2 "C2PA basics" of the design spec. The idea of Tiers 1–3 was covered in [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md).
-    Building this into the publisher (P1 and P2) is covered in [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md).
+    - This is the fourth page of 2.5 in Part 2 ([Hands-on](index.md#25-tiered-access-by-trust-stage-t--p)).
+    - This hands-on runs P0 (the first step) of the [C2PA provenance pipeline — provenance for camera footage and sensor data (Stage P design spec)](../design/c2pa-provenance-spec.md) on your own machine.
+    - The C2PA mechanism and terms are explained in §2 "C2PA basics" of the design spec. The idea of Tiers 1–3 was covered in [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md).
+    - Previous page: [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md)
+    - Next page: [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md). It builds this into the publisher (P1 and P2).
 
 ## Goal
 
@@ -311,6 +315,14 @@ In this hands-on, the camera and the gateway (the signing program) are on the sa
   - Check: did you try another camera with `--camera-index 1` or similar?
 - Symptom: `ModuleNotFoundError: No module named 'cv2'`
   - Check: did you run `python -m pip install "opencv-python<5"` from §6?
+
+## Next steps
+
+Next is [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md). You send the signed image to the publisher and record the provenance on the chain.
+
+- The next page uses the virtual environment (`.venv`) made in §1 of this page. The certificates are made again in §1 of the next page.
+- §2 of the next page starts a Hardhat node on port 8545. If a Hardhat node started earlier (for example in 2.4) is still running, stop it first with Ctrl+C.
+- §3 of the next page restarts the publisher with the C2PA settings.
 
 ## References
 

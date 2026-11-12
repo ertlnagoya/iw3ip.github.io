@@ -6,14 +6,18 @@ Covers the M2M (machine-to-machine) case where a service (a program), not a pers
 >
 > **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) and [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md)
 >
+> **Keep running**: the publisher started in 2.2 and 2.3 (`ssi-wallet` profile). If you stopped it, step 1 starts it. Keep the Quickstart IPFS stopped (it shares port 8080)
+>
 > **What you need**: PC + smartphone (iw3ip-wallet)
 >
 > **Time required**: approx. 45 min
 
-!!! note "M2M extension of the wallet hands-on"
-    Assumes you've completed Stage 1 (ConsentVC + PolicyToken) and
-    Stage 3 (ViewerVC + ViewerToken). This page covers the case where
-    a **non-human service** holds a VC and writes continuously.
+!!! note "Where this page belongs"
+    - This is the second page of section 2.3 of Part 2 ([Hands-on](index.md#23-split-read-vs-write-roles)).
+    - Assumes you've completed Stage 1 (ConsentVC + PolicyToken) and Stage 3 (ViewerVC + ViewerToken). This page covers the case where a **non-human service** holds a VC and writes continuously.
+    - "Stage 4 prep" means preparation for Stage 4. Stage 4 is planned as the stage where the LLM Planner proves, with a VC, that it is authorized to run each plan step. The ServiceVC on this page is that preparation (see [Limits of this hands-on (future work)](#limits-of-this-hands-on-future-work)).
+    - Previous page: [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) (2.3)
+    - Next page: [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) (2.4)
 
 !!! tip "Choosing a dataset"
     The example uses `home/env/temperature`, but the same steps work
@@ -179,6 +183,15 @@ The trailing number in `reason` is `write_count`. Five calls list 5 down to 1, n
 The unknown-token case returns `policy_token_*` rather than `service_*`
 on purpose — to preserve the Stage 1 user-visible error name.
 
+## Stop
+
+If you go on to the next page, [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md), you can keep the publisher running. Step 4 of that page starts it again with the `ssi-wallet` and `mv-bridge` profiles. If you stop here, run the following command.
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile ssi-wallet down
+```
+
 ## Three VCs side by side
 
 | | ConsentVC (Stage 1) | ViewerVC (Stage 3) | ServiceVC (Stage 4 prep) |
@@ -211,3 +224,11 @@ each plan step via a VC presentation. This is why this page is called Stage 4 pr
 - [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md): repeated reads by a person
 - Appendix of [Share detections, not raw frames](webcam-event-sharing.md#appendix-wallet-mode-authorization):
   one-shot wallet mode (no ServiceVC required)
+
+## Next steps
+
+Next is [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) in 2.4 ([Hands-on](index.md#24-marketplace--wallet-v2-lane)).
+
+- You can keep the publisher running. Step 4 of the next page starts it again with the `ssi-wallet` and `mv-bridge` profiles.
+- Keep the Quickstart IPFS stopped. IPFS and the publisher both use port 8080.
+- Step 1 of the next page starts a new Hardhat node. If the Quickstart Hardhat node and the mediators are running, stop them there.

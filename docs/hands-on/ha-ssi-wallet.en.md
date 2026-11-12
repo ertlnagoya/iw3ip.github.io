@@ -6,9 +6,17 @@ Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to aut
 >
 > **Prerequisites**: [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) or [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md) finished, and ideally Stage 0 ([Share detections, not raw frames](webcam-event-sharing.md) or [Share disaster events](environment-disaster.md))
 >
+> **Keep running**: nothing. Step 1 of this page starts the publisher with the `ssi-wallet` profile. The publisher from 2.1 can stay running. Keep the Quickstart IPFS stopped (it shares port 8080)
+>
 > **What you need**: PC + smartphone with iw3ip-wallet
 >
 > **Time required**: approx. 60 min
+
+!!! note "Where this page belongs"
+    - This is section 2.2 of Part 2 (Stage 1) ([Hands-on](index.md#22-add-consent-consent-vc-stage-1)).
+    - "Phase 1" and "Phase 3" on this page are development stages of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
+    - Previous page: [Share detections, not raw frames](webcam-event-sharing.md) or [Share disaster events](environment-disaster.md) in 2.1
+    - Next page: [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) (2.3)
 
 !!! note "Wallet used on this page"
     This page uses [`iw3ip-wallet`](https://github.com/ertlnagoya/iw3ip-wallet),
@@ -53,15 +61,6 @@ Pipeline:
 - A lightweight stack using `did:jwk` and SD-JWT VC
 - How `allowed` / `denied` depends on VC content and `purpose`
 
-## Common issues
-
-- If the Presentation Definition `input_descriptors` disagree with the VC
-  claims, the wallet reports "no matching credential"
-- DID method mismatches between issuer / wallet / verifier cause signature failures
-- SD-JWT VC, W3C VC-JWT, and mdoc are not interchangeable; pin one format
-- QR redirect fails if the phone and PC are on different networks
-  (same prerequisite as [Open the marketplace and buy on a phone (v1)](mobile-viewer.md))
-
 ## Prerequisites
 
 - Docker / Docker Compose available
@@ -70,13 +69,7 @@ Pipeline:
 - Installable `iw3ip-wallet` (fork) build on the phone
   (TestFlight / internal APK / Expo dev build)
 - You have started the publisher once via [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) or [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
-
-## Related repositories
-
-- `iw3ip-wallet`: <https://github.com/ertlnagoya/iw3ip-wallet>
-  - upstream: Sphereon-Opensource/mobile-wallet [1]
-  - Branch policy: `main` tracks upstream; `iw3ip/*` carries IW3IP-specific changes
-- [Blockchain_IoT_Marketplace](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace): publisher (includes the OID4VCI / OID4VP endpoints; started with the `ssi-wallet` profile)
+- If the IPFS from the [Quickstart (run the stack)](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
 
 ## Shortest path
 
@@ -308,16 +301,16 @@ docker compose -f infra/docker-compose.yml logs publisher 2>&1 | grep policy_tok
 
 If more than 5 minutes have passed since §5, or `policy_token_expired` is returned, the token has expired. Redo the presentation in §5 and use the `token=` value from the newest (last) line printed by the command above.
 
-## Next steps
+## Stop
 
-This hands-on (Stage 1) only covers **single-use write authorization**
-(ConsentVC + PolicyToken). Other forms of authorization are covered on the following pages.
+If you go on to the next page, [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md), keep everything running. If you stop here, run the following command.
 
-- [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) — reads, any number of times within the TTL (ViewerVC)
-- [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) — continuous writes from a device (ServiceVC)
-- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
-- [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
-- [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — seller identity
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile ssi-wallet down
+```
+
+The VCs saved in the wallet stay on the phone after you stop the publisher.
 
 ## Extension ideas
 
@@ -329,6 +322,15 @@ This hands-on (Stage 1) only covers **single-use write authorization**
   [Let an AI plan the steps (LLM Planner)](llm-planner.md) `plan` execution, lifting the check into
   the intelligence layer
 
+## Common issues
+
+- If the Presentation Definition `input_descriptors` disagree with the VC
+  claims, the wallet reports "no matching credential"
+- DID method mismatches between issuer / wallet / verifier cause signature failures
+- SD-JWT VC, W3C VC-JWT, and mdoc are not interchangeable; pin one format
+- QR redirect fails if the phone and PC are on different networks
+  (same prerequisite as [Open the marketplace and buy on a phone (v1)](mobile-viewer.md))
+
 ## Troubleshooting
 
 - Symptom: wallet shows "no matching credential"
@@ -338,6 +340,30 @@ This hands-on (Stage 1) only covers **single-use write authorization**
   - Check: clock skew (`iat` / `exp`) is within tolerance
 - Symptom: QR does not open
   - Check: phone and PC are on the same LAN (see [Open the marketplace and buy on a phone (v1)](mobile-viewer.md))
+
+## Related repositories
+
+- `iw3ip-wallet`: <https://github.com/ertlnagoya/iw3ip-wallet>
+  - upstream: Sphereon-Opensource/mobile-wallet [1]
+  - Branch policy: `main` tracks upstream; `iw3ip/*` carries IW3IP-specific changes
+- [Blockchain_IoT_Marketplace](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace): publisher (includes the OID4VCI / OID4VP endpoints; started with the `ssi-wallet` profile)
+
+## Next steps
+
+Next is [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) in 2.3 ([Hands-on](index.md#23-split-read-vs-write-roles)).
+
+- Keep the publisher running with the `ssi-wallet` profile. Step 1 of the next page starts it with the same command. If you stopped it, step 1 starts it again.
+- Keep the Quickstart IPFS stopped. IPFS and the publisher both use port 8080.
+- Now that Stage 1 is done, you can try the appendix of the 2.1 page.
+
+This hands-on (Stage 1) only covers **single-use write authorization**
+(ConsentVC + PolicyToken). Other forms of authorization are covered on the following pages.
+
+- [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) — reads, any number of times within the TTL (ViewerVC)
+- [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) — continuous writes from a device (ServiceVC)
+- [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — purchase-bound read (PurchaseViewerVC)
+- [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md) — capstone of Stage 1–5
+- [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — seller identity
 
 ## References
 

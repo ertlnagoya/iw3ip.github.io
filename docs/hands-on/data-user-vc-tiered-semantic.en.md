@@ -6,9 +6,17 @@ This page continues [Tier the response by trust (DataUserVC / Stage T)](data-use
 >
 > **Prerequisites**: §0–§7 of [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) and §8–§11 of [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md)
 >
+> **Keep running**: nothing. §12.2 starts the publisher, mosquitto and the VLM (Ollama)
+>
 > **What you need**: PC + smartphone (iw3ip-wallet), and a publisher started with `--profile vlm` (Ollama)
 >
 > **Time required**: approx. 60–90 min (the first run takes longer because the VLM model has to be downloaded)
+
+!!! note "Where this page belongs"
+    - This is the third page of 2.5 in Part 2 ([Hands-on](index.md#25-tiered-access-by-trust-stage-t--p)).
+    - Previous page: [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md)
+    - Next page: [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md)
+    - The local VLM is also covered in [Enrich camera data with a local VLM](local-vlm-distribution.md) in Part 3. You can do the two in either order. This page starts the VLM itself in §12.2, so you can complete it on its own.
 
 ## 12. Semantic-level redaction (VLM + face blur)
 
@@ -623,7 +631,14 @@ Implementation:
 [#52](https://github.com/ertlnagoya/Blockchain_IoT_Marketplace/pull/52)
 (audit hook). Unit tests at 190/190 pass.
 
-## Where to go next
+## Next steps
+
+Next is the second half of 2.5, [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md). You attach C2PA provenance to an image and sign it.
+
+- The next page runs on Python only and does not use the publisher or the VLM. You can stop them.
+- The page after it, [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md), restarts the publisher with the C2PA settings.
+
+To go back to an earlier page:
 
 - Back: [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — §8–§11 (delivering images and video)
 - Start: [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) — §0–§7 (issuing DataUserVC and tiering the response)

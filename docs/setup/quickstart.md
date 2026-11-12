@@ -147,6 +147,14 @@ cargo run
 
 ### 5. IPFS と PostgreSQL を起動 (Docker)
 
+!!! warning "publisher が動いている場合"
+    [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) などで起動した publisher が動いたままの場合は、先に止めます。IPFS と publisher は、どちらもポート 8080 を使うためです。次のコマンドは、HA Demo Simulator で起動した Home Assistant と Node-RED もまとめて止めます。
+
+    ```bash
+    cd ~/program/Blockchain_IoT_Marketplace
+    docker compose -f infra/docker-compose.yml --profile ha-demo --profile ha-demo-phase3 --profile nodered down
+    ```
+
 ターミナル 5:
 
 ```bash
@@ -244,7 +252,7 @@ MetaMask をローカル Hardhat に接続します。
 - [ ] MetaMask が `Hardhat Local` ネットワークに接続できている
 - [ ] MetaMask のアカウント残高が約 `10000 ETH` (9999.99… でよい) と表示される
 
-すべてチェック → [ハンズオン](../hands-on/index.md) の Part 1 に進めます。
+すべてチェック → [ハンズオン](../hands-on/index.md) の Part 1 の 1.2 に進みます。
 
 ## 簡易な代替: docker compose だけで動く最小スタック
 

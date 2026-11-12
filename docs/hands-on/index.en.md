@@ -7,6 +7,15 @@ This is the chapter where you run IW3IP yourself to understand it.
 
 The pages in this section are step-by-step procedures with commands, expected output and checkpoints. The mechanisms and the reasons behind each feature's design are in the [Design](../design/index.md) section, and what to do when a step does not work is in the [Support](../operations/index.md) section.
 
+!!! tip "If this is your first time"
+    If this is your first time, go in this order.
+
+    1. §1.1 [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
+    2. One of the three pages in §1.2
+    3. Listing and purchase in §1.3
+
+    If you use a camera in §1.2, and for §1.3, start the stack with [Quickstart (run the stack)](../setup/quickstart.md) first. Go on to Part 2 and later only when you need them.
+
 ## Basic vs Feature Extensions
 
 The hands-on explains the marketplace stack in two layers: **Basic (v1)** and **Feature Extensions (v2)**.
@@ -33,31 +42,6 @@ Purchase (shared by v1 and v2)
 ```
 
 Design detail: [Marketplace VC Bridge — v1 / v2 Design Spec](../design/marketplace-vc-bridge-spec.md).
-
-## How Part, Phase, and Stage relate { #part-phase-stage }
-
-This site uses three kinds of numbering.
-
-- **Part 1–3**: the learning order on this site (Basic, Feature Extensions, Intelligence Integration).
-- **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see the Phase structure in [Platform Overview](../platform-overview.md#phase-structure)).
-- **Stage 0–7, A, T, P**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0) and image provenance signing (Stage P). Each page assumes the earlier Stages are done. The exception is the first Stage P page (P0), which uses neither the earlier Stages nor any VC and runs on its own with only the course repository and Python. The following P1–P3 pages connect to the publisher and the chain and use per-tier ViewerTokens (obtained with a PurchaseViewerVC). There is no Stage 2.
-
-| Stage | Hands-on | VC |
-|---|---|---|
-| 0 | [Share detections, not raw frames](webcam-event-sharing.md), [Share disaster events](environment-disaster.md) | none (JSON registered at `/consents`) |
-| 1 | [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) | ConsentVC |
-| 3 | [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) | ViewerVC |
-| 4 prep | [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) | ServiceVC |
-| 5 | [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) | PurchaseViewerVC |
-| 6 | [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md) | ServiceVC + PurchaseViewerVC (builds on the ConsentVC / ViewerVC flows of Stages 1 and 3) |
-| 7 | [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) | SellerVC |
-| A | [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md) | PurchaseViewerVC (phone only) |
-| T | [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) | DataUserVC |
-| P | [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) | none (C2PA signing with X.509 certificates; no publisher or wallet needed) |
-| P | [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
-| P | [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
-
-The mapping between VCs and tokens is summarized in [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md).
 
 ## About `$HOST_IP` in commands { #host-ip }
 
@@ -91,7 +75,7 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
       <a href="huskylens2/">HUSKYLENS2</a> /
       <a href="webcam/">USB Webcam</a> /
       <a href="ha-ssi-publisher/">HA Publisher</a> /
-      <a href="mobile-viewer/">Mobile Viewer</a>
+      <a href="mobile-viewer/">Mobile Viewer (optional)</a>
     </p>
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-2">
@@ -109,7 +93,7 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
   <div class="iw3ip-phase-card iw3ip-phase-3">
     <div class="iw3ip-phase-kicker">Part 3 / Intelligence Integration</div>
     <h3>Let an AI act on requests</h3>
-    <p>An AI interprets free-form requests and uses Part 1/2 data as material to plan and act.</p>
+    <p>An AI interprets free-form requests and uses data as material to plan and act. You can start it before finishing all of Part 2.</p>
     <p class="iw3ip-phase-links">
       <a href="local-vlm-distribution/">Enrich camera data with a local VLM</a> /
       <a href="privacy-compare/">Protect camera images before handing them to AI</a> /
@@ -124,15 +108,42 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
 | Goal | Path |
 |---|---|
 | See it run first | [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md) only (approx. 20 min) |
-| Cover all of Basic | All of Part 1 (approx. 1.5 hours; pick one device in §1.2) |
+| Cover all of Basic | All of Part 1 (approx. 1.5 hours; pick one device in §1.2; §1.4 is optional) |
 | Reach safe / conditional sharing | Part 1 → Part 2 §2.1–§2.3 (+ approx. 4 hours) |
 | Reach v2 marketplace integration | Part 1 → Part 2 §2.4 (+ approx. 4 hours) |
-| Reach tiered access | Through Part 2 §2.5 (+ approx. 1 hour; about 3 more hours to cover image/video delivery and semantic-level tiering, about 30–40 more minutes to prove image provenance with C2PA (Stage P), about 40–60 more minutes to connect provenance to the publisher and the chain, and about 20–30 more minutes to trace a VLM summary back to the image) |
+| Reach tiered access | Through Part 2 §2.5 (+ approx. 1 hour; about 2.5–3 more hours to cover image/video delivery and semantic-level tiering, about 30–40 more minutes to prove image provenance with C2PA (Stage P), about 40–60 more minutes to connect provenance to the publisher and the chain, and about 20–30 more minutes to trace a VLM summary back to the image) |
 | Reach AI integration | Through Part 3 (+ approx. 5 hours) |
 
-The times are sums of the estimates at the top of each page. A "+" means time needed on top of the row above.
+The times are sums of the estimates at the top of each page. A "+" means time needed on top of the row above. They do not include [Prerequisites (install tools)](../setup/prerequisites.md) or [Quickstart (run the stack)](../setup/quickstart.md) (approx. 15–30 min).
 
 Each hands-on page opens with a "What you'll do / Prerequisites / What you need / Time required" block. If you get stuck partway, see [Troubleshooting](../operations/troubleshooting.md).
+
+## How Part, Phase, and Stage relate { #part-phase-stage }
+
+This site uses three kinds of numbering.
+
+- **Part 1–3**: the learning order on this site (Basic, Feature Extensions, Intelligence Integration).
+- **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see the Phase structure in [Platform Overview](../platform-overview.md#phase-structure)).
+- **Stage 0–7, A, T, P**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0) and image provenance signing (Stage P). Each page assumes the earlier Stages are done. The exception is the first Stage P page (P0), which uses neither the earlier Stages nor any VC and runs on its own with only the course repository and Python. The following P1–P3 pages connect to the publisher and the chain and use per-tier ViewerTokens (obtained with a PurchaseViewerVC).
+
+There is no Stage 2. Stage 4 prep is the ServiceVC page that prepares for the stage where VCs authorize the LLM Planner's execution (planned as Stage 4). Stages 8 and 9 appear on some pages only as future work. They have no hands-on pages.
+
+| Stage | Hands-on | VC |
+|---|---|---|
+| 0 | [Share detections, not raw frames](webcam-event-sharing.md), [Share disaster events](environment-disaster.md) | none (JSON registered at `/consents`) |
+| 1 | [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) | ConsentVC |
+| 3 | [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md) | ViewerVC |
+| 4 prep | [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md) | ServiceVC |
+| 5 | [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) | PurchaseViewerVC |
+| 6 | [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md) | ServiceVC + PurchaseViewerVC (builds on the ConsentVC / ViewerVC flows of Stages 1 and 3) |
+| 7 | [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) | SellerVC |
+| A | [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md) | PurchaseViewerVC (phone only) |
+| T | [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) | DataUserVC, PurchaseViewerVC (received and presented the same way as Steps 7–8 of Stage 5) |
+| P | [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) | none (C2PA signing with X.509 certificates; no publisher or wallet needed) |
+| P | [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
+| P | [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
+
+The mapping between VCs and tokens is summarized in [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md).
 
 ## Tech stack at a glance
 
@@ -233,11 +244,13 @@ Detailed bring-up: [Quickstart (run the stack)](../setup/quickstart.md).
 
 ### 1.4 Open the marketplace and buy on a phone
 
+This section is optional. You try it with MetaMask Mobile on a phone. It is not part of the Part 1 "Done when…" list.
+
 Open the §1.3 marketplace screen in a phone browser and walk through a purchase.
 
 - [Open the marketplace and buy on a phone (v1)](mobile-viewer.md)
 
-### Done when…
+### Done when… { #part-1-done-when }
 
 - You confirmed that the §1.2 data arrived: on the HA path it appears in `curl http://localhost:8080/platform/ingest` (step 6 of HA SSI Publisher), and on the camera path it appears as `Product deployed` in `mediator-owner`
 - Listing → purchase → delivery on the marketplace worked, and the data was saved under `mediator-buyer/downloads`
@@ -283,7 +296,9 @@ Deliver the data after purchase with **PurchaseViewerVC + ViewerToken** instead 
 
 ### 2.5 Tiered access by trust (Stage T / P)
 
-Switch the response between Tier 3 (video + everything), Tier 2 (image + derived), and Tier 1 (summary only) based on the user's **DataUserVC**. The later pages also cover structured data that describes the image content (a semantic intermediate representation) and rendering that changes by trust level (trust-aware rendering).
+Change what the user sees in steps, based on the user's **DataUserVC**. The first two pages use three tiers: Tier 3 (event, image, video), Tier 2 (event, image), and Tier 1 (event only; the decision is `denied`). The third page turns on the VLM extension and uses four tiers: Tier 3, Tier 2 (event, blurred image, description), Tier 1 (event, summary text), and Tier 0 (event only; the decision is `denied`).
+On the first page you receive and present a PurchaseViewerVC the same way as Steps 7–8 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) in §2.4.
+The later pages also cover structured data that describes the image content (a semantic intermediate representation) and rendering that changes by trust level (trust-aware rendering).
 
 - [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)
 - [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md) — continues with §8–§11
@@ -293,7 +308,7 @@ Switch the response between Tier 3 (video + everything), Tier 2 (image + derived
 - [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md) — verify provenance at the publisher, sign the Tier 2 image, record a token on chain, and check what provenance each tier sees
 - [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md) — the publisher signs a summary card with the VLM's summary, and someone who receives only the text traces it to the capture and the token
 
-### Done when…
+### Done when… { #part-2-done-when }
 
 - A Consent / DataUserVC / PurchaseViewerVC lands in your phone wallet
 - Changing `purpose` flips sharing (`/simulate/publish`) or presentation (`/verifier/request`) between allow / deny, and changing the trust level changes what `/platform/data` returns
@@ -302,6 +317,8 @@ Switch the response between Tier 3 (video + everything), Tier 2 (image + derived
 ---
 
 ## Part 3: Intelligence Integration — let an AI act on requests
+
+You can start Part 3 before finishing all of Part 2. §3.1 and §3.2 run with Docker, Python, and a USB webcam (§3.2 also works with a JPEG image instead of a camera). They do not use the Quickstart stack. §3.3 uses a sample event file and assumes [Share detections, not raw frames](webcam-event-sharing.md) from §2.1. §3.4 assumes §3.3.
 
 ### Goals
 
@@ -336,7 +353,7 @@ The "request → plan → execute → UI" decomposition pattern.
 - [Let an AI plan the steps (LLM Planner)](llm-planner.md)
 - Design background: [LLM Planner replacement spec](llm-planner-spec.md) (in the [Design](../design/index.md) section)
 
-### Done when…
+### Done when… { #part-3-done-when }
 
 - You can compare and explain what left the PC in each of the four ways of handing the image to AI
 - A free-form request decomposes into plan steps that execute

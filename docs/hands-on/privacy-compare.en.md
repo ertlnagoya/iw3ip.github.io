@@ -6,9 +6,16 @@ Hand the same webcam frame to AI in four ways, and each time compare **what left
 >
 > **Prerequisites**: Having run [Enrich camera data with a local VLM](local-vlm-distribution.md) once helps
 >
+> **Keep running**: nothing. §1 starts the publisher, the local VLM (Ollama) and the mock cloud AI
+>
 > **What you need**: PC + USB webcam (or a JPEG image) + Docker + Python 3
 >
 > **Time required**: approx. 90–120 min (the first run takes longer because the VLM model has to be downloaded)
+
+!!! note "Where this page belongs"
+    - This is 3.2 in Part 3 ([Hands-on](index.md#32-protect-camera-images-before-handing-them-to-ai)).
+    - Previous page: [Enrich camera data with a local VLM](local-vlm-distribution.md)
+    - Next page: [Run the regional safety assistant](regional-safety-assistant.md)
 
 ## Goal
 
@@ -191,6 +198,13 @@ docker compose -f infra/docker-compose.yml --profile vlm down
 ```
 
 If you no longer need the downloaded VLM model (the `iw3ip_ollama` volume, about 1.7 GB), remove it with `docker volume rm iw3ip_ollama`.
+
+## Next steps
+
+Next is [Run the regional safety assistant](regional-safety-assistant.md). You see how an AI breaks a free-text request into a plan and responds.
+
+- First stop the mock cloud AI and the containers, as in [7. Clean up](#7-clean-up).
+- The next page uses only the assistant (port 8090). It does not use the publisher or the VLM.
 
 ## Related pages
 

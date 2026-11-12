@@ -6,16 +6,20 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
 >
 > **Prerequisites**: [Environment Setup](../setup/index.md) completed and Docker available (the Quickstart stack is not used)
 >
+> **Keep running**: nothing. §1 starts the publisher, mosquitto and the VLM (Ollama)
+>
 > **What you need**: laptop PC + USB webcam + Docker (including the VLM)
 >
 > **Time required**: approx. 40–60 min (the first model pull takes a while)
 
 !!! note "Where this page belongs"
-    This is a Part 3 (intelligence integration) hands-on. Camera capture basics
-    are covered in [Detect with a USB webcam (OpenCV)](webcam.md), and per-tier projection with a
-    VLM is in §12 of [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur). This
-    page covers "**camera → local VLM → distribute semantic
-    data**" as a single flow.
+    - This is 3.1 in Part 3 (intelligence integration) ([Hands-on](index.md#31-enrich-camera-data-with-a-local-vlm)).
+    - Camera capture basics are covered in [Detect with a USB webcam (OpenCV)](webcam.md).
+    - This page covers "**camera → local VLM → distribute semantic data**" as a single flow.
+    - You can do this page on its own, with only the environment setup and Docker. You do not need to have finished the Part 2 pages.
+    - Per-tier projection with a VLM is covered in §12 of [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur) in Part 2. It uses the same `--profile vlm` VLM and the same `description_full` / `description_summary` as §12. You can do §12 and this page in either order.
+    - Previous page: [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md)
+    - Next page: [Protect camera images before handing them to AI (local vs cloud)](privacy-compare.md)
 
 ## Goal
 
@@ -261,6 +265,14 @@ Without a template, implement one of these yourself:
 - inference is slow / times out on CPU → use the lightweight `VLM_MODEL=moondream`, or raise `VLM_TIMEOUT_SEC`
 - `processing_warnings` shows `vlm_unavailable` → check that the `vlm` service is up and the model pull is complete (`docker compose -f infra/docker-compose.yml --profile vlm ps` / `docker compose -f infra/docker-compose.yml logs vlm-pull`)
 - the camera cannot be opened → change the camera index, stop the process holding it, or on macOS allow camera access for your terminal app (see [Detect with a USB webcam (OpenCV)](webcam.md))
+
+## Next steps
+
+Next is [Protect camera images before handing them to AI (local vs cloud)](privacy-compare.md). You hand the same camera image to AI in four ways and compare what leaves the PC.
+
+- You can leave the publisher and the `vlm` container running. §1 of the next page restarts the publisher with different settings.
+- The next page starts Ollama in a separate container (`iw3ip-ollama`, port 11434). The `vlm` container does not publish a port to the host, so they do not clash.
+- The next page also uses the virtual environment (`.venv`) and OpenCV made on this page.
 
 ## Related pages
 

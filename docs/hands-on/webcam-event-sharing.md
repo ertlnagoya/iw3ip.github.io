@@ -4,11 +4,19 @@
 
 > **やること**: 検知イベントを共有基盤に送る + purpose に応じた allow/deny を見る
 >
-> **前提**: [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を済ませてあること
+> **前提**: Part 1 の 1.2 のどれか 1 つを済ませていること (疑似データで進めるので、カメラが無くても進められます)
+>
+> **起動しておくもの**: なし。このページで publisher を起動します。最短起動の IPFS は止めておきます (ポート 8080 が重なるため)
 >
 > **使うもの**: PC、できれば USB ウェブカメラ (なくても疑似データで可)
 >
 > **所要時間**: 約 45 分
+
+!!! note "このページの位置付け"
+    - Part 2 の 2.1 (Stage 0) です ([ハンズオン](index.md#21-イベント共有--生データではなく結果だけ-stage-0))。2.1 の 2 ページのうち、どちらか 1 つを選べば十分です。もう 1 つは [防災イベントを共有する](environment-disaster.md) です。
+    - このページの「Phase 1」「Phase 2」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
+    - 前のページ: Part 1 の 1.3 ([ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路))。1.4 は任意です
+    - 次のページ: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) (2.2)
 
 この Hands-on は、既存の [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を発展させた **Phase 2: Event / Intelligence Sharing** の例です。  
 Phase 1 では、USBウェブカメラで `person_detected` や `possible_littering` を検知し、イベントファイルを生成して、商品として登録されるところまで確認しました。  
@@ -47,7 +55,7 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 
 ## 前提
 
-- [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) の内容を理解している
+- Part 1 の 1.2 のどれか 1 つを済ませている。このページは [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) のイベントを例にしますが、疑似データで進めるので、カメラが無くても進められます
 - [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) を起動できる
 - Docker / Docker Compose が使える
 - [最短起動 (スタックを動かす)](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
@@ -289,9 +297,19 @@ Phase 2 では、検知したイベントを条件付きで共有することが
 3. 映像本体は非共有、イベントだけ共有するポリシーを明示する
 4. スマホ閲覧アプリと連携して、イベントの一覧表示や通知へつなげる
 
+## 次に進む
+
+2.1 は 1 つ選べば十分です。次は 2.2 の [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) です ([ハンズオン](index.md#22-同意-consent-vc-を入れる-stage-1))。
+
+- publisher は動かしたままで構いません。次のページの手順 1 で、`ssi-wallet` プロファイルを付けて起動し直します。
+- 最短起動の IPFS は止めたままにします。IPFS と publisher は、どちらもポート 8080 を使うためです。
+- Stage 1 を済ませたら、このページの下の補論も試せます。
+
+ここで終える場合は、`cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml down` で publisher を止めます。
+
 ## 補論: ウォレットモードによる認可
 
-この補論は [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) を済ませてから試します。
+この補論は任意です。[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) (Stage 1) を使うので、Stage 1 を済ませてから試します。Stage 1 のあとで、このページに戻って試しても構いません。
 
 本編では `consent_possible_littering.json` を `/consents` に POST して
 ポリシーを登録しました。これは「同意の記録を平文 JSON でサーバに置く」

@@ -10,7 +10,6 @@ theme:
   language: ja
   features:
     - navigation.sections
-    - navigation.expand
     - navigation.top
     - navigation.footer
     - toc.follow
@@ -52,7 +51,7 @@ plugins:
             Facilitator Guide: 講師進行ガイド
             Hands-on: ハンズオン
             "Part 1: Basic — Share some data": Part 1 基本 — データを共有してみよう
-            "Capture data": データを取り込む
+            "Capture data from a device (pick one)": デバイスからデータを取り込む (どれか 1 つ)
             "Run the whole pipeline without hardware (HA Demo Simulator)": 実機なしで一連を動かす (HA Demo Simulator)
             "Detect a person on an AI camera (HUSKYLENS2)": AI カメラで人物を検知する (HUSKYLENS2)
             "Detect with a USB webcam (OpenCV)": USB カメラでポイ捨てを検知する (OpenCV)
@@ -126,7 +125,6 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Platform Overview: platform-overview.md
-  - Publications: publications.md
   - Learning Foundations:
       - Learning Roadmap: foundations/roadmap.md
       - Blockchain Basics: foundations/blockchain-basics.md
@@ -140,8 +138,8 @@ nav:
   - Hands-on:
       - Hands-on Overview: hands-on/index.md
       - "Part 1: Basic — Share some data":
-          - "Capture data":
-              - "Run the whole pipeline without hardware (HA Demo Simulator)": hands-on/ha-demo-simulator.md
+          - "Run the whole pipeline without hardware (HA Demo Simulator)": hands-on/ha-demo-simulator.md
+          - "Capture data from a device (pick one)":
               - "Detect a person on an AI camera (HUSKYLENS2)": hands-on/huskylens2.md
               - "Detect with a USB webcam (OpenCV)": hands-on/webcam.md
               - "Pull from Home Assistant (HA SSI Publisher)": hands-on/ha-ssi-publisher.md
@@ -187,6 +185,7 @@ nav:
   - Workshop:
       - Course Guide: foundations/course-guide.md
       - Facilitator Guide: operations/facilitator-guide.md
+  - Publications: publications.md
   - About This Site:
       - Building and Editing This Site: docs.md
       - Contact: contact.md

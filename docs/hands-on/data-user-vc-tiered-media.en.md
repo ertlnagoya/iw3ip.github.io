@@ -6,9 +6,17 @@ This page continues [Tier the response by trust (DataUserVC / Stage T)](data-use
 >
 > **Prerequisites**: §0–§7 of [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)
 >
+> **Keep running**: the publisher and mosquitto started in §1 of the first page
+>
 > **What you need**: PC + smartphone (iw3ip-wallet)
 >
 > **Time required**: approx. 90 min
+
+!!! note "Where this page belongs"
+    - This is the second page of 2.5 in Part 2 ([Hands-on](index.md#25-tiered-access-by-trust-stage-t--p)).
+    - Previous page: [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md)
+    - Next page: [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md)
+    - The first time, do §8 (Option B), §10 and §11 in that order. §9 (Option C, IPFS) is optional; you can skip it and still go on to the next page. §13 of the next page uses `/viewer` from §10 and `/provider` from §11.
 
 As on the first page, the command examples assume that the course repository is cloned to
 `~/program/Blockchain_IoT_Marketplace`. `$HOST_IP` and `<HOST_IP>` are the PC's LAN IP (see [Hands-on](index.md#host-ip) for how to set it). Options A / B / C are compared in
@@ -88,6 +96,8 @@ stays the same so the provider script doesn't change — only the
 backend swaps.
 
 ## 9. Option C: local kubo IPFS daemon for distributed delivery
+
+This section is optional. It is another way to deliver the media, using IPFS instead of Option B in §8. The first time, you can skip it and go on to §10.
 
 Option B served the blob from a single publisher instance. Option C
 hashes the same blob into a **content-addressed CID** and stores it on
@@ -692,7 +702,11 @@ Run the codec list in DevTools console to make the branch visible.
 - Camera/mic permission may need to be granted via the **address-bar
   Safari settings icon** in some setups.
 
-## Where to go next
+## Next steps
 
-- Back: [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) — §0–§7 (issuing DataUserVC and tiering the response)
-- Next: [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md) — §12–§13 (semantic-level tiering with a VLM, semantic intermediate representation)
+Next is the follow-up page [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md). §12–§13 cover semantic-level tiering with a VLM and the semantic intermediate representation.
+
+- You can leave the publisher running. §12.2 of the next page recreates it with the VLM settings.
+- You redo the claim and the presentation in §12.4 of the next page.
+
+To go back to the previous page: [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) — §0–§7 (issuing DataUserVC and tiering the response)

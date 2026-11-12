@@ -4,11 +4,18 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 
 > **やること**: 1 つの dataset について、ServiceVC での書き込みと PurchaseViewerVC での読み出しをつなぐ
 >
-> **前提**: [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md)
+> **前提**: [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) と [機器間での連携認証 (Service VC / Stage 4 prep)](ha-ssi-service.md) を通していること
+>
+> **起動しておくもの**: なし。Step E0 で Hardhat ノード、publisher、bridge、iot-market-ui を起動します。Stage 5 の iot-market-ui と Metro が動いていれば、そのまま使います
 >
 > **使うもの**: PC + MetaMask + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 約 90 分
+
+!!! note "このページの位置付け"
+    - Part 2 の 2.4 の 2 ページ目です ([ハンズオン](index.md#24-マーケットプレイス--ウォレット-v2-経路))。
+    - 前のページ: [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md)
+    - 次のページ: [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md)
 
 !!! abstract "Stage 1〜5 の総合演習"
     Seller が **ServiceVC** で連続書き込みしたデータを、Buyer が
@@ -17,7 +24,8 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
     `additionalInfo` から動的に取得する変更 (本サイトでは Stage 6 case B と呼びます) を加えたものです。
 
 !!! tip "dataset の選択"
-    例は `home/env/temperature` ですが、deploy script (Stage 6 case B) で
+    この補足は任意です。初めてのときは読み飛ばして構いません。
+    例は `home/env/temperature` ですが、Step E0 で実行する deploy script で
     `home/event/possible_littering` と `home/event/flood_risk_high` の
     Merchandise も同時に作られます。ServiceVC / PurchaseViewerVC の PD が
     あるのは、Stage 0 の 2 つのイベントのうち `possible_littering` だけなので、Stage 0 と同じイベント形式で
@@ -497,6 +505,13 @@ SERVICE=
 - **連続性の観測**: ServiceVC の TTL 1 時間内に複数の buyer が読み出す
   ケース (multi-tenant read) の負荷試験は未実施
 - **EIP-712 署名**: eth_addr ↔ did:jwk のなりすまし対策は最小実装の段階
+
+## 次に進む
+
+次は [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) です。出品者の身元を SellerVC で裏付けます。
+
+- Hardhat ノード (ターミナル A) は、止めずに動かしたままにします。Stage 7 は、Step E0 でデプロイしたコントラクトを使います。起動し直した場合は、先に Step E0 をやり直します。
+- publisher、bridge、iot-market-ui、Metro も動かしたままで構いません。publisher は、Stage 7 の Step S0 で作り直します。
 
 ## 関連
 

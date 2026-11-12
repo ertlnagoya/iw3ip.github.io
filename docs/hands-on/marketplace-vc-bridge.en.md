@@ -4,11 +4,18 @@ This is the core v2 hands-on. A marketplace purchase triggers the issuance of a 
 
 > **What you'll do**: Purchase → bridge → PurchaseViewerVC → wallet → ViewerToken → fetch
 >
-> **Prerequisites**: [Quickstart (run the stack)](../setup/quickstart.md) and [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
+> **Prerequisites**: you have run [Quickstart (run the stack)](../setup/quickstart.md) once (so that `npm install` has been run in `iot-market` and `iot-market-ui`; Step 1 stops what Quickstart started). You have also done [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) and [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md)
+>
+> **Keep running**: nothing. This page starts the Hardhat node, the publisher, the bridge, iot-market-ui and Metro in turn
 >
 > **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
 > **Time required**: approx. 60 min
+
+!!! note "Where this page belongs"
+    - This is the first page of 2.4 in Part 2 ([Hands-on](index.md#24-marketplace--wallet-v2-lane)).
+    - Previous page: [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md)
+    - Next page: [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md)
 
 !!! abstract "Hands-on for trying v2"
     Starting from a marketplace purchase, you issue a
@@ -17,8 +24,9 @@ This is the core v2 hands-on. A marketplace purchase triggers the issuance of a 
     For design details, see the [Marketplace VC Bridge — v1 / v2 Design Spec](../design/marketplace-vc-bridge-spec.md).
 
 !!! tip "Choosing a dataset"
-    The example uses `home/env/temperature`, but the deploy script from
-    Stage 6 case B onward also registers Merchandise #2
+    This note is optional. You can skip it the first time.
+    The example uses `home/env/temperature`, but the deploy script that
+    you run in Step 2 also registers Merchandise #2
     (`home/event/possible_littering`) and Merchandise #4
     (`home/event/flood_risk_high`). Of the two Stage 0 event datasets, only
     `possible_littering` has a PurchaseViewerVC Presentation Definition
@@ -360,6 +368,8 @@ http://<HOST_IP>:5173/merchandise/0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
 `/purchased/<txHash>?merchandise=...&dataset=...&buyer=...` and shows a QR code and a deeplink.
 
 ### Steps B: alternative procedure when MetaMask does not work
+
+Do these steps only if you could not purchase with Steps A. If Steps A worked, skip to the expected output.
 
 Terminal B (Hardhat console):
 
@@ -807,6 +817,14 @@ The first line is the publisher's error log, a one-line JSON (`logger` is `ssi.e
 - **Integration with ServiceVC**: the mechanism that authorizes continuous MQTT writes with a VC (Stage 4 prep) and
   the mechanism that reads data in connection with a purchase (Stage 5) are independent. A scenario that combines both is
   covered in [Stage 6](marketplace-vc-end-to-end.md)
+
+## Next steps
+
+Next is [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md). In the same environment, you run the flow from writing with a ServiceVC to reading with a PurchaseViewerVC.
+
+- The Hardhat node (Terminal A) is stopped and restarted in Step E0 of the next page.
+- You can leave the publisher and the bridge running. Step E0 recreates them.
+- Keep iot-market-ui (Terminal D) and Metro (Terminal E) running.
 
 ## Related
 

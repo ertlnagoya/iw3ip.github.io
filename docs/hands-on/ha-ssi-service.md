@@ -6,14 +6,18 @@
 >
 > **前提**: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) と [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md)
 >
+> **起動しておくもの**: 2.2・2.3 で起動した publisher (`ssi-wallet` プロファイル)。止めた場合は手順 1 で起動します。最短起動の IPFS は止めておきます (ポート 8080 が重なるため)
+>
 > **使うもの**: PC + スマホ (iw3ip-wallet)
 >
 > **所要時間**: 約 45 分
 
-!!! note "wallet ハンズオンの M2M 拡張です"
-    Stage 1 (ConsentVC + PolicyToken) と Stage 3 (ViewerVC + ViewerToken)
-    を済ませた前提で進めます。本ページは「**人ではないサービス**が
-    VC を持って継続的に書き込む」M2M ケースを扱います。
+!!! note "このページの位置付け"
+    - Part 2 の 2.3 の 2 ページ目です ([ハンズオン](index.md#23-役割の分離--閲覧と書き込みを分ける))。
+    - Stage 1 (ConsentVC + PolicyToken) と Stage 3 (ViewerVC + ViewerToken) を済ませた前提で進めます。本ページは「**人ではないサービス**が VC を持って継続的に書き込む」M2M ケースを扱います。
+    - 「Stage 4 prep」は、Stage 4 の準備という意味です。Stage 4 は、LLM Planner が plan の各ステップを実行するときの認可を VC で証明する段階として計画されています。このページの ServiceVC はその準備にあたります (詳しくは [このハンズオンの限界 (将来課題)](#このハンズオンの限界-将来課題))。
+    - 前のページ: [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) (2.3)
+    - 次のページ: [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) (2.4)
 
 !!! tip "dataset の選択"
     例は `home/env/temperature` ですが、Stage 0 と同じ
@@ -179,6 +183,15 @@ curl -s "http://$HOST_IP:8080/audit/logs?limit=5" | python3 -m json.tool
 Stage 1 ハンズオン (PolicyToken のみ知る参加者) のエラーメッセージ
 互換を保っています。
 
+## 停止
+
+次のページ [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) に進む場合は、publisher を止めずに進めて構いません。そのページの Step 4 で、`ssi-wallet` と `mv-bridge` のプロファイルを付けて起動し直します。ここで終える場合は、次のコマンドで止めます。
+
+```bash
+cd ~/program/Blockchain_IoT_Marketplace
+docker compose -f infra/docker-compose.yml --profile ssi-wallet down
+```
+
 ## 三つの VC とトークンの対比
 
 | | ConsentVC (Stage 1) | ViewerVC (Stage 3) | ServiceVC (Stage 4 prep) |
@@ -212,3 +225,11 @@ Stage 1 ハンズオン (PolicyToken のみ知る参加者) のエラーメッ�
 - [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md): 人による複数回の読み出しの認可
 - [検知イベントだけを共有する](webcam-event-sharing.md#補論-ウォレットモードによる認可) の補論:
   ServiceVC を使わない 1 件単発 wallet モード
+
+## 次に進む
+
+次は 2.4 の [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) です ([ハンズオン](index.md#24-マーケットプレイス--ウォレット-v2-経路))。
+
+- publisher は動かしたままで構いません。次のページの Step 4 で、`ssi-wallet` と `mv-bridge` のプロファイルを付けて起動し直します。
+- 最短起動の IPFS は止めたままにします。IPFS と publisher は、どちらもポート 8080 を使うためです。
+- 次のページの Step 1 では、Hardhat ノードを新しく起動します。最短起動の Hardhat ノードと mediator が動いている場合は、そこで止めます。

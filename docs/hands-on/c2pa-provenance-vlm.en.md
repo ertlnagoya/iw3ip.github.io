@@ -10,14 +10,19 @@ On the left is the capture signed by the gateway; on the right is the "summary c
 >
 > **Prerequisites**: §1–§3 of [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md)
 >
+> **Keep running**: the Hardhat node from the previous page (the one with the ProvenanceToken deployed). §1 recreates the publisher
+>
 > **What you need**: a PC (to try a real VLM, Docker must be able to run the 4.7 GB llava model)
 >
 > **Time required**: approx. 20–30 minutes (another 30 minutes to 1 hour to try a real VLM)
 
 !!! note "Where this page belongs"
-    This hands-on runs P3 of the [C2PA provenance pipeline — provenance for camera footage and sensor data (Stage P design spec)](../design/c2pa-provenance-spec.md).
-    P3 covers the provenance of the Tier 1 summary text (§5.5 of the spec) and how it is shown (§7.2).
-    VLM summaries were covered in [Enrich camera data with a local VLM](local-vlm-distribution.md) and [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md).
+    - This is the last page of 2.5 in Part 2 ([Hands-on](index.md#25-tiered-access-by-trust-stage-t--p)).
+    - This hands-on runs P3 of the [C2PA provenance pipeline — provenance for camera footage and sensor data (Stage P design spec)](../design/c2pa-provenance-spec.md).
+    - P3 covers the provenance of the Tier 1 summary text (§5.5 of the spec) and how it is shown (§7.2).
+    - VLM summaries were covered in [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md). How to use a local VLM is covered in [Enrich camera data with a local VLM](local-vlm-distribution.md) in Part 3. You can do the two in either order. This page can be completed with the stub VLM, which returns a fixed text.
+    - Previous page: [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md)
+    - Next page: [Enrich camera data with a local VLM](local-vlm-distribution.md) in Part 3
 
 ## Goal
 
@@ -203,7 +208,9 @@ The differences from P2:
 
 ## 4. Try a real VLM
 
-Use a VLM running on Ollama [3] instead of the stub. The first time, downloading the model takes a while (the same steps as [Enrich camera data with a local VLM](local-vlm-distribution.md)).
+This section is optional. You can get through §2 with the stub VLM.
+
+Use a VLM running on Ollama [3] instead of the stub. The first time, downloading the model takes a while ([Enrich camera data with a local VLM](local-vlm-distribution.md) in Part 3 also starts the VLM with the same `--profile vlm`).
 
 ```bash
 VLM_MODEL=llava docker compose -f infra/docker-compose.yml --profile vlm up -d vlm vlm-pull
@@ -286,6 +293,16 @@ docker compose -f infra/docker-compose.yml --profile vlm stop vlm
   - Check: is the Hardhat node running? Redo §2 and §3 of the previous page
 - Symptom: the program stops with `TimeoutError`
   - Check: raise `--timeout` and run again. The program signs a new capture, so the VLM inference starts over
+
+## Next steps
+
+Part 2 ends here. You can look back on what you checked in "Done when…" for Part 2 on [Hands-on](index.md#part-2-done-when).
+
+Next is [Enrich camera data with a local VLM](local-vlm-distribution.md) in Part 3. You enrich camera images with a local VLM and distribute the results on the platform.
+
+- Part 3 does not use the Hardhat node. You can stop it with Ctrl+C.
+- Restart the publisher without the C2PA settings, as in [Restoring the settings](#restoring-the-settings). §1 of the next page also restarts it with the VLM settings.
+- You can leave the `vlm` container started in §4 running, because the next page also uses it.
 
 ## References
 

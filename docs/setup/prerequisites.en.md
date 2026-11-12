@@ -3,7 +3,7 @@
 Before the hands-on, install the required software on your PC and confirm it works.
 Each item includes a one-line note on why the tool is needed. Technical terms are explained where they appear.
 
-> If you already have these tools, you can just complete the [verification checklist](#verification-checklist) and proceed to [Quickstart (run the stack)](quickstart.md).
+> If you already have these tools, you can just complete the [verification checklist](#verification-checklist) and proceed to the next page ([Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)).
 
 ## Overview — why each tool
 
@@ -163,9 +163,10 @@ The initial clone takes a few minutes (the repo is large).
 - [ ] `docker run hello-world` succeeds
 - [ ] You have a `~/program/Blockchain_IoT_Marketplace` directory
 - [ ] (Part 1) MetaMask shows up in your browser's extensions list
+- [ ] (Optional, for §1.4 of Part 1) MetaMask Mobile is installed on your phone
 - [ ] (Part 2) iw3ip-wallet is installed on your phone
 
-All checked → head to [Quickstart (run the stack)](quickstart.md).
+All checked → go to [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md). That page does not use the Quickstart stack; it runs with Docker Compose only. After that, go to [Quickstart (run the stack)](quickstart.md).
 
 ## Per-OS notes
 

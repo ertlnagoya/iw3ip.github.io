@@ -4,11 +4,19 @@ Share edge-generated disaster events instead of raw camera frames.
 
 > **What you'll do**: Emit disaster events from mock data, share, observe
 >
-> **Prerequisites**: [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
+> **Prerequisites**: one of the pages in section 1.2 of Part 1 is done (this page uses mock data, so you can do it without a camera)
+>
+> **Keep running**: nothing. This page starts the publisher. Keep the Quickstart IPFS stopped (it shares port 8080)
 >
 > **What you need**: PC only
 >
 > **Time required**: approx. 30 min
+
+!!! note "Where this page belongs"
+    - This is section 2.1 of Part 2 (Stage 0) ([Hands-on](index.md#21-event-sharing--share-inferences-not-raw-frames-stage-0)). Pick just one of the two pages in 2.1. The other one is [Share detections, not raw frames](webcam-event-sharing.md).
+    - "Phase 1" and "Phase 2" on this page are development stages of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
+    - Previous page: section 1.3 of Part 1 ([Hands-on](index.md#13-trade-on-the-marketplace-v1-lane)). 1.4 is optional
+    - Next page: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) (2.2)
 
 This hands-on is designed as a minimal **Phase 2: Event / Intelligence Sharing** exercise.  
 Instead of sharing camera images or raw sensor streams, it shares disaster-related events generated at the edge.
@@ -289,9 +297,19 @@ The focus therefore changes as follows:
 3. connect the events to map visualization or notification apps
 4. split Consent VCs by sharing destination
 
+## Next steps
+
+One page from 2.1 is enough. Next is [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) in 2.2 ([Hands-on](index.md#22-add-consent-consent-vc-stage-1)).
+
+- You can keep the publisher running. Step 1 of the next page starts it again with the `ssi-wallet` profile.
+- Keep the Quickstart IPFS stopped. IPFS and the publisher both use port 8080.
+- After you finish Stage 1, you can also try the appendix at the bottom of this page.
+
+If you stop here, stop the publisher with `cd ~/program/Blockchain_IoT_Marketplace && docker compose -f infra/docker-compose.yml down`.
+
 ## Appendix: wallet-mode authorization
 
-Try this appendix after finishing [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md).
+This appendix is optional. It uses [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) (Stage 1), so try it after you finish Stage 1. You can come back to this page after Stage 1.
 
 The main flow registers `consent_flood_risk_high.json` via POST to
 `/consents` — i.e. consent is stored as plaintext JSON on the publisher.

@@ -4,11 +4,19 @@ Build a minimal setup that receives Home Assistant state over MQTT and decides w
 
 > **What you'll do**: MQTT → publisher → Consent VC check → audit log
 >
-> **Prerequisites**: [Quickstart (run the stack)](../setup/quickstart.md), ideally [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
+> **Prerequisites**: [Prerequisites (install tools)](../setup/prerequisites.md), ideally [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md). The [Quickstart (run the stack)](../setup/quickstart.md) stack is not used
+>
+> **Keep running**: nothing. This page starts the publisher. If IPFS from Quickstart is running, stop it first (see [Prerequisites](#prerequisites) below)
 >
 > **What you need**: PC (Docker)
 >
 > **Time required**: approx. 45 min
+
+!!! note "Where this page belongs"
+    - This is section 1.2 of Part 1 ([Hands-on](index.md#12-capture-data-from-a-device)). Pick just one of the three pages in 1.2.
+    - "Phase 1–3" on this page are development stages of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
+    - Previous page: [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
+    - Next page: section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane) (trade on the marketplace)
 
 ## Goal
 
@@ -212,3 +220,11 @@ If you want to move directly into Phase 2, continue with:
 
 - [Share disaster events](environment-disaster.md) (Phase 2)
 - [Share detections, not raw frames](webcam-event-sharing.md) (Phase 2)
+
+## Next steps
+
+One page from 1.2 is enough. Next is section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane), where you list an item, buy it, and receive it.
+
+- 1.3 does not use the publisher. First stop it with the command in [7. Stop services](#7-stop-services).
+- 1.3 uses the [Quickstart (run the stack)](../setup/quickstart.md) stack (terminals 1–7). Start it after the publisher is stopped, because the Quickstart IPFS and the publisher both use port 8080.
+- If you chose this page in 1.2, list an item in 1.3 by running the sample of [Detect with a USB webcam (OpenCV)](webcam.md) in mock mode.

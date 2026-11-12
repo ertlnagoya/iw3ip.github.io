@@ -4,11 +4,19 @@ A page that runs data generation through sharing in a minimal setup, using Home 
 
 > **What you'll do**: Stream Home Assistant demo data into the publisher and watch it in the browser
 >
-> **Prerequisites**: [Environment Setup](../setup/index.md) is done
+> **Prerequisites**: [Prerequisites (install tools)](../setup/prerequisites.md) is done. [Quickstart (run the stack)](../setup/quickstart.md) is not needed
+>
+> **Keep running**: nothing. This page starts the publisher and Home Assistant. If IPFS from Quickstart is running, stop it first (see [Prerequisites](#prerequisites) below)
 >
 > **What you need**: PC only (Docker is enough)
 >
 > **Time required**: approx. 20 min
+
+!!! note "Where this page belongs"
+    - This is section 1.1 of Part 1 ([Hands-on](index.md#11-run-it-first--check-the-whole-flow-without-hardware)). It is the first hands-on page.
+    - "Phase 1–3" on this page are development stages of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
+    - Previous page: [Prerequisites (install tools)](../setup/prerequisites.md)
+    - Next page: pick one of the three pages in 1.2 ([Hands-on](index.md#12-capture-data-from-a-device)).
 
 ## Goal
 
@@ -306,6 +314,8 @@ Once this part works, the basic sharing path from Home Assistant to the publishe
 
 ## Phase 2: Confirm event sharing and denial
 
+This section is optional. The shortest path only needs Phase 1.
+
 ### 6. Check a denied case
 
 The Home Assistant scripts mainly exercise allowed paths, so use HTTP simulation to confirm denial.
@@ -364,6 +374,8 @@ Related files:
 This confirms that data sent through the same MQTT path is not always shared. In Phase 3, you pass the shared events to the assistant and check request interpretation and execution.
 
 ## Phase 3: Confirm assistant planning and execution
+
+This section is optional. Phase 3 is also covered in [Run the regional safety assistant](regional-safety-assistant.md) (Part 3). This section uses Python 3.
 
 ### 8. Try Phase 3
 
@@ -468,7 +480,7 @@ This sample lets you go through Phase 1, Phase 2, and Phase 3 in a single enviro
   - pass publisher events to the assistant and execute the plan
   - inspect `triggered` and `actions_executed`
 
-After this page, you can continue with the following hands-on pages:
+Related pages for each Phase are listed below. For the next page in the learning order, see [Next steps](#next-steps).
 
 - [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) (Phase 1)
 - [Share disaster events](environment-disaster.md) (Phase 2)
@@ -481,6 +493,8 @@ Whether or not you started Node-RED or Phase 3, this one command stops everythin
 ```bash
 docker compose -f infra/docker-compose.yml --profile ha-demo --profile ha-demo-phase3 --profile nodered down
 ```
+
+If you go on to [Quickstart (run the stack)](../setup/quickstart.md), stop the publisher here. The IPFS that Quickstart starts and the publisher both use port 8080.
 
 ## Future extensions
 
@@ -497,6 +511,15 @@ Eclipse Ditto is a digital-twin platform for device state and command handling [
 ### CARLA
 
 CARLA is a simulator for urban spaces, vehicles, pedestrians, and virtual sensors [5]. It takes more effort to set up, but it can generate events for regional safety, disaster response, and traffic, and can serve as an evaluation environment for Phase 2 / 3. Its usage is described in the documentation [6].
+
+## Next steps
+
+Next is section 1.2 of Part 1. Pick one of the three pages in 1.2 of [Hands-on](index.md#12-capture-data-from-a-device) that matches your equipment.
+
+- [Detect a person on an AI camera (HUSKYLENS2)](huskylens2.md) and [Detect with a USB webcam (OpenCV)](webcam.md) use the [Quickstart (run the stack)](../setup/quickstart.md) stack. First stop the publisher with the command in [11. Stop services](#11-stop-services), then go to Quickstart.
+- [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) uses the same publisher as this page. Stop it with [11. Stop services](#11-stop-services), then start it again in step 1 of that page.
+
+If you stop here, shut everything down with the command in [11. Stop services](#11-stop-services).
 
 ## References
 

@@ -6,9 +6,17 @@ Without a HUSKYLENS2, a generic USB webcam plus OpenCV [1] is enough to emit `pe
 >
 > **Prerequisites**: [Environment Setup](../setup/index.md) + [Quickstart (run the stack)](../setup/quickstart.md)
 >
+> **Keep running**: the [Quickstart (run the stack)](../setup/quickstart.md) stack (especially `mediator-owner`). Keep the publisher from 1.1 stopped (it shares port 8080 with the Quickstart IPFS)
+>
 > **What you need**: PC + USB webcam
 >
 > **Time required**: approx. 30 min
+
+!!! note "Where this page belongs"
+    - This is section 1.2 of Part 1 ([Hands-on](index.md#12-capture-data-from-a-device)). Pick just one of the three pages in 1.2.
+    - "Phase 1" on this page is a development stage of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
+    - Previous page: [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
+    - Next page: section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane) (trade on the marketplace)
 
 ## Goal
 
@@ -173,6 +181,14 @@ This detection is a simple rule of thumb (heuristic) for learning, not a strict 
   - Check: `mediator-owner` is running
   - Check: the output path matches `mediator-owner/raw_data/output`
   - Check: the course repository is up to date (after `git pull`, restart `mediator-owner`)
+
+## Next steps
+
+One page from 1.2 is enough. Next is section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane), where you buy and receive the item you listed.
+
+- 1.3 uses the [Quickstart (run the stack)](../setup/quickstart.md) stack (terminals 1–7). Keep it running.
+- In step 1 of 1.3 (listing), you output event files with the mock mode of this page.
+- 1.3 does not use the publisher. Keep the publisher from 1.1 stopped, because it shares port 8080 with the Quickstart IPFS.
 
 ## References
 

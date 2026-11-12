@@ -6,16 +6,20 @@
 >
 > **前提**: [環境構築](../setup/index.md) が済み、Docker が使えること (最短起動のスタックは使いません)
 >
+> **起動しておくもの**: なし。§1 で publisher、mosquitto、VLM (Ollama) を起動します
+>
 > **使うもの**: ラップトップ PC + USB ウェブカメラ + Docker（VLM を含む）
 >
 > **所要時間**: 約 40〜60 分（初回はモデルの pull に時間がかかります）
 
 !!! note "このページの位置付け"
-    Part 3（知能統合）のハンズオンです。カメラ取り込みの基礎は
-    [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md)、VLM による tier 別の出し分けは
-    [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。
-    本ページは「**カメラ → ローカル VLM → 意味データ流通**」を 1 つの流れとして
-    扱います。
+    - Part 3（知能統合）の 3.1 です ([ハンズオン](index.md#31-ローカル-vlm-でカメラデータを意味づけ))。
+    - カメラ取り込みの基礎は [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) で扱います。
+    - 本ページは「**カメラ → ローカル VLM → 意味データ流通**」を 1 つの流れとして扱います。
+    - このページは、環境構築と Docker だけで、単独で進められます。Part 2 のページを済ませていなくても構いません。
+    - VLM による tier 別の出し分けは、Part 2 の [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。§12 と同じ `--profile vlm` の VLM と `description_full` / `description_summary` を使います。§12 との順番は、どちらが先でも構いません。
+    - 前のページ: [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md)
+    - 次のページ: [AI に渡す前にカメラ画像を守る (ローカルとクラウドの比較)](privacy-compare.md)
 
 ## 目的
 
@@ -256,6 +260,14 @@ python3 examples/hands_on/local_vlm_distribution/problem_program.py \
 - CPU で推論が遅い / タイムアウトする → 軽量な `VLM_MODEL=moondream` を使う、`VLM_TIMEOUT_SEC` を延ばす。
 - `processing_warnings` に `vlm_unavailable` が出る → `vlm` サービスが起動しているか、モデル pull が完了しているかを確認（`docker compose -f infra/docker-compose.yml --profile vlm ps` / `docker compose -f infra/docker-compose.yml logs vlm-pull`）。
 - カメラが開けない → カメラ index の変更や占有プロセスの停止、macOS ではターミナルのアプリへのカメラの許可（[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を参照）。
+
+## 次に進む
+
+次は [AI に渡す前にカメラ画像を守る (ローカルとクラウドの比較)](privacy-compare.md) です。同じカメラ画像を 4 通りの方法で AI に渡し、何が PC の外に出るかを比べます。
+
+- publisher と `vlm` のコンテナは、動かしたままで構いません。次のページの §1 で、publisher を別の設定で起動し直します。
+- 次のページは、Ollama を別のコンテナ (`iw3ip-ollama`、ポート 11434) で起動します。`vlm` のコンテナはホストにポートを公開していないので、重なりません。
+- 次のページも、このページで作った仮想環境 (`.venv`) と OpenCV を使います。
 
 ## 関連ページ
 

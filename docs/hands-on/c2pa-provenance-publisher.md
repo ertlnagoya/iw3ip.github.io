@@ -10,14 +10,19 @@
 >
 > **前提**: [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) の §1〜§3 を終えていること。Docker と Node.js が使えること。スマホのウォレットは使いません
 >
+> **起動しておくもの**: なし。§2 で Hardhat ノード、§3 で publisher を起動します。ほかの Hardhat ノードが動いていれば、先に止めておきます
+>
 > **使うもの**: PC (USB ウェブカメラまたは内蔵カメラは任意)
 >
 > **所要時間**: 約 40〜60 分
 
 !!! note "このページの位置付け"
-    [C2PA 来歴パイプライン — カメラ映像とセンサーデータの来歴証明 (Stage P 設計仕様)](../design/c2pa-provenance-spec.md) の P1 と P2 を動かすハンズオンです。
-    P1 は publisher での検証と監査ログ (設計仕様の §7.1、§7.3)、P2 は Tier 2 の画像の来歴 (§5.3)、Tier ごとの来歴の見せ方 (§7.2)、トークンの発行 (§8) です。
-    Tier 1〜3 と DataUserVC は [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) と [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) で扱いました。
+    - Part 2 の 2.5 の 5 ページ目です ([ハンズオン](index.md#25-信頼度に応じた段階アクセス-stage-t--p))。
+    - [C2PA 来歴パイプライン — カメラ映像とセンサーデータの来歴証明 (Stage P 設計仕様)](../design/c2pa-provenance-spec.md) の P1 と P2 を動かすハンズオンです。
+    - P1 は publisher での検証と監査ログ (設計仕様の §7.1、§7.3)、P2 は Tier 2 の画像の来歴 (§5.3)、Tier ごとの来歴の見せ方 (§7.2)、トークンの発行 (§8) です。
+    - 前のページ: [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md)
+    - 次のページ: [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md)
+    - Tier 1〜3 と DataUserVC は [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](data-user-vc-tiered.md) と [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md) で扱いました。
 
 ## 目的
 
@@ -378,6 +383,13 @@ docker compose -f infra/docker-compose.yml up -d publisher
   - 確認: `--image` で渡した写真の顔が、横向きや小さすぎではないか。オプションなしの既定の絵で、顔がぼけるかを試す
 - 症状: `HH411: The library @openzeppelin/contracts ... is not installed`
   - 確認: §1 の `npm install` を `iot-market/` で実行したか
+
+## 次に進む
+
+次は [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md) です。VLM の要約の文にも来歴を付けます。
+
+- Hardhat ノードは、止めずに動かしたままにします。次のページは、§2 でデプロイした ProvenanceToken を使います。
+- publisher は、C2PA の設定のまま動かしておきます。[元の設定に戻す](#元の設定に戻す) は、まだ行いません。次のページの §1 で、同じ設定で作り直します。
 
 ## 参考文献
 

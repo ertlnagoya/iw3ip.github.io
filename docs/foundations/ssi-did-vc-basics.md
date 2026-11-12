@@ -97,6 +97,12 @@ Phase 1 のサンプル（Consent VC に相当する JSON を `/consents` に登
 - DID解決（DID Document参照）
 - PEP（Policy Enforcement Point。ポリシー判定の結果に従ってアクセスを許可・遮断する箇所）を publisher の前段に置く
 
+## 次に読むページ
+
+[学習ロードマップ（初級者向け）](roadmap.md) の最短学習パスでは、次は [事前準備 (ツールのインストール)](../setup/prerequisites.md) です。学習基礎のページはここまでです。
+
+ウォレットで VC を受け取って提示するのは、ハンズオン Part 2 の [データ提供者の認証 (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md) からです。それより前のハンズオンで同意を扱うときは、Consent VC に相当する JSON を `/consents` に登録します。
+
 ## 参考文献
 
 [1] Decentralized Identity Foundation, "Decentralized Identity Foundation (DIF)," <https://identity.foundation/>
