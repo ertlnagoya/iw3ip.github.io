@@ -48,10 +48,10 @@
 ## つまずきやすい点
 
 - `dataset_id` と `event_type` の対応が頭の中で混ざりやすい
-- Consent VC の `allowed_purposes` と送信時の `purpose` が一致しないと拒否される
+- 登録した consent の `allowed_purposes` と送信時の `purpose` が一致しないと拒否される
 - `allowed` の結果は `/platform/ingest`、`denied` の結果は `/audit/logs` と、確認先が分かれている
 
-## 前提
+## 必要な環境
 
 - [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) を起動できる
 - Docker / Docker Compose が使える
@@ -122,7 +122,9 @@ curl http://localhost:8080/health
 {"status":"ok","service":"publisher"}
 ```
 
-### 2. この Hands-on 用の Consent VC を登録
+### 2. この Hands-on 用の同意 (consent) の JSON を登録する (Consent VC に相当)
+
+内容は Consent VC に相当しますが、ここでは JSON を `/consents` に直接登録し、VC の署名は検証しません。VC を使うのは次の 2.2 からです。
 
 この Hands-on では、`home/event/flood_risk_high` を `disaster_response` と `research` の目的でのみ許可します。
 

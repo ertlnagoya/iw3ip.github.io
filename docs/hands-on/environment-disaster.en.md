@@ -6,7 +6,7 @@ Share edge-generated disaster events instead of raw camera frames.
 >
 > **Prerequisites**: one of the pages in section 1.2 of Part 1 is done (this page uses mock data, so you can do it without a camera)
 >
-> **Keep running**: nothing. This page starts the publisher. Keep the Quickstart IPFS stopped (it shares port 8080)
+> **Keep running**: nothing needs to be running. This page starts the publisher. Keep the Quickstart IPFS stopped (it shares port 8080)
 >
 > **What you need**: PC only
 >
@@ -49,10 +49,10 @@ Branches after that:
 ## Common pitfalls
 
 - `dataset_id` and `event_type` are easy to mix up
-- the `purpose` in the request must match `allowed_purposes` in the Consent VC
+- the `purpose` in the request must match `allowed_purposes` in the registered consent
 - even when the flow is correct, `allowed` and `denied` are confirmed in different places
 
-## Prerequisites
+## Required environment
 
 - you can run [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
 - Docker / Docker Compose is available
@@ -123,7 +123,9 @@ Expected:
 {"status":"ok","service":"publisher"}
 ```
 
-### 2. Register a Consent VC for this hands-on
+### 2. Register the consent JSON for this hands-on (equivalent to a Consent VC)
+
+The content is equivalent to a Consent VC, but here you register the JSON directly at `/consents` and no VC signature is verified. VCs are first used in 2.2.
 
 This hands-on allows `home/event/flood_risk_high` only for `disaster_response` and `research`.
 

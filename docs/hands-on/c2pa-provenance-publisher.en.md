@@ -10,7 +10,7 @@ These are the two images you make on this page. On the left is the captured imag
 >
 > **Prerequisites**: §1–§3 of [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) are done. Docker and Node.js are available. The phone wallet is not used
 >
-> **Keep running**: nothing. §2 starts the Hardhat node and §3 starts the publisher. If another Hardhat node is running, stop it first
+> **Keep running**: nothing needs to be running. §2 starts the Hardhat node and §3 starts the publisher. If another Hardhat node is running, stop it first
 >
 > **What you need**: a PC (a USB webcam or built-in camera is optional)
 >
@@ -44,7 +44,7 @@ On this page you try three things from the publisher's side: checking that a rec
 - The ProvenanceToken address can change when you restart the Hardhat node. In §3, use the address printed in §2
 - With these settings, the publisher issues tokens from an unlocked account of the Hardhat node. This is for local trials only and cannot be used in production
 
-## Prerequisites
+## Required environment { #prerequisites }
 
 - §1–§3 of [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) are done (virtual environment and the C2PA SDK, c2pa-python [2]; certificates; signing and validation)
 - Docker works in the course repository `~/program/Blockchain_IoT_Marketplace` ([Environment Setup](../setup/index.md))

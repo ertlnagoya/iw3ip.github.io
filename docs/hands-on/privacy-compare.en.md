@@ -6,7 +6,7 @@ Hand the same webcam frame to AI in four ways, and each time compare **what left
 >
 > **Prerequisites**: Having run [Enrich camera data with a local VLM](local-vlm-distribution.md) once helps
 >
-> **Keep running**: nothing. §1 starts the publisher, the local VLM (Ollama) and the mock cloud AI
+> **Keep running**: nothing needs to be running. §1 starts the publisher, the local VLM (Ollama) and the mock cloud AI
 >
 > **What you need**: PC + USB webcam (or a JPEG image) + Docker + Python 3
 >
@@ -48,7 +48,7 @@ flowchart LR
 !!! warning "When taking pictures"
     Only photograph people who agreed to it (yourself, or a printed synthetic face). Do not point the camera at other people, ID cards, or screens showing personal data. All data in this exercise stays on the PC, but delete it afterwards as described in [Clean up](#7-clean-up).
 
-## Prerequisites
+## Required environment { #prerequisites }
 
 - Docker
 - If the IPFS from the [Quickstart (run the stack)](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080

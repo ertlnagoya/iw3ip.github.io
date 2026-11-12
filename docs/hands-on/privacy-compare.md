@@ -48,7 +48,7 @@ flowchart LR
 !!! warning "撮影するときの注意"
     写すのは、撮影に同意した人だけにしてください (自分自身、または印刷した合成の顔画像)。他の人、身分証、個人情報が表示された画面にカメラを向けないでください。この演習のデータは PC の中だけで処理されますが、終わったら [後片付け](#7-後片付け) のとおり削除します。
 
-## 前提
+## 必要な環境 { #前提 }
 
 - Docker が使える
 - [最短起動 (スタックを動かす)](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです

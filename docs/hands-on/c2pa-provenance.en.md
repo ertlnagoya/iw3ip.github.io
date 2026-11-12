@@ -6,7 +6,7 @@ Attach "provenance" that follows the C2PA standard [1] to an image taken with a 
 >
 > **Prerequisites**: Python 3.10 or later. The publisher, the blockchain, and the phone wallet are not used
 >
-> **Keep running**: nothing. Only Python programs are used
+> **Keep running**: nothing needs to be running. Only Python programs are used
 >
 > **What you need**: a PC (a USB webcam or built-in camera is optional)
 >
@@ -39,7 +39,7 @@ The page also covers a second problem: the provenance itself can leak informatio
 - A webcam may return black frames right after it opens. The program waits up to about 3 seconds for a bright frame
 - Captured images and keys are saved under `out/` and `certs/`. Both are ignored by git, so they cannot be committed by mistake
 
-## Prerequisites
+## Required environment { #prerequisites }
 
 - You have the course repository `~/program/Blockchain_IoT_Marketplace` ([Environment Setup](../setup/index.md))
 - Python 3.10 or later is available

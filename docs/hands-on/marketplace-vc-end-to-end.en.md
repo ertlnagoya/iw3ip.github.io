@@ -6,7 +6,7 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 >
 > **Prerequisites**: you have done [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) and [Authenticate machines (Service VC / Stage 4 prep)](ha-ssi-service.md)
 >
-> **Keep running**: nothing. Step E0 starts the Hardhat node, the publisher, the bridge and iot-market-ui. If iot-market-ui and Metro from Stage 5 are running, keep using them
+> **Keep running**: nothing needs to be running. Step E0 starts the Hardhat node, the publisher, the bridge and iot-market-ui. If iot-market-ui and Metro from Stage 5 are running, keep using them
 >
 > **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
@@ -83,7 +83,7 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
    │  ── the N rows written by the Seller reach the Buyer ──
 ```
 
-## Prerequisites
+## Required environment { #prerequisites }
 
 - You have gone through [Stage 1](ha-ssi-wallet.md) / [Stage 3](ha-ssi-viewer.md) /
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)

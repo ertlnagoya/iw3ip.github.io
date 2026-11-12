@@ -1,6 +1,6 @@
 # Open the marketplace and buy on a phone (v1)
 
-Open the v1 marketplace (purchase with MetaMask [1]; data is handed over through simple-storage on :3000) in a phone browser and go as far as buying an item. The v2 VC flow is a separate page.
+Open the v1 marketplace (purchase with MetaMask [1]; data is handed over through simple-storage on :3000) in a phone browser and go as far as buying an item. The v2 VC flow on a phone is covered on a separate page, [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md).
 
 > **What you'll do**: Open the marketplace screen in a phone browser and walk through a purchase
 >
@@ -18,11 +18,6 @@ Open the v1 marketplace (purchase with MetaMask [1]; data is handed over through
     - If the Quickstart IPFS is still stopped from 1.1 or 1.2, start it again with Quickstart step 5 before you continue.
     - Previous page: section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane)
     - Next page: section 2.1 of Part 2 ([Share detections, not raw frames](webcam-event-sharing.md) or [Share disaster events](environment-disaster.md))
-
-!!! note "Open and buy on v1"
-    This page covers opening the marketplace and buying from a phone on
-    **v1 (current marketplace + MetaMask)**. For the v2 wallet-VC phone flow, see
-    [Marketplace as a phone app (Stage A)](marketplace-mobile-app.md).
 
 ## Goal
 
@@ -46,7 +41,7 @@ Confirm that you can open the marketplace from a smartphone and buy an item.
 - even on what looks like the same Wi-Fi, a split network prevents the connection
 - purchase actions do not progress well unless done through the MetaMask Mobile browser
 
-## Prerequisites
+## Required environment
 
 - `iot-market-ui` can be started on the PC
 - PC and smartphone are connected to the same LAN / Wi-Fi
@@ -211,6 +206,7 @@ Next is section 2.1 of Part 2. Pick one of [Share detections, not raw frames](we
 
 - 2.1 uses the publisher and does not use the Quickstart stack.
 - First stop the Quickstart IPFS (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`). IPFS and the publisher both use port 8080.
+- Also stop the Quickstart frontend (terminal 3, port 5173) with Ctrl+C. Step 6 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) in 2.4 starts iot-market-ui again on port 5173.
 - You may also stop the other Quickstart processes.
 
 If you end Part 1 here, check the Part 1 "Done when…" list in [Hands-on](index.md#part-1-done-when).

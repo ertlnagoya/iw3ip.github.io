@@ -17,7 +17,7 @@
 
 | 設計仕様 | 扱う範囲 | 対応するハンズオン |
 |---|---|---|
-| [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) | 6 種類の VC と 4 種類のトークン、どの API をどの VC で認可するか、Stage の一覧 | Part 2 全体 |
+| [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) | 6 種類の VC と 4 種類のトークン、どの API をどの VC で認可するか、Stage の一覧 | Part 2 全体 |
 | [Marketplace VC Bridge — v1 / v2 設計仕様](marketplace-vc-bridge-spec.md) | マーケットプレイスと SSI ウォレットの接続 (v1 / v2) | [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md)、[ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](../hands-on/marketplace-vc-end-to-end.md) |
 | [SellerVC — マーケット出品ガバナンス VC (Stage 7 設計仕様)](seller-vc-spec.md) | 出品者の身元の確認 | [出品者の身元を裏付ける (Seller VC / Stage 7)](../hands-on/marketplace-seller-vc.md) |
 | [段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md) | 受信者の信頼度に応じた出し分け (DataUserVC、VLM による派生データ) | [信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md) から始まる Stage T の 3 ページ |
@@ -27,4 +27,4 @@
 ## 設計仕様の読み方
 
 - 多くの仕様は実装の前に書いた設計です。実装と違う箇所には、その旨の注記を付けています (「→ 実装では」の行、「当初の設計では／現在の実装では」の書き分け、「現在の実装」の囲みなど)。実際の動作は、教材リポジトリのソースコードとハンズオンの手順を正とします。
-- 本文中の Stage は、Phase 2 のハンズオンの段階番号です (一覧は [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の §5)。Part、Phase、Stage の関係は [ハンズオン](../hands-on/index.md#part-phase-stage) で説明しています。
+- 本文中の Stage は、ハンズオンの Part 2 の段階番号です (一覧は [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の §5)。Part、Phase、Stage の関係は [ハンズオン](../hands-on/index.md#part-phase-stage) で説明しています。

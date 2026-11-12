@@ -49,7 +49,7 @@ In class, it is more efficient to align the prerequisites using the explanations
 
 ## Page sets by number of exercise sessions
 
-Assuming 90-minute sessions, these are the pages to cover depending on how many sessions are available for exercises. Times are the sums of the estimates at the top of each page. Students are expected to finish the prerequisites (tool installation) on their own beforehand. The page order is the same as the short learning path in the participants' [Learning Roadmap](roadmap.md) (Prerequisites → Run the whole pipeline without hardware → Quickstart → §1.2 of Part 1 → §1.3).
+Assuming 90-minute sessions, these are the pages to cover depending on how many sessions are available for exercises. Times are the sums of the estimates at the top of each page. Students are expected to finish the prerequisites (tool installation) on their own beforehand. The page order is mostly the same as the short learning path in the participants' [Learning Roadmap](roadmap.md) (Prerequisites → Run the whole pipeline without hardware → Quickstart → §1.2 of Part 1 → §1.3). The 1-session and 3-session sets use [Pull from Home Assistant (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) for §1.2, so Quickstart comes after §1.2 (at the start of session 2 in the 3-session set).
 
 | Sessions available | Pages to cover | Aim |
 |---|---|---|

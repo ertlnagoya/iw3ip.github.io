@@ -52,7 +52,7 @@ Phase 3 の [地域安全アシスタントを動かす](regional-safety-assista
 - `stub` と `openai_compatible` の設定差分が環境変数に集まっている
 - 失敗時は `plan` 本体に加えて `planner_diagnostics` を見ないと原因が分かりにくい
 
-## 前提
+## 必要な環境 { #前提 }
 
 - Docker / Docker Compose が使える [1]
 - `curl` が使える
@@ -117,7 +117,7 @@ ASSISTANT_LLM_PROVIDER=stub \
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
-`uvicorn` はホストの Python (前提で作った venv) で動かします。Docker Compose の `assistant` サービスは rule-based planner で起動し、`planner_name` が `rule-based-planner-v1` になるため、この段階ではホストで起動します。
+`uvicorn` はホストの Python (「必要な環境」で作った venv) で動かします。Docker Compose の `assistant` サービスは rule-based planner で起動し、`planner_name` が `rule-based-planner-v1` になるため、この段階ではホストで起動します。
 
 別ターミナルで起動を確認します。
 

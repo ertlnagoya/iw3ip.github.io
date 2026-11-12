@@ -6,7 +6,7 @@ Replace the rule-based planner in [Run the regional safety assistant](regional-s
 >
 > **Prerequisites**: [Run the regional safety assistant](regional-safety-assistant.md)
 >
-> **Keep running**: nothing. Stage 1 starts the assistant with `uvicorn` on the host. If the assistant from the previous page is running, stop it first (both use port 8090)
+> **Keep running**: nothing needs to be running. Stage 1 starts the assistant with `uvicorn` on the host. If the assistant from the previous page is running, stop it first (both use port 8090)
 >
 > **What you need**: PC (real LLM step needs an API key or a local LLM)
 >
@@ -52,7 +52,7 @@ Branches after that:
 - the configuration difference between `stub` and `openai_compatible` is concentrated in environment variables
 - on failure, the cause is hard to find without looking at `planner_diagnostics`, not just the `plan` body
 
-## Prerequisites
+## Required environment { #prerequisites }
 
 - Docker / Docker Compose [1]
 - `curl`
@@ -117,7 +117,7 @@ ASSISTANT_LLM_PROVIDER=stub \
 uvicorn assistant.app.main:app --host 0.0.0.0 --port 8090
 ```
 
-`uvicorn` runs on the host Python (the venv created in the prerequisites). The Docker Compose `assistant` service starts with the rule-based planner and returns `planner_name` `rule-based-planner-v1`, so use the host for this stage.
+`uvicorn` runs on the host Python (the venv created in "Required environment"). The Docker Compose `assistant` service starts with the rule-based planner and returns `planner_name` `rule-based-planner-v1`, so use the host for this stage.
 
 In another terminal:
 

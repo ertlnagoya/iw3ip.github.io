@@ -6,17 +6,17 @@ A page that runs data generation through sharing in a minimal setup, using Home 
 >
 > **Prerequisites**: [Prerequisites (install tools)](../setup/prerequisites.md) is done. [Quickstart (run the stack)](../setup/quickstart.md) is not needed
 >
-> **Keep running**: nothing. This page starts the publisher and Home Assistant. If IPFS from Quickstart is running, stop it first (see [Prerequisites](#prerequisites) below)
+> **Keep running**: nothing needs to be running. This page starts the publisher and Home Assistant. If IPFS from Quickstart is running, stop it first (see [Required environment](#required-environment) below)
 >
 > **What you need**: PC only (Docker is enough)
 >
-> **Time required**: approx. 20 min
+> **Time required**: approx. 20 min (optional sections not included)
 
 !!! note "Where this page belongs"
     - This is section 1.1 of Part 1 ([Hands-on](index.md#11-run-it-first--check-the-whole-flow-without-hardware)). It is the first hands-on page.
     - "Phase 1–3" on this page are development stages of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
     - Previous page: [Prerequisites (install tools)](../setup/prerequisites.md)
-    - Next page: pick one of the three pages in 1.2 ([Hands-on](index.md#12-capture-data-from-a-device)).
+    - Next page: [Quickstart (run the stack)](../setup/quickstart.md) (if you use a camera in 1.2). If you pick HA SSI Publisher in 1.2, go directly to [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md).
 
 ## Goal
 
@@ -34,7 +34,7 @@ For a first pass, these five steps are enough.
 
 1. `PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d`
 2. Open `http://localhost:8123` and add the `MQTT` integration
-3. Register the Consent VCs
+3. Register the consent JSON (equivalent to a Consent VC)
 4. Run `script.iw3ip_publish_demo_temperature` or `script.iw3ip_publish_demo_possible_littering` from `Developer Tools -> Actions`
 5. Check the shared result with `curl http://localhost:8080/platform/ingest`
 
@@ -49,18 +49,18 @@ Branches:
 - how to reproduce `temperature`, `power`, `person_detected`, `flood_risk_high`, and `possible_littering` without real devices
 - how IW3IP publisher receives, normalizes, and records data coming from Home Assistant through MQTT
 - the difference between Phase 1 state sharing and Phase 2 event sharing
-- how Consent VC changes `allowed` and `denied`
+- how the registered consent changes `allowed` and `denied`
 - how to pass the events accumulated in `/platform/ingest` to the Phase 3 `assistant`
 
 ## Common issues
 
 - starting Home Assistant alone is not enough; you must add the `MQTT` integration before the scripts can publish
-- if Consent VCs are not registered, the scripts may run but the expected sharing behavior will not appear
+- if the consent JSON is not registered, the scripts may run but the expected sharing behavior will not appear
 - Home Assistant can publish an event correctly and the publisher can still reject it if `purpose` does not match
 - because there are no physical devices, the flow is easier to lose sight of, so check both `/platform/ingest` and `/audit/logs`
 - in Phase 3 it is easy to mix up sharing and execution, because publisher and assistant are separate services
 
-## Prerequisites
+## Required environment
 
 - Docker / Docker Compose
 - a browser that can open `http://localhost:8123`
@@ -146,9 +146,9 @@ What to check:
 - the `mosquitto` service is shown
 - once this screen is visible, Home Assistant is ready to use `mqtt.publish`
 
-### 3. Register Consent VCs
+### 3. Register the consent JSON (equivalent to a Consent VC)
 
-Register the Consent VCs used by the demo datasets.
+Register the consents for the demo datasets as JSON at `/consents`. The content is equivalent to a Consent VC, but no VC signature is verified here. You first receive and present a VC in a wallet in [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) in Part 2.
 
 ```bash
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/ha_demo/consent_temperature.json
@@ -236,6 +236,8 @@ Focus points:
 So far you have confirmed that events matching a registered consent are shared. The next exercise checks what happens when a consent expires.
 
 ### Exercise: an expired consent causes denials
+
+This exercise is optional. To finish 1.1, steps 1–5 are enough.
 
 The bundled `examples/ha_demo/consent_*.json` files have `valid_to` set to `2030-12-31T23:59:59Z`, so nothing expires as shipped. Here you deliberately register an expired `possible_littering` consent, confirm that events are denied, and then fix it. This shows how a VC's validity period (`valid_from`–`valid_to`) works.
 
@@ -349,10 +351,12 @@ How to read the flow:
 
 What to check here:
 
-- the input topic can be correct and still be rejected when `purpose` does not match the Consent VC
+- the input topic can be correct and still be rejected when `purpose` does not match the registered consent
 - you should confirm the rejection in both the `simulate/publish` response and `audit/logs`
 
 ### 7. Test the MQTT path directly
+
+This step is optional too.
 
 You can also publish directly to the same topic without Home Assistant.
 
@@ -475,16 +479,12 @@ This sample lets you go through Phase 1, Phase 2, and Phase 3 in a single enviro
   - basic receive, normalize, send, and record flow
 - Phase 2:
   - event sharing such as `flood_risk_high` and `possible_littering`
-  - conditional sharing based on `purpose` and Consent VC
+  - conditional sharing based on `purpose` and the registered consent
 - Phase 3:
   - pass publisher events to the assistant and execute the plan
   - inspect `triggered` and `actions_executed`
 
-Related pages for each Phase are listed below. For the next page in the learning order, see [Next steps](#next-steps).
-
-- [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) (Phase 1)
-- [Share disaster events](environment-disaster.md) (Phase 2)
-- [Run the regional safety assistant](regional-safety-assistant.md) (Phase 3)
+For the next page in the learning order, see [Next steps](#next-steps).
 
 ### 11. Stop services
 
@@ -514,10 +514,15 @@ CARLA is a simulator for urban spaces, vehicles, pedestrians, and virtual sensor
 
 ## Next steps
 
-Next is section 1.2 of Part 1. Pick one of the three pages in 1.2 of [Hands-on](index.md#12-capture-data-from-a-device) that matches your equipment.
+Next is [Quickstart (run the stack)](../setup/quickstart.md). After that, go to section 1.2 of Part 1 and pick one of the three pages in 1.2 of [Hands-on](index.md#12-capture-data-from-a-device) that matches your equipment.
 
-- [Detect a person on an AI camera (HUSKYLENS2)](huskylens2.md) and [Detect with a USB webcam (OpenCV)](webcam.md) use the [Quickstart (run the stack)](../setup/quickstart.md) stack. First stop the publisher with the command in [11. Stop services](#11-stop-services), then go to Quickstart.
-- [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) uses the same publisher as this page. Stop it with [11. Stop services](#11-stop-services), then start it again in step 1 of that page.
+- [Detect a person on an AI camera (HUSKYLENS2)](huskylens2.md) and [Detect with a USB webcam (OpenCV)](webcam.md) use the Quickstart stack. First stop the publisher with the command in [11. Stop services](#11-stop-services), then go to Quickstart.
+- If you pick HA SSI Publisher in 1.2, go directly to [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) before Quickstart. It uses the same publisher as this page. Stop it with [11. Stop services](#11-stop-services), then start it again in step 1 of that page. Run Quickstart after that page, before 1.3.
+
+Phase 2 and 3 of this page are covered again later in the course, on these pages. You do not need to go there now.
+
+- [Share disaster events](environment-disaster.md) (section 2.1 of Part 2)
+- [Run the regional safety assistant](regional-safety-assistant.md) (Part 3)
 
 If you stop here, shut everything down with the command in [11. Stop services](#11-stop-services).
 

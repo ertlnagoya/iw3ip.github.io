@@ -15,7 +15,7 @@ HUSKYLENS2 がなくても、USB ウェブカメラと OpenCV [1] だけで `per
 !!! note "このページの位置付け"
     - Part 1 の 1.2 です ([ハンズオン](index.md#12-デバイスからデータを取る))。1.2 の 3 ページのうち、どれか 1 つを選べば十分です。
     - このページの「Phase 1」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
-    - 前のページ: [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)
+    - 前のページ: [最短起動 (スタックを動かす)](../setup/quickstart.md)
     - 次のページ: [ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 (マーケットプレイスで売買)
 
 ## 目的
@@ -35,7 +35,7 @@ USB ウェブカメラの画像から人物とポイ捨ての可能性を検知�
 - 照明や画角でヒューリスティックの出力が大きく変わる
 - 検知が動いていても `mediator-owner` 側まで届いていないことがある
 
-## 前提
+## 必要な環境
 
 - USBウェブカメラ、または mock 実行環境がある
 - `webcam-bridge` が利用できる
@@ -132,7 +132,7 @@ mock でイベントファイルが生成されることを確認できたら、
 
 ### 2. 実機（USB webcam）
 
-実機モードでは、物体検出のモデル (YOLO) を使います。前提のとおり venv に `ultralytics` と `opencv-python` を入れておきます。下のコマンドの最初の 2 行で `webcam-bridge` フォルダに移動し、その venv を有効にします。初回の実行時に、モデルのファイル (`yolov8n.pt`、数 MB) が自動でダウンロードされます。
+実機モードでは、物体検出のモデル (YOLO) を使います。[必要な環境](#必要な環境) のとおり venv に `ultralytics` と `opencv-python` を入れておきます。下のコマンドの最初の 2 行で `webcam-bridge` フォルダに移動し、その venv を有効にします。初回の実行時に、モデルのファイル (`yolov8n.pt`、数 MB) が自動でダウンロードされます。
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge

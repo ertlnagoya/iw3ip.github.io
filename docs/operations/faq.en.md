@@ -4,11 +4,11 @@ Questions about how to proceed and how the material is positioned. For isolating
 
 ## Q. Which sample should I start with?
 
-A. To go through Phase 1 onward without hardware, start from [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md). To run a single Phase 3 demo, `assistant-demo` ([Let an AI plan the steps (LLM Planner)](../hands-on/llm-planner.md)) is the shortest path because it starts with one command. With real hardware, start from [Detect a person on an AI camera (HUSKYLENS2)](../hands-on/huskylens2.md) or [Detect with a USB webcam (OpenCV)](../hands-on/webcam.md), depending on what you have.
+A. With or without real hardware, after [Prerequisites (install tools)](../setup/prerequisites.md), go in this order: [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) (§1.1 of Part 1) → [Quickstart (run the stack)](../setup/quickstart.md) → §1.2 of Part 1. In §1.2, pick one of [Detect a person on an AI camera (HUSKYLENS2)](../hands-on/huskylens2.md), [Detect with a USB webcam (OpenCV)](../hands-on/webcam.md), and [Pull from Home Assistant (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md), depending on what you have. If you pick HA SSI Publisher, run Quickstart after §1.2 (before §1.3). `assistant-demo` ([Let an AI plan the steps (LLM Planner)](../hands-on/llm-planner.md)), which starts with one command, is Part 3 content and is not needed the first time.
 
 ## Q. Can I proceed without real devices or a smartphone?
 
-A. Part 1 needs only a PC, except for the phone viewing step (§1.4). The page [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) runs without hardware, and the HUSKYLENS2 and USB webcam pages have a mock mode. The Part 2 hands-on pages that use the wallet need a smartphone.
+A. Part 1 needs only a PC, except for the phone viewing step (§1.4, optional). The page [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) runs without hardware, and the HUSKYLENS2 and USB webcam pages have a mock mode. The Part 2 hands-on pages that use the wallet need a smartphone. §1.4 and Stage A in Part 2 also need MetaMask Mobile on the phone.
 
 ## Q. Do I need real money or cryptocurrency?
 

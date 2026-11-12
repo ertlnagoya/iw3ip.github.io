@@ -163,10 +163,10 @@ cd Blockchain_IoT_Marketplace
 - [ ] `docker run hello-world` が成功する
 - [ ] `~/program/Blockchain_IoT_Marketplace` ディレクトリができている
 - [ ] (Part 1 を進める人) MetaMask が拡張機能としてブラウザに表示されている
-- [ ] (Part 1 の 1.4 を試す人。任意) スマホに MetaMask モバイルが入っている
+- [ ] (Part 1 の 1.4 (任意) と Part 2 の Stage A を試す人) スマホに MetaMask モバイルが入っている
 - [ ] (Part 2 を進める人) スマホに iw3ip-wallet が入っている
 
-すべてチェックできたら → [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) に進みます。このページは最短起動のスタックを使わず、Docker Compose だけで動きます。そのあと [最短起動 (スタックを動かす)](quickstart.md) に進みます。
+すべてチェックできたら → [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) に進みます。このページは最短起動のスタックを使わず、Docker Compose だけで動きます。そのあと [最短起動 (スタックを動かす)](quickstart.md) に進みます。1.2 で [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) を選ぶ場合は、最短起動を 1.2 のあと (1.3 の前) に行います。
 
 ## OS 別の補足
 

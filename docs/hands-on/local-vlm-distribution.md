@@ -4,11 +4,11 @@
 
 > **やること**: ウェブカメラ画像をローカル VLM で解析し、生成した意味データ（説明文）を基盤上で流通させる
 >
-> **前提**: [環境構築](../setup/index.md) が済み、Docker が使えること (最短起動のスタックは使いません)
+> **前提**: [環境構築](../setup/index.md) が済み、Docker と Python 3 が使えること。USB ウェブカメラを PC につないでおくこと (最短起動のスタックは使いません)
 >
 > **起動しておくもの**: なし。§1 で publisher、mosquitto、VLM (Ollama) を起動します
 >
-> **使うもの**: ラップトップ PC + USB ウェブカメラ + Docker（VLM を含む）
+> **使うもの**: ラップトップ PC + USB ウェブカメラ + Docker（VLM を含む）+ Python 3 (OpenCV を入れた venv)
 >
 > **所要時間**: 約 40〜60 分（初回はモデルの pull に時間がかかります）
 
@@ -16,7 +16,7 @@
     - Part 3（知能統合）の 3.1 です ([ハンズオン](index.md#31-ローカル-vlm-でカメラデータを意味づけ))。
     - カメラ取り込みの基礎は [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) で扱います。
     - 本ページは「**カメラ → ローカル VLM → 意味データ流通**」を 1 つの流れとして扱います。
-    - このページは、環境構築と Docker だけで、単独で進められます。Part 2 のページを済ませていなくても構いません。
+    - このページは、環境構築が済んでいて、Docker、Python (OpenCV を入れた venv)、USB ウェブカメラがあれば、単独で進められます。Part 2 のページを済ませていなくても構いません。
     - VLM による tier 別の出し分けは、Part 2 の [意味レベルで段階化する (VLM と意味的中間表現 / Stage T)](data-user-vc-tiered-semantic.md#12-意味レベルの段階化vlm--顔ブラー) の §12 で扱います。§12 と同じ `--profile vlm` の VLM と `description_full` / `description_summary` を使います。§12 との順番は、どちらが先でも構いません。
     - 前のページ: [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md)
     - 次のページ: [AI に渡す前にカメラ画像を守る (ローカルとクラウドの比較)](privacy-compare.md)
@@ -47,7 +47,7 @@
                                      └────────────────────┘
 ```
 
-## 前提
+## 必要な環境 { #前提 }
 
 - Docker が使え、教材リポジトリのトップで `docker compose -f infra/docker-compose.yml ...` を実行できる
 - [最短起動 (スタックを動かす)](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
@@ -109,7 +109,7 @@ curl -s http://localhost:8080/health | jq .
 
 ## 2. ウェブカメラから 1 枚撮る
 
-USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。下のスクリプトを教材リポジトリのトップ (`~/program/Blockchain_IoT_Marketplace`) に `capture_snapshot.py` として保存し、そこで実行します。OpenCV を使うので、前提で作った venv を有効にします。
+USB ウェブカメラから静止画を 1 枚だけ取得し、`snapshot.jpg` として保存します。下のスクリプトを教材リポジトリのトップ (`~/program/Blockchain_IoT_Marketplace`) に `capture_snapshot.py` として保存し、そこで実行します。OpenCV を使うので、「必要な環境」で作った venv を有効にします。
 
 ```python
 # capture_snapshot.py

@@ -15,7 +15,7 @@ Turn detections from DFRobot's [1] HUSKYLENS2 AI camera [2] into event files.
 !!! note "Where this page belongs"
     - This is section 1.2 of Part 1 ([Hands-on](index.md#12-capture-data-from-a-device)). Pick just one of the three pages in 1.2.
     - "Phase 1" on this page is a development stage of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
-    - Previous page: [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
+    - Previous page: [Quickstart (run the stack)](../setup/quickstart.md)
     - Next page: section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane) (trade on the marketplace)
 
 ## Goal
@@ -35,7 +35,7 @@ Aggregate HUSKYLENS2 (or mock) detections every few seconds and write them out a
 - event files cannot be written if the output folder does not exist
 - when real hardware is unstable, it is better to verify the pipeline in `mock` mode first
 
-## Prerequisites
+## Required environment
 
 - HUSKYLENS2 device, or a mock test environment
 - `sensor-bridge` available
@@ -149,7 +149,7 @@ Once event files are generated in mock mode, the next step is to try the physica
 
 ### 2. Real device (serial)
 
-For `--serial-port`, give the name of the port the HUSKYLENS2 is connected to. On macOS, replace it with the name you find with `ls /dev/tty.usb*` (on Linux it is something like `/dev/ttyUSB0`). Run serial mode in the `sensor-bridge` folder with the venv from the prerequisites (with `pyserial`) active (the first two lines below do this).
+For `--serial-port`, give the name of the port the HUSKYLENS2 is connected to. On macOS, replace it with the name you find with `ls /dev/tty.usb*` (on Linux it is something like `/dev/ttyUSB0`). Run serial mode in the `sensor-bridge` folder with the venv from [Required environment](#required-environment) (with `pyserial`) active (the first two lines below do this).
 
 The bridge reads the serial port one line at a time and treats a line in either of these formats as a detection:
 

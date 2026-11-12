@@ -4,7 +4,7 @@
     [設計](index.md) の章の設計仕様です。
     市販の安価な IP カメラや USB ウェブカメラの映像と、センサーデータに、C2PA (Coalition for Content Provenance and Authenticity) [1] の規格に沿った来歴情報を付ける **Stage P** (Provenance) の設計仕様である。
     署名には CAI (Content Authenticity Initiative) が公開している Rust の SDK [2] と Python の SDK [3] を使い、来歴のハッシュを NFT としてチェーンに記録する。実装前に書いた設計であり、そのうち P0〜P3 は実装して、教材リポジトリの main に入っている (§10 の注記。Content Credentials Verify と c2patool での確認はまだ)。
-    本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の §5)。
+    本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の §5)。
     Stage P は、Stage T の段階アクセス ([段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)) と Stage 7 の SellerVC ([SellerVC — マーケット出品ガバナンス VC (Stage 7 設計仕様)](seller-vc-spec.md)) の上に載せる。P0 の部分は、ハンズオン [画像の来歴を証明する (C2PA / Stage P)](../hands-on/c2pa-provenance.md) で手元で動かせる。P1 と P2 は、ハンズオン [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](../hands-on/c2pa-provenance-publisher.md) で、P3 は [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](../hands-on/c2pa-provenance-vlm.md) で動かせる。
     本文中の P0〜P6 は、本仕様の実装の段階を指す (一覧は §10)。MVP (Minimum Viable Product、最初に作る最小限の実装) は P0〜P2 に当たる。P0〜P3 は実装済みでハンズオンで動かせる。P4 以降はまだ実装していない。
 
@@ -19,7 +19,7 @@
 
 ## 読む前に
 
-- ハンズオンの Part 2 の「データ処理と来歴を入れてみよう」([信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md) など) を終えていると読みやすい。Tier 1〜3、DataUserVC、publisher、`/media/upload` は説明なしで使う
+- ハンズオンの Part 2 の「2.5 段階アクセスと来歴 (Stage T / P)」([信頼度に応じて見せる中身を変える (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md) など) を終えていると読みやすい。Tier 1〜3、DataUserVC、publisher、`/media/upload` は説明なしで使う
 - DID と VC の基本 ([SSI / DID / VC 基礎](../foundations/ssi-did-vc-basics.md)) を前提にする。C2PA の署名の仕組みは、§2 で VC と対応させて説明する
 
 ## つまずきやすい点
@@ -613,7 +613,7 @@ Merchandise の追加情報に ProvenanceToken のコントラクトのアドレ
 
 ## 12. 関連
 
-- [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) (Stage 番号の一覧は §5)
+- [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) (Stage 番号の一覧は §5)
 - [SellerVC — マーケット出品ガバナンス VC (Stage 7 設計仕様)](seller-vc-spec.md)
 - [段階アクセスの設計仕様](../hands-on/data-user-vc-tiered-spec.md)
 - [画像・動画を段階アクセスで配信する (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered-media.md)

@@ -75,7 +75,7 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
    │   the response carries seller_did
 ```
 
-## Prerequisites
+## Required environment { #prerequisites }
 
 - You have gone through the Stage 5 / 6 hands-on
 - The deploy script is the version that creates Merchandise contracts with `dataset_id` in `additionalInfo` (Stage 6 or later)

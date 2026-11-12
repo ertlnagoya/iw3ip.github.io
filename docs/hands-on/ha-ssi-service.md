@@ -63,7 +63,7 @@ Bearer ヘッダで添えて `/platform/ingest` を呼び出す想定です。
 - ServiceVC は M2M 想定。スマホウォレットで持つことも可能だが、
   本来は publisher に組み込まれた holder が保持する
 
-## 前提
+## 必要な環境
 
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) を通している
 - publisher が `main` ブランチのコードで起動している
@@ -223,7 +223,7 @@ docker compose -f infra/docker-compose.yml --profile ssi-wallet down
 
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md): 人による 1 回だけの書き込みの認可
 - [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md): 人による複数回の読み出しの認可
-- [検知イベントだけを共有する](webcam-event-sharing.md#補論-ウォレットモードによる認可) の補論:
+- [検知イベントだけを共有する](webcam-event-sharing.md#補論-ウォレットモードによる認可) または [防災イベントを共有する](environment-disaster.md#補論-ウォレットモードによる認可) の補論:
   ServiceVC を使わない 1 件単発 wallet モード
 
 ## 次に進む

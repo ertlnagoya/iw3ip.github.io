@@ -1,4 +1,4 @@
-# VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)
+# VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)
 
 !!! abstract "このページの位置付け"
     [設計](index.md) の章の資料です。

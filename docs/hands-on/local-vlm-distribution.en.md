@@ -4,11 +4,11 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
 
 > **What you'll do**: analyze a webcam image with a local VLM and distribute the generated semantic data (descriptions) over the platform
 >
-> **Prerequisites**: [Environment Setup](../setup/index.md) completed and Docker available (the Quickstart stack is not used)
+> **Prerequisites**: [Environment Setup](../setup/index.md) completed, Docker and Python 3 available, and a USB webcam connected to the PC (the Quickstart stack is not used)
 >
-> **Keep running**: nothing. §1 starts the publisher, mosquitto and the VLM (Ollama)
+> **Keep running**: nothing needs to be running. §1 starts the publisher, mosquitto and the VLM (Ollama)
 >
-> **What you need**: laptop PC + USB webcam + Docker (including the VLM)
+> **What you need**: laptop PC + USB webcam + Docker (including the VLM) + Python 3 (a venv with OpenCV)
 >
 > **Time required**: approx. 40–60 min (the first model pull takes a while)
 
@@ -16,7 +16,7 @@ Analyze frames from a laptop PC and a USB webcam with a **local VLM (vision-lang
     - This is 3.1 in Part 3 (intelligence integration) ([Hands-on](index.md#31-enrich-camera-data-with-a-local-vlm)).
     - Camera capture basics are covered in [Detect with a USB webcam (OpenCV)](webcam.md).
     - This page covers "**camera → local VLM → distribute semantic data**" as a single flow.
-    - You can do this page on its own, with only the environment setup and Docker. You do not need to have finished the Part 2 pages.
+    - You can do this page on its own, once the environment setup is done and you have Docker, Python (a venv with OpenCV) and a USB webcam. You do not need to have finished the Part 2 pages.
     - Per-tier projection with a VLM is covered in §12 of [Tier by semantic level (VLM and semantic representation / Stage T)](data-user-vc-tiered-semantic.md#12-semantic-level-redaction-vlm--face-blur) in Part 2. It uses the same `--profile vlm` VLM and the same `description_full` / `description_summary` as §12. You can do §12 and this page in either order.
     - Previous page: [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md)
     - Next page: [Protect camera images before handing them to AI (local vs cloud)](privacy-compare.md)
@@ -47,7 +47,7 @@ Instead of distributing raw images, distribute the **semantic derivatives** a lo
                                      └────────────────────┘
 ```
 
-## Prerequisites
+## Required environment { #prerequisites }
 
 - Docker is available and you can run `docker compose -f infra/docker-compose.yml ...` at the top of the course repository
 - If the IPFS from the [Quickstart (run the stack)](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
@@ -110,7 +110,7 @@ Expected output:
 
 ## 2. Capture one frame from the webcam
 
-Grab a single still image from the USB webcam and save it as `snapshot.jpg`. Save the script below as `capture_snapshot.py` at the top of the course repository (`~/program/Blockchain_IoT_Marketplace`) and run it there. The script uses OpenCV, so activate the venv from the prerequisites.
+Grab a single still image from the USB webcam and save it as `snapshot.jpg`. Save the script below as `capture_snapshot.py` at the top of the course repository (`~/program/Blockchain_IoT_Marketplace`) and run it there. The script uses OpenCV, so activate the venv from "Required environment".
 
 ```python
 # capture_snapshot.py

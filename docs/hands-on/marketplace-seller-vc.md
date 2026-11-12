@@ -75,7 +75,7 @@
    │   レスポンスに seller_did が同梱される
 ```
 
-## 前提
+## 必要な環境 { #前提 }
 
 - Stage 5 / 6 のハンズオンを通せている
 - deploy script が、`dataset_id` を `additionalInfo` に持つ Merchandise を作る版 (Stage 6 以降) である

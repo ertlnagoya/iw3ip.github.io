@@ -8,7 +8,7 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 >
 > **Keep running**: the Hardhat node on which you did Step E0 of Stage 6. Step M0 restarts the publisher, the bridge and iot-market-ui
 >
-> **What you need**: PC + smartphone (iw3ip-wallet) + MetaMask mobile
+> **What you need**: PC + smartphone (with two apps installed: iw3ip-wallet and MetaMask Mobile)
 >
 > **Time required**: approx. 30 min
 
@@ -22,8 +22,8 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
     In this hands-on you use the backend built in Phase 2 as is, and use `iot-market-ui`
     as a home screen app on iPhone/Android.
     Without any command-line operation, you go from purchase through VC receipt to
-    viewing the data by tapping on the phone screen. The PWA version on this page is called "option A", and a native
-    app (React Native) with the wallet function built in is called "option B". Option B is planned
+    viewing the data by tapping on the phone screen. Stage A refers to this smartphone app (PWA) version. There are two ways to use the phone: the PWA version on this page is called "method 1", and a native
+    app (React Native) with the wallet function built in is called "method 2". Method 2 is planned
     as Stage 9. Stage 9 is only a plan; there is no hands-on page for it yet.
 
 !!! tip "Same data as Stage 0"
@@ -64,15 +64,16 @@ Using the Phase 2 backend as is, you use `iot-market-ui` as a home screen app (P
 
 ## Pages to read first
 
-- [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md) — the overall picture
+- [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md) — the overall picture
 - [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) — the hands-on the purchase flow comes from
 - [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md) — the seller-side flow
 
-## Prerequisites
+## Required environment { #prerequisites }
 
 - You have completed the Stage 5 and Stage 6 hands-ons (the purchase uses the Merchandise deployed and the public key registered in Stage 6 Step E0; Stage 7 is optional and only matters for the `seller_did` explanation in Step M5). If you restarted Hardhat since then, first redo [Stage 6 Step E0](marketplace-vc-end-to-end.md#step-e0-start-the-prerequisite-environment-same-as-stage-5) (start the node, deploy, register the public key, recreate the bridge)
 - You can start publisher + bridge + Hardhat + iot-market-ui
 - iw3ip-wallet (iPhone) works
+- MetaMask Mobile (the App Store app) is installed on the iPhone. You make the purchase from its built-in browser (setup is step 0 of Step M3)
 - `$HOST_IP` in commands and `<HOST_IP>` in URLs stand for the PC's LAN IP. In each terminal you use, first run `export HOST_IP='<your PC LAN IP>'` (see the [Hands-on](index.md#host-ip) for how to find it). Replace `<HOST_IP>` in URLs you type into a browser or phone with the same IP
 - The steps assume a Mac and an iPhone, with the course repository cloned to `~/program/Blockchain_IoT_Marketplace` and the wallet to `~/program/iw3ip-wallet`
 
@@ -312,7 +313,7 @@ used in Stage 7 has already been purchased and cannot be bought again).
 !!! note "Current limitation (to be resolved in Stage 9)"
     Having to paste the ViewerToken manually is the current usability
     issue. Completing the flow by tapping alone requires a native app with a
-    built-in OID4VP client (option B, Stage 9).
+    built-in OID4VP client (method 2, Stage 9).
 
 ---
 
@@ -381,9 +382,9 @@ and the troubleshooting section of [Stage 7](marketplace-seller-vc.md).
 ## Limitations (to be resolved in Stage 9)
 
 - **Pasting the ViewerToken**: Automatic retrieval requires an implementation on the wallet side that
-  calls the publisher API (option B = Stage 9)
+  calls the publisher API (method 2 = Stage 9)
 - **Switching between apps**: You move back and forth between three apps (PWA / MetaMask / iw3ip-wallet).
-  Completing everything in one app is option B
+  Completing everything in one app is method 2
 - **Offline support**: It is a PWA, but the service worker is pass-through. Chain
   reads are always online
 - **iOS notifications / background processing**: Limited by the iOS PWA restrictions
@@ -398,7 +399,7 @@ Next is [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.
 
 ## Related
 
-- [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md)
+- [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md)
 - [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md)
 - [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](marketplace-vc-end-to-end.md)
 - [Back the seller's identity (Seller VC / Stage 7)](marketplace-seller-vc.md)

@@ -1,12 +1,12 @@
 # Pull from Home Assistant (HA SSI Publisher)
 
-Build a minimal setup that receives Home Assistant state over MQTT and decides whether to share it with a Consent VC.
+Build a minimal setup that receives Home Assistant state over MQTT and decides whether to share it with a consent JSON (equivalent to a Consent VC).
 
-> **What you'll do**: MQTT → publisher → Consent VC check → audit log
+> **What you'll do**: MQTT → publisher → consent check → audit log
 >
 > **Prerequisites**: [Prerequisites (install tools)](../setup/prerequisites.md), ideally [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md). The [Quickstart (run the stack)](../setup/quickstart.md) stack is not used
 >
-> **Keep running**: nothing. This page starts the publisher. If IPFS from Quickstart is running, stop it first (see [Prerequisites](#prerequisites) below)
+> **Keep running**: nothing needs to be running. This page starts the publisher. If IPFS from Quickstart is running, stop it first (see [Required environment](#required-environment) below)
 >
 > **What you need**: PC (Docker)
 >
@@ -16,12 +16,13 @@ Build a minimal setup that receives Home Assistant state over MQTT and decides w
     - This is section 1.2 of Part 1 ([Hands-on](index.md#12-capture-data-from-a-device)). Pick just one of the three pages in 1.2.
     - "Phase 1–3" on this page are development stages of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
     - Previous page: [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
-    - Next page: section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane) (trade on the marketplace)
+    - Next page: [Quickstart (run the stack)](../setup/quickstart.md), then section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane) (trade on the marketplace)
 
 ## Goal
 
 This covers a minimal setup that receives Home Assistant data via MQTT,
-decides whether to allow it with a Consent VC, then forwards only allowed data and records audit logs.
+decides whether to allow it with a consent JSON, then forwards only allowed data and records audit logs.
+The consent JSON is equivalent to a Consent VC, but it is registered directly at `/consents` and no VC signature is verified. You first receive and present a VC in a wallet in [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) in Part 2.
 
 Pipeline:
 
@@ -51,10 +52,10 @@ Branches after that:
 ## Common issues
 
 - the relation between `topic` and `dataset_id` is hard to grasp at first
-- a Consent VC can exist and still produce `denied` if `purpose` does not match
+- a consent JSON can be registered and still produce `denied` if `purpose` does not match
 - HTTP simulation and MQTT ingestion are two different checkpoints
 
-## Prerequisites
+## Required environment
 
 - Docker / Docker Compose
 - `curl`
@@ -105,7 +106,7 @@ Expected:
 {"status":"ok","service":"publisher"}
 ```
 
-### 2. Register Consent VCs
+### 2. Register the consent JSON (equivalent to a Consent VC)
 
 ```bash
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_temperature.json
@@ -223,7 +224,7 @@ If you want to move directly into Phase 2, continue with:
 
 ## Next steps
 
-One page from 1.2 is enough. Next is section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane), where you list an item, buy it, and receive it.
+One page from 1.2 is enough. Next, start the stack with [Quickstart (run the stack)](../setup/quickstart.md), then go to section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane), where you list an item, buy it, and receive it.
 
 - 1.3 does not use the publisher. First stop it with the command in [7. Stop services](#7-stop-services).
 - 1.3 uses the [Quickstart (run the stack)](../setup/quickstart.md) stack (terminals 1–7). Start it after the publisher is stopped, because the Quickstart IPFS and the publisher both use port 8080.

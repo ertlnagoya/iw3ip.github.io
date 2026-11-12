@@ -92,7 +92,7 @@ Small devices such as a Raspberry Pi with a camera can also serve as data source
 
 ## If You Want To Run One Demo First
 
-If you want the simplest Phase 1 / Phase 2 entry without physical devices, `ha-demo-simulator` is the best starting point. Phases 1–3 are the development stages of the platform, described in [Phase structure in the platform overview](platform-overview.md#phase-structure).
+If you want the simplest Phase 1 / Phase 2 entry without physical devices, start with `ha-demo-simulator` in §1.1 of hands-on Part 1. Phases 1–3 are the development stages of the platform, described in [Phase structure in the platform overview](platform-overview.md#phase-structure).
 
 - Matching page: [Run the whole pipeline without hardware (HA Demo Simulator)](hands-on/ha-demo-simulator.md)
 - What you can confirm:
@@ -113,26 +113,23 @@ Open:
 - `http://localhost:8123`
 - `http://localhost:8080/health`
 
-As the shortest Phase 3 demo, `assistant-demo` starts the following in one command:
+??? note "Shortest Part 3 demo (not needed the first time)"
+    `assistant-demo` is Part 3 (Intelligence Integration) content. If this is your first time, start from §1.1 above. If you want to see Part 3 first, `assistant-demo` starts the following in one command:
 
-- `assistant-demo`
-- `llm-mock`
-- `assistant-ui`
+    - `assistant-demo`
+    - `llm-mock`
+    - `assistant-ui`
 
-Matching page:
+    Matching page: [Let an AI plan the steps (LLM Planner)](hands-on/llm-planner.md)
 
-- [Let an AI plan the steps (LLM Planner)](hands-on/llm-planner.md)
+    Start command:
 
-Start command:
+    ```bash
+    cd ~/program/Blockchain_IoT_Marketplace
+    docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
+    ```
 
-```bash
-cd ~/program/Blockchain_IoT_Marketplace
-docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
-```
-
-Open:
-
-- `http://localhost:4173`
+    Open: `http://localhost:4173`
 
 ## Recommended Learning Order
 
@@ -141,7 +138,11 @@ The reading order is in the [Learning Roadmap](foundations/roadmap.md). After th
 1. [Prerequisites (install tools)](setup/prerequisites.md)
 2. [Run the whole pipeline without hardware (HA Demo Simulator)](hands-on/ha-demo-simulator.md)
 3. [Quickstart (run the stack)](setup/quickstart.md)
-4. §1.2 of Part 1 in [Hands-on](hands-on/index.md)
+4. §1.2 of Part 1 in [Hands-on](hands-on/index.md) (one of the three pages)
+5. §1.3 of Part 1 in [Hands-on](hands-on/index.md#13-trade-on-the-marketplace-v1-lane) (listing and purchase)
+6. §1.4 (optional)
+
+If you pick [Pull from Home Assistant (HA SSI Publisher)](hands-on/ha-ssi-publisher.md) in §1.2, do §1.2 right after §1.1 without running Quickstart, then run Quickstart and go on to §1.3. The publisher on that page uses port 8080, the same port as the Quickstart IPFS.
 
 If you get stuck, see [Troubleshooting](operations/troubleshooting.md). Instructors and TAs should first read the [Course Guide](foundations/course-guide.md) to plan the course.
 

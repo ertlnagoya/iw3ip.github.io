@@ -4,7 +4,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 
 > **やること**: 購入 → bridge → PurchaseViewerVC → wallet → ViewerToken → 取得
 >
-> **前提**: [最短起動 (スタックを動かす)](../setup/quickstart.md) を一度通していること (`iot-market` と `iot-market-ui` の `npm install` を済ませるためです。最短起動で動かしたものは Step 1 で止めます)。[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) と [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) を通していること
+> **前提**: [最短起動 (スタックを動かす)](../setup/quickstart.md) を一度通していること (`iot-market` と `iot-market-ui` の `npm install` を済ませるためです。最短起動のプロセスがまだ動いていれば、Step 1 ですべて止めます)。[データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) と [データ閲覧者の認証 (Viewer VC / Stage 3)](ha-ssi-viewer.md) を通していること
 >
 > **起動しておくもの**: なし。このページで Hardhat ノード、publisher、bridge、iot-market-ui、Metro を順に起動します
 >
@@ -87,7 +87,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
        [JSON データ取得]
 ```
 
-## 前提
+## 必要な環境 { #前提 }
 
 - [Stage 1](ha-ssi-wallet.md) と [Stage 3](ha-ssi-viewer.md) の動作確認が済んでいる
 - iot-market-ui (Svelte) と Hardhat ローカルチェーンが起動できる
@@ -105,7 +105,7 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 
 ### 操作
 
-[最短起動 (スタックを動かす)](../setup/quickstart.md) の Hardhat ノードと mediator (mediator-owner / mediator-buyer) が動いていれば、先にそれぞれ Ctrl+C で止めてください。古いノードが 8545 番を使ったままだと、次のコマンドが起動に失敗します。最短起動の IPFS も、`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` で止めてください。IPFS と後で起動する publisher は、どちらもポート 8080 を使います。
+[最短起動 (スタックを動かす)](../setup/quickstart.md) の Hardhat ノードと mediator (mediator-owner / mediator-buyer) が動いていれば、先にそれぞれ Ctrl+C で止めてください。古いノードが 8545 番を使ったままだと、次のコマンドが起動に失敗します。最短起動の IPFS も、`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down` で止めてください。IPFS と後で起動する publisher は、どちらもポート 8080 を使います。最短起動のフロントエンド (ターミナル 3、`npm run dev`) も Ctrl+C で止めてください。Step 6 で iot-market-ui を 5173 番で起動し直すためです。データ保管庫 simple-storage (ターミナル 4、ポート 3000) はこのページでは使わないので、Ctrl+C で止めて構いません。
 
 ターミナル A (起動したまま):
 

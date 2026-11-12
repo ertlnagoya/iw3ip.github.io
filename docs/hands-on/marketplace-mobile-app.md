@@ -8,7 +8,7 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 >
 > **起動しておくもの**: Stage 6 の Step E0 を済ませた Hardhat ノード。publisher、bridge、iot-market-ui は Step M0 で起動し直します
 >
-> **使うもの**: PC + スマホ (iw3ip-wallet) + MetaMask モバイル
+> **使うもの**: PC + スマホ (iw3ip-wallet と MetaMask Mobile の 2 つのアプリを入れておきます)
 >
 > **所要時間**: 約 30 分
 
@@ -22,8 +22,9 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
     Phase 2 で構築した backend をそのまま使い、`iot-market-ui` を
     iPhone/Android のホーム画面アプリとして使うハンズオンです。
     コマンドライン操作なしで、購入から VC 受領、データ閲覧までを
-    スマホ画面のタップで進めます。本ページの PWA 版を「案 A」、ウォレット機能を
-    組み込んだネイティブアプリ (React Native) を「案 B」と呼びます。案 B は Stage 9
+    スマホ画面のタップで進めます。Stage A は、このスマホアプリ (PWA) 版を指します。
+    スマホで使う方法は 2 つあり、本ページの PWA 版を「方式 1」、ウォレット機能を
+    組み込んだネイティブアプリ (React Native) を「方式 2」と呼びます。方式 2 は Stage 9
     として計画しています。Stage 9 は計画の段階で、ハンズオンのページはまだありません。
 
 !!! tip "Stage 0 と同じデータ"
@@ -64,15 +65,16 @@ Phase 2 の backend をそのまま使い、`iot-market-ui` をスマホのホ�
 
 ## 先に読むページ
 
-- [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md) — 全体像
+- [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md) — 全体像
 - [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) — 購入動線の元ハンズオン
 - [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md) — Seller 側の動線
 
-## 前提
+## 必要な環境 { #前提 }
 
 - Stage 5 と Stage 6 のハンズオンを済ませている (購入には、Stage 6 の Step E0 でデプロイした Merchandise と、登録した公開鍵を使います。Stage 7 は任意で、Step M5 の `seller_did` の説明にだけ関わります)。その後に Hardhat を起動し直した場合は、先に [Stage 6 の Step E0](marketplace-vc-end-to-end.md#step-e0-前提環境の起動-stage-5-と共通) (ノードの起動、デプロイ、公開鍵の登録、bridge の作り直し) をやり直す
 - publisher + bridge + Hardhat + iot-market-ui が起動できる
 - iw3ip-wallet (iPhone) が動く
+- iPhone に MetaMask Mobile (App Store のアプリ) が入っている。購入はその内蔵ブラウザから行います (設定は Step M3 の手順 0)
 - コマンド中の `$HOST_IP` と URL 中の `<HOST_IP>` は、PC の LAN IP を表します。使うターミナルごとに、最初に `export HOST_IP='<PC の LAN IP>'` を実行してください (IP の調べ方は [ハンズオン](index.md#host-ip) を参照)。ブラウザやスマホに入力する URL の `<HOST_IP>` は、同じ IP に置き換えます
 - 教材リポジトリは `~/program/Blockchain_IoT_Marketplace`、ウォレットは `~/program/iw3ip-wallet` に clone した前提で、Mac と iPhone を使う手順を示します
 
@@ -304,7 +306,7 @@ Merchandise は購入済みなので、もう一度は買えません)。
 !!! note "現状の限界 (Stage 9 で解消予定)"
     ViewerToken を手動で貼り付ける必要がある点が、現状の使い勝手の
     課題です。タップだけで完結させるには、OID4VP クライアントを組み込んだ
-    ネイティブアプリ (案 B、Stage 9) が必要です。
+    ネイティブアプリ (方式 2、Stage 9) が必要です。
 
 ---
 
@@ -374,9 +376,9 @@ Safari のキャッシュ。
 ## 限界 (Stage 9 で解消予定)
 
 - **ViewerToken の貼り付け**: 自動取得には、wallet 側に publisher API を
-  呼び出す実装が必要 (案 B = Stage 9)
+  呼び出す実装が必要 (方式 2 = Stage 9)
 - **アプリ間スイッチング**: 3 つのアプリ (PWA / MetaMask / iw3ip-wallet)
-  を行き来する。1 つのアプリで完結させるのは案 B
+  を行き来する。1 つのアプリで完結させるのは方式 2
 - **オフライン対応**: PWA だが service worker は pass-through。チェーン
   read は常にオンライン
 - **iOS の通知 / バックグラウンド処理**: iOS PWA の制約で限定的
@@ -391,7 +393,7 @@ Safari のキャッシュ。
 
 ## 関連
 
-- [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md)
+- [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md)
 - [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md)
 - [ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)](marketplace-vc-end-to-end.md)
 - [出品者の身元を裏付ける (Seller VC / Stage 7)](marketplace-seller-vc.md)

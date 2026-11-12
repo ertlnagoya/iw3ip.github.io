@@ -1,6 +1,6 @@
 # 検知イベントだけを共有する
 
-[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) で作ったイベントを、Consent VC を介して共有可否を制御しながら送信します。
+[USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) で作ったイベントを、同意 (consent) の JSON (Consent VC に相当) で共有可否を制御しながら送信します。
 
 > **やること**: 検知イベントを共有基盤に送る + purpose に応じた allow/deny を見る
 >
@@ -20,7 +20,7 @@
 
 この Hands-on は、既存の [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) を発展させた **Phase 2: Event / Intelligence Sharing** の例です。  
 Phase 1 では、USBウェブカメラで `person_detected` や `possible_littering` を検知し、イベントファイルを生成して、商品として登録されるところまで確認しました。  
-このページでは、その次の段階として、**検知イベントをデータ共有基盤へ送って、Consent VC に基づいて共有可否を制御する**流れを試します。
+このページでは、その次の段階として、**検知イベントをデータ共有基盤へ送って、同意 (consent) の JSON (Consent VC に相当) に基づいて共有可否を制御する**流れを試します。
 
 パイプライン:
 
@@ -38,7 +38,7 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 その後の分岐:
 
 - 許可されるケースだけ確認したい場合: `allowed` を確認したところで終えて構いません
-- Consent VC による制御まで理解したい場合: `advertising` を送って `denied` も確認します
+- 同意 (consent) による制御まで理解したい場合: `advertising` を送って `denied` も確認します
 - MQTT 経路まで見たい場合: 最後に `mosquitto_pub` を使います
 
 ## このページで分かること
@@ -53,9 +53,8 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 - `purpose` を変えるだけで結果が変わる理由が見えにくい
 - `/platform/ingest` だけ見ていると `denied` ケースを見落とす
 
-## 前提
+## 必要な環境
 
-- Part 1 の 1.2 のどれか 1 つを済ませている。このページは [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) のイベントを例にしますが、疑似データで進めるので、カメラが無くても進められます
 - [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) を起動できる
 - Docker / Docker Compose が使える
 - [最短起動 (スタックを動かす)](../setup/quickstart.md) の IPFS を起動したままの場合は、先に止めておく (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher がどちらもポート 8080 を使うためです
@@ -128,7 +127,9 @@ curl http://localhost:8080/health
 {"status":"ok","service":"publisher"}
 ```
 
-### 2. この Hands-on 用の Consent VC を登録
+### 2. この Hands-on 用の同意 (consent) の JSON を登録する (Consent VC に相当)
+
+内容は Consent VC に相当しますが、ここでは JSON を `/consents` に直接登録し、VC の署名は検証しません。VC を使うのは次の 2.2 からです。
 
 この Hands-on では、`home/event/possible_littering` を `community_cleaning` と `research` の目的でのみ許可します。
 

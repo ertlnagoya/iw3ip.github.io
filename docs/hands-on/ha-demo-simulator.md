@@ -6,17 +6,17 @@
 >
 > **前提**: [事前準備 (ツールのインストール)](../setup/prerequisites.md) が済んでいること。[最短起動 (スタックを動かす)](../setup/quickstart.md) は不要です
 >
-> **起動しておくもの**: なし。このページで publisher と Home Assistant を起動します。最短起動の IPFS が動いている場合は止めておきます (下の [前提](#前提) を参照)
+> **起動しておくもの**: なし。このページで publisher と Home Assistant を起動します。最短起動の IPFS が動いている場合は止めておきます (下の [必要な環境](#必要な環境) を参照)
 >
 > **使うもの**: PC のみ (Docker が動けば可)
 >
-> **所要時間**: 約 20 分
+> **所要時間**: 約 20 分 (任意の節は含みません)
 
 !!! note "このページの位置付け"
     - Part 1 の 1.1 です ([ハンズオン](index.md#11-まず動かす--実機なしで全体像を確認する))。ハンズオンの最初のページです。
     - このページの「Phase 1〜3」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
     - 前のページ: [事前準備 (ツールのインストール)](../setup/prerequisites.md)
-    - 次のページ: 1.2 の 3 ページから 1 つを選びます ([ハンズオン](index.md#12-デバイスからデータを取る))。
+    - 次のページ: [最短起動 (スタックを動かす)](../setup/quickstart.md) (1.2 でカメラを使う場合)。1.2 で HA SSI Publisher を選ぶ場合は、直接 [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) に進みます。
 
 ## 目的
 
@@ -34,7 +34,7 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 
 1. `PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --profile ha-demo up --build -d`
 2. `http://localhost:8123` を開き、`MQTT` integration を追加する
-3. Consent VC を登録する
+3. 同意 (consent) の JSON を登録する (Consent VC に相当)
 4. `Developer Tools -> Actions` から `script.iw3ip_publish_demo_temperature` または `script.iw3ip_publish_demo_possible_littering` を実行する
 5. `curl http://localhost:8080/platform/ingest` で共有結果を見る
 
@@ -49,18 +49,18 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 - 実機がなくても `temperature`、`power`、`person_detected`、`flood_risk_high`、`possible_littering` を再現できること
 - Home Assistant から MQTT へ流したデータを、IW3IP publisher がどう受け取り、正規化し、記録するか
 - Phase 1 の状態共有と Phase 2 のイベント共有の違い
-- Consent VC によって `allowed` / `denied` がどう変わるか
+- 登録した同意 (consent) によって `allowed` / `denied` がどう変わるか
 - `/platform/ingest` に蓄積したイベントを Phase 3 の `assistant` へ渡す方法
 
 ## よくある問題
 
 - Home Assistant を起動しただけでは MQTT publish は動かず、最初に `MQTT` integration の追加が必要です
-- Consent VC を登録していないと、スクリプトを実行しても期待した共有結果になりません
+- 同意 (consent) の JSON を登録していないと、スクリプトを実行しても期待した共有結果になりません
 - Home Assistant 側でイベントを送れていても、`purpose` が合わなければ publisher 側で拒否されます
 - 実機がないぶん流れが見えにくいため、`/platform/ingest` と `/audit/logs` を都度確認してください
 - Phase 3 では publisher と assistant を別サービスとして扱う必要があり、`share` と `execute` を混同しやすい点に注意してください
 
-## 前提
+## 必要な環境
 
 - Docker / Docker Compose が使える
 - ブラウザで `http://localhost:8123` を開ける
@@ -146,9 +146,9 @@ curl http://localhost:8080/health
 - `mosquitto` サービスが表示されていること
 - この画面が見えれば `mqtt.publish` を使う準備は完了していること
 
-### 3. Consent VC を登録
+### 3. 同意 (consent) の JSON を登録する (Consent VC に相当)
 
-Home Assistant demo で扱うデータセットに対応する Consent VC を登録します。
+Home Assistant demo で扱うデータセットに対応する同意 (consent) を、JSON で `/consents` に登録します。内容は Consent VC に相当しますが、ここでは VC の署名は検証しません。ウォレットで VC を受け取って提示するのは、Part 2 の [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) からです。
 
 ```bash
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/ha_demo/consent_temperature.json
@@ -236,6 +236,8 @@ curl 'http://localhost:8080/audit/logs?limit=10'
 ここまでで、登録した consent に一致するイベントが共有されることを確認しました。次のワークでは、consent の有効期限が切れたときにどうなるかを確かめます。
 
 ### ワーク: consent の有効期限が切れると拒否される
+
+このワークは任意です。1.1 を終えるには、手順 5 までで十分です。
 
 配布している `examples/ha_demo/consent_*.json` の `valid_to` は `2030-12-31T23:59:59Z` なので、そのままでは期限切れは起きません。ここでは `possible_littering` の consent をわざと期限切れにして登録し、拒否が起きることを確かめてから直します。VC の有効期間 (`valid_from` 〜 `valid_to`) の働きを確認できます。
 
@@ -349,10 +351,12 @@ curl -X POST http://localhost:8080/simulate/publish \
 
 ここで見る点:
 
-- 入力 topic は正しくても、`purpose` が Consent VC と一致しないと拒否されること
+- 入力 topic は正しくても、`purpose` が登録した consent と一致しないと拒否されること
 - `simulate/publish` のレスポンスと `audit/logs` の両方で拒否を確認すること
 
 ### 7. MQTT 経路を直接試す
+
+この手順も任意です。
 
 Home Assistant を使わず、同じ topic に直接 publish することもできます。
 
@@ -474,16 +478,12 @@ Node-RED は必須ではありません。まず Home Assistant demo だけで�
   - 基本的な受信、正規化、送信、記録
 - Phase 2:
   - `flood_risk_high` や `possible_littering` のようなイベント共有
-  - `purpose` と Consent VC に基づく条件付き共有
+  - `purpose` と登録した consent に基づく条件付き共有
 - Phase 3:
   - publisher にたまったイベントを assistant に渡して `execute` する
   - `triggered` と `actions_executed` を確認する
 
-Phase ごとの関連ページは次のとおりです。学習順の次のページは [次に進む](#次に進む) を参照してください。
-
-- [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) (Phase 1)
-- [防災イベントを共有する](environment-disaster.md) (Phase 2)
-- [地域安全アシスタントを動かす](regional-safety-assistant.md) (Phase 3)
+学習順の次のページは [次に進む](#次に進む) を参照してください。
 
 ### 11. 停止
 
@@ -513,10 +513,15 @@ docker compose -f infra/docker-compose.yml --profile ha-demo --profile ha-demo-p
 
 ## 次に進む
 
-次は Part 1 の 1.2 です。[ハンズオン](index.md#12-デバイスからデータを取る) の 1.2 にある 3 ページから、手元の機材に合わせて 1 つを選びます。
+次は [最短起動 (スタックを動かす)](../setup/quickstart.md) です。そのあと Part 1 の 1.2 に進み、[ハンズオン](index.md#12-デバイスからデータを取る) の 1.2 にある 3 ページから、手元の機材に合わせて 1 つを選びます。
 
-- [AI カメラで人物を検知する (HUSKYLENS2)](huskylens2.md) と [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) は、[最短起動 (スタックを動かす)](../setup/quickstart.md) のスタックを使います。先に [11. 停止](#11-停止) のコマンドで publisher を止めてから、最短起動に進みます。
-- [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) は、このページと同じ publisher を使います。[11. 停止](#11-停止) で止めてから、そのページの手順 1 で起動し直します。
+- [AI カメラで人物を検知する (HUSKYLENS2)](huskylens2.md) と [USB カメラでポイ捨てを検知する (OpenCV)](webcam.md) は、最短起動のスタックを使います。先に [11. 停止](#11-停止) のコマンドで publisher を止めてから、最短起動に進みます。
+- 1.2 で HA SSI Publisher を選ぶ場合は、最短起動の前に、直接 [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) に進みます。このページと同じ publisher を使います。[11. 停止](#11-停止) で止めてから、そのページの手順 1 で起動し直します。最短起動は、そのページを終えてから 1.3 の前に行います。
+
+このページの Phase 2・3 は、コースの後半で次のページでも扱います。今は先に進む必要はありません。
+
+- [防災イベントを共有する](environment-disaster.md) (Part 2 の 2.1)
+- [地域安全アシスタントを動かす](regional-safety-assistant.md) (Part 3)
 
 ここで終える場合は、[11. 停止](#11-停止) のコマンドで止めておきます。
 

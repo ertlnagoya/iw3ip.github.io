@@ -252,16 +252,18 @@ MetaMask をローカル Hardhat に接続します。
 - [ ] MetaMask が `Hardhat Local` ネットワークに接続できている
 - [ ] MetaMask のアカウント残高が約 `10000 ETH` (9999.99… でよい) と表示される
 
-すべてチェック → [ハンズオン](../hands-on/index.md) の Part 1 の 1.2 に進みます。
+すべてチェック → [ハンズオン](../hands-on/index.md) の Part 1 の 1.2 に進み、1.2 のページを 1 つ終えたら 1.3 の出品と購入に進みます。1.2 で [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) を済ませてから最短起動をした場合は、そのまま 1.3 に進みます。
 
-## 簡易な代替: docker compose だけで動く最小スタック
+## 最短起動を使わないページ
 
-ターミナルを 7 つ開くのが煩雑な場合は、Docker Compose で publisher 周りだけを起動する方法もあります。
-データの取り込みと観察に特化した、実機を使わない最短経路は次のページを参照してください。
+次のページは、最短起動のスタックを使いません。必要なもの (publisher など) は、それぞれのページで起動します。
 
-- [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)
+- Part 1 の 1.1: [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)
+- Part 1 の 1.2: [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md)
+- Part 2 の 2.1〜2.3: [検知イベントだけを共有する](../hands-on/webcam-event-sharing.md)、[防災イベントを共有する](../hands-on/environment-disaster.md)、[データ提供者の認証 (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md)、[データ閲覧者の認証 (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md)、[機器間での連携認証 (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
+- Part 3 のすべてのページ
 
-これだけでも Part 1 の最初の節は試せます。手順 5 の IPFS を起動したままの場合は、先に `ipfs` ディレクトリで `docker compose down` を実行して止めてください。IPFS と publisher がどちらもポート 8080 を使うためです。
+これらのページで起動する publisher は、最短起動の IPFS (手順 5) と同じポート 8080 を使います。IPFS を起動したままの場合は、先に `ipfs` ディレクトリで `docker compose down` を実行して止めてください。
 
 ## よくあるつまずき
 

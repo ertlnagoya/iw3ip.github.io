@@ -4,9 +4,9 @@ The basic Phase 3 sample: using a sample file of events like those shared in Pha
 
 > **What you'll do**: Free-form request → plan → execute
 >
-> **Prerequisites**: [Share detections, not raw frames](webcam-event-sharing.md)
+> **Prerequisites**: one of the 2.1 pages ([Share detections, not raw frames](webcam-event-sharing.md) or [Share disaster events](environment-disaster.md)). This page uses a sample event file (`possible_littering` and others), so the former makes it easier to follow
 >
-> **Keep running**: nothing. §1 starts the assistant
+> **Keep running**: nothing needs to be running. §1 starts the assistant
 >
 > **What you need**: PC only
 >
@@ -52,7 +52,7 @@ Branches after that:
 - treating event-count evaluation and device control as one process makes the flow hard to see
 - this page has you read the minimum implementation itself rather than a problem program, so the module boundaries deserve attention
 
-## Prerequisites
+## Required environment { #prerequisites }
 
 - Docker / Docker Compose [1]
 - `curl`

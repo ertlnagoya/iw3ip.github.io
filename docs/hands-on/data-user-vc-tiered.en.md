@@ -4,9 +4,9 @@ Switch the response between Tier 3 / 2 / 1 by the receiver's trust (DataUserVC).
 
 > **What you'll do**: Watch the response narrow from video → image → event only as the trust level drops
 >
-> **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md), [Share detections, not raw frames](webcam-event-sharing.md), and Steps 7–8 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) (receiving and presenting a PurchaseViewerVC)
+> **Prerequisites**: [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md), one of the 2.1 pages ([Share detections, not raw frames](webcam-event-sharing.md) or [Share disaster events](environment-disaster.md); this page uses `possible_littering` events, so the former makes it easier to follow), and Steps 7–8 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md) (receiving and presenting a PurchaseViewerVC)
 >
-> **Keep running**: nothing. §1 starts the publisher and mosquitto
+> **Keep running**: nothing needs to be running. §1 starts the publisher and mosquitto
 >
 > **What you need**: PC + smartphone (iw3ip-wallet)
 >
@@ -56,10 +56,10 @@ The DataUserVC is issued to the wallet so you can inspect it. The course reposit
 - Changing `data_user_attrs` after a ViewerToken has been minted **does
   not** retroactively widen the existing token
 
-## Prerequisites
+## Required environment { #prerequisites }
 
 - You have run [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) once
-- You understand [Share detections, not raw frames](webcam-event-sharing.md)
+- You have read one of the 2.1 pages ([Share detections, not raw frames](webcam-event-sharing.md) or [Share disaster events](environment-disaster.md)). The examples on this page use `possible_littering` events, so the former makes them easier to follow
 - You have received and presented a PurchaseViewerVC with the wallet in Steps 7–8 of [Hand a credential to the buyer's wallet (Bridge / Stage 5)](marketplace-vc-bridge.md). §3 and §4 of this page use `/marketplace/claim` and the PurchaseViewerVC that Stage 5 used
 - Docker / Docker Compose
 - `curl`, `jq`

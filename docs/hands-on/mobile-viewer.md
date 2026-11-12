@@ -1,6 +1,6 @@
 # スマホでマーケットを開いて購入する (v1)
 
-v1 マーケットプレイス (MetaMask [1] で購入し、データは simple-storage (:3000) 経由で受け渡す) を、スマホのブラウザで開いて購入するところまで確かめます。VC 連携 (v2) の動線は別ページです。
+v1 マーケットプレイス (MetaMask [1] で購入し、データは simple-storage (:3000) 経由で受け渡す) を、スマホのブラウザで開いて購入するところまで確かめます。VC 連携 (v2) のスマホの動線は、別ページの [スマホアプリで購入から閲覧まで (Stage A)](marketplace-mobile-app.md) で扱います。
 
 > **やること**: スマホのブラウザでマーケットプレイス画面を開き、購入操作まで確かめる
 >
@@ -18,12 +18,6 @@ v1 マーケットプレイス (MetaMask [1] で購入し、データは simple-
     - 1.1 や 1.2 で最短起動の IPFS を止めたままの場合は、最短起動の手順 5 で起動し直してから進みます。
     - 前のページ: [ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3
     - 次のページ: Part 2 の 2.1 ([検知イベントだけを共有する](webcam-event-sharing.md) または [防災イベントを共有する](environment-disaster.md))
-
-!!! note "v1 で開いて購入する手順"
-    このページは **v1 (現行マーケットプレイス + MetaMask)** で、
-    スマホからマーケットを開いて購入する手順です。VC 連携 (v2) のスマホ動線は
-    [スマホアプリで購入から閲覧まで (Stage A)](marketplace-mobile-app.md) を
-    参照してください。
 
 ## 目的
 
@@ -47,7 +41,7 @@ v1 マーケットプレイス (MetaMask [1] で購入し、データは simple-
 - 同じ Wi-Fi に見えてもネットワークが分かれていると接続できない
 - 購入操作は MetaMask モバイルのブラウザ経由でないと進みにくい
 
-## 前提
+## 必要な環境
 
 - `iot-market-ui` が起動できる
 - PC とスマホが同じ LAN / Wi-Fi に接続されている
@@ -214,6 +208,7 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 
 - 2.1 は publisher を使い、最短起動のスタックは使いません。
 - 先に、最短起動の IPFS を止めます (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`)。IPFS と publisher は、どちらもポート 8080 を使うためです。
+- 最短起動のフロントエンド (ターミナル 3、ポート 5173) も Ctrl+C で止めます。2.4 の [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) の Step 6 で、iot-market-ui を 5173 番で起動し直すためです。
 - 最短起動のほかのプロセスも、止めて構いません。
 
 ここで Part 1 を終える場合は、[ハンズオン](index.md#part-1-の成功判定) の Part 1 の成功判定を確かめます。

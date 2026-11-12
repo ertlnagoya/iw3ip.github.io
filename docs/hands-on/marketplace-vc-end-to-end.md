@@ -83,7 +83,7 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
    │  ── Seller が書いた N 件が Buyer に届く ──
 ```
 
-## 前提
+## 必要な環境 { #前提 }
 
 - [Stage 1](ha-ssi-wallet.md) / [Stage 3](ha-ssi-viewer.md) /
   [Stage 4 prep](ha-ssi-service.md) / [Stage 5](marketplace-vc-bridge.md)

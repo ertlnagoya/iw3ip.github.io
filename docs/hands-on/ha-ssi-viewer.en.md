@@ -51,7 +51,7 @@ Pipeline:
 - `/platform/data` only accepts ViewerToken (PolicyToken is rejected)
 - ViewerToken TTL is 60 s. After expiry, present again
 
-## Prerequisites
+## Required environment
 
 - Have completed §1–§8 of [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
 - Publisher running from the `main` branch

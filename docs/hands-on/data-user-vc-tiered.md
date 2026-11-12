@@ -4,7 +4,7 @@
 
 > **やること**: 信頼度ごとに動画 / 画像 / イベントだけを出し分ける動作の確認
 >
-> **前提**: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md)、[検知イベントだけを共有する](webcam-event-sharing.md)、[購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) の Step 7〜8 (PurchaseViewerVC の受け取りと提示)
+> **前提**: [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md)、2.1 のどちらか 1 ページ ([検知イベントだけを共有する](webcam-event-sharing.md) か [防災イベントを共有する](environment-disaster.md)。このページは `possible_littering` のイベントを使うので、前者を読んでいると分かりやすいです)、[購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) の Step 7〜8 (PurchaseViewerVC の受け取りと提示)
 >
 > **起動しておくもの**: なし。§1 で publisher と mosquitto を起動します
 >
@@ -50,10 +50,10 @@ DataUserVC はウォレットに発行して中身を確かめるところまで
 - score >= 80 でも、`entityType` が `Enterprise` のままでは **`full` になりません**
 - ViewerToken の発行後に `data_user_attrs` を変えても、**発行済みの token には反映されません**
 
-## 前提
+## 必要な環境 { #前提 }
 
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) を一度動かしている
-- [検知イベントだけを共有する](webcam-event-sharing.md) を理解している
+- 2.1 のどちらか 1 ページ ([検知イベントだけを共有する](webcam-event-sharing.md) か [防災イベントを共有する](environment-disaster.md)) を読んでいる。このページの例は `possible_littering` のイベントなので、前者を読んでいると分かりやすい
 - [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](marketplace-vc-bridge.md) の Step 7〜8 で、PurchaseViewerVC をウォレットに受け取り、提示したことがある。このページの §3 と §4 は、Stage 5 で使った `/marketplace/claim` と PurchaseViewerVC を使います
 - Docker / Docker Compose が使える
 - `curl`, `jq` が使える

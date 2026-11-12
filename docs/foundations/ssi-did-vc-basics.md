@@ -59,7 +59,7 @@ flowchart LR
 
 ### VC とトークン
 
-VC は長く使う証明書で、API を呼ぶたびに提示するものではありません。本サイトでは、VC の提示が検証されると、publisher が有効期間の短い **トークン** を発行し、API はそのトークンで呼び出します。VC の種類とトークンの対応は [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md) にまとめています。
+VC は長く使う証明書で、API を呼ぶたびに提示するものではありません。本サイトでは、VC の提示が検証されると、publisher が有効期間の短い **トークン** を発行し、API はそのトークンで呼び出します。VC の種類とトークンの対応は [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md) にまとめています。
 
 ## 本システムでの位置付け
 

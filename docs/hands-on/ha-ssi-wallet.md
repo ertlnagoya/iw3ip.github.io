@@ -61,7 +61,7 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 - `did:jwk` と SD-JWT VC を用いた軽量構成
 - `allowed` / `denied` が VC の内容と `purpose` によって決まる様子
 
-## 前提
+## 必要な環境
 
 - Docker / Docker Compose が使える
 - PC とスマホが同じ LAN に接続されている

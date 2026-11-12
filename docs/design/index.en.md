@@ -17,7 +17,7 @@ Read it after the hands-on when you want to know why things behave as they do, w
 
 | Design spec | Scope | Matching hands-on |
 |---|---|---|
-| [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md) | the 6 VC kinds and 4 token kinds, which VC authorizes which API, the list of Stages | all of Part 2 |
+| [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md) | the 6 VC kinds and 4 token kinds, which VC authorizes which API, the list of Stages | all of Part 2 |
 | [Marketplace VC Bridge — v1 / v2 Design Spec](marketplace-vc-bridge-spec.md) | connecting the marketplace and the SSI wallet (v1 / v2) | [Hand a credential to the buyer's wallet (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md), [Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)](../hands-on/marketplace-vc-end-to-end.md) |
 | [SellerVC — marketplace listing governance VC (Stage 7 design spec)](seller-vc-spec.md) | verifying the seller's identity | [Back the seller's identity (Seller VC / Stage 7)](../hands-on/marketplace-seller-vc.md) |
 | [Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md) | tailoring the response to the receiver's trust level (DataUserVC, VLM-derived data) | the three Stage T pages, starting with [Tier the response by trust (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md) |
@@ -27,4 +27,4 @@ Read it after the hands-on when you want to know why things behave as they do, w
 ## How to read the design specs
 
 - Many specs were written before the implementation. Where the implementation differs, the spec says so in a note (a "→ In the implementation" line, an "in the original design / in the current implementation" contrast, or a "Current implementation" box). The source code of the course repository and the hands-on steps are the reference for actual behaviour.
-- "Stage" in the text is the step number of the Phase 2 hands-on (listed in §5 of the [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md)). The relation between Part, Phase and Stage is explained in [Hands-on](../hands-on/index.md#part-phase-stage).
+- "Stage" in the text is the step number of the hands-on in Part 2 (listed in §5 of the [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md)). The relation between Part, Phase and Stage is explained in [Hands-on](../hands-on/index.md#part-phase-stage).

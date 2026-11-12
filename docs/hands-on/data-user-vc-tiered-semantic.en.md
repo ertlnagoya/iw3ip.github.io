@@ -6,7 +6,7 @@ This page continues [Tier the response by trust (DataUserVC / Stage T)](data-use
 >
 > **Prerequisites**: §0–§7 of [Tier the response by trust (DataUserVC / Stage T)](data-user-vc-tiered.md) and §8–§11 of [Deliver images and video with tiered access (DataUserVC / Stage T)](data-user-vc-tiered-media.md)
 >
-> **Keep running**: nothing. §12.2 starts the publisher, mosquitto and the VLM (Ollama)
+> **Keep running**: nothing needs to be running. §12.2 starts the publisher, mosquitto and the VLM (Ollama)
 >
 > **What you need**: PC + smartphone (iw3ip-wallet), and a publisher started with `--profile vlm` (Ollama)
 >

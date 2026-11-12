@@ -6,7 +6,7 @@ Receive a VC into a smartphone SSI wallet (iw3ip-wallet), then present it to aut
 >
 > **Prerequisites**: [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) or [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md) finished, and ideally Stage 0 ([Share detections, not raw frames](webcam-event-sharing.md) or [Share disaster events](environment-disaster.md))
 >
-> **Keep running**: nothing. Step 1 of this page starts the publisher with the `ssi-wallet` profile. The publisher from 2.1 can stay running. Keep the Quickstart IPFS stopped (it shares port 8080)
+> **Keep running**: nothing needs to be running. Step 1 of this page starts the publisher with the `ssi-wallet` profile. The publisher from 2.1 can stay running. Keep the Quickstart IPFS stopped (it shares port 8080)
 >
 > **What you need**: PC + smartphone with iw3ip-wallet
 >
@@ -61,7 +61,7 @@ Pipeline:
 - A lightweight stack using `did:jwk` and SD-JWT VC
 - How `allowed` / `denied` depends on VC content and `purpose`
 
-## Prerequisites
+## Required environment
 
 - Docker / Docker Compose available
 - PC and phone on the same LAN

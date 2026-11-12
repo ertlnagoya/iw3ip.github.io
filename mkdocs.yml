@@ -50,28 +50,28 @@ plugins:
             Quickstart: 最短起動
             Facilitator Guide: 講師進行ガイド
             Hands-on: ハンズオン
-            "Part 1: Basic — Share some data": Part 1 基本 — データを共有してみよう
-            "Capture data from a device (pick one)": デバイスからデータを取り込む (どれか 1 つ)
+            "Part 1: Basic — the core data path": "Part 1: 基本 — IoT データの基本経路"
+            "1.2 Capture data from a device (pick one)": 1.2 デバイスからデータを取る (どれか 1 つ)
             "Run the whole pipeline without hardware (HA Demo Simulator)": 実機なしで一連を動かす (HA Demo Simulator)
             "Detect a person on an AI camera (HUSKYLENS2)": AI カメラで人物を検知する (HUSKYLENS2)
             "Detect with a USB webcam (OpenCV)": USB カメラでポイ捨てを検知する (OpenCV)
             "Pull from Home Assistant (HA SSI Publisher)": Home Assistant のデータを取り込む (HA SSI Publisher)
-            "Trade on the marketplace (MetaMask)": マーケットで売買する (MetaMask = ETH ウォレット)
+            "1.3–1.4 Trade on the marketplace (1.3 is on the Hands-on page)": 1.3〜1.4 マーケットプレイスで売買 (1.3 はハンズオンのページ)
             "Open the marketplace and buy on a phone (v1)": スマホでマーケットを開いて購入する (v1)
-            "Part 2: Feature Extensions — Add auth, marketplace integration, and processing": Part 2 機能拡張 — 認証・連携・データ処理を加える
-            "Share events (Stage 0)": イベントを共有してみよう (Stage 0)
-            "Add authentication (SSI wallet)": 認証してみよう (SSI ウォレット)
+            "Part 2: Feature Extensions — consent, conditional sharing, tiered access": "Part 2: 機能拡張 — 同意・条件付き共有・段階アクセス"
+            "2.1 Event sharing (Stage 0, pick one)": 2.1 イベント共有 (Stage 0、どれか 1 つ)
+            "2.2–2.3 Consent and split roles (Stage 1, 3, 4 prep)": 2.2〜2.3 同意と役割の分離 (Stage 1・3・4 prep)
             "Authenticate the data provider (Consent VC / Stage 1)": データ提供者の認証 (Consent VC / Stage 1)
             "Authenticate the viewer (Viewer VC / Stage 3)": データ閲覧者の認証 (Viewer VC / Stage 3)
             "Authenticate machines (Service VC / Stage 4 prep)": 機器間での連携認証 (Service VC / Stage 4 prep)
             "Share detections, not raw frames": 検知イベントだけを共有する
             "Share disaster events": 防災イベントを共有する
-            "Wire wallet to the marketplace (v2)": マーケットと連携してみよう (v2)
+            "2.4 Marketplace × wallet (v2)": 2.4 マーケットプレイス × ウォレット (v2)
             "Hand a credential to the buyer's wallet (Bridge / Stage 5)": 購入後に証明書をウォレットへ渡す (Bridge / Stage 5)
             "Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)": ServiceVC で書いたデータを PurchaseViewerVC で読み出す (Stage 6)
             "Back the seller's identity (Seller VC / Stage 7)": 出品者の身元を裏付ける (Seller VC / Stage 7)
             "Marketplace as a phone app (Stage A)": スマホアプリで購入から閲覧まで (Stage A)
-            "Process data and add provenance": データ処理と来歴を入れてみよう (段階アクセス + 画像処理 + VLM + C2PA)
+            "2.5 Tiered access and provenance (Stage T / P)": 2.5 段階アクセスと来歴 (Stage T / P)
             "Tier the response by trust (DataUserVC / Stage T)": 信頼度に応じて見せる中身を変える (DataUserVC / Stage T)
             "Deliver images and video with tiered access (DataUserVC / Stage T)": 画像・動画を段階アクセスで配信する (DataUserVC / Stage T)
             "Tier by semantic level (VLM and semantic representation / Stage T)": 意味レベルで段階化する (VLM と意味的中間表現 / Stage T)
@@ -80,11 +80,11 @@ plugins:
             "Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)": 来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)
             "Trace a VLM summary back to the image (C2PA / Stage P, P3)": VLM の要約から元の画像をたどる (C2PA / Stage P の P3)
             Design: 設計
-            "VC Architecture Overview (Phase 2)": VC アーキテクチャ全体像 (Phase 2)
+            "VC Architecture Overview (Part 2 Stages)": VC アーキテクチャ全体像 (Part 2 の Stage)
             "Marketplace VC Bridge (v1/v2 spec)": Marketplace VC Bridge 設計仕様 (v1/v2)
             "SellerVC (Stage 7 spec)": SellerVC 設計仕様 (Stage 7)
             "C2PA Provenance Pipeline (Stage P spec)": C2PA 来歴パイプライン設計仕様 (Stage P)
-            "Part 3: Intelligence Integration — Let an AI act on requests": Part 3 知能統合 — AI に要求を解釈させてみよう
+            "Part 3: Intelligence Integration — let an AI act on requests": "Part 3: 知能統合 — AI に要求を解釈させる"
             "Enrich camera data with a local VLM": ローカル VLM でカメラデータを意味づけ
             "Protect camera images before handing them to AI (local vs cloud)": AI に渡す前にカメラ画像を守る (ローカルとクラウドの比較)
             "Run the regional safety assistant": 地域安全アシスタントを動かす
@@ -134,45 +134,45 @@ nav:
   - Environment Setup:
       - Setup Overview: setup/index.md
       - Prerequisites: setup/prerequisites.md
-      - Quickstart: setup/quickstart.md
   - Hands-on:
       - Hands-on Overview: hands-on/index.md
-      - "Part 1: Basic — Share some data":
+      - "Part 1: Basic — the core data path":
           - "Run the whole pipeline without hardware (HA Demo Simulator)": hands-on/ha-demo-simulator.md
-          - "Capture data from a device (pick one)":
+          - Quickstart: setup/quickstart.md
+          - "1.2 Capture data from a device (pick one)":
               - "Detect a person on an AI camera (HUSKYLENS2)": hands-on/huskylens2.md
               - "Detect with a USB webcam (OpenCV)": hands-on/webcam.md
               - "Pull from Home Assistant (HA SSI Publisher)": hands-on/ha-ssi-publisher.md
-          - "Trade on the marketplace (MetaMask)":
+          - "1.3–1.4 Trade on the marketplace (1.3 is on the Hands-on page)":
               - "Open the marketplace and buy on a phone (v1)": hands-on/mobile-viewer.md
-      - "Part 2: Feature Extensions — Add auth, marketplace integration, and processing":
-          - "Share events (Stage 0)":
+      - "Part 2: Feature Extensions — consent, conditional sharing, tiered access":
+          - "2.1 Event sharing (Stage 0, pick one)":
               - "Share detections, not raw frames": hands-on/webcam-event-sharing.md
               - "Share disaster events": hands-on/environment-disaster.md
-          - "Add authentication (SSI wallet)":
+          - "2.2–2.3 Consent and split roles (Stage 1, 3, 4 prep)":
               - "Authenticate the data provider (Consent VC / Stage 1)": hands-on/ha-ssi-wallet.md
               - "Authenticate the viewer (Viewer VC / Stage 3)": hands-on/ha-ssi-viewer.md
               - "Authenticate machines (Service VC / Stage 4 prep)": hands-on/ha-ssi-service.md
-          - "Wire wallet to the marketplace (v2)":
+          - "2.4 Marketplace × wallet (v2)":
               - "Hand a credential to the buyer's wallet (Bridge / Stage 5)": hands-on/marketplace-vc-bridge.md
               - "Read ServiceVC-written data with a PurchaseViewerVC (Stage 6)": hands-on/marketplace-vc-end-to-end.md
               - "Back the seller's identity (Seller VC / Stage 7)": hands-on/marketplace-seller-vc.md
               - "Marketplace as a phone app (Stage A)": hands-on/marketplace-mobile-app.md
-          - "Process data and add provenance":
+          - "2.5 Tiered access and provenance (Stage T / P)":
               - "Tier the response by trust (DataUserVC / Stage T)": hands-on/data-user-vc-tiered.md
               - "Deliver images and video with tiered access (DataUserVC / Stage T)": hands-on/data-user-vc-tiered-media.md
               - "Tier by semantic level (VLM and semantic representation / Stage T)": hands-on/data-user-vc-tiered-semantic.md
               - "Prove where an image came from (C2PA / Stage P)": hands-on/c2pa-provenance.md
               - "Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)": hands-on/c2pa-provenance-publisher.md
               - "Trace a VLM summary back to the image (C2PA / Stage P, P3)": hands-on/c2pa-provenance-vlm.md
-      - "Part 3: Intelligence Integration — Let an AI act on requests":
+      - "Part 3: Intelligence Integration — let an AI act on requests":
           - "Enrich camera data with a local VLM": hands-on/local-vlm-distribution.md
           - "Protect camera images before handing them to AI (local vs cloud)": hands-on/privacy-compare.md
           - "Run the regional safety assistant": hands-on/regional-safety-assistant.md
           - "Let an AI plan the steps (LLM Planner)": hands-on/llm-planner.md
   - Design:
       - Design Overview: design/index.md
-      - VC Architecture Overview (Phase 2): design/vc-architecture-overview.md
+      - "VC Architecture Overview (Part 2 Stages)": design/vc-architecture-overview.md
       - Marketplace VC Bridge (v1/v2 spec): design/marketplace-vc-bridge-spec.md
       - SellerVC (Stage 7 spec): design/seller-vc-spec.md
       - "Tiered access design spec": hands-on/data-user-vc-tiered-spec.md

@@ -4,9 +4,9 @@ This is the core v2 hands-on. A marketplace purchase triggers the issuance of a 
 
 > **What you'll do**: Purchase → bridge → PurchaseViewerVC → wallet → ViewerToken → fetch
 >
-> **Prerequisites**: you have run [Quickstart (run the stack)](../setup/quickstart.md) once (so that `npm install` has been run in `iot-market` and `iot-market-ui`; Step 1 stops what Quickstart started). You have also done [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) and [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md)
+> **Prerequisites**: you have run [Quickstart (run the stack)](../setup/quickstart.md) once (so that `npm install` has been run in `iot-market` and `iot-market-ui`; if Quickstart's processes are still running, Step 1 stops all of them). You have also done [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md) and [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md)
 >
-> **Keep running**: nothing. This page starts the Hardhat node, the publisher, the bridge, iot-market-ui and Metro in turn
+> **Keep running**: nothing needs to be running. This page starts the Hardhat node, the publisher, the bridge, iot-market-ui and Metro in turn
 >
 > **What you need**: PC + MetaMask + smartphone (iw3ip-wallet)
 >
@@ -87,7 +87,7 @@ is added to **v1 (the current marketplace + MetaMask + delivery via an encrypted
        [JSON data retrieved]
 ```
 
-## Prerequisites
+## Required environment { #prerequisites }
 
 - You have verified [Stage 1](ha-ssi-wallet.md) and [Stage 3](ha-ssi-viewer.md)
 - You can start iot-market-ui (Svelte) and the Hardhat local chain
@@ -106,7 +106,7 @@ is added to **v1 (the current marketplace + MetaMask + delivery via an encrypted
 
 ### Steps
 
-If the Hardhat node and the mediators (mediator-owner / mediator-buyer) from the [Quickstart (run the stack)](../setup/quickstart.md) are still running, first stop each of them with Ctrl+C. If the old node keeps port 8545, the next command fails to start. Also stop the Quickstart IPFS with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`. IPFS and the publisher you start later both use port 8080.
+If the Hardhat node and the mediators (mediator-owner / mediator-buyer) from the [Quickstart (run the stack)](../setup/quickstart.md) are still running, first stop each of them with Ctrl+C. If the old node keeps port 8545, the next command fails to start. Also stop the Quickstart IPFS with `cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`. IPFS and the publisher you start later both use port 8080. Stop the Quickstart frontend (terminal 3, `npm run dev`) with Ctrl+C, because Step 6 starts iot-market-ui again on port 5173. This page does not use the data store simple-storage (terminal 4, port 3000), so you can stop it with Ctrl+C as well.
 
 Terminal A (leave it running):
 

@@ -251,16 +251,18 @@ Reference (network add screen):
 - [ ] MetaMask is on the `Hardhat Local` network
 - [ ] The MetaMask account shows about `10000 ETH` (9999.99… is fine)
 
-All checked → go on to §1.2 of Part 1 in [Hands-on](../hands-on/index.md).
+All checked → go on to §1.2 of Part 1 in [Hands-on](../hands-on/index.md), and after you finish one §1.2 page, go on to the listing and purchase in §1.3. If you did [Pull from Home Assistant (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) before running Quickstart, go straight on to §1.3.
 
-## Simpler alternative: a minimal stack with docker compose only
+## Pages that do not use Quickstart
 
-If opening seven terminals is cumbersome, you can use Docker Compose to start just the publisher-related components.
-For the shortest path focused on ingesting and observing data without physical devices, see the following page.
+The following pages do not use the Quickstart stack. Each page starts what it needs (such as the publisher) itself.
 
-- [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)
+- Part 1 §1.1: [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md)
+- Part 1 §1.2: [Pull from Home Assistant (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md)
+- Part 2 §2.1–§2.3: [Share detections, not raw frames](../hands-on/webcam-event-sharing.md), [Share disaster events](../hands-on/environment-disaster.md), [Authenticate the data provider (Consent VC / Stage 1)](../hands-on/ha-ssi-wallet.md), [Authenticate the viewer (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md), [Authenticate machines (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
+- Every page in Part 3
 
-This alone is enough to try the first section of Part 1. If IPFS from step 5 is still running, stop it first with `docker compose down` in the `ipfs` directory, because IPFS and the publisher both use port 8080.
+The publisher that these pages start uses port 8080, the same port as the Quickstart IPFS (step 5). If IPFS is still running, stop it first with `docker compose down` in the `ipfs` directory.
 
 ## Common stumbles
 

@@ -1,12 +1,12 @@
 # Home Assistant のデータを取り込む (HA SSI Publisher)
 
-Home Assistant の状態を MQTT で受け、Consent VC で共有可否を判定する最小構成を組みます。
+Home Assistant の状態を MQTT で受け、同意 (consent) の JSON (Consent VC に相当) で共有可否を判定する最小構成を組みます。
 
-> **やること**: MQTT → publisher → Consent VC 判定 → 監査ログ までを一通り動かす
+> **やること**: MQTT → publisher → 同意 (consent) の判定 → 監査ログ までを一通り動かす
 >
 > **前提**: [事前準備 (ツールのインストール)](../setup/prerequisites.md)、できれば [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)。[最短起動 (スタックを動かす)](../setup/quickstart.md) のスタックは使いません
 >
-> **起動しておくもの**: なし。このページで publisher を起動します。最短起動の IPFS が動いている場合は止めておきます (下の [前提](#前提) を参照)
+> **起動しておくもの**: なし。このページで publisher を起動します。最短起動の IPFS が動いている場合は止めておきます (下の [必要な環境](#必要な環境) を参照)
 >
 > **使うもの**: PC (Docker)
 >
@@ -16,12 +16,13 @@ Home Assistant の状態を MQTT で受け、Consent VC で共有可否を判定
     - Part 1 の 1.2 です ([ハンズオン](index.md#12-デバイスからデータを取る))。1.2 の 3 ページのうち、どれか 1 つを選べば十分です。
     - このページの「Phase 1〜3」は基盤の発展段階を指し、学習の順番ではありません ([ハンズオン](index.md#part-phase-stage))。
     - 前のページ: [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)
-    - 次のページ: [ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 (マーケットプレイスで売買)
+    - 次のページ: [最短起動 (スタックを動かす)](../setup/quickstart.md)。そのあと [ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 (マーケットプレイスで売買) に進みます。
 
 ## 目的
 
-Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意VC）で許可判定し、
+Home Assistant のデータを MQTT 経由で受け取り、同意 (consent) の JSON で許可判定し、
 許可データのみを送信・監査ログ保存する最小構成を扱います。
+同意の JSON は Consent VC に相当する内容ですが、`/consents` に直接登録し、VC の署名は検証しません。ウォレットで VC を受け取って提示するのは、Part 2 の [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) からです。
 
 パイプライン:
 
@@ -51,10 +52,10 @@ Home Assistant のデータを MQTT 経由で受け取り、Consent VC（同意V
 ## よくある問題
 
 - `topic` と `dataset_id` の関係が最初は把握しにくい
-- Consent VC を登録していても `purpose` が合わなければ拒否される
+- 同意 (consent) の JSON を登録していても `purpose` が合わなければ拒否される
 - HTTP 疑似投入と MQTT 経路が別の確認ポイントを持つ
 
-## 前提
+## 必要な環境
 
 - Docker / Docker Compose が使える
 - `curl` が使える
@@ -105,7 +106,7 @@ curl http://localhost:8080/health
 {"status":"ok","service":"publisher"}
 ```
 
-### 2. Consent VC を登録
+### 2. 同意 (consent) の JSON を登録する (Consent VC に相当)
 
 ```bash
 curl -X POST http://localhost:8080/consents -H 'Content-Type: application/json' -d @examples/consent_temperature.json
@@ -223,7 +224,7 @@ Phase 2 をすぐ試したい場合は、次の Hands-on を参照してくだ�
 
 ## 次に進む
 
-1.2 は 1 つ選べば十分です。次は [ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 で、商品を出品し、購入して受け取ります。
+1.2 は 1 つ選べば十分です。次は [最短起動 (スタックを動かす)](../setup/quickstart.md) でスタックを起動し、そのあと [ハンズオン](index.md#13-マーケットプレイスで売買-v1-経路) の 1.3 で、商品を出品し、購入して受け取ります。
 
 - 1.3 は publisher を使いません。先に [7. 停止](#7-停止) のコマンドで publisher を止めます。
 - 1.3 は、[最短起動 (スタックを動かす)](../setup/quickstart.md) のスタック (ターミナル 1〜7) を使います。publisher を止めてから起動します。最短起動の IPFS と publisher は、どちらもポート 8080 を使うためです。

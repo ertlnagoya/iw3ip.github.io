@@ -50,7 +50,7 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 - `/platform/data` は ViewerToken のみ受け付ける（PolicyToken は通らない）
 - ViewerToken は TTL 60 秒。連続閲覧で期限が切れたら再提示が必要
 
-## 前提
+## 必要な環境
 
 - [データ提供者の認証 (Consent VC / Stage 1)](ha-ssi-wallet.md) の §1〜§8 を一度通している
 - publisher が `main` ブランチのコードで起動している

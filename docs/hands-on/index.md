@@ -3,18 +3,23 @@
 実際に手を動かして IW3IP を理解する章です。
 **基本** で全体像を確認し、**機能拡張** で安全な共有や段階アクセスを扱い、**知能統合** で AI によるデータの意味づけと要求の解釈を扱います。
 
-> 先に [環境構築](../setup/index.md) を済ませてからこのページに進んでください。
+> 先に [事前準備 (ツールのインストール)](../setup/prerequisites.md) を済ませてから、このページに進んでください。[最短起動 (スタックを動かす)](../setup/quickstart.md) は、このページの順番の中で案内します。
 
 この章のページは、コマンドと期待する出力、確認ポイントを順に示す手順書です。各機能の仕組みと設計判断の理由は [設計](../design/index.md) の章に、手順どおりに動かないときの対処は [困ったとき](../operations/index.md) の章にまとめています。
 
 !!! tip "初めての人の進め方"
     初めての人は、次の順に進みます。
 
-    1. 1.1 [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)
-    2. 1.2 の 3 つのページから 1 つ
-    3. 1.3 の出品と購入
+    1. [事前準備 (ツールのインストール)](../setup/prerequisites.md)
+    2. 1.1 [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md)
+    3. [最短起動 (スタックを動かす)](../setup/quickstart.md)
+    4. 1.2 の 3 つのページから 1 つ
+    5. 1.3 の出品と購入
+    6. 1.4 (任意)
 
-    1.2 でカメラを使う場合と 1.3 では、先に [最短起動 (スタックを動かす)](../setup/quickstart.md) でスタックを起動します。Part 2 以降は、必要になったら進みます。
+    例外: 1.2 で [Home Assistant のデータを取り込む (HA SSI Publisher)](ha-ssi-publisher.md) を選ぶ場合は、1.1 のあと最短起動をせずに 1.2 を行います。このページの publisher は、最短起動の IPFS と同じポート 8080 を使うためです。1.2 を終えたら publisher を止めて最短起動を行い、1.3 に進みます。
+
+    Part 2 以降は、必要になったら進みます。
 
 ## 基本 と 機能拡張 の関係
 
@@ -83,11 +88,11 @@ export HOST_IP=192.168.1.20
     <h3>同意・条件付き共有・段階アクセス</h3>
     <p>VC とウォレットを使って、目的や信頼度に応じた共有を扱います。途中で止めても問題ありません。</p>
     <p class="iw3ip-phase-links">
-      <a href="webcam-event-sharing/">Webcam Event Sharing</a> /
-      <a href="environment-disaster/">Environment Disaster</a> /
-      <a href="ha-ssi-wallet/">HA SSI Wallet</a> /
-      <a href="marketplace-vc-bridge/">VC Bridge</a> /
-      <a href="data-user-vc-tiered/">DataUserVC Tiered</a>
+      <a href="webcam-event-sharing/">2.1 イベント共有</a> /
+      <a href="ha-ssi-wallet/">2.2 同意 (Consent VC)</a> /
+      <a href="ha-ssi-viewer/">2.3 役割の分離</a> /
+      <a href="marketplace-vc-bridge/">2.4 マーケット × ウォレット</a> /
+      <a href="data-user-vc-tiered/">2.5 段階アクセスと来歴</a>
     </p>
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-3">
@@ -105,18 +110,23 @@ export HOST_IP=192.168.1.20
 
 ## 進む順 — 目的別の経路
 
-| 目的 | 進む順 |
-|---|---|
-| まず動かしたい | [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md) のみ (約 20 分) |
-| 基本を一通り | Part 1 全部 (約 1.5 時間。1.2 のデバイスは 1 つ選ぶ。1.4 は任意) |
-| 安全な共有まで | Part 1 → Part 2 の 2.1〜2.3 (+ 約 4 時間) |
-| マーケット連携の v2 まで | Part 1 → Part 2 の 2.4 まで (+ 約 4 時間) |
-| 段階アクセスまで | Part 2 の 2.5 まで (+ 約 1 時間。画像・動画の配信と意味レベルの段階化まで進む場合は、さらに約 2.5〜3 時間。C2PA で画像の来歴を証明する (Stage P) 場合は、さらに約 30〜40 分。来歴を publisher とチェーンにつなぐ場合は、さらに約 40〜60 分。VLM の要約から元の画像をたどる場合は、さらに約 20〜30 分) |
-| AI 統合まで | Part 3 まで (+ 約 5 時間) |
+| 目的 | 進む範囲 | 所要時間 |
+|---|---|---|
+| まず動かしたい | 1.1 [実機なしで一連を動かす (HA Demo Simulator)](ha-demo-simulator.md) のみ | 約 20 分 |
+| 基本を一通り | Part 1 の 1.1〜1.3 (1.2 のデバイスは 1 つ選ぶ) | 約 50〜65 分 (1.1 と 1.2 の合計。1.3 の時間は含まない) |
+| スマホでも購入する (任意) | Part 1 の 1.4 | 約 20 分 |
+| 安全な共有まで | Part 2 の 2.1〜2.3 (2.1 は 1 ページ選ぶ) | 約 3〜3.5 時間 |
+| マーケット連携の v2 まで | Part 2 の 2.4 (Stage 5、6、7、A) | 約 3 時間 45 分 |
+| 段階アクセス | Part 2 の 2.5: Stage T の 1 ページ目 | 約 60 分 |
+| 画像・動画と意味レベルの段階化 | Part 2 の 2.5: Stage T の続きの 2 ページ | 約 2.5〜3 時間 |
+| 画像の来歴を証明する | Part 2 の 2.5: Stage P の P0 | 約 30〜40 分 |
+| 来歴を publisher とチェーンにつなぐ | Part 2 の 2.5: Stage P の P1・P2 | 約 40〜60 分 |
+| VLM の要約から元の画像をたどる | Part 2 の 2.5: Stage P の P3 | 約 20〜30 分 (本物の VLM を試す場合は、さらに 30 分〜1 時間) |
+| AI 統合まで | Part 3 | 約 4〜5 時間 |
 
-時間は、各ページの冒頭にある所要時間を合計した目安です。「+」は、1 つ上の行までにかかる時間に加えて必要な時間です。[事前準備 (ツールのインストール)](../setup/prerequisites.md) と [最短起動 (スタックを動かす)](../setup/quickstart.md) (約 15〜30 分) の時間は含みません。
+所要時間は、その行で進むページの冒頭にある所要時間を合計した目安です。前の行までの時間は含みません。1.3 はこのページの節で、所要時間を示していません。2.1 の 2 ページを両方進める場合は、2.1 で約 75 分かかります。[事前準備 (ツールのインストール)](../setup/prerequisites.md) と [最短起動 (スタックを動かす)](../setup/quickstart.md) (約 15〜30 分) の時間は含みません。
 
-各ハンズオンページの先頭には **「やること」「前提」「使うもの」「所要時間」** を載せています。途中で詰まったら [トラブルシュート](../operations/troubleshooting.md) を参照してください。
+各ハンズオンページの先頭には **「やること」「前提」「起動しておくもの」「使うもの」「所要時間」** を載せています。途中で詰まったら [トラブルシュート](../operations/troubleshooting.md) を参照してください。
 
 ## Part / Phase / Stage の関係 { #part-phase-stage }
 
@@ -124,7 +134,7 @@ export HOST_IP=192.168.1.20
 
 - **Part 1〜3**: このサイトでの学習順です。基本、機能拡張、知能統合の順に進みます。
 - **Phase 1〜3**: 基盤の発展段階です。Phase 1 はデータ共有、Phase 2 はイベント共有、Phase 3 は AI による判断と制御を指します（[プラットフォーム概要](../platform-overview.md#フェーズ構成) のフェーズ構成）。
-- **Stage 0〜7、A、T、P**: Part 2 のうち、VC を使うハンズオンと、その準備 (Stage 0)、画像の来歴の署名 (Stage P) に付けた通し番号です。各ページは、前の Stage を済ませていることを前提にしています。ただし、Stage P の最初のページ (P0) は前の Stage と VC を使わず、教材リポジトリと Python だけで単独で動かせます。続きの P1〜P3 のページは publisher とチェーンにつなぎ、Tier ごとの ViewerToken (PurchaseViewerVC で得る) を使います。
+- **Stage 0〜7、A、T、P**: Part 2 のうち、VC を使うハンズオンと、その準備 (Stage 0)、画像の来歴の署名 (Stage P) に付けた番号です。A はスマホアプリ (PWA) で購入から閲覧まで、T は Tier (信頼度に応じた段階アクセス)、P は Provenance (画像の来歴) を扱います。番号は進む順の目安です。どのページを先に済ませておくかは、各ページの冒頭にある「前提」の行に従ってください。たとえば、Stage P の最初のページ (P0) は前の Stage と VC を使わず、教材リポジトリと Python だけで単独で動かせます。続きの P1〜P3 のページは publisher とチェーンにつなぎ、Tier ごとの ViewerToken (PurchaseViewerVC で得る) を使います。
 
 Stage 2 はありません。Stage 4 prep は、LLM Planner の実行を VC で認可する段階 (Stage 4 として計画) の準備にあたる ServiceVC のページです。Stage 8 と Stage 9 は、一部のページに今後の検討事項として出てくる番号です。これらのハンズオンはありません。
 
@@ -143,37 +153,38 @@ Stage 2 はありません。Stage 4 prep は、LLM Planner の実行を VC で�
 | P | [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) | PurchaseViewerVC (DataUserVC の属性で Tier が決まる。プログラムの中のウォレットが使うため、スマホは不要) |
 | P | [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md) | PurchaseViewerVC (DataUserVC の属性で Tier が決まる。プログラムの中のウォレットが使うため、スマホは不要) |
 
-VC とトークンの対応は [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md) にまとめています。
+VC とトークンの対応は [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md) にまとめています。
 
 ## 使う技術要素の早見表
 
-サブグループごとに、使う技術要素をまとめます。Part 2 には、ブロックチェーンを使うサブグループと使わないサブグループがあります。
+左側のナビゲーションのグループごとに、使う技術要素をまとめます。Part 2 には、ブロックチェーンを使うグループと使わないグループがあります。
 
-| サブグループ | publisher (Docker) | ブロックチェーン (Hardhat) | MetaMask | SSI ウォレット (スマホ) | IPFS・保管庫 (v1) | 画像処理 / LLM |
+| グループ | publisher (Docker) | ブロックチェーン (Hardhat) | MetaMask | SSI ウォレット (スマホ) | IPFS・保管庫 (v1) | 画像処理 / LLM |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
-| **Part 1 / データを取り込む** | ✓ <small>(HA 経路)</small> | ✓ <small>(カメラ経路)</small> | – | – | ✓ <small>(カメラ経路)</small> | – |
-| **Part 1 / マーケットで売買 (v1)** | – | ✓ | ✓ | – | ✓ | – |
-| **Part 2 / イベントを共有してみよう (Stage 0)** | ✓ | – | – | ✓ <small>(補論のみ)</small> | – | – |
-| **Part 2 / 認証してみよう (SSI)** | ✓ | – | – | ✓ | – | – |
-| **Part 2 / マーケットと連携 (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
-| **Part 2 / データ処理と来歴を入れる**<sup>※</sup> | ✓ | ✓ <small>(Tier 3 実機時)</small> | ✓ <small>(同)</small> | ✓ | – | ✓ <small>(OpenCV / VLM 任意)</small> |
-| **Part 3 / 知能統合** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
+| **Part 1 / 1.1 HA Demo Simulator** | ✓ | – | – | – | – | – |
+| **Part 1 / 1.2 デバイスからデータを取る (どれか 1 つ)** | ✓ <small>(HA 経路)</small> | ✓ <small>(カメラ経路)</small> | – | – | ✓ <small>(カメラ経路)</small> | – |
+| **Part 1 / 1.3〜1.4 マーケットプレイスで売買 (1.3 はハンズオンのページ)** | – | ✓ | ✓ | – | ✓ | – |
+| **Part 2 / 2.1 イベント共有 (Stage 0、どれか 1 つ)** | ✓ | – | – | ✓ <small>(補論のみ)</small> | – | – |
+| **Part 2 / 2.2〜2.3 同意と役割の分離 (Stage 1・3・4 prep)** | ✓ | – | – | ✓ | – | – |
+| **Part 2 / 2.4 マーケットプレイス × ウォレット (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
+| **Part 2 / 2.5 段階アクセスと来歴 (Stage T / P)**<sup>※</sup> | ✓ | ✓ <small>(Tier 3 実機時)</small> | ✓ <small>(同)</small> | ✓ | – | ✓ <small>(OpenCV / VLM 任意)</small> |
+| **Part 3: 知能統合 — AI に要求を解釈させる** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
 
-※ このサブグループのうち、[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) は Python だけで動き、publisher、ブロックチェーン、MetaMask、SSI ウォレットと VC を使いません。続きの [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) と [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md) は publisher と Hardhat を使い、プログラムの中のウォレットで PurchaseViewerVC を受け取って Tier ごとの ViewerToken を得ます。MetaMask とスマホのウォレットは使いません。
+※ このグループのうち、[画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) は Python だけで動き、publisher、ブロックチェーン、MetaMask、SSI ウォレットと VC を使いません。続きの [来歴を publisher とチェーンにつなぐ (C2PA / Stage P の P1・P2)](c2pa-provenance-publisher.md) と [VLM の要約から元の画像をたどる (C2PA / Stage P の P3)](c2pa-provenance-vlm.md) は publisher と Hardhat を使い、プログラムの中のウォレットで PurchaseViewerVC を受け取って Tier ごとの ViewerToken を得ます。MetaMask とスマホのウォレットは使いません。
 
 ### 主に使う VC (Verifiable Credential) の種類
 
-| サブグループ | Consent | Viewer | Service | Purchase&shy;Viewer | Seller | DataUser |
+| グループ | Consent | Viewer | Service | Purchase&shy;Viewer | Seller | DataUser |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
-| Part 2 / イベントを共有してみよう (Stage 0) | ✓ <small>(補論のみ)</small> | – | – | – | – | – |
-| Part 2 / 認証してみよう | ✓ | ✓ | ✓ | – | – | – |
-| Part 2 / マーケットと連携 (v2) | – | – | ✓ | ✓ | ✓ | – |
-| Part 2 / データ処理と来歴を入れる<sup>※</sup> | – | – | – | ✓ | – | ✓ |
+| Part 2 / 2.1 イベント共有 (Stage 0、どれか 1 つ) | ✓ <small>(補論のみ)</small> | – | – | – | – | – |
+| Part 2 / 2.2〜2.3 同意と役割の分離 (Stage 1・3・4 prep) | ✓ | ✓ | ✓ | – | – | – |
+| Part 2 / 2.4 マーケットプレイス × ウォレット (v2) | – | – | ✓ | ✓ | ✓ | – |
+| Part 2 / 2.5 段階アクセスと来歴 (Stage T / P)<sup>※</sup> | – | – | – | ✓ | – | ✓ |
 
 ### 表の見方
 
 - **publisher**: ハンズオン用のサーバ。`docker compose up` で起動します。Part 1 のマーケットでの売買 (v1) では使いません。v1 のスタックでは IPFS も起動します。IPFS と publisher はどちらもポート 8080 を使うため、同時には起動できません。
-- **ブロックチェーン**: Hardhat ローカルチェーン + デプロイ済コントラクト。マーケットでの売買が起点になるサブグループで必要です。
+- **ブロックチェーン**: Hardhat ローカルチェーン + デプロイ済コントラクト。マーケットでの売買が起点になるグループで必要です。
 - **MetaMask**: ブロックチェーンに対する署名・送金に使います。ローカルチェーンに接続して使います。
 - **SSI ウォレット**: スマホに入れる iw3ip-wallet (Sphereon Wallet の fork) です。VC の受け取りと提示に使います。
 - **IPFS・保管庫 (v1)**: v1 で使います。購入後のデータは保管庫 (simple-storage) に置き、その場所 (URI) を暗号化してチェーンに書き込みます。IPFS と PostgreSQL は、動画のメタデータの登録と検索画面に使います。v2 では VC を使う経路が加わります。
@@ -244,6 +255,8 @@ VC とトークンの対応は [VC アーキテクチャ全体像 (Phase 2 / Sta
 最短起動の手順 2 (デプロイ) で登録される 5 件は、`mediator-owner` が出品したものではありません。購入はできますが、データは届きません。
 
 各プロセスの起動手順は [最短起動 (スタックを動かす)](../setup/quickstart.md) にあります。
+
+1.3 のあとに 1.4 (任意) に進む場合は、最短起動のスタックを動かしたままにします。Part 2 に進む前には、最短起動の IPFS を止めます (`ipfs` ディレクトリで `docker compose down`)。Part 2 のページで起動する publisher が、IPFS と同じポート 8080 を使うためです。
 
 ### 1.4 スマホでマーケットを開いて購入する
 
@@ -321,7 +334,7 @@ VC とトークンの対応は [VC アーキテクチャ全体像 (Phase 2 / Sta
 
 ## Part 3: 知能統合 — AI に要求を解釈させる
 
-Part 3 は、Part 2 をすべて終えていなくても始められます。3.1 と 3.2 は、Docker、Python、USB ウェブカメラがあれば動きます (3.2 はカメラの代わりに JPEG 画像でも動きます)。最短起動のスタックは使いません。3.3 はサンプルのイベントファイルを使い、2.1 の [検知イベントだけを共有する](webcam-event-sharing.md) を前提にしています。3.4 は 3.3 を前提にしています。
+Part 3 は、Part 2 をすべて終えていなくても始められます。3.1 と 3.2 は、Docker、Python、USB ウェブカメラがあれば動きます (3.2 はカメラの代わりに JPEG 画像でも動きます)。最短起動のスタックは使いません。3.3 はサンプルのイベントファイルを使い、2.1 のどちらか 1 ページを前提にしています ([検知イベントだけを共有する](webcam-event-sharing.md) を済ませていると、`possible_littering` の例が分かりやすくなります)。3.4 は 3.3 を前提にしています。
 
 ### この Part のゴール
 

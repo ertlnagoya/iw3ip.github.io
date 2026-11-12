@@ -44,7 +44,7 @@
 - ProvenanceToken のアドレスは、Hardhat ノードを起動し直すと変わることがあります。§3 では、§2 で表示されたアドレスを使います
 - この設定では、publisher は Hardhat ノードの、鍵がロックされていないアカウントでトークンを発行します。手元で試すための方法で、本番では使えません
 
-## 前提
+## 必要な環境 { #前提 }
 
 - [画像の来歴を証明する (C2PA / Stage P)](c2pa-provenance.md) の §1〜§3 (仮想環境と C2PA の SDK、c2pa-python [2]、証明書、署名と検証) を終えている
 - 教材リポジトリ `~/program/Blockchain_IoT_Marketplace` で Docker が使える ([環境構築](../setup/index.md))

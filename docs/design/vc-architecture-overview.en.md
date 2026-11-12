@@ -1,4 +1,4 @@
-# VC architecture overview (Phase 2 / Stages 0–7, T, A, P)
+# VC architecture overview (Part 2 / Stages 0–7, T, A, P)
 
 !!! abstract "Where this page belongs"
     This is a document in the [Design](index.md) section.

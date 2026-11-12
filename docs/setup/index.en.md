@@ -103,7 +103,11 @@ Follow these in order. The Prerequisites and Quickstart pages end with a "you ca
 1. [Prerequisites (install tools)](prerequisites.md)
 2. [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) (§1.1 of hands-on Part 1; it does not use the Quickstart stack and runs with Docker Compose only)
 3. [Quickstart (run the stack)](quickstart.md)
-4. Go on to §1.2 of Part 1 in [Hands-on](../hands-on/index.md)
+4. §1.2 of Part 1 in [Hands-on](../hands-on/index.md) (one of the three pages)
+5. §1.3 of Part 1 in [Hands-on](../hands-on/index.md#13-trade-on-the-marketplace-v1-lane) (listing and purchase)
+6. §1.4 (optional)
+
+If you pick [Pull from Home Assistant (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) in §1.2, do §1.2 right after §1.1 without running Quickstart, then run Quickstart and go on to §1.3. The publisher on that page uses port 8080, the same port as the Quickstart IPFS.
 
 If something breaks, see [Troubleshooting](../operations/troubleshooting.md).
 
@@ -158,9 +162,9 @@ Extra for feature-extension part:
 
 - **A smartphone** (Android / iPhone) — to install the SSI wallet
 
-Needed for §1.4 of Part 1 (optional):
+Needed for §1.4 of Part 1 (optional) and for Stage A in Part 2:
 
-- **A smartphone** — to install MetaMask Mobile and buy on the marketplace from the phone's browser
+- **A smartphone** — to install MetaMask Mobile and buy on the marketplace from the phone
 
 Optional hardware (everything works without it):
 

@@ -3,18 +3,23 @@
 This is the chapter where you run IW3IP yourself to understand it.
 **Basic** establishes the overall picture, **Feature Extensions** covers safe sharing and tiered access, and **Intelligence Integration** covers AI that enriches data and interprets requests.
 
-> Finish the [Environment Setup](../setup/index.md) before moving on to this page.
+> Finish [Prerequisites (install tools)](../setup/prerequisites.md) before moving on to this page. This page tells you when to run [Quickstart (run the stack)](../setup/quickstart.md) in its order.
 
 The pages in this section are step-by-step procedures with commands, expected output and checkpoints. The mechanisms and the reasons behind each feature's design are in the [Design](../design/index.md) section, and what to do when a step does not work is in the [Support](../operations/index.md) section.
 
 !!! tip "If this is your first time"
     If this is your first time, go in this order.
 
-    1. §1.1 [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
-    2. One of the three pages in §1.2
-    3. Listing and purchase in §1.3
+    1. [Prerequisites (install tools)](../setup/prerequisites.md)
+    2. §1.1 [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
+    3. [Quickstart (run the stack)](../setup/quickstart.md)
+    4. One of the three pages in §1.2
+    5. Listing and purchase in §1.3
+    6. §1.4 (optional)
 
-    If you use a camera in §1.2, and for §1.3, start the stack with [Quickstart (run the stack)](../setup/quickstart.md) first. Go on to Part 2 and later only when you need them.
+    Exception: if you pick [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md) in §1.2, do §1.2 right after §1.1 without running Quickstart. The publisher on that page uses port 8080, the same port as the Quickstart IPFS. After §1.2, stop the publisher, run Quickstart, and go on to §1.3.
+
+    Go on to Part 2 and later only when you need them.
 
 ## Basic vs Feature Extensions
 
@@ -83,11 +88,11 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
     <h3>Consent, conditional sharing, tiered access</h3>
     <p>Use VCs and a wallet to share according to purpose and trust level. You can stop partway.</p>
     <p class="iw3ip-phase-links">
-      <a href="webcam-event-sharing/">Webcam Event Sharing</a> /
-      <a href="environment-disaster/">Environment Disaster</a> /
-      <a href="ha-ssi-wallet/">HA SSI Wallet</a> /
-      <a href="marketplace-vc-bridge/">VC Bridge</a> /
-      <a href="data-user-vc-tiered/">DataUserVC Tiered</a>
+      <a href="webcam-event-sharing/">2.1 Event sharing</a> /
+      <a href="ha-ssi-wallet/">2.2 Consent (Consent VC)</a> /
+      <a href="ha-ssi-viewer/">2.3 Split roles</a> /
+      <a href="marketplace-vc-bridge/">2.4 Marketplace × wallet</a> /
+      <a href="data-user-vc-tiered/">2.5 Tiered access and provenance</a>
     </p>
   </div>
   <div class="iw3ip-phase-card iw3ip-phase-3">
@@ -105,18 +110,23 @@ After that, commands containing `$HOST_IP` can be pasted and run as they are. Re
 
 ## Paths by goal
 
-| Goal | Path |
-|---|---|
-| See it run first | [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md) only (approx. 20 min) |
-| Cover all of Basic | All of Part 1 (approx. 1.5 hours; pick one device in §1.2; §1.4 is optional) |
-| Reach safe / conditional sharing | Part 1 → Part 2 §2.1–§2.3 (+ approx. 4 hours) |
-| Reach v2 marketplace integration | Part 1 → Part 2 §2.4 (+ approx. 4 hours) |
-| Reach tiered access | Through Part 2 §2.5 (+ approx. 1 hour; about 2.5–3 more hours to cover image/video delivery and semantic-level tiering, about 30–40 more minutes to prove image provenance with C2PA (Stage P), about 40–60 more minutes to connect provenance to the publisher and the chain, and about 20–30 more minutes to trace a VLM summary back to the image) |
-| Reach AI integration | Through Part 3 (+ approx. 5 hours) |
+| Goal | Scope | Time required |
+|---|---|---|
+| See it run first | §1.1 [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md) only | approx. 20 min |
+| Cover all of Basic | Part 1 §1.1–§1.3 (pick one device in §1.2) | approx. 50–65 min (§1.1 and §1.2; §1.3 not included) |
+| Also buy on a phone (optional) | Part 1 §1.4 | approx. 20 min |
+| Reach safe / conditional sharing | Part 2 §2.1–§2.3 (pick one page in §2.1) | approx. 3–3.5 hours |
+| Reach v2 marketplace integration | Part 2 §2.4 (Stages 5, 6, 7, A) | approx. 3 hours 45 min |
+| Tiered access | Part 2 §2.5: the first Stage T page | approx. 60 min |
+| Image/video delivery and semantic-level tiering | Part 2 §2.5: the next two Stage T pages | approx. 2.5–3 hours |
+| Prove image provenance | Part 2 §2.5: Stage P, P0 | approx. 30–40 min |
+| Connect provenance to the publisher and the chain | Part 2 §2.5: Stage P, P1 and P2 | approx. 40–60 min |
+| Trace a VLM summary back to the image | Part 2 §2.5: Stage P, P3 | approx. 20–30 min (30 min to 1 hour more to try a real VLM) |
+| Reach AI integration | Part 3 | approx. 4–5 hours |
 
-The times are sums of the estimates at the top of each page. A "+" means time needed on top of the row above. They do not include [Prerequisites (install tools)](../setup/prerequisites.md) or [Quickstart (run the stack)](../setup/quickstart.md) (approx. 15–30 min).
+Each time is the sum of the estimates at the top of the pages in that row. It does not include the rows above. §1.3 is a section of this page and gives no time estimate. If you do both §2.1 pages, §2.1 takes about 75 min. The times do not include [Prerequisites (install tools)](../setup/prerequisites.md) or [Quickstart (run the stack)](../setup/quickstart.md) (approx. 15–30 min).
 
-Each hands-on page opens with a "What you'll do / Prerequisites / What you need / Time required" block. If you get stuck partway, see [Troubleshooting](../operations/troubleshooting.md).
+Each hands-on page opens with a "What you'll do / Prerequisites / Keep running / What you need / Time required" block. If you get stuck partway, see [Troubleshooting](../operations/troubleshooting.md).
 
 ## How Part, Phase, and Stage relate { #part-phase-stage }
 
@@ -124,7 +134,7 @@ This site uses three kinds of numbering.
 
 - **Part 1–3**: the learning order on this site (Basic, Feature Extensions, Intelligence Integration).
 - **Phase 1–3**: the development stages of the platform. Phase 1 is data sharing, Phase 2 is event sharing, and Phase 3 is AI-based decision and control (see the Phase structure in [Platform Overview](../platform-overview.md#phase-structure)).
-- **Stage 0–7, A, T, P**: sequence labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0) and image provenance signing (Stage P). Each page assumes the earlier Stages are done. The exception is the first Stage P page (P0), which uses neither the earlier Stages nor any VC and runs on its own with only the course repository and Python. The following P1–P3 pages connect to the publisher and the chain and use per-tier ViewerTokens (obtained with a PurchaseViewerVC).
+- **Stage 0–7, A, T, P**: labels for the Part 2 hands-on pages that use VCs, plus their preparation (Stage 0) and image provenance signing (Stage P). A covers the phone app (PWA) from purchase to viewing, T covers tiers (tiered access by trust level), and P covers provenance (where an image came from). The numbers are a guide to the order. Which pages you must finish first is given by the "Prerequisites" line at the top of each page. For example, the first Stage P page (P0) uses neither the earlier Stages nor any VC and runs on its own with only the course repository and Python. The following P1–P3 pages connect to the publisher and the chain and use per-tier ViewerTokens (obtained with a PurchaseViewerVC).
 
 There is no Stage 2. Stage 4 prep is the ServiceVC page that prepares for the stage where VCs authorize the LLM Planner's execution (planned as Stage 4). Stages 8 and 9 appear on some pages only as future work. They have no hands-on pages.
 
@@ -143,36 +153,37 @@ There is no Stage 2. Stage 4 prep is the ServiceVC page that prepares for the st
 | P | [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
 | P | [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md) | PurchaseViewerVC (DataUserVC attributes decide the tier; used by a wallet inside the program, so no phone needed) |
 
-The mapping between VCs and tokens is summarized in [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md).
+The mapping between VCs and tokens is summarized in [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md).
 
 ## Tech stack at a glance
 
-What runs behind each sub-group. Part 2 is mixed — some sub-groups need the blockchain, others don't.
+What each group in the left navigation uses. In Part 2, some groups use the blockchain and others do not.
 
-| Sub-group | publisher (Docker) | Blockchain (Hardhat) | MetaMask | SSI wallet (phone) | IPFS / storage (v1) | Image proc. / LLM |
+| Group | publisher (Docker) | Blockchain (Hardhat) | MetaMask | SSI wallet (phone) | IPFS / storage (v1) | Image proc. / LLM |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
-| **Part 1 / Capture data** | ✓ <small>(HA path)</small> | ✓ <small>(camera path)</small> | – | – | ✓ <small>(camera path)</small> | – |
-| **Part 1 / Trade (v1)** | – | ✓ | ✓ | – | ✓ | – |
-| **Part 2 / Share events (Stage 0)** | ✓ | – | – | ✓ <small>(appendix only)</small> | – | – |
-| **Part 2 / Add authentication** | ✓ | – | – | ✓ | – | – |
-| **Part 2 / Wire wallet to marketplace (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
-| **Part 2 / Process data and add provenance**<sup>*</sup> | ✓ | ✓ <small>(for Tier 3 e2e)</small> | ✓ <small>(same)</small> | ✓ | – | ✓ <small>(OpenCV / VLM optional)</small> |
-| **Part 3 / Intelligence integration** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
+| **Part 1 / 1.1 HA Demo Simulator** | ✓ | – | – | – | – | – |
+| **Part 1 / 1.2 Capture data from a device (pick one)** | ✓ <small>(HA path)</small> | ✓ <small>(camera path)</small> | – | – | ✓ <small>(camera path)</small> | – |
+| **Part 1 / 1.3–1.4 Trade on the marketplace (1.3 is on the Hands-on page)** | – | ✓ | ✓ | – | ✓ | – |
+| **Part 2 / 2.1 Event sharing (Stage 0, pick one)** | ✓ | – | – | ✓ <small>(appendix only)</small> | – | – |
+| **Part 2 / 2.2–2.3 Consent and split roles (Stage 1, 3, 4 prep)** | ✓ | – | – | ✓ | – | – |
+| **Part 2 / 2.4 Marketplace × wallet (v2)** | ✓ | ✓ | ✓ | ✓ | – | – |
+| **Part 2 / 2.5 Tiered access and provenance (Stage T / P)**<sup>*</sup> | ✓ | ✓ <small>(for Tier 3 e2e)</small> | ✓ <small>(same)</small> | ✓ | – | ✓ <small>(OpenCV / VLM optional)</small> |
+| **Part 3: Intelligence Integration — let an AI act on requests** | ✓ | – | – | – | – | ✓ <small>(VLM / LLM)</small> |
 
-\* In this sub-group, [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) runs with Python only and uses no publisher, blockchain, MetaMask, SSI wallet, or VC. The follow-ups, [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md) and [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md), use the publisher and Hardhat, and a wallet inside the program receives a PurchaseViewerVC to get a per-tier ViewerToken. They use no MetaMask or phone wallet.
+\* In this group, [Prove where an image came from (C2PA / Stage P)](c2pa-provenance.md) runs with Python only and uses no publisher, blockchain, MetaMask, SSI wallet, or VC. The follow-ups, [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](c2pa-provenance-publisher.md) and [Trace a VLM summary back to the image (C2PA / Stage P, P3)](c2pa-provenance-vlm.md), use the publisher and Hardhat, and a wallet inside the program receives a PurchaseViewerVC to get a per-tier ViewerToken. They use no MetaMask or phone wallet.
 
 ### VCs used
 
-| Sub-group | Consent | Viewer | Service | Purchase&shy;Viewer | Seller | DataUser |
+| Group | Consent | Viewer | Service | Purchase&shy;Viewer | Seller | DataUser |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
-| Part 2 / Share events (Stage 0) | ✓ <small>(appendix only)</small> | – | – | – | – | – |
-| Part 2 / Add authentication | ✓ | ✓ | ✓ | – | – | – |
-| Part 2 / Wire wallet to marketplace (v2) | – | – | ✓ | ✓ | ✓ | – |
-| Part 2 / Process data and add provenance<sup>*</sup> | – | – | – | ✓ | – | ✓ |
+| Part 2 / 2.1 Event sharing (Stage 0, pick one) | ✓ <small>(appendix only)</small> | – | – | – | – | – |
+| Part 2 / 2.2–2.3 Consent and split roles (Stage 1, 3, 4 prep) | ✓ | ✓ | ✓ | – | – | – |
+| Part 2 / 2.4 Marketplace × wallet (v2) | – | – | ✓ | ✓ | ✓ | – |
+| Part 2 / 2.5 Tiered access and provenance (Stage T / P)<sup>*</sup> | – | – | – | ✓ | – | ✓ |
 
 ### Reading the tables
 
-- **publisher**: the hands-on server, started with `docker compose up`. Part 1 / Trade (v1) does not use it. The v1 stack also starts IPFS, and IPFS and the publisher both use port 8080, so they cannot run at the same time.
+- **publisher**: the hands-on server, started with `docker compose up`. §1.3–§1.4 (trading on the marketplace, v1) do not use it. The v1 stack also starts IPFS, and IPFS and the publisher both use port 8080, so they cannot run at the same time.
 - **Blockchain**: a local Hardhat chain plus deployed contracts. Required when the marketplace purchase is the entry point.
 - **MetaMask**: signs / sends transactions on the local chain.
 - **SSI wallet**: iw3ip-wallet (a fork of Sphereon Wallet) on a phone — receives and presents VCs.
@@ -241,6 +252,8 @@ The list → buy → receive flow. On delivery, the location (URI) of the data p
 The 5 items registered by step 2 of Quickstart (deployment) were not listed by `mediator-owner`. They can be purchased, but no data is delivered.
 
 Detailed bring-up: [Quickstart (run the stack)](../setup/quickstart.md).
+
+If you go on to §1.4 (optional) after §1.3, keep the Quickstart stack running. Before you go on to Part 2, stop the Quickstart IPFS (`docker compose down` in the `ipfs` directory), because the publisher that Part 2 pages start uses the same port 8080.
 
 ### 1.4 Open the marketplace and buy on a phone
 
@@ -318,7 +331,7 @@ The later pages also cover structured data that describes the image content (a s
 
 ## Part 3: Intelligence Integration — let an AI act on requests
 
-You can start Part 3 before finishing all of Part 2. §3.1 and §3.2 run with Docker, Python, and a USB webcam (§3.2 also works with a JPEG image instead of a camera). They do not use the Quickstart stack. §3.3 uses a sample event file and assumes [Share detections, not raw frames](webcam-event-sharing.md) from §2.1. §3.4 assumes §3.3.
+You can start Part 3 before finishing all of Part 2. §3.1 and §3.2 run with Docker, Python, and a USB webcam (§3.2 also works with a JPEG image instead of a camera). They do not use the Quickstart stack. §3.3 uses a sample event file and assumes either page of §2.1 (finishing [Share detections, not raw frames](webcam-event-sharing.md) makes the `possible_littering` example easier to follow). §3.4 assumes §3.3.
 
 ### Goals
 

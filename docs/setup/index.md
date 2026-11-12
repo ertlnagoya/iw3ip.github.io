@@ -104,7 +104,11 @@ flowchart TB
 1. [事前準備 (ツールのインストール)](prerequisites.md)
 2. [実機なしで一連を動かす (HA Demo Simulator)](../hands-on/ha-demo-simulator.md) (ハンズオン Part 1 の 1.1。最短起動のスタックは使わず、Docker Compose だけで動きます)
 3. [最短起動 (スタックを動かす)](quickstart.md)
-4. [ハンズオン](../hands-on/index.md) の Part 1 の 1.2 に進む
+4. [ハンズオン](../hands-on/index.md) の Part 1 の 1.2 (3 つのページから 1 つ)
+5. [ハンズオン](../hands-on/index.md#13-マーケットプレイスで売買-v1-経路) の Part 1 の 1.3 (出品と購入)
+6. 1.4 (任意)
+
+1.2 で [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) を選ぶ場合は、最短起動をせずに 1.1 のあと 1.2 を行い、1.2 を終えてから最短起動を行って 1.3 に進みます。このページの publisher は、最短起動の IPFS と同じポート 8080 を使うためです。
 
 うまく動かないときは [トラブルシュート](../operations/troubleshooting.md) を参照してください。
 
@@ -159,9 +163,9 @@ flowchart TB
 
 - **スマートフォン** (Android / iPhone) — SSI ウォレットアプリのインストール
 
-Part 1 の 1.4 (任意) で必要:
+Part 1 の 1.4 (任意) と Part 2 の Stage A で必要:
 
-- **スマートフォン** — MetaMask モバイルを入れ、スマホのブラウザからマーケットで購入する
+- **スマートフォン** — MetaMask モバイルを入れ、スマホからマーケットで購入する
 
 実機オプション (なくても可):
 

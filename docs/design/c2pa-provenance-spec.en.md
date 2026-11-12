@@ -4,7 +4,7 @@
     This is a design spec in the [Design](index.md) section.
     This is the design spec for **Stage P** (Provenance), which attaches provenance information that follows the C2PA (Coalition for Content Provenance and Authenticity) standard [1] to footage from low-cost commercial IP cameras and USB webcams, and to sensor data.
     Signing uses the Rust SDK [2] and Python SDK [3] published by the CAI (Content Authenticity Initiative), and the provenance hashes are recorded on chain as NFTs. It was designed before implementation; P0–P3 are now implemented and on the main branch of the course repository (see the note in §10; checks with Content Credentials Verify and c2patool are not done yet).
-    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md)).
+    "Stage" in this document refers to the step numbers of the Phase 2 hands-on series (listed in the "Hands-on stages" section (§5) of the [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md)).
     Stage P builds on the tiered access of Stage T ([Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)) and the SellerVC of Stage 7 ([SellerVC — marketplace listing governance VC (Stage 7 design spec)](seller-vc-spec.md)). The P0 part can be run locally in the hands-on [Prove where an image came from (C2PA / Stage P)](../hands-on/c2pa-provenance.md). P1 and P2 can be run in the hands-on [Connect provenance to the publisher and the chain (C2PA / Stage P, P1 and P2)](../hands-on/c2pa-provenance-publisher.md), and P3 in [Trace a VLM summary back to the image (C2PA / Stage P, P3)](../hands-on/c2pa-provenance-vlm.md).
     P0–P6 in this document refer to the implementation steps of this spec (listed in §10). The MVP (Minimum Viable Product, the minimal implementation to build first) corresponds to P0–P2. P0–P3 are implemented and can be run in the hands-on pages; P4 and later are not implemented yet.
 
@@ -19,7 +19,7 @@ This spec is a design for adding to IW3IP a mechanism that **attaches to each ph
 
 ## Before you read
 
-- It is easier to follow after finishing "Process data and add provenance" in Part 2 of the hands-on (such as [Tier the response by trust (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md)). Tiers 1–3, DataUserVC, the publisher, and `/media/upload` are used without explanation
+- It is easier to follow after finishing "2.5 Tiered access and provenance (Stage T / P)" in Part 2 of the hands-on (such as [Tier the response by trust (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered.md)). Tiers 1–3, DataUserVC, the publisher, and `/media/upload` are used without explanation
 - Basic knowledge of DIDs and VCs ([SSI / DID / VC Basics](../foundations/ssi-did-vc-basics.md)) is assumed. §2 explains C2PA signing by comparing it with VCs
 
 ## Common pitfalls
@@ -613,7 +613,7 @@ C2PA also has a mechanism for finding stripped provenance again from the pixels,
 
 ## 12. Related
 
-- [VC architecture overview (Phase 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md) (§5 lists the Stage numbers)
+- [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](vc-architecture-overview.md) (§5 lists the Stage numbers)
 - [SellerVC — marketplace listing governance VC (Stage 7 design spec)](seller-vc-spec.md)
 - [Tiered access design spec](../hands-on/data-user-vc-tiered-spec.md)
 - [Deliver images and video with tiered access (DataUserVC / Stage T)](../hands-on/data-user-vc-tiered-media.md)

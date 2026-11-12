@@ -5,7 +5,7 @@
     マーケットプレイスと、スマホの SSI (Self-Sovereign Identity、自己主権型アイデンティティ) ウォレットを接続する **v2** の設計仕様である。
     既存システムを **v1**、本仕様で実装するシステムを **v2** と呼び、
     共通部分と派生部分を明示する。本書は、§11 のマイルストーン M1 (設計確定) のドラフトである。
-    本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の「ハンズオンの段階」(§5))。
+    本文中の Stage は Phase 2 のハンズオンの段階番号を指す (一覧は [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の「ハンズオンの段階」(§5))。
     本仕様はハンズオン [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md) に対応する。
 
 ## 1. v1 と v2 の関係
@@ -328,7 +328,7 @@ claim の進行状況を返す。
 
 これらは既存の audit_log テーブルに `ALTER TABLE ... ADD COLUMN` で追加する。
 
-→ 実装では次のとおりで、[VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の §7 と同じである。
+→ 実装では次のとおりで、[VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) の §7 と同じである。
 
 - `marketplace/claim`: `reason=claim_received:<claim_id>:tx=<tx_hash>`
 - `marketplace/issued`: `reason=eth_did_bound:claim=<claim_id>:eth=<buyer_eth_addr>:tx=<tx_hash>`
@@ -395,4 +395,4 @@ e2e (end-to-end) テストには、ハンズオンの手順をそのまま用い
 - [データ閲覧者の認証 (Viewer VC / Stage 3)](../hands-on/ha-ssi-viewer.md)
 - [機器間での連携認証 (Service VC / Stage 4 prep)](../hands-on/ha-ssi-service.md)
 - [購入後に証明書をウォレットへ渡す (Bridge / Stage 5)](../hands-on/marketplace-vc-bridge.md)
-- [VC アーキテクチャ全体像 (Phase 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) (Stage 番号の一覧は「ハンズオンの段階」(§5))
+- [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](vc-architecture-overview.md) (Stage 番号の一覧は「ハンズオンの段階」(§5))

@@ -15,7 +15,7 @@ Without a HUSKYLENS2, a generic USB webcam plus OpenCV [1] is enough to emit `pe
 !!! note "Where this page belongs"
     - This is section 1.2 of Part 1 ([Hands-on](index.md#12-capture-data-from-a-device)). Pick just one of the three pages in 1.2.
     - "Phase 1" on this page is a development stage of the platform, not the learning order ([Hands-on](index.md#part-phase-stage)).
-    - Previous page: [Run the whole pipeline without hardware (HA Demo Simulator)](ha-demo-simulator.md)
+    - Previous page: [Quickstart (run the stack)](../setup/quickstart.md)
     - Next page: section 1.3 of [Hands-on](index.md#13-trade-on-the-marketplace-v1-lane) (trade on the marketplace)
 
 ## Goal
@@ -34,7 +34,7 @@ Detect people and possible littering in USB webcam images and generate event fil
 - lighting and framing strongly affect the heuristic output
 - detections can be generated while the downstream pipeline still fails to pick them up
 
-## Prerequisites
+## Required environment
 
 - USB webcam, or a mock execution setup
 - `webcam-bridge` available
@@ -131,7 +131,7 @@ Once event files are generated in mock mode, the next step is to switch to the p
 
 ### 2. USB webcam
 
-Webcam mode uses an object-detection model (YOLO). Install `ultralytics` and `opencv-python` into the venv as described in the prerequisites. The first two lines of the command below move to the `webcam-bridge` folder and activate that venv. On the first run the model file (`yolov8n.pt`, a few MB) is downloaded automatically.
+Webcam mode uses an object-detection model (YOLO). Install `ultralytics` and `opencv-python` into the venv as described in [Required environment](#required-environment). The first two lines of the command below move to the `webcam-bridge` folder and activate that venv. On the first run the model file (`yolov8n.pt`, a few MB) is downloaded automatically.
 
 ```bash
 cd ~/program/Blockchain_IoT_Marketplace/webcam-bridge

@@ -1,12 +1,12 @@
 # Share detections, not raw frames
 
-Take the events you built in [Detect with a USB webcam (OpenCV)](webcam.md) and share them through a Consent VC gate.
+Take the events you built in [Detect with a USB webcam (OpenCV)](webcam.md) and share them through a consent check that uses a consent JSON (equivalent to a Consent VC).
 
 > **What you'll do**: Send detection events to the platform and observe allow/deny by purpose
 >
 > **Prerequisites**: one of the pages in section 1.2 of Part 1 is done (this page uses mock data, so you can do it without a camera)
 >
-> **Keep running**: nothing. This page starts the publisher. Keep the Quickstart IPFS stopped (it shares port 8080)
+> **Keep running**: nothing needs to be running. This page starts the publisher. Keep the Quickstart IPFS stopped (it shares port 8080)
 >
 > **What you need**: PC, ideally a USB webcam (mock data also works)
 >
@@ -20,7 +20,7 @@ Take the events you built in [Detect with a USB webcam (OpenCV)](webcam.md) and 
 
 This hands-on is a **Phase 2: Event / Intelligence Sharing** extension of the existing [Detect with a USB webcam (OpenCV)](webcam.md).  
 In Phase 1, the USB webcam sample detected `person_detected` and `possible_littering`, generated event files, and confirmed that they were registered as merchandise.  
-This page moves to the next step: **sending detected events into the data-sharing platform and controlling sharing based on Consent VC**.
+This page moves to the next step: **sending detected events into the data-sharing platform and controlling sharing based on a consent JSON (equivalent to a Consent VC)**.
 
 Pipeline:
 
@@ -53,9 +53,8 @@ Branches after that:
 - changing only `purpose` can change the outcome, which is easy to miss at first
 - checking only `/platform/ingest` hides the `denied` path
 
-## Prerequisites
+## Required environment
 
-- you have done one of the pages in section 1.2 of Part 1. This page uses events from [Detect with a USB webcam (OpenCV)](webcam.md) as the example, but it uses mock data, so you can do it without a camera
 - you can run [Pull from Home Assistant (HA SSI Publisher)](ha-ssi-publisher.md)
 - Docker / Docker Compose is available
 - If the IPFS from the [Quickstart (run the stack)](../setup/quickstart.md) is still running, stop it first (`cd ~/program/Blockchain_IoT_Marketplace/ipfs && docker compose down`); IPFS and the publisher both use port 8080
@@ -128,7 +127,9 @@ Expected:
 {"status":"ok","service":"publisher"}
 ```
 
-### 2. Register a Consent VC for this hands-on
+### 2. Register the consent JSON for this hands-on (equivalent to a Consent VC)
+
+The content is equivalent to a Consent VC, but here you register the JSON directly at `/consents` and no VC signature is verified. VCs are first used in 2.2.
 
 This hands-on allows `home/event/possible_littering` only for `community_cleaning` and `research`.
 

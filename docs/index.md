@@ -88,7 +88,7 @@ flowchart TB
 
 ## まず 1 つ動かしたい場合
 
-実機なしで Phase 1 / Phase 2 の基本経路を確認したい場合は、`ha-demo-simulator` から始めてください。Phase 1〜3 は基盤の発展段階を表す区分で、[プラットフォーム概要のフェーズ構成](platform-overview.md#フェーズ構成) で説明しています。
+実機なしで Phase 1 / Phase 2 の基本経路を確認したい場合は、ハンズオン Part 1 の 1.1 の `ha-demo-simulator` から始めてください。Phase 1〜3 は基盤の発展段階を表す区分で、[プラットフォーム概要のフェーズ構成](platform-overview.md#フェーズ構成) で説明しています。
 
 - 対応ページ: [実機なしで一連を動かす (HA Demo Simulator)](hands-on/ha-demo-simulator.md)
 - 確認できること:
@@ -109,26 +109,23 @@ PLATFORM_INGEST_READ_ENABLED=true docker compose -f infra/docker-compose.yml --p
 - `http://localhost:8123`
 - `http://localhost:8080/health`
 
-Phase 3 の最短デモとして `assistant-demo` を使うと、1 コマンドで次をまとめて起動できます。
+??? note "Part 3 の最短デモ (初めての人は不要)"
+    `assistant-demo` は Part 3 (知能統合) の内容です。初めての人は、上の 1.1 から始めてください。Part 3 を先に見ておきたい場合は、`assistant-demo` を使うと、1 コマンドで次をまとめて起動できます。
 
-- `assistant-demo`
-- `llm-mock`
-- `assistant-ui`
+    - `assistant-demo`
+    - `llm-mock`
+    - `assistant-ui`
 
-対応ページ:
+    対応ページ: [AI に手順を考えさせる (LLM Planner)](hands-on/llm-planner.md)
 
-- [AI に手順を考えさせる (LLM Planner)](hands-on/llm-planner.md)
+    起動コマンド:
 
-起動コマンド:
+    ```bash
+    cd ~/program/Blockchain_IoT_Marketplace
+    docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
+    ```
 
-```bash
-cd ~/program/Blockchain_IoT_Marketplace
-docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -d
-```
-
-開く URL:
-
-- `http://localhost:4173`
+    開く URL: `http://localhost:4173`
 
 ## 推奨学習順
 
@@ -137,7 +134,11 @@ docker compose -f infra/docker-compose.yml --profile assistant-demo up --build -
 1. [事前準備 (ツールのインストール)](setup/prerequisites.md)
 2. [実機なしで一連を動かす (HA Demo Simulator)](hands-on/ha-demo-simulator.md)
 3. [最短起動 (スタックを動かす)](setup/quickstart.md)
-4. [ハンズオン](hands-on/index.md) の Part 1 の 1.2
+4. [ハンズオン](hands-on/index.md) の Part 1 の 1.2 (3 つのページから 1 つ)
+5. [ハンズオン](hands-on/index.md#13-マーケットプレイスで売買-v1-経路) の Part 1 の 1.3 (出品と購入)
+6. 1.4 (任意)
+
+1.2 で [Home Assistant のデータを取り込む (HA SSI Publisher)](hands-on/ha-ssi-publisher.md) を選ぶ場合は、最短起動をせずに 1.1 のあと 1.2 を行い、1.2 を終えてから最短起動を行って 1.3 に進みます。このページの publisher は、最短起動の IPFS と同じポート 8080 を使うためです。
 
 途中で詰まったら [トラブルシュート](operations/troubleshooting.md) を参照してください。講師・TA は、先に [授業ガイド](foundations/course-guide.md) を読んで授業の構成を決めます。
 

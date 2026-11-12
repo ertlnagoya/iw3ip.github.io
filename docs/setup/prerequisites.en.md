@@ -163,10 +163,10 @@ The initial clone takes a few minutes (the repo is large).
 - [ ] `docker run hello-world` succeeds
 - [ ] You have a `~/program/Blockchain_IoT_Marketplace` directory
 - [ ] (Part 1) MetaMask shows up in your browser's extensions list
-- [ ] (Optional, for §1.4 of Part 1) MetaMask Mobile is installed on your phone
+- [ ] (For §1.4 of Part 1 (optional) and Stage A in Part 2) MetaMask Mobile is installed on your phone
 - [ ] (Part 2) iw3ip-wallet is installed on your phone
 
-All checked → go to [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md). That page does not use the Quickstart stack; it runs with Docker Compose only. After that, go to [Quickstart (run the stack)](quickstart.md).
+All checked → go to [Run the whole pipeline without hardware (HA Demo Simulator)](../hands-on/ha-demo-simulator.md). That page does not use the Quickstart stack; it runs with Docker Compose only. After that, go to [Quickstart (run the stack)](quickstart.md). If you pick [Pull from Home Assistant (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) in §1.2, run Quickstart after §1.2 (before §1.3) instead.
 
 ## Per-OS notes
 

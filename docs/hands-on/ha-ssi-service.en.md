@@ -64,7 +64,7 @@ every `/platform/ingest` call.
   experimentation, but properly belongs to a holder embedded in the
   publisher
 
-## Prerequisites
+## Required environment
 
 - Completed [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md)
 - Publisher running from the `main` branch
@@ -222,7 +222,7 @@ each plan step via a VC presentation. This is why this page is called Stage 4 pr
 
 - [Authenticate the data provider (Consent VC / Stage 1)](ha-ssi-wallet.md): single-use write by a person
 - [Authenticate the viewer (Viewer VC / Stage 3)](ha-ssi-viewer.md): repeated reads by a person
-- Appendix of [Share detections, not raw frames](webcam-event-sharing.md#appendix-wallet-mode-authorization):
+- Appendix of [Share detections, not raw frames](webcam-event-sharing.md#appendix-wallet-mode-authorization) or [Share disaster events](environment-disaster.md#appendix-wallet-mode-authorization):
   one-shot wallet mode (no ServiceVC required)
 
 ## Next steps
