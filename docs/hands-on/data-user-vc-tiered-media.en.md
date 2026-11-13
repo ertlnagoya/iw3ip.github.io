@@ -215,18 +215,35 @@ collect the token, curl /platform/data"). The publisher now ships a
 opens **one URL** and the rest is automatic, on iPhone Safari **or**
 PC Chrome / Edge / Firefox.
 
-```
-[iPhone Safari] ─ /buyer/start                            [publisher]
-   │  ↓ auto-redirect to deeplink                              │
-   │  iw3ip-wallet opens → present Tier 3 ────────────────────►│ mint ViewerToken
-   │  ↑ redirect_uri = /viewer?vt=...                          │
-   │  Safari resumes → /viewer auto-renders image/video        │
+On iPhone Safari:
 
-[PC Chrome] ─ /buyer/start                                [publisher]
-   │  ↓ shows QR + polls every 2 s                             │
-   │  Scan QR with iPhone → wallet → present ────────────────► │
-   │  ↑ /verifier/status returns viewer_url                    │
-   │  PC browser auto-navigates to /viewer → image renders     │
+```mermaid
+sequenceDiagram
+  participant S as iPhone Safari
+  participant W as iw3ip-wallet
+  participant P as publisher
+  S->>S: /buyer/start
+  S->>W: auto-redirect to deeplink, iw3ip-wallet opens
+  W->>P: present Tier 3
+  P->>P: mint ViewerToken
+  P-->>S: redirect_uri = /viewer?vt=...
+  Note over S: Safari resumes → /viewer auto-renders image/video
+```
+
+On PC Chrome:
+
+```mermaid
+sequenceDiagram
+  participant C as PC Chrome
+  participant W as iPhone<br>(wallet)
+  participant P as publisher
+  C->>C: /buyer/start
+  C->>C: shows QR + polls every 2 s
+  C-->>W: scan QR with iPhone
+  W->>P: wallet → present
+  P->>P: mint ViewerToken
+  P-->>C: /verifier/status returns viewer_url
+  Note over C: PC browser auto-navigates to /viewer → image renders
 ```
 
 ### 10.1 Bring it up
@@ -371,20 +388,26 @@ publisher container — `/provider/start` + `/provider` + `/provider/publish`
 replace the curl steps in `provider_with_media.py` with a browser-only
 flow.
 
-```
-[PC browser] ── /provider/start                      [publisher]
-   │  ↓ QR + polling every 2 s                           │
-   │     scan QR with iPhone wallet → present SellerVC ►│ mint SellerToken
-   │  ↑ /verifier/status returns seller_token + licensed_datasets
-   │  PC page renders the licensed_datasets list
-   │  ↓ pick one and click "Continue to upload"          │
-   │  /provider?pt=<seller_token>&ds=<dataset_id>        │
-   │     file pick / camera capture / browser recorder ►│ /media/upload
-   │     ↑ URL + (CID)                                   │
-   │     "Publish" button                                │
-   │     POST /provider/publish (Bearer SellerToken) ───►│ use_seller_token
-   │                                                     │ → process_message
-   │  ↑ {"status":"allowed", ...}                         │
+```mermaid
+sequenceDiagram
+  participant B as PC browser
+  participant W as iPhone<br>(wallet)
+  participant P as publisher
+  B->>B: /provider/start
+  B->>B: QR + polling every 2 s
+  B-->>W: scan QR with iPhone wallet
+  W->>P: present SellerVC
+  P->>P: mint SellerToken
+  P-->>B: /verifier/status returns seller_token + licensed_datasets
+  B->>B: PC page renders the licensed_datasets list
+  B->>B: pick one and click "Continue to upload"
+  B->>B: /provider?pt=#lt;seller_token#gt;&ds=#lt;dataset_id#gt;
+  B->>P: file pick / camera capture / browser recorder → /media/upload
+  P-->>B: URL + (CID)
+  B->>B: "Publish" button
+  B->>P: POST /provider/publish (Bearer SellerToken)
+  P->>P: use_seller_token → process_message
+  P-->>B: {"status":"allowed", ...}
 ```
 
 `/provider/start` is the SellerVC counterpart of `/buyer/start` — same

@@ -50,29 +50,14 @@
 
 ## 全体像
 
-```
-[Seller wallet]
-   │ 1. /issuer/offer?type=SellerVC → 受領
-   │ 2. /verifier/request?vc_kind=SellerVC → 提示
-   │ 3. SellerToken (24h 複数回可)
-   │
-[Seller (Hardhat console)]
-   │ 4. Merchandise を deploy + IoTMarket.registerMerchandise()
-   │
-[Seller (curl or /seller UI)]
-   │ 5. POST /marketplace/register
-   │    Authorization: Bearer SellerToken
-   │    body: merchandise_address + seller_eth_addr + tx_hash + dataset_id
-   │
-[publisher]
-   │ - SellerToken 検証 (licensed_datasets に dataset_id が含まれる)
-   │ - (任意) Merchandise.getOwner() を on-chain 検証
-   │ - audit: raw_topic=marketplace/seller_registered
-   │ - publisher 内部に merchandise → seller_did binding
-   │
-[Buyer (Stage 5/6 の購入動線)]
-   │ → GET /platform/data?merchandise=<addr>
-   │   レスポンスに seller_did が同梱される
+```mermaid
+flowchart TB
+  SW["Seller wallet<br>1. /issuer/offer?type=SellerVC → 受領<br>2. /verifier/request?vc_kind=SellerVC → 提示<br>3. SellerToken (24h 複数回可)"]
+  SH["Seller (Hardhat console)<br>4. Merchandise を deploy + IoTMarket.registerMerchandise()"]
+  SC["Seller (curl or /seller UI)<br>5. POST /marketplace/register<br>Authorization: Bearer SellerToken<br>body: merchandise_address + seller_eth_addr + tx_hash + dataset_id"]
+  PUB["publisher<br>- SellerToken 検証 (licensed_datasets に dataset_id が含まれる)<br>- (任意) Merchandise.getOwner() を on-chain 検証<br>- audit: raw_topic=marketplace/seller_registered<br>- publisher 内部に merchandise → seller_did binding"]
+  BUYER["Buyer (Stage 5/6 の購入動線)<br>→ GET /platform/data?merchandise=&lt;addr&gt;<br>レスポンスに seller_did が同梱される"]
+  SW --> SH --> SC --> PUB --> BUYER
 ```
 
 ## 必要な環境 { #前提 }

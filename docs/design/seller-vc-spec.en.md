@@ -188,31 +188,32 @@ through the v7 path (it was listed through the v6 path, or it is not registered)
 
 ## 5. Data flow (v7 sequence)
 
-```
-[Seller]
-  │  /issuer/offer?type=SellerVC&seller_id=...
-  │  → receive in the wallet
-  │
-  │  /verifier/request?vc_kind=SellerVC
-  │  → present from the wallet
-  │  → SellerToken (24h)
-  │
-  │  Hardhat console / iot-market-ui (seller mode):
-  │  deploy the Merchandise
-  │  IoTMarket.registerMerchandise(addr)  ← on-chain
-  │
-  │  POST /marketplace/register
-  │  Authorization: Bearer <SellerToken>
-  │  → audit: marketplace/seller_registered
-  │  → publisher records merchandise -> seller_did
-  │
-[Buyer (same as Stage 5/6)]
-  │  Merchandise.purchase()
-  │  → bridge → /marketplace/claim
-  │  → receive PurchaseViewerVC → present → ViewerToken
-  │
-  │  GET /platform/data?merchandise=<addr>
-  │  → existing dataset resolution logic + new: seller_did is also included
+```mermaid
+sequenceDiagram
+  actor S as Seller
+  participant P as publisher
+  participant C as chain<br>(on-chain)
+  participant BR as bridge
+  actor B as Buyer<br>(same as Stage 5/6)
+  S->>P: /issuer/offer?type=SellerVC&seller_id=...
+  P-->>S: receive in the wallet
+  S->>P: /verifier/request?vc_kind=SellerVC
+  S->>P: present from the wallet
+  P-->>S: SellerToken (24h)
+  Note over S,C: Hardhat console / iot-market-ui (seller mode)
+  S->>C: deploy the Merchandise
+  S->>C: IoTMarket.registerMerchandise(addr)
+  S->>P: POST /marketplace/register<br>Authorization: Bearer #lt;SellerToken#gt;
+  Note over P: audit: marketplace/seller_registered
+  P->>P: publisher records merchandise -> seller_did
+  B->>C: Merchandise.purchase()
+  C->>BR: to the bridge
+  BR->>P: /marketplace/claim
+  P-->>B: receive PurchaseViewerVC
+  B->>P: present
+  P-->>B: ViewerToken
+  B->>P: GET /platform/data?merchandise=#lt;addr#gt;
+  P-->>B: existing dataset resolution logic<br>+ new: seller_did is also included
 ```
 
 ## 6. Issuance governance

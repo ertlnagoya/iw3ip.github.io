@@ -40,12 +40,19 @@ v2 は v1 を置き換えるものではなく、v1 に追加する経路です�
 - 受信側は VC を提示してデータを取得する。何のために使うか (purpose) や信頼度に応じて、見せる中身を段階的に変える
 - ハンズオン Part 2 ではこの v2 経路と、それを前提とする同意・段階アクセスを扱います
 
-```
-購入 (v1 と v2 で共通)
-    ↓
-    ├── v1 経路: 暗号化した URI → 復号 → 保管庫からデータ ← Part 1 で扱う
-    └── v2 経路: bridge → PurchaseViewerVC → wallet     ← Part 2 で扱う
-                  → ViewerToken → /platform/data
+```mermaid
+flowchart TB
+  BUY["購入 (v1 と v2 で共通)"]
+  subgraph L1["v1 経路 (Part 1 で扱う)"]
+    direction LR
+    A1["暗号化した URI"] --> A2["復号"] --> A3["保管庫からデータ"]
+  end
+  subgraph L2["v2 経路 (Part 2 で扱う)"]
+    direction LR
+    B1["bridge"] --> B2["PurchaseViewerVC"] --> B3["wallet"] --> B4["ViewerToken"] --> B5["/platform/data"]
+  end
+  BUY --> A1
+  BUY --> B1
 ```
 
 詳しい設計は [Marketplace VC Bridge — v1 / v2 設計仕様](../design/marketplace-vc-bridge-spec.md) を参照してください。

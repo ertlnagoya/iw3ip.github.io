@@ -61,27 +61,15 @@ The two groups run independently. Note that the IPFS gateway on the marketplace 
 
 The hands-on is split into three Parts: **Basic**, **Feature Extensions**, and **Intelligence Integration**.
 
-```
- ┌──────────────────────────────────────────────────────────┐
- │  Environment Setup (these pages)                         │
- │   - install tools                                        │
- │   - sanity-check                                         │
- └──────────────────────────────────────────────────────────┘
-          ↓ if this works, you're ready
- ┌──────────────────────────────────────────────────────────┐
- │  Hands-on Part 1: Basic                                  │
- │   capture, view, and trade IoT data                      │
- └──────────────────────────────────────────────────────────┘
-          ↓ go deeper if you want
- ┌──────────────────────────────────────────────────────────┐
- │  Hands-on Part 2: Feature Extensions                     │
- │   consent, conditional sharing, wallet, tiered access    │
- └──────────────────────────────────────────────────────────┘
-          ↓ advanced
- ┌──────────────────────────────────────────────────────────┐
- │  Hands-on Part 3: Intelligence Integration               │
- │   let an AI interpret human requests and act on them     │
- └──────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+  SETUP["Environment Setup (these pages)<br>- install tools<br>- sanity-check"]
+  P1["Hands-on Part 1: Basic<br>capture, view, and trade IoT data"]
+  P2["Hands-on Part 2: Feature Extensions<br>consent, conditional sharing, wallet, tiered access"]
+  P3["Hands-on Part 3: Intelligence Integration<br>let an AI interpret human requests and act on them"]
+  SETUP -->|"if this works, you're ready"| P1
+  P1 -->|"go deeper if you want"| P2
+  P2 -->|"advanced"| P3
 ```
 
 ## Pick your track

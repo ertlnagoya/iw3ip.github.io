@@ -57,23 +57,21 @@ Part 2 で実現済みの「VC 提示 → 検証 → token mint → /platform/da
 
 ## アーキテクチャ
 
-```
-[/marketplace/claim (data_user_attrs = DataUserVC と同じ 5 属性)]
-        v
-[trust_score.evaluate(entityType, purpose, legalCompliance,
-                      dataHandlingPolicy, misuseRecord)]
-        | -> trust_score: int, access_level: "full"/"access"/"denied",
-        |    allowed_views: ["event"|"image"|"video", ...]
-        v
-[MarketplaceClaim.allowed_views]
-        v
-[PurchaseViewerVC issuance]  -> VC.claims.allowed_views
-        v
-[/verifier/* で PurchaseViewerVC 提示]
-        v
-[ViewerToken.allowed_views]
-        v
-[/platform/data] image_cid / video_cid / video_duration_sec を選別投影
+```mermaid
+flowchart TB
+  A["/marketplace/claim<br>(data_user_attrs = DataUserVC と同じ 5 属性)"]
+  B["trust_score.evaluate(entityType, purpose, legalCompliance,<br>dataHandlingPolicy, misuseRecord)"]
+  C["MarketplaceClaim.allowed_views"]
+  D["PurchaseViewerVC issuance"]
+  E["/verifier/* で PurchaseViewerVC 提示"]
+  F["ViewerToken.allowed_views"]
+  G["/platform/data<br>image_cid / video_cid / video_duration_sec を選別投影"]
+  A --> B
+  B -->|"trust_score: int, access_level: #quot;full#quot;/#quot;access#quot;/#quot;denied#quot;,<br>allowed_views: [#quot;event#quot;#124;#quot;image#quot;#124;#quot;video#quot;, ...]"| C
+  C --> D
+  D -->|"VC.claims.allowed_views"| E
+  E --> F
+  F --> G
 ```
 
 `DataUserVC` 単体では token を発行しません。DataUserVC と同じ属性が、**PurchaseViewerVC を
@@ -346,17 +344,21 @@ allowed_views ⊆ {
 publisher の `VLM_BACKEND`（と `IMAGE_REDACTION_BACKEND`）を設定すると、`/provider/publish` の処理経路に
 次のステップが挟まります（`--profile vlm` は Ollama のコンテナを起動するだけです）。
 
-```
-provider page
-  ├── /media/upload で image を保存（既存）
-  └── POST /provider/publish
-        └── pipeline.process_message
-              ├── 既存: consent / policy 評価 (拒否ならここで終わる)
-              ├── (新) VLMClient.describe(image_url)
-              │     -> {description_full, description_summary, description_model, description_generated_at}
-              ├── (新) ImageRedactor.blur_pii(image_url)
-              │     -> {image_url_redacted, image_cid_redacted}
-              └── 既存: platform_client.send(envelope)
+```mermaid
+flowchart TB
+  PP["provider page"]
+  UP["/media/upload で image を保存 (既存)"]
+  PUB["POST /provider/publish"]
+  subgraph PM["pipeline.process_message"]
+    S1["既存: consent / policy 評価<br>(拒否ならここで終わる)"]
+    S2["(新) VLMClient.describe(image_url)<br>→ {description_full, description_summary,<br>description_model, description_generated_at}"]
+    S3["(新) ImageRedactor.blur_pii(image_url)<br>→ {image_url_redacted, image_cid_redacted}"]
+    S4["既存: platform_client.send(envelope)"]
+    S1 --> S2 --> S3 --> S4
+  end
+  PP --> UP
+  PP --> PUB
+  PUB --> PM
 ```
 
 VLM が使えない場合（VLM 拡張が無効、または推論に失敗）は、機能を縮退（degrade）させて処理を続けます。条件ごとの挙動は次のとおりです。

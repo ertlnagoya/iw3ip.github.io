@@ -40,12 +40,19 @@ They are **additive lanes, not a replacement** — Basic alone is enough to buy 
 - The receiver presents that VC to fetch data. The contents shown vary by `purpose` and trust level
 - Part 2 of the hands-on covers this v2 path plus the consent and tiered access that sit on top of it
 
-```
-Purchase (shared by v1 and v2)
-    ↓
-    ├── v1 lane: encrypted URI → decrypt → data from storage ← covered in Part 1
-    └── v2 lane: bridge → PurchaseViewerVC → wallet         ← covered in Part 2
-                  → ViewerToken → /platform/data
+```mermaid
+flowchart TB
+  BUY["Purchase (shared by v1 and v2)"]
+  subgraph L1["v1 lane (covered in Part 1)"]
+    direction LR
+    A1["encrypted URI"] --> A2["decrypt"] --> A3["data from storage"]
+  end
+  subgraph L2["v2 lane (covered in Part 2)"]
+    direction LR
+    B1["bridge"] --> B2["PurchaseViewerVC"] --> B3["wallet"] --> B4["ViewerToken"] --> B5["/platform/data"]
+  end
+  BUY --> A1
+  BUY --> B1
 ```
 
 Design detail: [Marketplace VC Bridge — v1 / v2 Design Spec](../design/marketplace-vc-bridge-spec.md).

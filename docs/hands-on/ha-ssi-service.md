@@ -37,13 +37,15 @@ ServiceVC は「**サービスが継続的に書き込んでよい**」ことを
 publisher プロセスがこの ServiceToken を保持し、各 MQTT メッセージに
 Bearer ヘッダで添えて `/platform/ingest` を呼び出す想定です。
 
-```
-[サービス] -- ServiceVC 提示 (1 回) ----> [Verifier]
-                                              ↓
-                                         ServiceToken (1h, 複数回)
-[サービス] <- ServiceToken --------------------┘
-[サービス] -- POST /platform/ingest x N -----> [Publisher]
-                                                  認可は ServiceToken で
+```mermaid
+sequenceDiagram
+  participant S as サービス
+  participant V as Verifier
+  participant P as Publisher
+  S->>V: ServiceVC 提示 (1 回)
+  V-->>S: ServiceToken (1h, 複数回)
+  S->>P: POST /platform/ingest x N
+  Note over P: 認可は ServiceToken で
 ```
 
 ## このページで分かること

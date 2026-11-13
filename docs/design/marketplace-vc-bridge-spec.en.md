@@ -28,73 +28,51 @@ to receive the data through the encrypted URI (v1) or through a VC (v2).
 
 → In the implemented v1, the data itself is placed in the storage server (simple-storage), not IPFS. The seller-side `mediator-owner` puts the data in the storage server, encrypts its location (URI) with the buyer's public key, and writes it to the chain with `emitUpload`. IPFS and PostgreSQL (`ipfs_records`) hold video metadata and back the search screen.
 
-```
-Purchase (common)
-    ↓
-    ├── v1 lane: Upload event → encryptURI → decrypt → data
-    └── v2 lane: bridge → PurchaseViewerVC → wallet → ViewerToken → /platform/data
+```mermaid
+flowchart LR
+  P["Purchase (common)"] -->|"v1 lane"| U1["Upload event"] --> E1["encryptURI"] --> D1["decrypt"] --> X1["data"]
+  P -->|"v2 lane"| BR["bridge"] --> VC["PurchaseViewerVC"] --> W["wallet"] --> VT["ViewerToken"] --> PD["/platform/data"]
 ```
 
 ## 2. Overall architecture
 
 ### 2.1 v1 (current)
 
-```
-┌─────────────┐       ┌──────────────────┐       ┌─────────────┐
-│   buyer     │──────▶│  iot-market-ui   │──────▶│ MetaMask    │
-│             │       │  (Svelte / 5173) │       │             │
-└─────────────┘       └────────┬─────────┘       └──────┬──────┘
-                               │                         │
-                               ▼ /api/sql-query          ▼ purchase()
-                       ┌───────────────┐         ┌──────────────────┐
-                       │  PostgreSQL   │         │  Merchandise     │
-                       │  (ipfs_records│         │  contract (HH)   │
-                       └───────────────┘         └──────┬───────────┘
-                               ▲                        │ Upload event
-                               │ enrich                  │
-                       ┌───────┴───────┐         ┌──────▼──────────┐
-                       │  IPFS         │◀────────│ seller (encrypt)│
-                       └───────────────┘         └─────────────────┘
+```mermaid
+flowchart LR
+  B["buyer"] --> UI["iot-market-ui<br>(Svelte / 5173)"]
+  UI --> MM["MetaMask"]
+  UI -->|"/api/sql-query"| PG["PostgreSQL<br>(ipfs_records)"]
+  MM -->|"purchase()"| MC["Merchandise<br>contract (HH)"]
+  MC -->|"Upload event"| S["seller (encrypt)"]
+  S --> IPFS["IPFS"]
+  IPFS -->|"enrich"| PG
 ```
 
 ### 2.2 v2 (this spec)
 
-```
-                              ┌─────────────────────────────┐
-                              │   buyer (human)              │
-                              │   ┌──MetaMask──┬──Wallet──┐  │
-                              │   │ ETH addr   │ did:jwk  │  │
-                              │   └────────────┴──────────┘  │
-                              └────┬────────────┬────────────┘
-                                   │ purchase()  │ OID4VP
-                                   ▼            ▼
-┌─────────────────┐         ┌──────────────────┐       ┌──────────────────┐
-│ iot-market-ui   │────────▶│  Merchandise     │       │  iw3ip-wallet    │
-│ (post-purchase  │         │  contract (HH)   │       │  (RN, Sphereon)  │
-│  VC delivery)   │         └──────────┬───────┘       └────────┬─────────┘
-└─────────────────┘                    │ Purchase event           │
-        │                              ▼                         │
-        │                    ┌──────────────────┐                │
-        │                    │  bridge service  │                │
-        │                    │  (Node, listener)│                │
-        │                    └──────────┬───────┘                │
-        │                               │ /marketplace/claim     │
-        ▼ POST /marketplace/claim       ▼                        │
-                              ┌──────────────────┐               │
-                              │   publisher      │◀──────────────┤ OID4VCI
-                              │   (FastAPI)      │               │ OID4VP
-                              │                  │               │
-                              │  /issuer/...     │───PurchaseVC──┤
-                              │  /verifier/...   │               │
-                              │  /platform/data  │◀──────────────┘ ViewerToken
-                              │  /audit/logs     │
-                              └────────┬─────────┘
-                                       │ enrich
-                                       ▼
-                              ┌──────────────────┐
-                              │  IPFS / Postgres │
-                              │ (shared with v1) │
-                              └──────────────────┘
+```mermaid
+flowchart TB
+  subgraph BUYER["buyer (human)"]
+    MM["MetaMask<br>ETH addr"]
+    BW["Wallet<br>did:jwk"]
+  end
+  UI["iot-market-ui<br>(post-purchase<br>VC delivery)"]
+  MC["Merchandise<br>contract (HH)"]
+  W["iw3ip-wallet<br>(RN, Sphereon)"]
+  BR["bridge service<br>(Node, listener)"]
+  PUB["publisher<br>(FastAPI)<br><br>/issuer/...<br>/verifier/...<br>/platform/data<br>/audit/logs"]
+  DB["IPFS / Postgres<br>(shared with v1)"]
+  MM -->|"purchase()"| MC
+  BW -->|"OID4VP"| W
+  UI --> MC
+  MC -->|"Purchase event"| BR
+  BR -->|"/marketplace/claim"| PUB
+  UI -->|"POST /marketplace/claim"| PUB
+  W -->|"OID4VCI<br>OID4VP"| PUB
+  PUB -->|"PurchaseVC"| W
+  W -->|"ViewerToken"| PUB
+  PUB -->|"enrich"| DB
 ```
 
 → In the implementation, the publisher does not enrich data from IPFS / Postgres. `/platform/data` returns the rows that the publisher received at `/platform/ingest` and keeps in memory (`app.state.ingested`). In v1, `mediator-owner` puts the data itself in the storage (simple-storage), and only metadata goes to IPFS and PostgreSQL.

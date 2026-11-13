@@ -78,24 +78,36 @@ Using the backend you built in Stages 5–6 as is, you use `iot-market-ui` as a 
 
 ## Overview
 
-```
-[First launch]
-   iPhone Safari → http://<HOST_IP>:5173/welcome
-        ↓ complete the 3 steps → "マーケットへ進む" (Go to the market)
-[Add to Home Screen]
-   Safari menu → Add to Home Screen
-   → the IW3IP app icon is added (standalone display)
-[Launch]
-   tap the icon → "/" of iot-market-ui opens in standalone mode
-[Purchase]
-   select a product → confirm in the MetaMask Mobile in-app browser → send the tx
-   → automatically moves to /purchased/[txHash]
-   → "ウォレットで開く" (Open in wallet) button → iw3ip-wallet launches → VC received
-[History + viewing]
-   hamburger menu → "購入履歴 / データを見る" (Purchase history / View data)
-   → list of past purchases in /my-data
-   → "閲覧チケットを取得" (Get viewing ticket) → present in the wallet
-   → paste the ViewerToken → data is displayed
+```mermaid
+flowchart TB
+  subgraph FIRST["First launch"]
+    F1["iPhone Safari → http://&lt;HOST_IP&gt;:5173/welcome"]
+  end
+  subgraph HOME["Add to Home Screen"]
+    H1["Safari menu → Add to Home Screen"]
+    H2["the IW3IP app icon is added<br>(standalone display)"]
+  end
+  subgraph LAUNCH["Launch"]
+    L1["tap the icon → / of iot-market-ui opens in standalone mode"]
+  end
+  subgraph BUY["Purchase"]
+    B1["select a product → confirm in the MetaMask Mobile in-app browser → send the tx"]
+    B2["automatically moves to /purchased/[txHash]"]
+    B3["「ウォレットで開く」 (Open in wallet) button → iw3ip-wallet launches → VC received"]
+  end
+  subgraph HIST["History + viewing"]
+    V1["hamburger menu → 「購入履歴 / データを見る」<br>(Purchase history / View data)"]
+    V2["list of past purchases in /my-data"]
+    V3["「閲覧チケットを取得」 (Get viewing ticket) → present in the wallet"]
+    V4["paste the ViewerToken → data is displayed"]
+  end
+  F1 -->|"complete the 3 steps → 「マーケットへ進む」 (Go to the market)"| H1
+  H1 --> H2
+  H2 --> L1
+  L1 --> B1
+  B1 --> B2 --> B3
+  B3 --> V1
+  V1 --> V2 --> V3 --> V4
 ```
 
 ---

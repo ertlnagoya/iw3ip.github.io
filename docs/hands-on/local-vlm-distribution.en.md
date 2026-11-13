@@ -34,17 +34,15 @@ Instead of distributing raw images, distribute the **semantic derivatives** a lo
 
 ## Overview
 
-```
-┌───────────────┐   snapshot.jpg   ┌──────────────────────────┐
-│ USB webcam     │ ───────────────▶ │ publisher (--profile vlm) │
-│ + laptop       │                  │  └─ Ollama (llava/moondream)│
-└───────────────┘                  └───────────┬──────────────┘
-                                               │ description_full / summary
-                                               ▼
-                                     ┌────────────────────┐
-                                     │ distributed to       │
-                                     │ /platform/ingest     │
-                                     └────────────────────┘
+```mermaid
+flowchart LR
+  CAM["USB webcam<br>+ laptop"]
+  subgraph PUB["publisher (--profile vlm)"]
+    OL["Ollama (llava/moondream)"]
+  end
+  ING["distributed to<br>/platform/ingest"]
+  CAM -->|"snapshot.jpg"| PUB
+  PUB -->|"description_full / summary"| ING
 ```
 
 ## Required environment { #prerequisites }

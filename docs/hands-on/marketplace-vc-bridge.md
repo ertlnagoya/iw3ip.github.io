@@ -54,37 +54,30 @@ v2 の基本になるハンズオンです。マーケットプレイスでの�
 
 ## 全体像
 
-```
-[buyer]
-   │  iot-market-ui で商品を選び、MetaMask で purchase()
-   ▼
-[Merchandise.purchase tx]
-   │  ↓                        ↓
-   │  Purchase event          (任意) v1 lane: encryptURI 配信
-   ▼
-[bridge listener]   または    [iot-market-ui /purchased/[txHash]]
-   │                           │
-   └───────┬───────────────────┘
-           │  POST /marketplace/claim (冪等 on tx_hash)
-           ▼
-       [publisher]
-           │  pre_authorized_code を発行、deeplink を返す
-           │  audit: marketplace/claim
-           ▼
-       [iw3ip-wallet]
-           │  deeplink で OID4VCI 受領
-           │  → PurchaseViewerVC (claims: merchandise/tx/eth)
-           │  audit: marketplace/issued (eth_did_bound)
-           ▼
-       [iw3ip-wallet]
-           │  OID4VP で提示
-           │  → ViewerToken (60s 複数回可)
-           ▼
-       [/platform/data?merchandise=<addr>]
-           │  ViewerToken Bearer で取得
-           │  audit: platform/data (viewer_token_used)
-           ▼
-       [JSON データ取得]
+```mermaid
+flowchart TB
+  BUYER["buyer"]
+  TX["Merchandise.purchase tx"]
+  V1L["(任意) v1 lane: encryptURI 配信"]
+  subgraph ALT["または"]
+    direction LR
+    BL["bridge listener"]
+    UIP["iot-market-ui /purchased/[txHash]"]
+  end
+  PUB["publisher"]
+  W1["iw3ip-wallet"]
+  W2["iw3ip-wallet"]
+  PD["/platform/data?merchandise=&lt;addr&gt;"]
+  J["JSON データ取得"]
+  BUYER -->|"iot-market-ui で商品を選び、MetaMask で purchase()"| TX
+  TX -->|"Purchase event"| BL
+  TX --> UIP
+  TX -.-> V1L
+  ALT -->|"POST /marketplace/claim (冪等 on tx_hash)"| PUB
+  PUB -->|"pre_authorized_code を発行、deeplink を返す<br>audit: marketplace/claim"| W1
+  W1 -->|"deeplink で OID4VCI 受領<br>→ PurchaseViewerVC (claims: merchandise/tx/eth)<br>audit: marketplace/issued (eth_did_bound)"| W2
+  W2 -->|"OID4VP で提示<br>→ ViewerToken (60s 複数回可)"| PD
+  PD -->|"ViewerToken Bearer で取得<br>audit: platform/data (viewer_token_used)"| J
 ```
 
 ## 必要な環境 { #前提 }

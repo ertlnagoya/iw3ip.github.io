@@ -54,33 +54,22 @@ Stage 1〜5 の総合演習です。Seller が ServiceVC で書き込んだデ�
 
 ## 全体像
 
-```
-[Seller]                              [Buyer]
-   │                                     │
-   │ wallet で ServiceVC 提示             │
-   │  → ServiceToken (1h)                │
-   │                                     │
-   │ POST /platform/ingest x N            │
-   │  → app.state.ingested 蓄積          │
-   │                                     │
-   │                                     │ MetaMask で Merchandise.purchase()
-   │                                     │  → Purchase event
-   │                                     ▼
-   │                                  [bridge listener]
-   │                                     │ Merchandise.additionalInfo から
-   │                                     │ dataset_id を解決
-   │                                     │ POST /marketplace/claim
-   │                                     ▼
-   │                                  [publisher]
-   │                                     │ PurchaseViewerVC offer
-   │                                     ▼
-   │                                  [iw3ip-wallet]
-   │                                     │ OID4VCI 受領 → eth↔did 紐付け
-   │                                     │ OID4VP 提示 → ViewerToken
-   │                                     ▼
-   │                                  GET /platform/data?merchandise=<addr>
-   │                                     │
-   │  ── Seller が書いた N 件が Buyer に届く ──
+```mermaid
+flowchart TB
+  SELLER["Seller"]
+  S1["wallet で ServiceVC 提示<br>→ ServiceToken (1h)"]
+  S2["POST /platform/ingest x N<br>→ app.state.ingested 蓄積"]
+  BUYER["Buyer"]
+  BL["bridge listener"]
+  PUB["publisher"]
+  W["iw3ip-wallet"]
+  GET["GET /platform/data?merchandise=&lt;addr&gt;"]
+  SELLER --> S1 --> S2
+  BUYER -->|"MetaMask で Merchandise.purchase()<br>→ Purchase event"| BL
+  BL -->|"Merchandise.additionalInfo から<br>dataset_id を解決<br>POST /marketplace/claim"| PUB
+  PUB -->|"PurchaseViewerVC offer"| W
+  W -->|"OID4VCI 受領 → eth↔did 紐付け<br>OID4VP 提示 → ViewerToken"| GET
+  S2 -.->|"Seller が書いた N 件が Buyer に届く"| GET
 ```
 
 ## 必要な環境 { #前提 }

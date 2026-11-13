@@ -14,33 +14,21 @@
 
 ## ここで動かすもの — 全体像
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  ブラウザ (Chrome 等) — http://localhost:5173                │
-│  └─ MetaMask で購入操作                                      │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-            ┌──────────────▼──────────────┐
-            │  iot-market-ui (1)           │ ← Svelte/Vite フロント
-            │  Node.js                     │
-            └──────┬───────────────┬───────┘
-                   │               │
-       ┌───────────▼─────┐   ┌────▼──────────────┐
-       │ iot-market (2)  │   │ simple-storage (3)│
-       │ Hardhat ノード  │   │ Rust              │
-       │ + コントラクト  │   │ データ本体        │
-       └─────────────────┘   └──────┬────────────┘
-                                    │
-                            ┌───────▼───────┐
-                            │ ipfs (4)      │
-                            │ + PostgreSQL  │
-                            │ Docker        │
-                            └───┬───────┬───┘
-                                │       │
-                  ┌─────────────▼──┐ ┌─▼─────────────────┐
-                  │ mediator-owner │ │ mediator-buyer    │
-                  │ (5) Rust       │ │ (6) Rust          │
-                  └────────────────┘ └───────────────────┘
+```mermaid
+flowchart TB
+  BR["ブラウザ (Chrome 等) — http://localhost:5173<br>MetaMask で購入操作"]
+  UI["iot-market-ui (1)<br>Node.js<br>Svelte/Vite フロント"]
+  IM["iot-market (2)<br>Hardhat ノード<br>+ コントラクト"]
+  SS["simple-storage (3)<br>Rust<br>データ本体"]
+  IP["ipfs (4)<br>+ PostgreSQL<br>Docker"]
+  MO["mediator-owner<br>(5) Rust"]
+  MB["mediator-buyer<br>(6) Rust"]
+  BR --> UI
+  UI --> IM
+  UI --> SS
+  SS --> IP
+  IP --> MO
+  IP --> MB
 ```
 
 (1) フロントエンド、(2) ブロックチェーン、(3) データ保管、(4) ファイル分散、(5)(6) 仲介プロセス、の 6 つです。

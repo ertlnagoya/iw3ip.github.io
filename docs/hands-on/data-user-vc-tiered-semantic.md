@@ -400,28 +400,23 @@ ollama に **`moondream`**（1.7 GB。llava の約 1/3 のサイズ）を入れ�
 
 ### 13.1 アーキテクチャ概観
 
-```
-[iPhone Safari の /provider]   §11.3 と同じフローでフレームをアップロード
-       │  POST /media/upload
-       ▼
-[publisher SemanticAnalyzer]   /semantic/analyze
-       │  ├─ MockSemanticAnalyzer   (テスト・MVP)
-       │  ├─ VisionSemanticAnalyzer (OpenCV Haar + MSER)
-       │  └─ Apple Vision / Core ML / VLM (将来課題)
-       ▼
-[Semantic Intermediate Representation (SIR) JSON]
-       │  正規化座標の bbox + sensitive_regions[] + events[] +
-       │  privacy_risk_score + analyzer_version
-       ▼
-[TrustPolicyEngine]            /semantic/render or /semantic/render_url
-       │  ViewerTrustLevel ∈ {anonymous,low,medium,high,owner,admin}
-       │  → DisclosurePolicy (allowed_outputs + mask_regions + audit_required)
-       ▼
-[TrustAwareRenderer]
-       │  textSummary / eventList / redactedImage / lowResolutionImage /
-       │  maskedVideoFrame / originalFrame
-       ▼
-[Viewer Output]
+```mermaid
+flowchart TB
+  U["iPhone Safari の /provider<br>§11.3 と同じフローでフレームをアップロード"]
+  subgraph SA["publisher SemanticAnalyzer: /semantic/analyze"]
+    SA1["MockSemanticAnalyzer<br>(テスト・MVP)"]
+    SA2["VisionSemanticAnalyzer<br>(OpenCV Haar + MSER)"]
+    SA3["Apple Vision / Core ML / VLM<br>(将来課題)"]
+  end
+  SIR["Semantic Intermediate Representation (SIR) JSON"]
+  TPE["TrustPolicyEngine<br>/semantic/render or /semantic/render_url"]
+  TAR["TrustAwareRenderer"]
+  OUT["Viewer Output"]
+  U -->|"POST /media/upload"| SA
+  SA --> SIR
+  SIR -->|"正規化座標の bbox + sensitive_regions[] + events[] +<br>privacy_risk_score + analyzer_version"| TPE
+  TPE -->|"ViewerTrustLevel ∈ {anonymous,low,medium,high,owner,admin}<br>→ DisclosurePolicy (allowed_outputs + mask_regions + audit_required)"| TAR
+  TAR -->|"textSummary / eventList / redactedImage / lowResolutionImage /<br>maskedVideoFrame / originalFrame"| OUT
 ```
 
 各層は独立してテストできます。ポリシー判定や VLM 出力に誤りがあっても

@@ -79,24 +79,36 @@ Stage 5〜6 で作った backend をそのまま使い、`iot-market-ui` をス�
 
 ## 全体像
 
-```
-[初回起動]
-   iPhone Safari → http://<HOST_IP>:5173/welcome
-        ↓ 3 ステップ完了 → 「マーケットへ進む」
-[ホーム画面追加]
-   Safari メニュー → ホーム画面に追加
-   → IW3IP アプリアイコンが追加 (standalone display)
-[起動]
-   アイコンタップ → iot-market-ui の "/" が standalone で開く
-[購入]
-   商品選択 → MetaMask Mobile in-app browser で確認 → tx 送信
-   → 自動で /purchased/[txHash] に遷移
-   → 「ウォレットで開く」ボタン → iw3ip-wallet 起動 → VC 受領
-[履歴 + 閲覧]
-   ハンバーガーメニュー → 「購入履歴 / データを見る」
-   → /my-data で過去の購入一覧
-   → 「閲覧チケットを取得」 → wallet で提示
-   → ViewerToken をペースト → データ表示
+```mermaid
+flowchart TB
+  subgraph FIRST["初回起動"]
+    F1["iPhone Safari → http://&lt;HOST_IP&gt;:5173/welcome"]
+  end
+  subgraph HOME["ホーム画面追加"]
+    H1["Safari メニュー → ホーム画面に追加"]
+    H2["IW3IP アプリアイコンが追加<br>(standalone display)"]
+  end
+  subgraph LAUNCH["起動"]
+    L1["アイコンタップ → iot-market-ui の「/」が standalone で開く"]
+  end
+  subgraph BUY["購入"]
+    B1["商品選択 → MetaMask Mobile in-app browser で確認 → tx 送信"]
+    B2["自動で /purchased/[txHash] に遷移"]
+    B3["「ウォレットで開く」ボタン → iw3ip-wallet 起動 → VC 受領"]
+  end
+  subgraph HIST["履歴 + 閲覧"]
+    V1["ハンバーガーメニュー → 「購入履歴 / データを見る」"]
+    V2["/my-data で過去の購入一覧"]
+    V3["「閲覧チケットを取得」 → wallet で提示"]
+    V4["ViewerToken をペースト → データ表示"]
+  end
+  F1 -->|"3 ステップ完了 → 「マーケットへ進む」"| H1
+  H1 --> H2
+  H2 --> L1
+  L1 --> B1
+  B1 --> B2 --> B3
+  B3 --> V1
+  V1 --> V2 --> V3 --> V4
 ```
 
 ---

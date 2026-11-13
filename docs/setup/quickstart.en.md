@@ -14,33 +14,21 @@ Estimated time: **approx. 15–30 min** (the first run pulls Docker images and r
 
 ## What you are starting — overview
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  Browser (Chrome etc.) — http://localhost:5173               │
-│  └─ MetaMask handles the purchase                            │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-            ┌──────────────▼──────────────┐
-            │  iot-market-ui (1)           │ ← Svelte/Vite frontend
-            │  Node.js                     │
-            └──────┬───────────────┬───────┘
-                   │               │
-       ┌───────────▼─────┐   ┌────▼──────────────┐
-       │ iot-market (2)  │   │ simple-storage (3)│
-       │ Hardhat node    │   │ Rust              │
-       │ + contracts     │   │ data store        │
-       └─────────────────┘   └──────┬────────────┘
-                                    │
-                            ┌───────▼───────┐
-                            │ ipfs (4)      │
-                            │ + PostgreSQL  │
-                            │ Docker        │
-                            └───┬───────┬───┘
-                                │       │
-                  ┌─────────────▼──┐ ┌─▼─────────────────┐
-                  │ mediator-owner │ │ mediator-buyer    │
-                  │ (5) Rust       │ │ (6) Rust          │
-                  └────────────────┘ └───────────────────┘
+```mermaid
+flowchart TB
+  BR["Browser (Chrome etc.) — http://localhost:5173<br>MetaMask handles the purchase"]
+  UI["iot-market-ui (1)<br>Node.js<br>Svelte/Vite frontend"]
+  IM["iot-market (2)<br>Hardhat node<br>+ contracts"]
+  SS["simple-storage (3)<br>Rust<br>data store"]
+  IP["ipfs (4)<br>+ PostgreSQL<br>Docker"]
+  MO["mediator-owner<br>(5) Rust"]
+  MB["mediator-buyer<br>(6) Rust"]
+  BR --> UI
+  UI --> IM
+  UI --> SS
+  SS --> IP
+  IP --> MO
+  IP --> MB
 ```
 
 (1) frontend, (2) blockchain, (3) data store, (4) distributed file store, (5)(6) mediators.

@@ -64,23 +64,21 @@ we do not call it on-chain (see [Why no on-chain call](#why-no-on-chain-call)).
 
 ## Architecture
 
-```
-[/marketplace/claim (data_user_attrs = the five DataUserVC attributes)]
-        v
-[trust_score.evaluate(entityType, purpose, legalCompliance,
-                      dataHandlingPolicy, misuseRecord)]
-        | -> trust_score: int, access_level: full/access/denied,
-        |    allowed_views: subset of {event, image, video}
-        v
-[MarketplaceClaim.allowed_views]
-        v
-[PurchaseViewerVC issuance] -> VC.claims.allowed_views
-        v
-[/verifier/* with PurchaseViewerVC presentation]
-        v
-[ViewerToken.allowed_views]
-        v
-[/platform/data] selects image_cid / video_cid / video_duration_sec
+```mermaid
+flowchart TB
+  A["/marketplace/claim<br>(data_user_attrs = the five DataUserVC attributes)"]
+  B["trust_score.evaluate(entityType, purpose, legalCompliance,<br>dataHandlingPolicy, misuseRecord)"]
+  C["MarketplaceClaim.allowed_views"]
+  D["PurchaseViewerVC issuance"]
+  E["/verifier/* with PurchaseViewerVC presentation"]
+  F["ViewerToken.allowed_views"]
+  G["/platform/data<br>selects image_cid / video_cid / video_duration_sec"]
+  A --> B
+  B -->|"trust_score: int, access_level: full/access/denied,<br>allowed_views: subset of {event, image, video}"| C
+  C --> D
+  D -->|"VC.claims.allowed_views"| E
+  E --> F
+  F --> G
 ```
 
 `DataUserVC` alone mints **no token**. The same attributes are the *material*
@@ -359,17 +357,21 @@ only — no image at all, redacted or otherwise.
 When the publisher's `VLM_BACKEND` (and `IMAGE_REDACTION_BACKEND`) are set, `/provider/publish`
 gains two new steps (`--profile vlm` only starts the Ollama containers):
 
-```
-provider page
-  ├── /media/upload stores the source image (existing)
-  └── POST /provider/publish
-        └── pipeline.process_message
-              ├── existing: consent / policy evaluation (stops here on deny)
-              ├── (new) VLMClient.describe(image_url)
-              │     -> {description_full, description_summary, description_model, description_generated_at}
-              ├── (new) ImageRedactor.blur_pii(image_url)
-              │     -> {image_url_redacted, image_cid_redacted}
-              └── existing: platform_client.send(envelope)
+```mermaid
+flowchart TB
+  PP["provider page"]
+  UP["/media/upload stores the source image (existing)"]
+  PUB["POST /provider/publish"]
+  subgraph PM["pipeline.process_message"]
+    S1["existing: consent / policy evaluation<br>(stops here on deny)"]
+    S2["(new) VLMClient.describe(image_url)<br>-> {description_full, description_summary,<br>description_model, description_generated_at}"]
+    S3["(new) ImageRedactor.blur_pii(image_url)<br>-> {image_url_redacted, image_cid_redacted}"]
+    S4["existing: platform_client.send(envelope)"]
+    S1 --> S2 --> S3 --> S4
+  end
+  PP --> UP
+  PP --> PUB
+  PUB --> PM
 ```
 
 Degrade policy when VLM is missing or fails:

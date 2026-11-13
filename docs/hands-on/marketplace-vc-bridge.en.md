@@ -54,37 +54,30 @@ is added to **v1 (the current marketplace + MetaMask + delivery via an encrypted
 
 ## Overview
 
-```
-[buyer]
-   │  pick an item in iot-market-ui, purchase() with MetaMask
-   ▼
-[Merchandise.purchase tx]
-   │  ↓                        ↓
-   │  Purchase event          (optional) v1 lane: encryptURI delivery
-   ▼
-[bridge listener]     or      [iot-market-ui /purchased/[txHash]]
-   │                           │
-   └───────┬───────────────────┘
-           │  POST /marketplace/claim (idempotent on tx_hash)
-           ▼
-       [publisher]
-           │  issues a pre_authorized_code, returns a deeplink
-           │  audit: marketplace/claim
-           ▼
-       [iw3ip-wallet]
-           │  receives via OID4VCI from the deeplink
-           │  → PurchaseViewerVC (claims: merchandise/tx/eth)
-           │  audit: marketplace/issued (eth_did_bound)
-           ▼
-       [iw3ip-wallet]
-           │  presents via OID4VP
-           │  → ViewerToken (60s, multi-use)
-           ▼
-       [/platform/data?merchandise=<addr>]
-           │  fetch with ViewerToken as Bearer
-           │  audit: platform/data (viewer_token_used)
-           ▼
-       [JSON data retrieved]
+```mermaid
+flowchart TB
+  BUYER["buyer"]
+  TX["Merchandise.purchase tx"]
+  V1L["(optional) v1 lane: encryptURI delivery"]
+  subgraph ALT["or"]
+    direction LR
+    BL["bridge listener"]
+    UIP["iot-market-ui /purchased/[txHash]"]
+  end
+  PUB["publisher"]
+  W1["iw3ip-wallet"]
+  W2["iw3ip-wallet"]
+  PD["/platform/data?merchandise=&lt;addr&gt;"]
+  J["JSON data retrieved"]
+  BUYER -->|"pick an item in iot-market-ui, purchase() with MetaMask"| TX
+  TX -->|"Purchase event"| BL
+  TX --> UIP
+  TX -.-> V1L
+  ALT -->|"POST /marketplace/claim (idempotent on tx_hash)"| PUB
+  PUB -->|"issues a pre_authorized_code, returns a deeplink<br>audit: marketplace/claim"| W1
+  W1 -->|"receives via OID4VCI from the deeplink<br>→ PurchaseViewerVC (claims: merchandise/tx/eth)<br>audit: marketplace/issued (eth_did_bound)"| W2
+  W2 -->|"presents via OID4VP<br>→ ViewerToken (60s, multi-use)"| PD
+  PD -->|"fetch with ViewerToken as Bearer<br>audit: platform/data (viewer_token_used)"| J
 ```
 
 ## Required environment { #prerequisites }

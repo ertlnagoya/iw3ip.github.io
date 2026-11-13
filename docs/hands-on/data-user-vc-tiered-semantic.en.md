@@ -422,28 +422,23 @@ For the detailed design rationale, see [Tiered access design spec](data-user-vc-
 
 ### 13.1 Architecture
 
-```
-[iPhone Safari /provider]   uploads frames as in §11.3
-       |  POST /media/upload
-       v
-[publisher SemanticAnalyzer]   /semantic/analyze
-       |  ├─ MockSemanticAnalyzer   (test / MVP)
-       |  ├─ VisionSemanticAnalyzer (OpenCV Haar + MSER)
-       |  └─ Apple Vision / Core ML / VLM   (future)
-       v
-[Semantic Intermediate Representation (SIR) JSON]
-       |  normalized bbox + sensitive_regions[] + events[] +
-       |  privacy_risk_score + analyzer_version
-       v
-[TrustPolicyEngine]            /semantic/render or /semantic/render_url
-       |  ViewerTrustLevel ∈ {anonymous,low,medium,high,owner,admin}
-       |  -> DisclosurePolicy (allowed_outputs + mask_regions + audit_required)
-       v
-[TrustAwareRenderer]
-       |  textSummary / eventList / redactedImage / lowResolutionImage /
-       |  maskedVideoFrame / originalFrame
-       v
-[Viewer Output]
+```mermaid
+flowchart TB
+  U["iPhone Safari /provider<br>uploads frames as in §11.3"]
+  subgraph SA["publisher SemanticAnalyzer: /semantic/analyze"]
+    SA1["MockSemanticAnalyzer<br>(test / MVP)"]
+    SA2["VisionSemanticAnalyzer<br>(OpenCV Haar + MSER)"]
+    SA3["Apple Vision / Core ML / VLM<br>(future)"]
+  end
+  SIR["Semantic Intermediate Representation (SIR) JSON"]
+  TPE["TrustPolicyEngine<br>/semantic/render or /semantic/render_url"]
+  TAR["TrustAwareRenderer"]
+  OUT["Viewer Output"]
+  U -->|"POST /media/upload"| SA
+  SA --> SIR
+  SIR -->|"normalized bbox + sensitive_regions[] + events[] +<br>privacy_risk_score + analyzer_version"| TPE
+  TPE -->|"ViewerTrustLevel ∈ {anonymous,low,medium,high,owner,admin}<br>-> DisclosurePolicy (allowed_outputs + mask_regions + audit_required)"| TAR
+  TAR -->|"textSummary / eventList / redactedImage / lowResolutionImage /<br>maskedVideoFrame / originalFrame"| OUT
 ```
 
 Each layer can be tested independently. Even if the policy decision or

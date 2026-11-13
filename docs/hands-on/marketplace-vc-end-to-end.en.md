@@ -54,33 +54,22 @@ This is the capstone exercise for Stages 1–5. In one session, you run a scenar
 
 ## Overview
 
-```
-[Seller]                              [Buyer]
-   │                                     │
-   │ present ServiceVC in the wallet     │
-   │  → ServiceToken (1h)                │
-   │                                     │
-   │ POST /platform/ingest x N           │
-   │  → accumulates in app.state.ingested│
-   │                                     │
-   │                                     │ Merchandise.purchase() with MetaMask
-   │                                     │  → Purchase event
-   │                                     ▼
-   │                                  [bridge listener]
-   │                                     │ resolves dataset_id from
-   │                                     │ Merchandise.additionalInfo
-   │                                     │ POST /marketplace/claim
-   │                                     ▼
-   │                                  [publisher]
-   │                                     │ PurchaseViewerVC offer
-   │                                     ▼
-   │                                  [iw3ip-wallet]
-   │                                     │ receive via OID4VCI → eth↔did binding
-   │                                     │ present via OID4VP → ViewerToken
-   │                                     ▼
-   │                                  GET /platform/data?merchandise=<addr>
-   │                                     │
-   │  ── the N rows written by the Seller reach the Buyer ──
+```mermaid
+flowchart TB
+  SELLER["Seller"]
+  S1["present ServiceVC in the wallet<br>→ ServiceToken (1h)"]
+  S2["POST /platform/ingest x N<br>→ accumulates in app.state.ingested"]
+  BUYER["Buyer"]
+  BL["bridge listener"]
+  PUB["publisher"]
+  W["iw3ip-wallet"]
+  GET["GET /platform/data?merchandise=&lt;addr&gt;"]
+  SELLER --> S1 --> S2
+  BUYER -->|"Merchandise.purchase() with MetaMask<br>→ Purchase event"| BL
+  BL -->|"resolves dataset_id from<br>Merchandise.additionalInfo<br>POST /marketplace/claim"| PUB
+  PUB -->|"PurchaseViewerVC offer"| W
+  W -->|"receive via OID4VCI → eth↔did binding<br>present via OID4VP → ViewerToken"| GET
+  S2 -.->|"the N rows written by the Seller reach the Buyer"| GET
 ```
 
 ## Required environment { #prerequisites }

@@ -211,18 +211,35 @@ iPhone Safari でいずれかを開いてください。
 publisher 内蔵の **PWA Viewer**（`/buyer/start` + `/viewer`。PWA は Progressive Web App の略）を使うと、
 スマホでも PC でも、ブラウザでページを開くだけで提示から表示までが自動で進みます。
 
-```
-[iPhone Safari] ─ /buyer/start                            [publisher]
-   │  ↓ 自動で deeplink                                       │
-   │  iw3ip-wallet 起動 → Tier 3 提示 ───────────────────────► │ mint ViewerToken
-   │  ↑ redirect_uri=/viewer?vt=...                            │
-   │  Safari 戻る → /viewer が image/video 自動表示             │
+スマホ (iPhone Safari) で開いた場合の流れです。
 
-[PC Chrome] ─ /buyer/start                                [publisher]
-   │  ↓ QR 表示 + 2 秒ごとにポーリング                         │
-   │      QR を iPhone で読む → ウォレット → Tier 3 提示 ──────► │
-   │  ↑ /verifier/status から viewer_url を取得                 │
-   │  PC ブラウザが /viewer に自動遷移 → 画像表示                │
+```mermaid
+sequenceDiagram
+  participant S as iPhone Safari
+  participant W as iw3ip-wallet
+  participant P as publisher
+  S->>S: /buyer/start
+  S->>W: 自動で deeplink、iw3ip-wallet 起動
+  W->>P: Tier 3 提示
+  P->>P: mint ViewerToken
+  P-->>S: redirect_uri=/viewer?vt=...
+  Note over S: Safari 戻る → /viewer が image/video 自動表示
+```
+
+PC (PC Chrome) で開いた場合の流れです。
+
+```mermaid
+sequenceDiagram
+  participant C as PC Chrome
+  participant W as iPhone<br>(ウォレット)
+  participant P as publisher
+  C->>C: /buyer/start
+  C->>C: QR 表示 + 2 秒ごとにポーリング
+  C-->>W: QR を iPhone で読む
+  W->>P: ウォレット → Tier 3 提示
+  P->>P: mint ViewerToken
+  P-->>C: /verifier/status から viewer_url を取得
+  Note over C: PC ブラウザが /viewer に自動遷移 → 画像表示
 ```
 
 ### 10.1 起動
@@ -359,20 +376,26 @@ verifier が VC 提示を拒否すると、`/verifier/status` レスポンスに
 `/provider/publish` だけで動作し、§8 の `provider_with_media.py` で行った操作を
 ブラウザだけで実行できます。
 
-```
-[PC ブラウザ] ─ /provider/start                       [publisher]
-   │  ↓ QR 表示 + 2 秒ごとにポーリング                     │
-   │      QR を iPhone で読む → ウォレット → SellerVC 提示 ─►│ mint SellerToken
-   │  ↑ /verifier/status で seller_token + licensed_datasets
-   │  PC ページが「許可データセット」一覧を出す
-   │  ↓ 1 つ選んで「アップロードへ進む」                     │
-   │  /provider?pt=<seller_token>&ds=<dataset_id>          │
-   │     ファイル選択 / カメラ撮影 / ブラウザ録画 ─────────►│ /media/upload
-   │     ↑ URL + (CID) を払い出し                          │
-   │     「Publish」ボタン                                  │
-   │     POST /provider/publish (Bearer SellerToken) ─────►│ use_seller_token
-   │                                                        │ → process_message
-   │  ↑ {"status":"allowed", ...} を表示                     │
+```mermaid
+sequenceDiagram
+  participant B as PC ブラウザ
+  participant W as iPhone<br>(ウォレット)
+  participant P as publisher
+  B->>B: /provider/start
+  B->>B: QR 表示 + 2 秒ごとにポーリング
+  B-->>W: QR を iPhone で読む
+  W->>P: ウォレット → SellerVC 提示
+  P->>P: mint SellerToken
+  P-->>B: /verifier/status で seller_token + licensed_datasets
+  B->>B: PC ページが「許可データセット」一覧を出す
+  B->>B: 1 つ選んで「アップロードへ進む」
+  B->>B: /provider?pt=#lt;seller_token#gt;&ds=#lt;dataset_id#gt;
+  B->>P: ファイル選択 / カメラ撮影 / ブラウザ録画 → /media/upload
+  P-->>B: URL + (CID) を払い出し
+  B->>B: 「Publish」ボタン
+  B->>P: POST /provider/publish (Bearer SellerToken)
+  P->>P: use_seller_token → process_message
+  P-->>B: {"status":"allowed", ...} を表示
 ```
 
 `/provider/start` は SellerVC を提示する **OID4VP のフロー**で、§10 の `/buyer/start`

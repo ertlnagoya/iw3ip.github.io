@@ -36,13 +36,15 @@ presentation yields a ServiceToken valid for 1 hour that can be used any number 
 A publisher process holds this token and attaches it as Bearer to
 every `/platform/ingest` call.
 
-```
-[service]  -- ServiceVC presentation (once) -> [Verifier]
-                                                  |
-                                            ServiceToken (1h, reusable)
-[service]  <- ServiceToken ----------------------+
-[service]  -- POST /platform/ingest x N --------> [Publisher]
-                                                  authz via ServiceToken
+```mermaid
+sequenceDiagram
+  participant S as service
+  participant V as Verifier
+  participant P as Publisher
+  S->>V: ServiceVC presentation (once)
+  V-->>S: ServiceToken (1h, reusable)
+  S->>P: POST /platform/ingest x N
+  Note over P: authz via ServiceToken
 ```
 
 ## What this page covers

@@ -34,17 +34,15 @@
 
 ## 全体像
 
-```
-┌───────────────┐   snapshot.jpg   ┌──────────────────────────┐
-│ USB ウェブカメラ │ ───────────────▶ │ publisher (--profile vlm) │
-│ + ラップトップ   │                  │  └─ Ollama (llava/moondream)│
-└───────────────┘                  └───────────┬──────────────┘
-                                               │ description_full / summary
-                                               ▼
-                                     ┌────────────────────┐
-                                     │ /platform/ingest へ│
-                                     │ (意味データを流通) │
-                                     └────────────────────┘
+```mermaid
+flowchart LR
+  CAM["USB ウェブカメラ<br>+ ラップトップ"]
+  subgraph PUB["publisher (--profile vlm)"]
+    OL["Ollama (llava/moondream)"]
+  end
+  ING["/platform/ingest へ<br>(意味データを流通)"]
+  CAM -->|"snapshot.jpg"| PUB
+  PUB -->|"description_full / summary"| ING
 ```
 
 ## 必要な環境 { #前提 }

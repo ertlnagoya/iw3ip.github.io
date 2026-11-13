@@ -186,31 +186,32 @@ Authorization: Bearer <SellerToken>
 
 ## 5. データフロー (v7 シーケンス)
 
-```
-[Seller]
-  │  /issuer/offer?type=SellerVC&seller_id=...
-  │  → wallet で受領
-  │
-  │  /verifier/request?vc_kind=SellerVC
-  │  → wallet 提示
-  │  → SellerToken (24h)
-  │
-  │  Hardhat console / iot-market-ui (seller mode):
-  │  Merchandise を deploy
-  │  IoTMarket.registerMerchandise(addr)  ← on-chain
-  │
-  │  POST /marketplace/register
-  │  Authorization: Bearer <SellerToken>
-  │  → audit: marketplace/seller_registered
-  │  → publisher が merchandise -> seller_did を記録
-  │
-[Buyer (Stage 5/6 と同じ)]
-  │  Merchandise.purchase()
-  │  → bridge → /marketplace/claim
-  │  → PurchaseViewerVC 受領 → 提示 → ViewerToken
-  │
-  │  GET /platform/data?merchandise=<addr>
-  │  → 既存の dataset 解決ロジック + 新規: seller_did も同梱
+```mermaid
+sequenceDiagram
+  actor S as Seller
+  participant P as publisher
+  participant C as チェーン<br>(on-chain)
+  participant BR as bridge
+  actor B as Buyer<br>(Stage 5/6 と同じ)
+  S->>P: /issuer/offer?type=SellerVC&seller_id=...
+  P-->>S: wallet で受領
+  S->>P: /verifier/request?vc_kind=SellerVC
+  S->>P: wallet 提示
+  P-->>S: SellerToken (24h)
+  Note over S,C: Hardhat console / iot-market-ui (seller mode)
+  S->>C: Merchandise を deploy
+  S->>C: IoTMarket.registerMerchandise(addr)
+  S->>P: POST /marketplace/register<br>Authorization: Bearer #lt;SellerToken#gt;
+  Note over P: audit: marketplace/seller_registered
+  P->>P: merchandise -> seller_did を記録
+  B->>C: Merchandise.purchase()
+  C->>BR: bridge へ
+  BR->>P: /marketplace/claim
+  P-->>B: PurchaseViewerVC 受領
+  B->>P: 提示
+  P-->>B: ViewerToken
+  B->>P: GET /platform/data?merchandise=#lt;addr#gt;
+  P-->>B: 既存の dataset 解決ロジック<br>+ 新規: seller_did も同梱
 ```
 
 ## 6. Issuance ガバナンス

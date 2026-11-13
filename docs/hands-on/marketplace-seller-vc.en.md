@@ -50,29 +50,14 @@ This page adds a layer that uses a VC to back "who" is selling a dataset. It cov
 
 ## Overview
 
-```
-[Seller wallet]
-   │ 1. /issuer/offer?type=SellerVC → receive
-   │ 2. /verifier/request?vc_kind=SellerVC → present
-   │ 3. SellerToken (24h, multi-use)
-   │
-[Seller (Hardhat console)]
-   │ 4. deploy a Merchandise + IoTMarket.registerMerchandise()
-   │
-[Seller (curl or /seller UI)]
-   │ 5. POST /marketplace/register
-   │    Authorization: Bearer SellerToken
-   │    body: merchandise_address + seller_eth_addr + tx_hash + dataset_id
-   │
-[publisher]
-   │ - verifies the SellerToken (licensed_datasets contains dataset_id)
-   │ - (optional) verifies Merchandise.getOwner() on-chain
-   │ - audit: raw_topic=marketplace/seller_registered
-   │ - merchandise → seller_did binding inside the publisher
-   │
-[Buyer (purchase flow of Stage 5/6)]
-   │ → GET /platform/data?merchandise=<addr>
-   │   the response carries seller_did
+```mermaid
+flowchart TB
+  SW["Seller wallet<br>1. /issuer/offer?type=SellerVC → receive<br>2. /verifier/request?vc_kind=SellerVC → present<br>3. SellerToken (24h, multi-use)"]
+  SH["Seller (Hardhat console)<br>4. deploy a Merchandise + IoTMarket.registerMerchandise()"]
+  SC["Seller (curl or /seller UI)<br>5. POST /marketplace/register<br>Authorization: Bearer SellerToken<br>body: merchandise_address + seller_eth_addr + tx_hash + dataset_id"]
+  PUB["publisher<br>- verifies the SellerToken (licensed_datasets contains dataset_id)<br>- (optional) verifies Merchandise.getOwner() on-chain<br>- audit: raw_topic=marketplace/seller_registered<br>- merchandise → seller_did binding inside the publisher"]
+  BUYER["Buyer (purchase flow of Stage 5/6)<br>→ GET /platform/data?merchandise=&lt;addr&gt;<br>the response carries seller_did"]
+  SW --> SH --> SC --> PUB --> BUYER
 ```
 
 ## Required environment { #prerequisites }

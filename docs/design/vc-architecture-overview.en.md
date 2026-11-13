@@ -39,51 +39,45 @@ DataUserVC does not issue a token on its own. At `/marketplace/claim` it is used
 
 ## 4. Authorization matrix (which VC gates which API)
 
-```
-                    write                              read
-                    ───────────────────────────────    ────────────────────────────
-                    single-use        continuous       short-term   purchase-bound
-────────────────────────────────────────────────────────────────────────────────────
-JSON registration │ /consents POST  │ —              │ —          │ —
-Wallet (human)    │ ConsentVC       │ —              │ ViewerVC   │ PurchaseViewerVC
-Wallet (M2M)      │ —               │ ServiceVC      │ —          │ —
-────────────────────────────────────────────────────────────────────────────────────
-Listing governance│ —               │ —              │ —          │ —
- (cross-cutting)  │   ↓ SellerVC gates "/marketplace/register" (and "/provider/publish")
-```
+| | write: single-use | write: continuous | read: short-term | read: purchase-bound |
+| --- | --- | --- | --- | --- |
+| JSON registration | /consents POST | — | — | — |
+| Wallet (human) | ConsentVC | — | ViewerVC | PurchaseViewerVC |
+| Wallet (M2M) | — | ServiceVC | — | — |
+| Listing governance (cross-cutting) | — | — | — | — |
+
+For listing governance (cross-cutting), SellerVC gates "/marketplace/register" (and "/provider/publish").
 
 **SellerVC does not gate the data-read APIs.** Instead, it leaves evidence of the seller's identity at listing time in the audit log, and that identity is included as `seller_did` in the buyer's `/platform/data?merchandise=` response. In the implementation, the SellerToken also works for `POST /provider/publish` in Stage T (writes from the data-provider PWA), and each use increments `register_count`.
 
 ## 5. Hands-on stages (Stages 0–7, T, A, P)
 
-```
-Dependency graph of the Part 2 hands-on
+The figure below shows the dependency graph of the Part 2 hands-on. A dotted arrow marks a design basis, not a hands-on prerequisite.
 
-  Stage 0 (baseline: /consents JSON registration)
-   ├── webcam-event-sharing
-   └── environment-disaster
-        ↓
-  Stage 1 ── ha-ssi-wallet         ConsentVC + PolicyToken (single-use write)
-        ↓
-  Stage 3 ── ha-ssi-viewer         ViewerVC + ViewerToken (multi-use read)
-        ↓
-  Stage 4 prep ── ha-ssi-service   ServiceVC + ServiceToken (M2M continuous)
-        ↓
-  Stage 5 ── marketplace-vc-bridge PurchaseViewerVC (purchase-bound read)
-        ↓
-  Stage 6 ── marketplace-vc-end-to-end
-                                   Service (write) × PurchaseViewer (read) combined
-        ↓
-  Stage 7 ── marketplace-seller-vc SellerVC (listing identity)
-
-  Stage 1 + Stage 0 ─→ Stage T ── data-user-vc-tiered  DataUserVC (content tiered by trust)
-  Stage 6 ─→ Stage A ── marketplace-mobile-app  purchase to viewing in a phone PWA
-  Stage T + Stage 7 ┄→ Stage P ── c2pa-provenance  image provenance signed with C2PA
-                       (┄→ marks a design basis, not a hands-on prerequisite.
-                        P0 has no prerequisite stage and runs on its own without VCs.
-                        P1–P3 send data with /simulate/publish and do not use SellerVC or Stage 7.
-                        They connect to the publisher and the chain and use the per-tier ViewerToken)
+```mermaid
+flowchart TB
+  S0["Stage 0 (baseline: /consents JSON registration)<br>webcam-event-sharing<br>environment-disaster"]
+  S1["Stage 1 ── ha-ssi-wallet<br>ConsentVC + PolicyToken (single-use write)"]
+  S3["Stage 3 ── ha-ssi-viewer<br>ViewerVC + ViewerToken (multi-use read)"]
+  S4["Stage 4 prep ── ha-ssi-service<br>ServiceVC + ServiceToken (M2M continuous)"]
+  S5["Stage 5 ── marketplace-vc-bridge<br>PurchaseViewerVC (purchase-bound read)"]
+  S6["Stage 6 ── marketplace-vc-end-to-end<br>Service (write) × PurchaseViewer (read) combined"]
+  S7["Stage 7 ── marketplace-seller-vc<br>SellerVC (listing identity)"]
+  ST["Stage T ── data-user-vc-tiered<br>DataUserVC (content tiered by trust)"]
+  SA["Stage A ── marketplace-mobile-app<br>purchase to viewing in a phone PWA"]
+  SP["Stage P ── c2pa-provenance<br>image provenance signed with C2PA"]
+  S0 --> S1 --> S3 --> S4 --> S5 --> S6 --> S7
+  S1 --> ST
+  S0 --> ST
+  S6 --> SA
+  ST -.-> SP
+  S7 -.-> SP
 ```
+
+The prerequisites of Stage P are as follows.
+
+- P0 has no prerequisite stage and runs on its own without VCs.
+- P1–P3 send data with /simulate/publish and do not use SellerVC or Stage 7. They connect to the publisher and the chain and use the per-tier ViewerToken.
 
 Details of each stage:
 

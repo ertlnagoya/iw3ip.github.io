@@ -38,51 +38,45 @@ DataUserVC は単独ではトークンを発行しない。`/marketplace/claim` 
 
 ## 4. 認可マトリクス (どの VC でどの API がゲートされるか)
 
-```
-                書き込み (write)             読み出し (read)
-                ───────────────────────      ───────────────────────
-                単回         連続              短期         購入連動
-─────────────────────────────────────────────────────────────────
-JSON 登録      │ /consents POST  │ —              │ —          │ —
-ウォレット (人) │ ConsentVC       │ —              │ ViewerVC   │ PurchaseViewerVC
-ウォレット (M2M)│ —               │ ServiceVC      │ —          │ —
-─────────────────────────────────────────────────────────────────
-出品ガバナンス  │ —               │ —              │ —          │ —
- (横断)        │   ↓ SellerVC が "/marketplace/register" (と "/provider/publish") を gate
-```
+| | 書き込み (write): 単回 | 書き込み (write): 連続 | 読み出し (read): 短期 | 読み出し (read): 購入連動 |
+| --- | --- | --- | --- | --- |
+| JSON 登録 | /consents POST | — | — | — |
+| ウォレット (人) | ConsentVC | — | ViewerVC | PurchaseViewerVC |
+| ウォレット (M2M) | — | ServiceVC | — | — |
+| 出品ガバナンス (横断) | — | — | — | — |
+
+出品ガバナンス (横断) では、SellerVC が "/marketplace/register" (と "/provider/publish") を gate する。
 
 **SellerVC はデータを読み出す API を gate しない**。代わりに出品時の身元証跡を audit log に残し、buyer の `/platform/data?merchandise=` レスポンスに `seller_did` として含まれる。なお、実装では SellerToken は Stage T の `POST /provider/publish` (データ提供者の PWA からの書き込み) にも使え、そのたびに `register_count` が増える。
 
 ## 5. ハンズオンの段階 (Stage 0〜7, T, A, P)
 
-```
-Part 2 のハンズオンの依存グラフ
+Part 2 のハンズオンの依存グラフを、次の図に示す。点線の矢印は設計の土台を表し、ハンズオンの前提ではない。
 
-  Stage 0 (baseline: /consents JSON 登録)
-   ├── webcam-event-sharing
-   └── environment-disaster
-        ↓
-  Stage 1 ── ha-ssi-wallet         ConsentVC + PolicyToken (write 単回)
-        ↓
-  Stage 3 ── ha-ssi-viewer         ViewerVC + ViewerToken (read 多回)
-        ↓
-  Stage 4 prep ── ha-ssi-service   ServiceVC + ServiceToken (M2M 連続)
-        ↓
-  Stage 5 ── marketplace-vc-bridge PurchaseViewerVC (購入連動 read)
-        ↓
-  Stage 6 ── marketplace-vc-end-to-end
-                                   Service (write) × PurchaseViewer (read) 連結
-        ↓
-  Stage 7 ── marketplace-seller-vc SellerVC (出品身元)
-
-  Stage 1 + Stage 0 ─→ Stage T ── data-user-vc-tiered  DataUserVC (信頼度で見せる中身を変える)
-  Stage 6 ─→ Stage A ── marketplace-mobile-app  スマホの PWA で購入から閲覧まで
-  Stage T + Stage 7 ┄→ Stage P ── c2pa-provenance  C2PA で画像の来歴を署名
-                       (┄→ は設計の土台を表し、ハンズオンの前提ではない。
-                        P0 は前提の Stage が無く、VC を使わずに単独で動く。
-                        P1〜P3 は /simulate/publish でデータを送り、SellerVC と Stage 7 を使わない。
-                        publisher とチェーンにつなぎ、Tier ごとの ViewerToken を使う)
+```mermaid
+flowchart TB
+  S0["Stage 0 (baseline: /consents JSON 登録)<br>webcam-event-sharing<br>environment-disaster"]
+  S1["Stage 1 ── ha-ssi-wallet<br>ConsentVC + PolicyToken (write 単回)"]
+  S3["Stage 3 ── ha-ssi-viewer<br>ViewerVC + ViewerToken (read 多回)"]
+  S4["Stage 4 prep ── ha-ssi-service<br>ServiceVC + ServiceToken (M2M 連続)"]
+  S5["Stage 5 ── marketplace-vc-bridge<br>PurchaseViewerVC (購入連動 read)"]
+  S6["Stage 6 ── marketplace-vc-end-to-end<br>Service (write) × PurchaseViewer (read) 連結"]
+  S7["Stage 7 ── marketplace-seller-vc<br>SellerVC (出品身元)"]
+  ST["Stage T ── data-user-vc-tiered<br>DataUserVC (信頼度で見せる中身を変える)"]
+  SA["Stage A ── marketplace-mobile-app<br>スマホの PWA で購入から閲覧まで"]
+  SP["Stage P ── c2pa-provenance<br>C2PA で画像の来歴を署名"]
+  S0 --> S1 --> S3 --> S4 --> S5 --> S6 --> S7
+  S1 --> ST
+  S0 --> ST
+  S6 --> SA
+  ST -.-> SP
+  S7 -.-> SP
 ```
+
+Stage P の前提は次のとおりである。
+
+- P0 は前提の Stage が無く、VC を使わずに単独で動く。
+- P1〜P3 は /simulate/publish でデータを送り、SellerVC と Stage 7 を使わない。publisher とチェーンにつなぎ、Tier ごとの ViewerToken を使う。
 
 各ステージの詳細:
 

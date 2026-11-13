@@ -72,15 +72,18 @@ Provenance is **embedded inside the file**, the JPEG or MP4 itself. Handing over
 
 The bundle of provenance embedded in a file is called a manifest. A manifest is made up as follows:
 
-```
-Signed JPEG file
-├─ Pixel data (the photo itself)
-└─ Manifest
-    ├─ Assertion 1: "captured" (c2pa.actions)
-    ├─ Assertion 2: camera ID and capture time (jp.ertl.iw3ip.capture)
-    ├─ Assertion 3: sensor readings (jp.ertl.iw3ip.sensor)
-    ├─ Claim: the hashes of assertions 1–3 and of the pixel data, listed together
-    └─ Signature: an electronic signature over the claim, plus the signer's certificate
+```mermaid
+flowchart TB
+  subgraph FILE["Signed JPEG file"]
+    PIX["Pixel data (the photo itself)"]
+    subgraph MAN["Manifest"]
+      AS1["Assertion 1: 'captured'<br>(c2pa.actions)"]
+      AS2["Assertion 2: camera ID and capture time<br>(jp.ertl.iw3ip.capture)"]
+      AS3["Assertion 3: sensor readings<br>(jp.ertl.iw3ip.sensor)"]
+      CLM["Claim: the hashes of assertions 1–3 and<br>of the pixel data, listed together"]
+      SIG["Signature: an electronic signature over the claim,<br>plus the signer's certificate"]
+    end
+  end
 ```
 
 What gets signed is the claim, and the claim contains the hashes of every assertion and of the pixel data. Changing a single pixel or a single character of an assertion therefore makes a hash mismatch, and validation fails.
