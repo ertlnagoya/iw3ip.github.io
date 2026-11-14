@@ -29,6 +29,30 @@ Pipeline:
 
 `Home Assistant -> MQTT -> (optional Node-RED) -> Data Publisher -> Platform API`
 
+The following diagram shows how the publisher decides whether received data may be shared.
+
+```mermaid
+flowchart TB
+  IN1["curl<br>POST /simulate/publish<br>(topic, payload, purpose)"] --> N["publisher: derives the<br>dataset_id from topic and payload"]
+  IN2["mosquitto_pub<br>(MQTT :1883)"] -->|"purpose is the default, research"| N
+  N --> C1{"Is there a consent with<br>the same dataset_id?"}
+  CON["POST /consents<br>consent JSON"] -.-> C1
+  C1 -->|"yes"| C2{"Is the purpose in<br>allowed_purposes?"}
+  C2 -->|"yes"| C3{"Is now between<br>valid_from and valid_to?"}
+  C3 -->|"yes"| SEND["send to the Platform API<br>(/platform/ingest)"]
+  SEND -->|"success"| A1["audit log: allow"]
+  SEND -->|"failure"| A3["audit log: send_error"]
+  C1 -->|"no"| A2["audit log: deny<br>(no_matching_consent)"]
+  C2 -->|"no"| A2
+  C3 -->|"no"| A2
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class A1 allow
+  class A2 deny
+```
+
+For example, `homeassistant/state/sensor/temperature` in step 3 becomes `home/env/temperature`. In step 4 a consent with the same `dataset_id` exists, but its purposes do not include `marketing`, so the result is `deny`.
+
 ## Shortest path
 
 For a first pass, these four steps are enough.

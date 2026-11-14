@@ -32,6 +32,27 @@ Pipeline:
 
 The DataUserVC is issued to the wallet so you can inspect it. The course repository has no presentation definition for presenting a DataUserVC from the wallet yet, so this page passes the same attributes directly in the `data_user_attrs` of `/marketplace/claim` to decide the trust level (§3).
 
+The next diagram shows the order in which the PC (curl and browser) and the phone wallet talk to the publisher on this page.
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant PC as PC<br>(curl / browser)
+  participant P as publisher
+  participant W as Phone wallet
+  PC->>P: POST /marketplace/claim (data_user_attrs)
+  P->>P: Compute trustScore, store allowed_views in the claim
+  P-->>PC: claim_id, offer_url, deeplink
+  W->>P: Scan the offer_url QR (OID4VCI)
+  P-->>W: PurchaseViewerVC (with allowed_views)
+  W->>P: Scan the /verifier/request QR, present the VC (OID4VP)
+  P->>P: Verify, issue a ViewerToken with the VC's allowed_views (logged)
+  PC->>P: GET /platform/data (Bearer ViewerToken)
+  P-->>PC: Event rows without the keys missing from allowed_views
+```
+
+What may be viewed is decided at step 2; the PurchaseViewerVC and the ViewerToken only carry that decision forward. That is why changing `data_user_attrs` after the ViewerToken is issued does not affect the token already issued.
+
 ## Quickest path
 
 1. Bring up the publisher
@@ -156,6 +177,31 @@ This profile scores 25 and the verdict is `denied`. `denied` is the name of the 
 ## 3. Three `/marketplace/claim` calls
 
 `/marketplace/claim` is the API that tells the publisher a purchase has happened. Normally the bridge calls it when it detects a purchase event; here we call it directly with curl to see only the tier differences. When `data_user_attrs` carries the same attributes as a DataUserVC, the publisher computes the trustScore and decides what that purchase may view.
+
+The next diagram shows how the publisher picks the PurchaseViewerVC type from `data_user_attrs`.
+
+```mermaid
+flowchart TB
+  A{"data_user_attrs<br>present?"}
+  S["Add up the points of<br>the 5 attributes (trustScore)"]
+  F{"trustScore #gt;= 80 and<br>entityType is<br>GovernmentOrganization or Police?"}
+  G{"trustScore #gt;= 60?"}
+  FULL["full<br>PurchaseViewerVC.full<br>event / image / video"]
+  ACC["access<br>PurchaseViewerVC.access<br>event / image"]
+  EV["denied or no attributes<br>PurchaseViewerVC.event<br>event only"]
+  A -->|"yes"| S --> F
+  A -->|"no"| EV
+  F -->|"yes"| FULL
+  F -->|"no"| G
+  G -->|"yes"| ACC
+  G -->|"no"| EV
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class FULL,ACC allow
+  class EV deny
+```
+
+Even with a trustScore of 80 or more, an `Enterprise` entityType goes on to the second check and ends up as `access`. The breakdown of the points is in the [tiered access design spec](data-user-vc-tiered-spec.md).
 
 `merchandise_address`, `buyer_eth_addr`, `tx_hash`, and `dataset_id` are required. No real purchase is involved here, so use any string for `tx_hash`, different for each call (calling again with the same `tx_hash` returns the same claim).
 

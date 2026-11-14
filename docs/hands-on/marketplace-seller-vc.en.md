@@ -246,6 +246,39 @@ Note down the four values shown in the console: `seller`, `merchandise`, `deploy
 - (Optional) When MARKETPLACE_HARDHAT_RPC is enabled, Merchandise.getOwner() is verified
 - A `marketplace/seller_registered` row appears in the audit log
 
+The next diagram shows the order of the checks the publisher runs on `/marketplace/register`. The first part uses the SellerToken obtained from the SellerVC; the second (optional) part checks the owner of the Merchandise on the blockchain.
+
+```mermaid
+flowchart TB
+  R["POST /marketplace/register<br>(Bearer SellerToken)"]
+  T{"SellerToken valid and<br>dataset_id in<br>licensed_datasets?"}
+  E1["401 / 403<br>seller_token_..."]
+  C{"MARKETPLACE_HARDHAT_RPC<br>set?"}
+  Q["Query Merchandise.getOwner()<br>on the Hardhat node"]
+  Q2{"Query succeeded?"}
+  E2["502 chain_rpc_failed"]
+  O{"Owner equals<br>seller_eth_addr?"}
+  E3["403 owner_mismatch"]
+  B["Bind merchandise to seller_did<br>audit: marketplace/seller_registered"]
+  R --> T
+  T -->|"no"| E1
+  T -->|"yes"| C
+  C -->|"no (owner_verify: skipped)"| B
+  C -->|"yes"| Q --> Q2
+  Q2 -->|"no"| E2
+  Q2 -->|"yes"| O
+  O -->|"no"| E3
+  O -->|"yes (owner_verify: verified)"| B
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  classDef chain fill:#e3ecfa,stroke:#2c5aa0,color:#1a3a6b
+  class B allow
+  class E1,E2,E3 deny
+  class Q chain
+```
+
+The SellerVC vouches for which datasets the seller may sell. Whether this seller really owns that Merchandise can only be checked by querying the blockchain, and that query runs only when `MARKETPLACE_HARDHAT_RPC` is set.
+
 ### Steps
 
 Run this in the terminal where you set `SELLER` in Step S2 (at the repository top). Before running, replace each whole `<…>` in the first three lines, including the angle brackets, with the value you noted in Step S3. If you forget, nothing errors out, because the values are quoted: the placeholder text is sent as is. When `MARKETPLACE_HARDHAT_RPC` is not set, the bogus values get registered. When it is set, a forgotten `MERCH` makes the on-chain lookup fail with HTTP 502 `chain_rpc_failed`, and a forgotten `SELLER_ETH` does not match the on-chain owner and fails with HTTP 403 `owner_mismatch`. `TX_HASH` is not checked, so a forgotten `TX_HASH` is registered as is.

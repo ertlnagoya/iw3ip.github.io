@@ -28,6 +28,24 @@ It uses Home Assistant `demo` entities to reproduce the following local flow:
 
 This page uses one environment to show Phase 1 state sharing, Phase 2 event sharing, and a Phase 3 assistant execution flow.
 
+The following diagram shows the data flow on this page.
+
+```mermaid
+flowchart TB
+  HA["Home Assistant demo<br>script (mqtt.publish)"] -->|"homeassistant/state/...<br>homeassistant/event/..."| MQ["mosquitto<br>(MQTT :1883)"]
+  MQ --> PUB["publisher (:8080)<br>receives and normalizes"]
+  SIM["curl<br>POST /simulate/publish"] -->|"sets purpose"| PUB
+  PUB --> CHK{"Is there a matching consent?<br>(dataset_id, purpose, validity period)"}
+  CON["POST /consents<br>consent JSON"] --> CHK
+  CHK -->|"allow"| ING["recorded in<br>/platform/ingest"]
+  CHK -->|"allow / deny"| AUD["recorded in<br>/audit/logs"]
+  ING -.->|"Phase 3:<br>run_phase3_from_ingest.py"| AST["assistant (:8090)<br>plan / execute"]
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  class ING allow
+```
+
+The publisher has two entry points: MQTT and HTTP (`/simulate/publish`). Data from either one goes through the same consent check. Data from MQTT carries no `purpose`, so the publisher uses its default (`research`). Both allowed (`allow`) and denied (`deny`) messages are recorded in `/audit/logs`.
+
 ## Shortest path
 
 For a first pass, these five steps are enough.

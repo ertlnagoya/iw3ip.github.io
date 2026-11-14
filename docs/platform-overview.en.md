@@ -174,6 +174,23 @@ The samples on this site first focus on the core flow so that readers can unders
 3. Decide `allow` or `deny` based on a Consent VC (a verifiable credential that expresses consent conditions; see [SSI / DID / VC Basics](foundations/ssi-did-vc-basics.md)).
 4. Record an audit log.
 
+The figure below shows how this flow splits into `allow` and `deny`.
+
+```mermaid
+flowchart LR
+  SRC["Home Assistant<br>or sensors"] --> NORM["Normalize into<br>a common schema"] --> CHK{"Does it meet the<br>Consent VC conditions?"}
+  CHK -->|"allow"| SEND["Send to the shared platform"]
+  CHK -->|"deny"| STOP["Do not send"]
+  SEND --> AUD["Audit log"]
+  STOP --> AUD
+  classDef allow fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class SEND allow
+  class STOP deny
+```
+
+Even when the data is not sent, the decision is recorded in the audit log.
+
 In other words, the site first demonstrates the minimum foundation for:
 
 **checking whether data may be sent before sending it, and recording the result**

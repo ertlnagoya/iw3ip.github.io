@@ -80,6 +80,31 @@ flowchart TB
   PD -->|"ViewerToken Bearer で取得<br>audit: platform/data (viewer_token_used)"| J
 ```
 
+次の図は、同じ流れを時間の順に並べたものです (bridge が申告する場合)。ブロックチェーン上 (on-chain) の処理は図の 1〜3 番目だけで、4 番目からはブロックチェーンの外 (off-chain) の VC のやり取りです。
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant B as 買い手の PC<br>(ブラウザ + MetaMask / curl)
+  participant M as Merchandise コントラクト<br>(Hardhat、on-chain)
+  participant BR as bridge
+  participant P as publisher
+  participant W as iw3ip-wallet<br>(iPhone)
+  B->>M: purchase() (ページの Step 6)
+  M->>M: Purchase event を記録
+  BR->>M: Purchase event を polling で検知
+  BR->>P: POST /marketplace/claim (merchandise_address、buyer_eth_addr、tx_hash、dataset_id)
+  P-->>BR: claim_id、deeplink (bridge のログに出力)
+  W->>P: deeplink で受け取る (OID4VCI、ページの Step 7)
+  P-->>W: PurchaseViewerVC (eth_addr ↔ did:jwk を audit に記録)
+  W->>P: PurchaseViewerVC を提示 (OID4VP、ページの Step 8)
+  P->>P: 検証して ViewerToken (60 秒) を発行
+  B->>P: GET /platform/data?merchandise=... (Bearer ViewerToken、ページの Step 9)
+  P-->>B: データ (JSON)
+```
+
+ETH の支払いは図の 1 番目で終わり、閲覧の権限は 7 番目の VC と 9 番目の ViewerToken で決まります。bridge は 3〜4 番目で、ブロックチェーン上の購入を publisher に伝えるだけです。
+
 ## 必要な環境 { #前提 }
 
 - [Stage 1](ha-ssi-wallet.md) と [Stage 3](ha-ssi-viewer.md) の動作確認が済んでいる

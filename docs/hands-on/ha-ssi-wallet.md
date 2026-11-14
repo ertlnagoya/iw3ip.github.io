@@ -61,6 +61,34 @@ OID4VP で検証し、検証が通った要求に対してのみデータを共�
 - `did:jwk` と SD-JWT VC を用いた軽量構成
 - `allowed` / `denied` が VC の内容と `purpose` によって決まる様子
 
+次の図は、このページの流れ (VC の発行、提示、書き込み) です。
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant B as PC<br>(ブラウザ / curl)
+  participant W as スマホウォレット
+  participant P as publisher<br>(Issuer / Verifier)
+  Note over B,P: OID4VCI: Consent VC を受け取る (§4)
+  B->>P: GET /issuer/offer?type=ConsentVC
+  P-->>B: QR を表示 (credential offer)
+  W->>P: QR を読み取り、POST /issuer/token
+  P-->>W: access_token
+  W->>P: POST /issuer/credential
+  P-->>W: Consent VC (SD-JWT VC)
+  Note over B,P: OID4VP: Consent VC を提示する (§5)
+  B->>P: GET /verifier/request?dataset_id=...&purpose=...
+  P-->>B: QR を表示 (提示の要求)
+  W->>P: QR を読み取り、VC を提示 (POST /verifier/response)
+  P->>P: dataset_id と allowed_purposes を確かめ、監査ログに記録
+  P-->>W: allowed と policy_token (5 分、1 回だけ)
+  Note over B,P: PolicyToken で書き込む (§8)
+  B->>P: POST /platform/ingest (Bearer policy_token)
+  P-->>B: received (トークンは使用済みになる)
+```
+
+Issuer と Verifier は、どちらも publisher です。11 の `policy_token` はウォレットに返るため、ハンズオンでは publisher のログから値を取り出して 12 で使います。`purpose` が `allowed_purposes` に入っていない場合は、11 で `denied` (`purpose_mismatch`) が返り、PolicyToken は発行されません。
+
 ## 必要な環境
 
 - Docker / Docker Compose が使える

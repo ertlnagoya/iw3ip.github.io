@@ -23,6 +23,33 @@ Without a HUSKYLENS2, a generic USB webcam plus OpenCV [1] is enough to emit `pe
 
 Detect people and possible littering in USB webcam images and generate event files, even without HUSKYLENS2. `mediator-owner` registers the generated files on the marketplace as merchandise.
 
+The following diagram shows how a detection result becomes registered merchandise.
+
+```mermaid
+flowchart TB
+  subgraph OFF["On the PC (off-chain)"]
+    direction LR
+    DEV["USB webcam<br>or mock"]
+    BR["webcam_litter_bridge.py<br>(webcam-bridge)"]
+    FILE["event file<br>401_webcam_event_*.txt<br>(raw_data/output)"]
+    MO["mediator-owner"]
+  end
+  subgraph ON["Blockchain (on-chain)"]
+    direction LR
+    MC["merchandise contract<br>(Merchandise)"]
+    MK["marketplace<br>(IoTMarket)"]
+  end
+  UI["iot-market-ui<br>localhost:5173/merchandise/#lt;address#gt;"]
+  DEV -->|"frames"| BR
+  BR -->|"writes one event<br>per file"| FILE
+  FILE -->|"finds the new file"| MO
+  MO -->|"creates<br>(price, file hash)"| MC
+  MO -->|"registers the merchandise address"| MK
+  MC -.->|"shown on the merchandise page"| UI
+```
+
+Only merchandise information such as the price and the file hash is written to the chain. The event file itself stays with `mediator-owner` and is handed to the buyer after a purchase (covered in 1.3).
+
 ## What this page helps you understand
 
 - how to try a Phase 1 event-generation flow with only a USB webcam
@@ -151,6 +178,24 @@ python3 webcam_litter_bridge.py \
 
 - A person is detected -> `person_detected`
 - A `bottle/cup` stays for a certain time and no person is nearby -> `possible_littering`
+
+The following diagram shows when webcam mode emits each of the two events.
+
+```mermaid
+flowchart TB
+  CAM["camera image (one frame)"] --> YOLO["detect objects with YOLO"]
+  YOLO --> P{"Is a person<br>in the frame?"}
+  P -->|"yes"| PE["person_detected"]
+  YOLO --> L{"Has a bottle / cup stayed<br>in the same place<br>for 8 s or more?"}
+  L -->|"yes"| A{"Has no person been<br>nearby for 5 s or more?"}
+  A -->|"yes"| LE["possible_littering"]
+  L -->|"no"| W["not emitted yet"]
+  A -->|"no"| W
+  PE --> OUT["write an event file"]
+  LE --> OUT
+```
+
+The 8 s and 5 s are the values set with `--linger-seconds` and `--person-away-seconds` in the step 2 command. `person_detected` is emitted only when 12 s or more (the `--person-event-interval` default) have passed since the last one. `possible_littering` is emitted only once per object.
 
 ### 4. Check points
 

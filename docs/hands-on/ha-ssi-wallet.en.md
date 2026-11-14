@@ -61,6 +61,34 @@ Pipeline:
 - A lightweight stack using `did:jwk` and SD-JWT VC
 - How `allowed` / `denied` depends on VC content and `purpose`
 
+The diagram below shows the flow on this page: issuing the VC, presenting it, and writing data.
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant B as PC<br>(browser / curl)
+  participant W as Mobile wallet
+  participant P as publisher<br>(Issuer / Verifier)
+  Note over B,P: OID4VCI: receive the Consent VC (§4)
+  B->>P: GET /issuer/offer?type=ConsentVC
+  P-->>B: Show QR (credential offer)
+  W->>P: Scan QR, POST /issuer/token
+  P-->>W: access_token
+  W->>P: POST /issuer/credential
+  P-->>W: Consent VC (SD-JWT VC)
+  Note over B,P: OID4VP: present the Consent VC (§5)
+  B->>P: GET /verifier/request?dataset_id=...&purpose=...
+  P-->>B: Show QR (presentation request)
+  W->>P: Scan QR, present VC (POST /verifier/response)
+  P->>P: Check dataset_id and allowed_purposes, write audit log
+  P-->>W: allowed and policy_token (5 min, single use)
+  Note over B,P: Write with the PolicyToken (§8)
+  B->>P: POST /platform/ingest (Bearer policy_token)
+  P-->>B: received (token is now consumed)
+```
+
+The publisher acts as both Issuer and Verifier. The `policy_token` in step 11 goes back to the wallet, so in this hands-on you copy it from the publisher log and use it in step 12. If `purpose` is not in `allowed_purposes`, step 11 returns `denied` (`purpose_mismatch`) and no PolicyToken is issued.
+
 ## Required environment
 
 - Docker / Docker Compose available

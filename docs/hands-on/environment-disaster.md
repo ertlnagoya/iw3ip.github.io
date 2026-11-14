@@ -45,6 +45,35 @@
 - `flood_risk_high` を `allowed` / `denied` に分ける条件
 - `/platform/ingest` と `/audit/logs` の見方
 
+次の図は、publisher がイベントを共有するかどうかを決める流れです。
+
+```mermaid
+flowchart TB
+  IN["イベントを受け取る<br>topic: homeassistant/event/flood_risk_high"]
+  NORM["dataset_id に変換する<br>home/event/flood_risk_high"]
+  Q1{"同じ dataset_id の<br>consent が登録されているか"}
+  Q2{"purpose が<br>allowed_purposes に入っているか"}
+  Q3{"いまが valid_from から<br>valid_to の間か"}
+  OK["allowed<br>/platform/ingest に転送"]
+  NG["denied<br>reason: no_matching_consent"]
+  AUD["/audit/logs<br>allow / deny を記録"]
+  IN --> NORM --> Q1
+  Q1 -->|"はい"| Q2
+  Q1 -->|"いいえ"| NG
+  Q2 -->|"はい"| Q3
+  Q2 -->|"いいえ"| NG
+  Q3 -->|"はい"| OK
+  Q3 -->|"いいえ"| NG
+  OK --> AUD
+  NG --> AUD
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class OK allow
+  class NG deny
+```
+
+このページの consent では、`disaster_response` は許可され、`advertising` は「purpose が allowed_purposes に入っているか」の判定で拒否されます。MQTT で送ったイベントには `purpose` が無いため、publisher の既定値 `research` で判定されます。
+
 ## つまずきやすい点
 
 - `dataset_id` と `event_type` の対応が頭の中で混ざりやすい

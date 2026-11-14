@@ -48,6 +48,41 @@ Branches after that:
 - what is kept and what is intentionally not shared for `possible_littering`
 - how `allowed`, `denied`, and the audit log fit together
 
+The diagram below shows how data moves on this page.
+
+```mermaid
+flowchart LR
+  subgraph EDGE["Edge (PC)"]
+    CAM["USB camera<br>video never leaves the PC"]
+    BR["webcam-bridge<br>detects possible_littering"]
+    EV["Event JSON<br>(simulated data on this page)"]
+  end
+  BRK["iw3ip-mosquitto<br>(MQTT broker)"]
+  subgraph PUB["publisher (localhost:8080)"]
+    SIM["POST /simulate/publish<br>purpose is given"]
+    MQ["MQTT subscription<br>purpose defaults to research"]
+    CHK{"Do dataset_id and purpose<br>match a registered consent?"}
+    ING["/platform/ingest<br>(shared)"]
+    DEN["Not shared<br>no_matching_consent"]
+    AUD["/audit/logs<br>records allow / deny"]
+  end
+  CAM --> BR --> EV
+  EV -->|"curl (HTTP)"| SIM
+  EV -->|"mosquitto_pub"| BRK --> MQ
+  SIM --> CHK
+  MQ --> CHK
+  CHK -->|"allowed"| ING
+  CHK -->|"denied"| DEN
+  ING --> AUD
+  DEN --> AUD
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class ING allow
+  class DEN deny
+```
+
+The camera video stays on the PC; only the event JSON reaches the publisher. HTTP and MQTT go through the same check. An MQTT message cannot carry a `purpose`, so the publisher uses its default, `research`. The registered consent allows `research`, so the message in step 7 is recorded as `allow`.
+
 ## Common stumbling points
 
 - it is easy to treat Phase 1 detection and Phase 2 sharing as one step, but they are separate

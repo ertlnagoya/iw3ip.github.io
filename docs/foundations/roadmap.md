@@ -30,6 +30,20 @@ IW3IP を「動かせる」だけでなく「説明できる」状態を目指�
 
 7 で [Home Assistant のデータを取り込む (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) を選ぶ場合は、6 の最短起動を 7 のあと (8 の前) に行います。HA SSI Publisher のページで起動する publisher は、最短起動の IPFS と同じポート 8080 を使うためです。
 
+次の図は、最短学習パスの順番です。7 で何を選ぶかによって、6 の最短起動を行う位置が変わります。
+
+```mermaid
+flowchart TB
+  F1["1. ブロックチェーン基礎"] --> F2["2. Hardhat 基礎"] --> F3["3. SSI / DID / VC 基礎"]
+  F3 --> S4["4. 事前準備"] --> H5["5. HA Demo Simulator (1.1)"]
+  H5 --> Q{"7 で HA SSI Publisher を選ぶか"}
+  Q -->|"いいえ"| QS1["6. 最短起動"] --> D7["7. 1.2 から 1 つ<br>HUSKYLENS2 または OpenCV"]
+  Q -->|"はい"| HA7["7. HA SSI Publisher (1.2)"] --> QS2["6. 最短起動"]
+  D7 --> M8["8. 1.3 出品と購入"]
+  QS2 --> M8
+  M8 --> O9["9. 1.4 (任意)"] --> P23["Part 2、Part 3<br>(必要な分だけ)"]
+```
+
 ここまでで、基本理解と最小ハンズオンは完結します。この先は、[ハンズオン](../hands-on/index.md) の Part 2、Part 3 に必要な分だけ進みます。
 
 ## 3週間プラン（例）

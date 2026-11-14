@@ -57,6 +57,36 @@ sequenceDiagram
 - `/platform/ingest` が PolicyToken と ServiceToken の両方を受け付ける
   仕組み (順序: PolicyToken → 不一致なら ServiceToken)
 
+次の図は、`/platform/ingest` が Bearer トークンを確かめる順序です。
+
+```mermaid
+flowchart TB
+  REQ["POST /platform/ingest<br>Authorization: Bearer トークン"]
+  Q1{"PolicyToken として<br>登録されているか"}
+  QP{"期限内、未使用、<br>dataset_id が一致するか"}
+  OKP["受け付ける<br>トークンは使用済みになる"]
+  Q2{"ServiceToken として<br>登録されているか"}
+  QS{"期限内 (1 時間)、<br>dataset_id が一致するか"}
+  OKS["受け付ける<br>write_count を 1 増やす"]
+  NGP["拒否<br>policy_token_...<br>(未知のトークンもここ)"]
+  NGS["拒否<br>service_token_expired など"]
+  REQ --> Q1
+  Q1 -->|"はい"| QP
+  QP -->|"はい"| OKP
+  QP -->|"いいえ"| NGP
+  Q1 -->|"いいえ"| Q2
+  Q2 -->|"はい"| QS
+  Q2 -->|"いいえ"| NGP
+  QS -->|"はい"| OKS
+  QS -->|"いいえ"| NGS
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class OKP,OKS allow
+  class NGP,NGS deny
+```
+
+受け付けた場合も拒否した場合も、監査ログに 1 行が残ります。PolicyToken は 1 回使うと使用済みになりますが、ServiceToken は期限内なら何度でも通り、そのたびに `write_count` が増えます。
+
 ## よくある問題
 
 - ConsentVC / ViewerVC / ServiceVC は別々の VC で、流用できない

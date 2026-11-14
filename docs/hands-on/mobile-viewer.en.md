@@ -79,6 +79,25 @@ Branches after that:
 
 ## Prepare the connection baseline
 
+The following diagram shows how the smartphone connects to the PC. The smartphone must reach two ports (5173 and 8545) on the PC's LAN IP.
+
+```mermaid
+flowchart LR
+  subgraph PHONE["Smartphone"]
+    BR["MetaMask in-app browser"]
+    MM["MetaMask wallet<br>(Account #35;2)"]
+  end
+  subgraph PC["PC (LAN IP)"]
+    UI["iot-market-ui<br>listens on 0.0.0.0:5173"]
+    HH["Hardhat node<br>listens on 0.0.0.0:8545"]
+  end
+  BR -->|"opens #lt;HOST_IP#gt;:5173"| UI
+  BR -->|"reads merchandise info<br>(VITE_RPC_URL in .env.local)"| HH
+  MM -->|"purchase transaction<br>(RPC URL added to MetaMask)"| HH
+```
+
+If `.env.local` or the MetaMask network still uses `127.0.0.1`, the smartphone points to itself and never reaches the PC.
+
 ### 0. Configure the frontend endpoint (.env.local) { #env-local }
 
 `iot-market-ui` reads the blockchain (RPC) and publisher endpoints from `iot-market-ui/.env.local`. If it points at the wrong host, the merchandise page returns **HTTP 500** (if the file is missing, `127.0.0.1` is used for RPC and `localhost` for the publisher, so the phone cannot connect). Copy the template first and match it to your setup.
@@ -164,6 +183,32 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 - If MetaMask rejects the network, confirm the node was started with `--hostname 0.0.0.0` and that both `.env.local` and the MetaMask RPC use the **PC's LAN IP, not 127.0.0.1**
 
 ### 5. What to check
+
+The following diagram shows the flow from a purchase until the data reaches `mediator-buyer` (v1 lane).
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant S as Smartphone<br>(MetaMask in-app browser)
+  participant M as Merchandise contract<br>(Hardhat :8545)
+  participant O as mediator-owner<br>(Account #35;1)
+  participant ST as simple-storage<br>(:3000)
+  participant B as mediator-buyer<br>(Account #35;2)
+  Note over M,B: At startup, the Account #35;2 public key<br>was registered in the PubKey contract
+  S->>M: purchase() (transaction signed by Account #35;2)
+  M-->>O: Purchase event (buyer's public key)
+  M-->>B: Purchase event (You bought a product of ...)
+  O->>ST: uploads the event file
+  ST-->>O: storage location (URI)
+  O->>M: emitUpload (URI encrypted with the public key)
+  M-->>B: Upload event (encrypted URI)
+  B->>B: decrypts the URI with its private key
+  B->>ST: downloads the file (File downloaded successfully)
+  B->>M: verify (file hash)
+  M-->>B: result (Verification result: true)
+```
+
+The data itself is never written to the chain; only its storage location, encrypted with the buyer's public key, is. Only `mediator-buyer`, which holds the matching private key, can decrypt it, so step 4 buys with Account #2. At the end, the hash of the received file is checked against the merchandise contract.
 
 - The iot-market-ui search UI or a merchandise page opens on the smartphone
 - The purchase action runs on an individual Merchandise page

@@ -57,6 +57,28 @@ flowchart LR
 | SD-JWT VC | VC の形式の 1 つ。持っている項目のうち、必要なものだけを選んで開示できる |
 | did:jwk | 公開鍵をそのまま識別子にした DID。ウォレットが最初に作る |
 
+次の図は、Part 2 で publisher が発行者と検証者を兼ねるときの流れです。
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant W as スマホのウォレット<br>(保持者)
+  participant P as publisher<br>(発行者・検証者)
+  participant A as API を呼ぶプログラム
+  W->>P: 発行用の QR を読み取り、VC を要求する (OID4VCI)
+  P-->>W: publisher の鍵で署名した VC (SD-JWT VC)
+  Note over W: VC を保管する
+  W->>P: 提示用の QR を読み取り、要求を取りに行く (OID4VP)
+  P-->>W: Presentation Definition (見せてほしい項目)
+  W->>P: 必要な項目だけを開示して VC を提示する
+  P->>P: publisher の公開鍵で署名を確かめ、内容を判定する
+  P->>P: 判定が通れば、短命のトークンを発行する
+  P-->>A: トークンを渡す
+  A->>P: トークンを付けて API を呼ぶ
+```
+
+発行者と検証者がどちらも publisher なので、6 の検証には publisher 自身の公開鍵を使います。VC を発行する 1〜2 と、VC を提示して検証する 3〜6 は別の操作です。VC は 1 回受け取れば、提示を何度も繰り返せます。
+
 ### VC とトークン
 
 VC は長く使う証明書で、API を呼ぶたびに提示するものではありません。本サイトでは、VC の提示が検証されると、publisher が有効期間の短い **トークン** を発行し、API はそのトークンで呼び出します。VC の種類とトークンの対応は [VC アーキテクチャ全体像 (Part 2 / Stage 0〜7, T, A, P)](../design/vc-architecture-overview.md) にまとめています。

@@ -28,6 +28,24 @@ Home Assistant の `demo` エンティティを使い、次の流れをローカ
 
 このページでは、Phase 1 の状態共有、Phase 2 のイベント共有、Phase 3 の assistant 実行までを同じ環境で確認します。
 
+次の図は、このページで動かすデータの流れです。
+
+```mermaid
+flowchart TB
+  HA["Home Assistant demo<br>script (mqtt.publish)"] -->|"homeassistant/state/...<br>homeassistant/event/..."| MQ["mosquitto<br>(MQTT :1883)"]
+  MQ --> PUB["publisher (:8080)<br>受け取り、正規化する"]
+  SIM["curl<br>POST /simulate/publish"] -->|"purpose を指定する"| PUB
+  PUB --> CHK{"一致する consent があるか<br>(dataset_id、purpose、有効期間)"}
+  CON["POST /consents<br>同意 (consent) の JSON"] --> CHK
+  CHK -->|"allow"| ING["/platform/ingest<br>に記録"]
+  CHK -->|"allow / deny"| AUD["/audit/logs<br>に記録"]
+  ING -.->|"Phase 3:<br>run_phase3_from_ingest.py"| AST["assistant (:8090)<br>plan / execute"]
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  class ING allow
+```
+
+publisher の入口は、MQTT と HTTP (`/simulate/publish`) の 2 つです。どちらから入ったデータも、同じ consent の判定を通ります。MQTT から入ったデータには `purpose` が無いため、publisher の既定値 (`research`) を使います。許可 (`allow`) と拒否 (`deny`) は、どちらも `/audit/logs` に残ります。
+
 ## 最短ルート
 
 最初は次の 5 手順で十分です。

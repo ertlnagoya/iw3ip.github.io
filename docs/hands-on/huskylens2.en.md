@@ -24,6 +24,33 @@ Turn detections from DFRobot's [1] HUSKYLENS2 AI camera [2] into event files.
 Aggregate HUSKYLENS2 (or mock) detections every few seconds and write them out as event files. `mediator-owner` registers each file on the marketplace as merchandise.
 
 
+The following diagram shows how a detection result becomes registered merchandise.
+
+```mermaid
+flowchart TB
+  subgraph OFF["On the PC (off-chain)"]
+    direction LR
+    DEV["HUSKYLENS2 (serial)<br>or mock"]
+    BR["huskylens_bridge.py<br>(sensor-bridge)"]
+    FILE["event file<br>301_huskylens_*.txt<br>(raw_data/output)"]
+    MO["mediator-owner"]
+  end
+  subgraph ON["Blockchain (on-chain)"]
+    direction LR
+    MC["merchandise contract<br>(Merchandise)"]
+    MK["marketplace<br>(IoTMarket)"]
+  end
+  UI["iot-market-ui<br>localhost:5173/merchandise/#lt;address#gt;"]
+  DEV -->|"detections (one per line)"| BR
+  BR -->|"writes one batch<br>every few seconds"| FILE
+  FILE -->|"finds the new file"| MO
+  MO -->|"creates<br>(price, file hash)"| MC
+  MO -->|"registers the merchandise address"| MK
+  MC -.->|"shown on the merchandise page"| UI
+```
+
+Only merchandise information such as the price and the file hash is written to the chain. The event file itself stays with `mediator-owner` and is handed to the buyer after a purchase (covered in 1.3).
+
 ## What this page helps you understand
 
 - how HUSKYLENS2 detections are turned into event files

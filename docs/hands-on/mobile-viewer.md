@@ -80,6 +80,25 @@ homepage `/` をスマホで開く形に読み替えてください。
 
 ## 接続の前提を整える
 
+次の図は、スマホから PC へのつながり方です。スマホからは、PC の LAN IP の 2 つのポート (5173 と 8545) に届く必要があります。
+
+```mermaid
+flowchart LR
+  subgraph PHONE["スマホ"]
+    BR["MetaMask のブラウザ"]
+    MM["MetaMask のウォレット<br>(Account #35;2)"]
+  end
+  subgraph PC["PC (LAN IP)"]
+    UI["iot-market-ui<br>0.0.0.0:5173 で待ち受け"]
+    HH["Hardhat ノード<br>0.0.0.0:8545 で待ち受け"]
+  end
+  BR -->|"#lt;HOST_IP#gt;:5173 を開く"| UI
+  BR -->|"商品情報を読む<br>(.env.local の VITE_RPC_URL)"| HH
+  MM -->|"購入の取引<br>(MetaMask に追加した RPC URL)"| HH
+```
+
+`.env.local` や MetaMask の接続先が `127.0.0.1` のままだと、スマホは自分自身を指してしまい、PC に届きません。
+
 ### 0. フロントの接続先を設定 (.env.local) { #env-local }
 
 `iot-market-ui` は、ブロックチェーン (RPC) と publisher の接続先を `iot-market-ui/.env.local` から読み込みます。接続先が間違っていると、商品ページが **HTTP 500** になります (ファイルが無い場合は RPC に `127.0.0.1`、publisher に `localhost` が使われるため、スマホからは接続できません)。まず雛形をコピーして自分の環境に合わせます。
@@ -166,6 +185,32 @@ http://<HOST_IP>:5173/merchandise/<merchandise_address>
 - ネットワーク追加が拒否される場合は、ノードを `--hostname 0.0.0.0` で起動しているか、`.env.local` と MetaMask の RPC が **127.0.0.1 ではなく PC の LAN IP** になっているかを確認
 
 ### 5. 確認ポイント
+
+次の図は、購入してからデータが `mediator-buyer` に届くまでの流れ (v1 経路) です。
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant S as スマホ<br>(MetaMask のブラウザ)
+  participant M as 商品のコントラクト<br>(Merchandise、Hardhat :8545)
+  participant O as mediator-owner<br>(Account #35;1)
+  participant ST as simple-storage<br>(:3000)
+  participant B as mediator-buyer<br>(Account #35;2)
+  Note over M,B: 起動時に、Account #35;2 の公開鍵を<br>PubKey コントラクトに登録済み
+  S->>M: purchase() (Account #35;2 で署名した取引)
+  M-->>O: Purchase イベント (購入者の公開鍵)
+  M-->>B: Purchase イベント (You bought a product of ...)
+  O->>ST: イベントファイルを上げる
+  ST-->>O: 保存先 (URI)
+  O->>M: emitUpload (公開鍵で暗号化した URI)
+  M-->>B: Upload イベント (暗号化した URI)
+  B->>B: 自分の秘密鍵で URI を復号する
+  B->>ST: ファイルをダウンロードする (File downloaded successfully)
+  B->>M: verify (ファイルのハッシュ)
+  M-->>B: 結果 (Verification result: true)
+```
+
+データそのものはチェーンに書きません。チェーンに書くのは、購入者の公開鍵で暗号化した保存先です。復号できるのは対応する秘密鍵を持つ `mediator-buyer` だけなので、手順 4 では Account #2 で購入します。最後に、届いたファイルのハッシュを商品のコントラクトと照合します。
 
 - iot-market-ui の検索 UI または商品ページがスマホで開ける
 - 個別 Merchandise ページで購入操作が走る

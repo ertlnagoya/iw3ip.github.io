@@ -56,6 +56,24 @@ Rather than studying Hardhat itself in depth, this site uses it as the experimen
 - deploy scripts: place contracts on the local network
 - MetaMask: connects to the local chain and sends transactions from the UI
 
+The figure below shows how these parts connect.
+
+```mermaid
+flowchart LR
+  DEP["Deploy script<br>npx hardhat run ... (network: localhost)"]
+  subgraph NODE["Local chain: npx hardhat node<br>http://127.0.0.1:8545 (chain ID 31337)"]
+    ACC["Test accounts<br>Account #35;0, #35;1, #35;2, ...<br>(10000 ETH each)"]
+    SC["Contracts<br>(IoTMarket, Merchandise, etc.)"]
+  end
+  MM["MetaMask<br>(browser)"]
+  DEP -->|"1. compiles and deploys"| SC
+  ACC -.->|"2. import the Account #35;2 private key"| MM
+  MM -->|"3. sends transactions"| SC
+  SC -->|"4. transaction result"| MM
+```
+
+Both the deploy script and MetaMask connect to the same node at `127.0.0.1:8545`. When you restart the node, the chain is emptied, so you need to deploy the contracts again.
+
 ### Typical Issues
 
 - stale MetaMask network state -> reset/sync accounts and network

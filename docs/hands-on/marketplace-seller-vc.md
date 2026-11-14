@@ -240,6 +240,39 @@ console に表示された `seller`、`merchandise`、`deploy tx`、`register tx
 - (任意) MARKETPLACE_HARDHAT_RPC 有効時、Merchandise.getOwner() が検証される
 - audit log に `marketplace/seller_registered` 行が出る
 
+次の図は、publisher が `/marketplace/register` で確かめる順番です。前半は SellerVC から得た SellerToken で確かめ、後半 (任意) はブロックチェーン上の Merchandise の持ち主で確かめます。
+
+```mermaid
+flowchart TB
+  R["POST /marketplace/register<br>(Bearer SellerToken)"]
+  T{"SellerToken が有効で、<br>dataset_id が<br>licensed_datasets にある?"}
+  E1["401 / 403<br>seller_token_..."]
+  C{"MARKETPLACE_HARDHAT_RPC<br>を設定している?"}
+  Q["Hardhat ノードの<br>Merchandise.getOwner() を照会"]
+  Q2{"照会できた?"}
+  E2["502 chain_rpc_failed"]
+  O{"持ち主が<br>seller_eth_addr と一致?"}
+  E3["403 owner_mismatch"]
+  B["merchandise と seller_did を結び付ける<br>audit: marketplace/seller_registered"]
+  R --> T
+  T -->|"いいえ"| E1
+  T -->|"はい"| C
+  C -->|"いいえ (owner_verify: skipped)"| B
+  C -->|"はい"| Q --> Q2
+  Q2 -->|"いいえ"| E2
+  Q2 -->|"はい"| O
+  O -->|"いいえ"| E3
+  O -->|"はい (owner_verify: verified)"| B
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  classDef chain fill:#e3ecfa,stroke:#2c5aa0,color:#1a3a6b
+  class B allow
+  class E1,E2,E3 deny
+  class Q chain
+```
+
+SellerVC が裏付けるのは「どの dataset を売って良いか」です。その Merchandise を本当にこの seller が持っているかは、ブロックチェーンを照会しないと確かめられません。`MARKETPLACE_HARDHAT_RPC` を設定しないと、この照会は行われません。
+
 ### 操作
 
 Step S2 で `SELLER` を設定したターミナル (リポジトリのトップ) で実行します。最初の 3 行の `<…>` は、山かっこを含めて全体を Step S3 でメモした値に置き換えてから実行してください。置き換え忘れても、引用符で囲んでいるのでエラーにはならず、その文字列がそのまま送られます。`MARKETPLACE_HARDHAT_RPC` が未設定なら、でたらめな値のまま登録されてしまいます。設定済みの場合、`MERCH` を置き換え忘れると on-chain の照会に失敗して HTTP 502 `chain_rpc_failed`、`SELLER_ETH` を置き換え忘れると on-chain の owner と一致せず HTTP 403 `owner_mismatch` で失敗します。`TX_HASH` は照合されないので、置き換え忘れてもそのまま登録されます。

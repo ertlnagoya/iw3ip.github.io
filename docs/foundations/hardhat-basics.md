@@ -55,6 +55,24 @@ sequenceDiagram
 - デプロイスクリプト: コントラクトをローカルネットワークへ配置
 - MetaMask: ローカルチェーンへ接続し、UIから取引を送る
 
+次の図は、これらがどうつながるかを示しています。
+
+```mermaid
+flowchart LR
+  DEP["デプロイスクリプト<br>npx hardhat run ... (network: localhost)"]
+  subgraph NODE["ローカルチェーン: npx hardhat node<br>http://127.0.0.1:8545 (チェーン ID 31337)"]
+    ACC["テスト用アカウント<br>Account #35;0, #35;1, #35;2, ...<br>(各 10000 ETH)"]
+    SC["コントラクト<br>(IoTMarket、Merchandise など)"]
+  end
+  MM["MetaMask<br>(ブラウザ)"]
+  DEP -->|"1. コンパイルして配置"| SC
+  ACC -.->|"2. Account #35;2 の秘密鍵を取り込む"| MM
+  MM -->|"3. 取引を送る"| SC
+  SC -->|"4. 取引の結果"| MM
+```
+
+デプロイスクリプトも MetaMask も、同じ `127.0.0.1:8545` のノードに接続します。ノードを再起動するとチェーンの中身は消えるため、コントラクトを配置し直す必要があります。
+
 ### よくあるつまずき
 
 - MetaMaskのネットワーク状態が古い -> アカウント/ネットワークを再同期

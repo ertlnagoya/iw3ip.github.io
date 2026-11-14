@@ -90,6 +90,32 @@ IW3IP separates information suited to verification and audit trails from informa
   - large media files
   - high-frequency sensor streams
 
+The figure below shows which information is on-chain and which is off-chain in the samples on this site.
+
+```mermaid
+flowchart LR
+  subgraph OFF["Off-chain"]
+    RAW["Raw IoT data<br>sensor streams"]
+    PUB["publisher<br>consent decision"]
+    AUD["Audit log<br>(SQLite)"]
+    BODY["Data and image files"]
+  end
+  subgraph ON["On-chain (Hardhat local chain)"]
+    MER["IoTMarket / Merchandise<br>data hash"]
+    PT["ProvenanceToken<br>manifest label<br>image sha256, IPFS CID"]
+  end
+  RAW --> PUB
+  PUB -->|"records the decision"| AUD
+  BODY -.->|"records the hash, etc."| MER
+  BODY -.->|"records the sha256, CID, etc."| PT
+  classDef onchain fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
+  classDef offchain fill:#f5f5f5,stroke:#616161,color:#212121
+  class MER,PT onchain
+  class RAW,PUB,AUD,BODY offchain
+```
+
+The data itself stays off the chain, and the chain records only short values such as hashes. By computing the hash of the data you received and comparing it with the value on the chain, you can check that the data has not been changed. In the samples, the consent decision (audit log) is kept in SQLite, not yet on the chain.
+
 ## Read Next
 
 In the short learning path of the [Learning Roadmap](roadmap.md), the next page is [Hardhat Basics (Blockchain Used in This Site)](hardhat-basics.md).

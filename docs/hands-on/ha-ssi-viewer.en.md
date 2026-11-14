@@ -38,6 +38,33 @@ Pipeline:
 
 `Mobile wallet (ViewerVC) -> OID4VP Verifier -> ViewerToken -> /platform/data`
 
+The diagram below shows how the VC you present decides which token you get and which API it opens.
+
+```mermaid
+flowchart LR
+  subgraph WAL["Mobile wallet"]
+    CVC["ConsentVC<br>allowed_purposes"]
+    VVC["ViewerVC<br>allowed_actions: read"]
+  end
+  subgraph PUB["publisher"]
+    VER["/verifier/response<br>verifies the presented VC"]
+    PT["PolicyToken<br>5 min, single use"]
+    VT["ViewerToken<br>60 s, reusable"]
+    ING["POST /platform/ingest<br>(write)"]
+    DATA["GET /platform/data<br>(read)"]
+  end
+  CVC -->|"present"| VER
+  VVC -->|"present"| VER
+  VER -->|"for ConsentVC"| PT
+  VER -->|"for ViewerVC"| VT
+  PT --> ING
+  VT --> DATA
+  PT -.->|"401 viewer_token_unknown"| DATA
+  linkStyle 6 stroke:#c0392b,color:#7b241c
+```
+
+`/platform/data` accepts only a ViewerToken. The publisher keeps PolicyTokens and ViewerTokens separately, so a PolicyToken obtained with a ConsentVC gets `viewer_token_unknown` (dotted line).
+
 ## What this page covers
 
 - Why "write VC" and "read VC" are separated

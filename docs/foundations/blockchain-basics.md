@@ -91,6 +91,32 @@ C --> E[Auditable History]
   - 動画や画像などの大きなファイル
   - 高頻度なセンサストリーム
 
+次の図は、本サイトのサンプルで、どの情報がオンチェーンに、どの情報がオフチェーンにあるかを示しています。
+
+```mermaid
+flowchart LR
+  subgraph OFF["オフチェーン"]
+    RAW["生の IoT データ<br>センサストリーム"]
+    PUB["publisher<br>同意判定"]
+    AUD["監査ログ<br>(SQLite)"]
+    BODY["データや画像の本体"]
+  end
+  subgraph ON["オンチェーン (Hardhat のローカルチェーン)"]
+    MER["IoTMarket / Merchandise<br>データのハッシュ"]
+    PT["ProvenanceToken<br>マニフェストのラベル<br>画像の sha256、IPFS の CID"]
+  end
+  RAW --> PUB
+  PUB -->|"判定結果を記録"| AUD
+  BODY -.->|"ハッシュなどを記録"| MER
+  BODY -.->|"sha256 や CID などを記録"| PT
+  classDef onchain fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
+  classDef offchain fill:#f5f5f5,stroke:#616161,color:#212121
+  class MER,PT onchain
+  class RAW,PUB,AUD,BODY offchain
+```
+
+データの本体はチェーンの外に置き、チェーンにはハッシュなどの短い値だけを記録します。受け取ったデータのハッシュを計算してチェーン上の値と比べると、データが書き換えられていないかを確かめられます。本サンプルでは、同意判定の結果 (監査ログ) はまだチェーンには書かず、SQLite に残します。
+
 ## 次に読むページ
 
 [学習ロードマップ（初級者向け）](roadmap.md) の最短学習パスでは、次は [Hardhat基礎（このサイトで使うブロックチェーン）](hardhat-basics.md) です。

@@ -56,6 +56,36 @@ sequenceDiagram
 - How `/platform/ingest` accepts both PolicyToken and ServiceToken
   (PolicyToken first, fall through to ServiceToken on "unknown")
 
+The diagram below shows the order in which `/platform/ingest` checks a Bearer token.
+
+```mermaid
+flowchart TB
+  REQ["POST /platform/ingest<br>Authorization: Bearer token"]
+  Q1{"Is it a known<br>PolicyToken?"}
+  QP{"Not expired, unused,<br>and dataset_id matches?"}
+  OKP["Accept<br>token becomes consumed"]
+  Q2{"Is it a known<br>ServiceToken?"}
+  QS{"Not expired (1 hour)<br>and dataset_id matches?"}
+  OKS["Accept<br>write_count += 1"]
+  NGP["Reject<br>policy_token_...<br>(unknown tokens end here)"]
+  NGS["Reject<br>service_token_expired, etc."]
+  REQ --> Q1
+  Q1 -->|"yes"| QP
+  QP -->|"yes"| OKP
+  QP -->|"no"| NGP
+  Q1 -->|"no"| Q2
+  Q2 -->|"yes"| QS
+  Q2 -->|"no"| NGP
+  QS -->|"yes"| OKS
+  QS -->|"no"| NGS
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class OKP,OKS allow
+  class NGP,NGS deny
+```
+
+Every accepted or rejected request adds one line to the audit log. A PolicyToken is consumed after one use, while a ServiceToken passes any number of times within its TTL and increments `write_count` each time.
+
 ## Common issues
 
 - ConsentVC / ViewerVC / ServiceVC are **distinct**; cross-use is denied

@@ -37,6 +37,33 @@ ConsentVC が「書き込み (ingest) を許可する VC」だったのに対し
 
 `スマホウォレット (ViewerVC保持) -> OID4VP Verifier -> ViewerToken -> /platform/data`
 
+次の図は、提示する VC によって、受け取るトークンと使える API が分かれる様子です。
+
+```mermaid
+flowchart LR
+  subgraph WAL["スマホウォレット"]
+    CVC["ConsentVC<br>allowed_purposes"]
+    VVC["ViewerVC<br>allowed_actions: read"]
+  end
+  subgraph PUB["publisher"]
+    VER["/verifier/response<br>提示された VC を検証"]
+    PT["PolicyToken<br>5 分、1 回だけ"]
+    VT["ViewerToken<br>60 秒、何度でも"]
+    ING["POST /platform/ingest<br>(書き込み)"]
+    DATA["GET /platform/data<br>(読み出し)"]
+  end
+  CVC -->|"提示"| VER
+  VVC -->|"提示"| VER
+  VER -->|"ConsentVC のとき"| PT
+  VER -->|"ViewerVC のとき"| VT
+  PT --> ING
+  VT --> DATA
+  PT -.->|"401 viewer_token_unknown"| DATA
+  linkStyle 6 stroke:#c0392b,color:#7b241c
+```
+
+`/platform/data` が受け付けるのは ViewerToken だけです。PolicyToken と ViewerToken は publisher の中で別々に管理されているため、ConsentVC から得た PolicyToken を使うと `viewer_token_unknown` になります (点線)。
+
 ## このページで分かること
 
 - 「書き込み VC」と「読み出し VC」を分ける理由

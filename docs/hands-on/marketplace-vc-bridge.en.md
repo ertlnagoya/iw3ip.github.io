@@ -80,6 +80,31 @@ flowchart TB
   PD -->|"fetch with ViewerToken as Bearer<br>audit: platform/data (viewer_token_used)"| J
 ```
 
+The next diagram shows the same flow in time order (when the bridge files the claim). Only arrows 1 to 3 happen on the blockchain (on-chain); from arrow 4 on, it is an exchange of VCs off the blockchain (off-chain).
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant B as Buyer's PC<br>(browser + MetaMask / curl)
+  participant M as Merchandise contract<br>(Hardhat, on-chain)
+  participant BR as bridge
+  participant P as publisher
+  participant W as iw3ip-wallet<br>(iPhone)
+  B->>M: purchase() (page Step 6)
+  M->>M: Record a Purchase event
+  BR->>M: Detect the Purchase event by polling
+  BR->>P: POST /marketplace/claim (merchandise_address, buyer_eth_addr, tx_hash, dataset_id)
+  P-->>BR: claim_id, deeplink (written to the bridge log)
+  W->>P: Receive via the deeplink (OID4VCI, page Step 7)
+  P-->>W: PurchaseViewerVC (eth_addr ↔ did:jwk recorded in audit)
+  W->>P: Present the PurchaseViewerVC (OID4VP, page Step 8)
+  P->>P: Verify and issue a ViewerToken (60 s)
+  B->>P: GET /platform/data?merchandise=... (Bearer ViewerToken, page Step 9)
+  P-->>B: Data (JSON)
+```
+
+The ETH payment ends at arrow 1; viewing rights come from the VC at arrow 7 and the ViewerToken at arrow 9. At arrows 3 and 4, the bridge only passes the on-chain purchase on to the publisher.
+
 ## Required environment { #prerequisites }
 
 - You have verified [Stage 1](ha-ssi-wallet.md) and [Stage 3](ha-ssi-viewer.md)

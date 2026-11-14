@@ -46,6 +46,35 @@ Branches after that:
 - how `flood_risk_high` becomes `allowed` or `denied`
 - how to read `/platform/ingest` and `/audit/logs` separately
 
+The diagram below shows how the publisher decides whether to share an event.
+
+```mermaid
+flowchart TB
+  IN["Receive an event<br>topic: homeassistant/event/flood_risk_high"]
+  NORM["Convert to dataset_id<br>home/event/flood_risk_high"]
+  Q1{"Is a consent registered<br>for this dataset_id?"}
+  Q2{"Is purpose in<br>allowed_purposes?"}
+  Q3{"Is now between<br>valid_from and valid_to?"}
+  OK["allowed<br>forwarded to /platform/ingest"]
+  NG["denied<br>reason: no_matching_consent"]
+  AUD["/audit/logs<br>records allow / deny"]
+  IN --> NORM --> Q1
+  Q1 -->|"yes"| Q2
+  Q1 -->|"no"| NG
+  Q2 -->|"yes"| Q3
+  Q2 -->|"no"| NG
+  Q3 -->|"yes"| OK
+  Q3 -->|"no"| NG
+  OK --> AUD
+  NG --> AUD
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class OK allow
+  class NG deny
+```
+
+With the consent on this page, `disaster_response` is allowed and `advertising` is denied at the check "Is purpose in allowed_purposes?". An event sent over MQTT carries no `purpose`, so it is checked with the publisher's default, `research`.
+
 ## Common pitfalls
 
 - `dataset_id` and `event_type` are easy to mix up

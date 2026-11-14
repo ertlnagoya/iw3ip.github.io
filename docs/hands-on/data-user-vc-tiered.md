@@ -30,6 +30,27 @@
 
 DataUserVC はウォレットに発行して中身を確かめるところまで行います。DataUserVC をウォレットから提示するための提示の条件 (presentation definition) は教材リポジトリにまだ無いため、このページでは DataUserVC と同じ属性を `/marketplace/claim` の `data_user_attrs` に直接渡して信頼度を決めます (§3)。
 
+次の図は、このページで PC (curl とブラウザ) とスマホのウォレットが publisher とやり取りする順番です。
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant PC as PC<br>(curl / ブラウザ)
+  participant P as publisher
+  participant W as スマホのウォレット
+  PC->>P: POST /marketplace/claim (data_user_attrs)
+  P->>P: trustScore を計算し、allowed_views を claim に記録
+  P-->>PC: claim_id、offer_url、deeplink
+  W->>P: offer_url の QR を読み取る (OID4VCI)
+  P-->>W: PurchaseViewerVC (allowed_views 入り)
+  W->>P: /verifier/request の QR を読み取り、VC を提示 (OID4VP)
+  P->>P: 提示を検証し、VC の allowed_views を持つ ViewerToken を発行 (ログに出力)
+  PC->>P: GET /platform/data (Bearer ViewerToken)
+  P-->>PC: allowed_views に無いキーを省いたイベントの行
+```
+
+閲覧できる範囲は 2 番目で決まり、PurchaseViewerVC と ViewerToken はその範囲を受け渡すだけです。そのため、ViewerToken を発行した後に `data_user_attrs` を変えても、発行済みの token には反映されません。
+
 ## 最短ルート
 
 1. publisher を起動する
@@ -151,6 +172,31 @@ http://<HOST_IP>:8080/issuer/offer?type=DataUserVC&entity_type=Enterprise&purpos
 ## 3. /marketplace/claim を 3 通り呼び出す
 
 `/marketplace/claim` は、購入が成立したことを publisher に伝える API です。通常は bridge が購入のイベントを検知して呼び出しますが、ここでは tier の違いだけを確認するため、curl で直接呼び出します。`data_user_attrs` に DataUserVC と同じ属性を渡すと、publisher が trustScore を計算し、その購入で閲覧できる範囲を決めます。
+
+次の図は、publisher が `data_user_attrs` から PurchaseViewerVC の種類を決める手順です。
+
+```mermaid
+flowchart TB
+  A{"data_user_attrs<br>がある?"}
+  S["5 つの属性の点数を合計<br>(trustScore)"]
+  F{"trustScore #gt;= 80 かつ<br>entityType が<br>GovernmentOrganization か Police?"}
+  G{"trustScore #gt;= 60?"}
+  FULL["full<br>PurchaseViewerVC.full<br>event / image / video"]
+  ACC["access<br>PurchaseViewerVC.access<br>event / image"]
+  EV["denied または属性なし<br>PurchaseViewerVC.event<br>event のみ"]
+  A -->|"はい"| S --> F
+  A -->|"いいえ"| EV
+  F -->|"はい"| FULL
+  F -->|"いいえ"| G
+  G -->|"はい"| ACC
+  G -->|"いいえ"| EV
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class FULL,ACC allow
+  class EV deny
+```
+
+trustScore が 80 以上でも、entityType が `Enterprise` なら 2 つ目の判定に進み、`access` になります。点数の内訳は [段階アクセスの設計仕様](data-user-vc-tiered-spec.md) にあります。
 
 `merchandise_address`、`buyer_eth_addr`、`tx_hash`、`dataset_id` の 4 つは必須です。ここでは実際の購入を伴わないので、`tx_hash` には呼び出しごとに異なる任意の文字列を入れます (同じ `tx_hash` で再度呼ぶと、前回と同じ claim が返ります)。
 

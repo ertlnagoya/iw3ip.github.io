@@ -58,6 +58,28 @@ The wallet-based hands-on pages (Part 2) use the following standards.
 | SD-JWT VC | A VC format that lets the holder disclose only the fields that are needed |
 | did:jwk | A DID that uses the public key itself as the identifier. The wallet creates one at first run |
 
+The figure below shows the flow in Part 2, where the publisher acts as both the issuer and the verifier.
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant W as Phone wallet<br>(holder)
+  participant P as publisher<br>(issuer and verifier)
+  participant A as Program that calls the API
+  W->>P: Scan the issuance QR and request a VC (OID4VCI)
+  P-->>W: VC signed with the publisher key (SD-JWT VC)
+  Note over W: Store the VC
+  W->>P: Scan the presentation QR and fetch the request (OID4VP)
+  P-->>W: Presentation Definition (fields to show)
+  W->>P: Present the VC, disclosing only the needed fields
+  P->>P: Check the signature with the publisher public key and evaluate the content
+  P->>P: If it passes, issue a short-lived token
+  P-->>A: Hand over the token
+  A->>P: Call the API with the token
+```
+
+Because the publisher is both the issuer and the verifier, step 6 uses the publisher's own public key. Issuing a VC (steps 1–2) and presenting and verifying it (steps 3–6) are separate operations. Once the wallet has a VC, it can present it many times.
+
 ### VCs and tokens
 
 A VC is a long-lived credential and is not presented on every API call. On this site, once a VC presentation is verified, the publisher issues a short-lived **token**, and APIs are called with that token. The mapping between VC kinds and tokens is summarized in the [VC architecture overview (Part 2 / Stages 0–7, T, A, P)](../design/vc-architecture-overview.md).

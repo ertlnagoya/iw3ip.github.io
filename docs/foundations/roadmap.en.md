@@ -31,6 +31,20 @@ Go from the top row down. The order is the same as the short learning path below
 
 If you pick [Pull from Home Assistant (HA SSI Publisher)](../hands-on/ha-ssi-publisher.md) in step 7, run Quickstart (step 6) after step 7 (before step 8). The publisher on that page uses port 8080, the same port as the Quickstart IPFS.
 
+The figure below shows the order of the short learning path. Where you run Quickstart (step 6) depends on what you pick in step 7.
+
+```mermaid
+flowchart TB
+  F1["1. Blockchain Basics"] --> F2["2. Hardhat Basics"] --> F3["3. SSI / DID / VC Basics"]
+  F3 --> S4["4. Prerequisites"] --> H5["5. HA Demo Simulator (1.1)"]
+  H5 --> Q{"Pick HA SSI Publisher in step 7?"}
+  Q -->|"No"| QS1["6. Quickstart"] --> D7["7. One page from 1.2<br>HUSKYLENS2 or OpenCV"]
+  Q -->|"Yes"| HA7["7. HA SSI Publisher (1.2)"] --> QS2["6. Quickstart"]
+  D7 --> M8["8. List and buy in 1.3"]
+  QS2 --> M8
+  M8 --> O9["9. 1.4 (optional)"] --> P23["Part 2 and Part 3<br>(as far as you need)"]
+```
+
 This completes the basic understanding and the minimum hands-on. After that, go on to Part 2 and Part 3 of [Hands-on](../hands-on/index.md) as far as you need.
 
 ## 3-Week Plan (Example)

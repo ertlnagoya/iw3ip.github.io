@@ -24,6 +24,33 @@ DFRobot [1] の小型 AI カメラ HUSKYLENS2 [2] からイベントを取り出
 HUSKYLENS2（または mock の入力）の検知結果を数秒ごとにまとめ、イベントファイルとして出力します。出力されたファイルは、`mediator-owner` が商品としてマーケットに登録します。
 
 
+次の図は、検知結果が商品として登録されるまでの流れです。
+
+```mermaid
+flowchart TB
+  subgraph OFF["PC の中 (オフチェーン)"]
+    direction LR
+    DEV["HUSKYLENS2 (serial)<br>または mock"]
+    BR["huskylens_bridge.py<br>(sensor-bridge)"]
+    FILE["イベントファイル<br>301_huskylens_*.txt<br>(raw_data/output)"]
+    MO["mediator-owner"]
+  end
+  subgraph ON["ブロックチェーン (オンチェーン)"]
+    direction LR
+    MC["商品のコントラクト<br>(Merchandise)"]
+    MK["マーケット<br>(IoTMarket)"]
+  end
+  UI["iot-market-ui<br>localhost:5173/merchandise/#lt;アドレス#gt;"]
+  DEV -->|"検知結果 (1 行ずつ)"| BR
+  BR -->|"決めた秒数ごとに<br>まとめて書き出す"| FILE
+  FILE -->|"新しいファイルを見つける"| MO
+  MO -->|"作成する<br>(価格、ファイルのハッシュ)"| MC
+  MO -->|"商品のアドレスを登録する"| MK
+  MC -.->|"商品ページに表示"| UI
+```
+
+チェーンに書かれるのは、価格やファイルのハッシュなどの商品の情報です。イベントファイルそのものは `mediator-owner` の手元に残り、購入されたあとで買い手に渡ります (1.3 で扱います)。
+
 ## このページで分かること
 
 - HUSKYLENS2 の検知結果がどのようにイベントファイルへ変わるか

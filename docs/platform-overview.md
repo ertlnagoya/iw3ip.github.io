@@ -128,6 +128,23 @@ IW3IP では、データを送る前に「そのデータは送ってよいか�
 3. Consent VC（同意条件を表す検証可能な資格情報。[SSI / DID / VC 基礎](foundations/ssi-did-vc-basics.md) を参照）に基づいて `allow` / `deny` を判定する
 4. 監査ログを残す
 
+次の図は、この流れで `allow` と `deny` がどう分かれるかを示しています。
+
+```mermaid
+flowchart LR
+  SRC["Home Assistant<br>やセンサ"] --> NORM["共通スキーマに<br>正規化"] --> CHK{"Consent VC の<br>条件に合うか"}
+  CHK -->|"allow"| SEND["共有基盤へ送る"]
+  CHK -->|"deny"| STOP["送らない"]
+  SEND --> AUD["監査ログ"]
+  STOP --> AUD
+  classDef allow fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class SEND allow
+  class STOP deny
+```
+
+送らなかった場合も、判定の結果は監査ログに残ります。
+
 **「データを送る前に利用条件を確認し、その結果を記録する」** という基盤の最小構成です。
 
 ## フェーズ構成

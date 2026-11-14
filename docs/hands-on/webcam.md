@@ -24,6 +24,33 @@ HUSKYLENS2 がなくても、USB ウェブカメラと OpenCV [1] だけで `per
 USB ウェブカメラの画像から人物とポイ捨ての可能性を検知し、イベントファイルを生成します。出力されたファイルは、`mediator-owner` が商品としてマーケットに登録します。
 
 
+次の図は、検知結果が商品として登録されるまでの流れです。
+
+```mermaid
+flowchart TB
+  subgraph OFF["PC の中 (オフチェーン)"]
+    direction LR
+    DEV["USB ウェブカメラ<br>または mock"]
+    BR["webcam_litter_bridge.py<br>(webcam-bridge)"]
+    FILE["イベントファイル<br>401_webcam_event_*.txt<br>(raw_data/output)"]
+    MO["mediator-owner"]
+  end
+  subgraph ON["ブロックチェーン (オンチェーン)"]
+    direction LR
+    MC["商品のコントラクト<br>(Merchandise)"]
+    MK["マーケット<br>(IoTMarket)"]
+  end
+  UI["iot-market-ui<br>localhost:5173/merchandise/#lt;アドレス#gt;"]
+  DEV -->|"画像"| BR
+  BR -->|"1 件のイベントを<br>1 ファイルに書き出す"| FILE
+  FILE -->|"新しいファイルを見つける"| MO
+  MO -->|"作成する<br>(価格、ファイルのハッシュ)"| MC
+  MO -->|"商品のアドレスを登録する"| MK
+  MC -.->|"商品ページに表示"| UI
+```
+
+チェーンに書かれるのは、価格やファイルのハッシュなどの商品の情報です。イベントファイルそのものは `mediator-owner` の手元に残り、購入されたあとで買い手に渡ります (1.3 で扱います)。
+
 ## このページで分かること
 
 - USBウェブカメラだけで Phase 1 のイベント生成を試す方法
@@ -152,6 +179,24 @@ python3 webcam_litter_bridge.py \
 
 - 人を検出 → `person_detected`
 - `bottle/cup` が一定時間残留し、人が近くにいない → `possible_littering`
+
+次の図は、webcam モードで 2 種類のイベントを出す条件です。
+
+```mermaid
+flowchart TB
+  CAM["カメラの画像 (1 フレーム)"] --> YOLO["YOLO で物体を検出する"]
+  YOLO --> P{"人 (person) が<br>写っているか"}
+  P -->|"はい"| PE["person_detected"]
+  YOLO --> L{"bottle / cup が<br>8 秒以上同じ場所に<br>残っているか"}
+  L -->|"はい"| A{"近くに人がいない<br>時間が 5 秒以上か"}
+  A -->|"はい"| LE["possible_littering"]
+  L -->|"いいえ"| W["まだ出さない"]
+  A -->|"いいえ"| W
+  PE --> OUT["イベントファイルに書き出す"]
+  LE --> OUT
+```
+
+8 秒と 5 秒は、手順 2 のコマンドの `--linger-seconds` と `--person-away-seconds` で指定した値です。 `person_detected` は、前回から 12 秒 (`--person-event-interval` の既定値) 以上経ったときだけ出ます。`possible_littering` は、1 つの物体について 1 回だけ出ます。
 
 ### 4. 確認ポイント
 

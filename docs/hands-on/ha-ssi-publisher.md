@@ -29,6 +29,30 @@ Home Assistant のデータを MQTT 経由で受け取り、同意 (consent) の
 
 `Home Assistant -> MQTT -> (任意 Node-RED) -> Data Publisher -> Platform API`
 
+次の図は、publisher が受け取ったデータの共有可否を決める流れです。
+
+```mermaid
+flowchart TB
+  IN1["curl<br>POST /simulate/publish<br>(topic、payload、purpose)"] --> N["publisher: topic と payload から<br>dataset_id を決める"]
+  IN2["mosquitto_pub<br>(MQTT :1883)"] -->|"purpose は既定の research"| N
+  N --> C1{"dataset_id が同じ<br>consent があるか"}
+  CON["POST /consents<br>同意 (consent) の JSON"] -.-> C1
+  C1 -->|"はい"| C2{"purpose が<br>allowed_purposes に含まれるか"}
+  C2 -->|"はい"| C3{"今が valid_from 〜 valid_to<br>の範囲か"}
+  C3 -->|"はい"| SEND["Platform API へ送る<br>(/platform/ingest)"]
+  SEND -->|"成功"| A1["監査ログ: allow"]
+  SEND -->|"失敗"| A3["監査ログ: send_error"]
+  C1 -->|"いいえ"| A2["監査ログ: deny<br>(no_matching_consent)"]
+  C2 -->|"いいえ"| A2
+  C3 -->|"いいえ"| A2
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class A1 allow
+  class A2 deny
+```
+
+例えば、手順 3 の `homeassistant/state/sensor/temperature` は `home/env/temperature` になります。手順 4 は `dataset_id` が同じ consent はありますが、`purpose` (`marketing`) が含まれないため `deny` になります。
+
 ## 最短ルート
 
 最初は次の 4 手順で十分です。

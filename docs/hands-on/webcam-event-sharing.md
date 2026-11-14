@@ -48,6 +48,41 @@ Phase 1 では、USBウェブカメラで `person_detected` や `possible_litter
 - `possible_littering` を共有するときに何を残し、何を送らないか
 - `allowed` / `denied` と監査ログの関係
 
+次の図は、このページで扱うデータの流れです。
+
+```mermaid
+flowchart LR
+  subgraph EDGE["エッジ (PC)"]
+    CAM["USB カメラ<br>映像は外に出さない"]
+    BR["webcam-bridge<br>possible_littering を検知"]
+    EV["イベント JSON<br>(このページでは疑似データ)"]
+  end
+  BRK["iw3ip-mosquitto<br>(MQTT ブローカー)"]
+  subgraph PUB["publisher (localhost:8080)"]
+    SIM["POST /simulate/publish<br>purpose を指定する"]
+    MQ["MQTT の購読<br>purpose は既定の research"]
+    CHK{"dataset_id と purpose が<br>登録した consent に合うか"}
+    ING["/platform/ingest<br>(共有する)"]
+    DEN["共有しない<br>no_matching_consent"]
+    AUD["/audit/logs<br>allow / deny を記録"]
+  end
+  CAM --> BR --> EV
+  EV -->|"curl (HTTP)"| SIM
+  EV -->|"mosquitto_pub"| BRK --> MQ
+  SIM --> CHK
+  MQ --> CHK
+  CHK -->|"allowed"| ING
+  CHK -->|"denied"| DEN
+  ING --> AUD
+  DEN --> AUD
+  classDef allow fill:#e3f4e1,stroke:#2e7d32,color:#1b5e20
+  classDef deny fill:#fde2e2,stroke:#c0392b,color:#7b241c
+  class ING allow
+  class DEN deny
+```
+
+カメラの映像は PC から出ず、publisher に届くのはイベントの JSON だけです。HTTP と MQTT のどちらで送っても、同じ判定を通ります。MQTT では `purpose` を付けられないため、publisher の既定値 `research` が使われます。`research` は登録した consent で許可されているので、手順 7 の送信は `allow` として記録されます。
+
 ## つまずきやすい点
 
 - Phase 1 のイベント生成と、Phase 2 の共有判定を同じ処理だと思いやすい
